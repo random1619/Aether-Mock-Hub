@@ -1,0 +1,160 @@
+/* ── Locomotive Scroll v5 + Apple design-motion integration ──
+   Smooth scrolling with spring-like lerp, parallax depth, and
+   staggered reveal animations — all styled via LS's is-inview
+   class lifecycle. Respects prefers-reduced-motion. */
+
+/* ── Scroll container (LS takes over the viewport) ────────── */
+html.locomotive-scroll-enabled,
+html.locomotive-scroll-enabled body {
+  overflow: hidden;
+  height: 100%;
+}
+
+[data-scroll-container] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Apple Reveal — fade-up + scale-in on is-inview ──────── */
+/* Container: children are hidden until in view. Each child
+   staggers with an increasing delay for a cascading feel.
+   Uses the spring-soft curve for a gentle overshoot "materialize"
+   (translate + scale), all GPU-friendly transform/opacity. */
+.apple-reveal > * {
+  opacity: 0;
+  transform: translateY(20px) scale(0.985);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+  transition:
+    opacity var(--duration-entrance) var(--ease-out),
+    transform var(--duration-entrance) var(--ease-spring-soft);
+}
+
+.apple-reveal.is-inview > * {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Fallback: if LS is not actively scoping or in static render, avoid hidden content */
+html:not(.locomotive-scroll-enabled) .apple-reveal > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* nth-child stagger — children appear one after another, capped at 14
+   so deep sections still cascade without dragging the last items. */
+.apple-reveal > *:nth-child(1)  { transition-delay: 0.00s; }
+.apple-reveal > *:nth-child(2)  { transition-delay: 0.04s; }
+.apple-reveal > *:nth-child(3)  { transition-delay: 0.08s; }
+.apple-reveal > *:nth-child(4)  { transition-delay: 0.12s; }
+.apple-reveal > *:nth-child(5)  { transition-delay: 0.16s; }
+.apple-reveal > *:nth-child(6)  { transition-delay: 0.20s; }
+.apple-reveal > *:nth-child(7)  { transition-delay: 0.24s; }
+.apple-reveal > *:nth-child(8)  { transition-delay: 0.28s; }
+.apple-reveal > *:nth-child(9)  { transition-delay: 0.32s; }
+.apple-reveal > *:nth-child(10) { transition-delay: 0.36s; }
+.apple-reveal > *:nth-child(11) { transition-delay: 0.40s; }
+.apple-reveal > *:nth-child(12) { transition-delay: 0.42s; }
+.apple-reveal > *:nth-child(13) { transition-delay: 0.44s; }
+.apple-reveal > *:nth-child(14) { transition-delay: 0.46s; }
+.apple-reveal > *:nth-child(n+15) { transition-delay: 0.48s; }
+
+/* ── Apple Fade Up (single element) ──────────────────────── */
+.apple-fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-spring-soft);
+}
+
+.apple-fade-up.is-inview {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Apple Scale In (single element) ─────────────────────── */
+.apple-scale-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-spring-soft);
+}
+
+.apple-scale-in.is-inview {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Apple Card Spring Lift ─────────────────────────────── */
+.apple-card-hover {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+.apple-card-hover:hover {
+  transform: translateY(-4px) scale(1.015);
+}
+
+/* ── Apple Press — tactile active-state for pills/links/tiles ──
+   Springs down on :active for that "button press" feel. Pair with
+   framer-motion whileTap on motion.* elements, or use standalone. */
+.apple-press {
+  transition: transform var(--duration-standard) var(--ease-spring-press);
+}
+.apple-press:active {
+  transform: scale(0.96);
+}
+
+/* ── Parallax data-scroll-speed helper — applies a slight
+   translateZ for depth without jank ──────────────────────── */
+[data-scroll-speed] {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+/* ── Sticky elements (LS handles sticky natively) ────────── */
+[data-scroll-sticky] {
+  will-change: transform;
+}
+
+/* ── Reduced motion: snap everything, kill smooth scroll ── */
+@media (prefers-reduced-motion: reduce) {
+  html.locomotive-scroll-enabled,
+  html.locomotive-scroll-enabled body {
+    overflow: auto;
+    height: auto;
+  }
+
+  [data-scroll-container] {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .apple-reveal > *,
+  .apple-fade-up,
+  .apple-scale-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  [data-scroll-speed],
+  [data-scroll-sticky] {
+    will-change: auto;
+  }
+}

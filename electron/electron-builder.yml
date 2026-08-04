@@ -1,0 +1,64 @@
+# electron-builder configuration — Aether Mocks desktop
+appId: com.aether.mocks
+productName: Aether Mocks
+copyright: Copyright © 2026 Aether
+
+directories:
+  # App code (main.js, preload.js, package.json) is here; build output to release/
+  app: .
+  output: release
+
+# Only ship the runtime files — exclude dev scaffolding from the asar.
+files:
+  - main.js
+  - preload.js
+  - renderer-desktop.js
+  - package.json
+  - node_modules/**
+
+# Maximum compression for a smaller shipped bundle at the cost of a
+# marginally longer first-launch extraction (one-time, negligible).
+asar:
+  compression: maximum
+
+# Bundle the entire static platform — the built React app (/v2/), the legacy
+# exam engine, PDFs, and mocks — into resources/public so the app is fully
+# self-contained & offline. electron/ lives at app/electron, so public is ../../.
+extraResources:
+  - from: ../../public
+    to: public
+    filter:
+      - "**/*"
+      - "!**/*.bak"
+      - "!_render_verify.js"
+      # Exclude dev scaffolding and build artifacts from the shipped bundle.
+      - "!.mimocode/**"
+      - "!.claude/**"
+      - "!**/__pycache__/**"
+      - "!**/*.py"
+      - "!**/*.pyc"
+      - "!**/package.json"
+      - "!**/package-lock.json"
+      - "!**/*.map"
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: "${productName}-Setup-${version}.${ext}"
+
+# Publish target for electron-updater (GitHub Releases).
+# TODO: Replace placeholder owner/repo with the actual GitHub repo before
+# auto-update will work. Otherwise the updater silently no-ops.
+publish:
+  provider: github
+  owner: your-github-user
+  repo: your-repo
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Aether Mocks

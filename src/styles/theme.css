@@ -1,0 +1,1127 @@
+/* AETHER v2 — Apple design tokens (Tailwind v4 CSS-first theme).
+   Light is the default theme; dark mirrors iOS/macOS dark (#000/#1c1c1e);
+   Netflix is a third dark-based scheme. Consumed via Tailwind utilities:
+   bg-surface, text-muted, border-border, bg-primary, text-success, etc. */
+@import 'tailwindcss';
+
+/* Netflix is a dark-based scheme, so every `dark:` component utility must also
+   apply under data-theme='netflix'. Apple dark keeps its own selector unchanged. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-theme='netflix'], [data-theme='netflix'] *));
+
+@theme {
+  /* ── Typography — SF Pro on Apple devices, Inter elsewhere ──── */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Fira Code', Menlo, Consolas, monospace;
+
+  /* ── Radius (Apple: 18px tiles, pill buttons) ───────────────── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 28px;
+
+  /* ── Motion ───────────────────────────────────────────────────
+     Spring curves overshoot for Apple's tactile feel. Use spring-soft
+     for large surfaces (reveals), spring-press for active/tap states. */
+  --ease-standard:     cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:          cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:       cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring-soft:  cubic-bezier(0.34, 1.2, 0.64, 1);
+  --ease-spring-press:cubic-bezier(0.5, 1.6, 0.4, 1);
+
+  /* ── Transition durations (one scale, used everywhere) ──────── */
+  --duration-standard: 200ms;
+  --duration-entrance: 420ms;
+  --stagger-step:      55ms;
+
+  /* ── Z-index scale (stacking order, lowest → highest) ───────── */
+  --z-raised: 10;
+  --z-sticky: 500;
+  --z-overlay: 600;
+  --z-modal: 1000;
+  --z-toast: 2000;
+}
+
+/* Semantic theme tokens — Apple light (default). Exposed as CSS custom
+   properties so Tailwind utilities and inline styles stay in sync and
+   flip with [data-theme]. */
+:root {
+  color-scheme: light;
+
+  /* surfaces — apple.com whites and warm grays */
+  --bg: #fbfbfd;
+  --bg-raised: #ffffff;
+  --surface: #f5f5f7;
+  --surface-2: #ececf1;
+  --surface-3: #e2e2e8;
+  --overlay: rgba(0, 0, 0, 0.4);
+
+  --border: #d2d2d7;
+  --border-strong: #b6b6bd;
+
+  --text: #1d1d1f;
+  --text-2: #49494d;
+  --text-muted: #6e6e73;
+
+  /* Apple blue */
+  --primary: #0071e3;
+  --primary-hover: #0077ed;
+  --primary-soft: rgba(0, 113, 227, 0.1);
+
+  --success: #34c759;
+  --success-soft: rgba(52, 199, 89, 0.12);
+  --success-fg: #248a3d;
+  --warning: #ff9500;
+  --warning-soft: rgba(255, 149, 0, 0.12);
+  --warning-fg: #c93400;
+  --danger: #ff3b30;
+  --danger-soft: rgba(255, 59, 48, 0.1);
+  --danger-fg: #d70015;
+  --info: #64d2ff;
+  --info-soft: rgba(100, 210, 255, 0.15);
+  --info-fg: #0071e3;
+
+  /* Foreground for SOLID bright fills (success/danger/warning buttons): white
+     in light mode; Apple switches to near-black in dark for contrast. */
+  --on-bright: #ffffff;
+
+  /* CBT palette states */
+  --answered: #34c759;
+  --notanswered: #ff3b30;
+  --marked: #af52de;
+  --notvisited: #d1d1d6;
+  --notvisited-soft: rgba(209, 209, 214, 0.5);
+
+  /* elevation — soft, diffuse, Apple-like */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 8px 28px rgba(0, 0, 0, 0.1);
+  --focus-ring: 0 0 0 4px rgba(0, 113, 227, 0.3);
+
+  --glass: rgba(251, 251, 253, 0.72);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --scrollbar: rgba(0, 0, 0, 0.25);
+
+  --surface-shine: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+
+  /* Apple pages are flat — ambient washes are essentially off */
+  --ambient-1: radial-gradient(60rem 40rem at 12% -10%, rgba(0, 113, 227, 0.03), transparent 60%);
+  --ambient-2: radial-gradient(50rem 36rem at 105% 0%, rgba(0, 113, 227, 0.02), transparent 60%);
+
+  /* ── Exam skin tokens (Apple-light CBT chrome) ──────────────── */
+  --tcs-ink: #fbfbfd;
+  --tcs-ink-2: #f5f5f7;
+  --tcs-header: #fbfbfd;
+  --tcs-panel: #f5f5f7;
+  --tcs-panel-2: #ececf1;
+  --tcs-border: #d2d2d7;
+  --tcs-muted: #6e6e73;
+  --tcs-text: #1d1d1f;
+  --tcs-action-bg: #ffffff;
+
+  /* Exam action buttons */
+  --tcs-save: #34c759;          /* green — Save & Next */
+  --tcs-save-fg: #ffffff;
+  --tcs-mark: #af52de;          /* purple — Mark for Review & Next */
+  --tcs-mark-fg: #ffffff;
+  --tcs-clear: #ff9500;         /* orange — Clear Response */
+  --tcs-clear-fg: #ffffff;
+  --tcs-submit: #0071e3;
+  --tcs-submit-fg: #ffffff;
+  --tcs-answer-dot: #ffffff;
+
+  /* Exam timer warning state (time-left ≤ 5 min) */
+  --tcs-warn-bg: #3a1414;
+  --tcs-warn-border: #e03131;
+  --tcs-warn-text: #ffa8a8;
+
+  /* ── Chart tokens (recharts) — Apple-pleasing series palette ── */
+  --chart-1: #0071e3; /* primary series */
+  --chart-2: #64d2ff; /* secondary series */
+  --chart-3: #34c759; /* success / correct */
+  --chart-4: #ff3b30; /* danger / incorrect */
+  --chart-5: #c7c7cc; /* neutral / skipped */
+}
+
+/* ── Apple dark: iOS/macOS dark mode ──────────────────────────── */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #000000;
+  --bg-raised: #161617;
+  --surface: #161617;
+  --surface-2: #1d1d1f;
+  --surface-3: #2c2c2e;
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --border: #38383d;
+  --border-strong: #4c4c52;
+
+  --text: #f5f5f7;
+  --text-2: #c7c7cc;
+  --text-muted: #86868b;
+
+  /* Apple's dark-mode blue */
+  --primary: #2997ff;
+  --primary-hover: #47a5ff;
+  --primary-soft: rgba(41, 151, 255, 0.14);
+
+  --success: #30d158;
+  --success-soft: rgba(48, 209, 88, 0.14);
+  --success-fg: #30d158;
+  --warning: #ff9f0a;
+  --warning-soft: rgba(255, 159, 10, 0.14);
+  --warning-fg: #ffb340;
+  --danger: #ff453a;
+  --danger-soft: rgba(255, 69, 58, 0.14);
+  --danger-fg: #ff6961;
+  --info: #64d2ff;
+  --info-soft: rgba(100, 210, 255, 0.14);
+  --info-fg: #64d2ff;
+
+  /* Solid bright fills take near-black text in dark mode (Apple convention). */
+  --on-bright: #000000;
+
+  /* CBT palette */
+  --answered: #30d158;
+  --notanswered: #ff453a;
+  --marked: #bf5af2;
+  --notvisited: #636366;
+  --notvisited-soft: rgba(99, 99, 102, 0.4);
+
+  /* Exam skin — dark variant */
+  --tcs-ink: #000000;
+  --tcs-ink-2: #161617;
+  --tcs-header: #161617;
+  --tcs-panel: #161617;
+  --tcs-panel-2: #1d1d1f;
+  --tcs-border: #38383d;
+  --tcs-muted: #86868b;
+  --tcs-text: #f5f5f7;
+  --tcs-action-bg: #1d1d1f;
+
+  --tcs-save: #30d158;
+  --tcs-save-fg: #000000;
+  --tcs-mark: #bf5af2;
+  --tcs-mark-fg: #000000;
+  --tcs-clear: #ff9f0a;
+  --tcs-clear-fg: #000000;
+  --tcs-submit: #2997ff;
+  --tcs-submit-fg: #000000;
+  --tcs-answer-dot: #000000;
+
+  /* Exam timer warning — slightly brighter in dark for contrast */
+  --tcs-warn-bg: #451a1a;
+  --tcs-warn-border: #ff6b6b;
+  --tcs-warn-text: #ffc9c9;
+
+  /* Chart palette — dark-mode variants keep series legible on near-black */
+  --chart-1: #2997ff;
+  --chart-2: #64d2ff;
+  --chart-3: #30d158;
+  --chart-4: #ff453a;
+  --chart-5: #636366;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.55), 0 8px 16px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --focus-ring: 0 0 0 4px rgba(41, 151, 255, 0.35);
+
+  --glass: rgba(22, 22, 23, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --scrollbar: rgba(255, 255, 255, 0.28);
+
+  --surface-shine: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+
+  --ambient-1: radial-gradient(60rem 40rem at 12% -10%, rgba(41, 151, 255, 0.05), transparent 60%);
+  --ambient-2: radial-gradient(50rem 36rem at 105% 0%, rgba(255, 255, 255, 0.03), transparent 60%);
+}
+
+/* NETFLIX — third selectable scheme. Dark-based (near-black #141414) with
+   the signature red (#e50914) accent. Fully self-contained so the Apple
+   schemes above never change. */
+[data-theme='netflix'] {
+  color-scheme: dark;
+
+  /* Netflix typography — a heavier, tighter grotesk for the cinematic feel.
+     Inter is a closer stand-in for Netflix Sans; scoped to this theme. */
+  --font-sans: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* ── Corners: Netflix is near-sharp. ── */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+
+  /* surfaces — Netflix near-black */
+  --bg: #141414;
+  --bg-raised: #1c1c1c;
+  --surface: #1f1f1f;
+  --surface-2: #2a2a2a;
+  --surface-3: #333333;
+  --overlay: rgba(0, 0, 0, 0.72);
+
+  --border: #2f2f2f;
+  --border-strong: #4a4a4a;
+
+  --text: #E5E5E5;
+  --text-2: #A3A3A3;
+  --text-muted: #808080;
+
+  /* Netflix red */
+  --primary: #e50914;
+  --primary-hover: #f6121d;
+  --primary-soft: rgba(229, 9, 20, 0.16);
+
+  --success: #46d369;
+  --success-soft: rgba(70, 211, 105, 0.16);
+  --success-fg: #46d369;
+  --warning: #ffa00a;
+  --warning-soft: rgba(255, 160, 10, 0.16);
+  --warning-fg: #ffb84d;
+  --danger: #f40612;
+  --danger-soft: rgba(244, 6, 18, 0.16);
+  --danger-fg: #ff5c5c;
+  --info: #54b9c5;
+  --info-soft: rgba(84, 185, 197, 0.16);
+  --info-fg: #54b9c5;
+
+  /* Solid bright fills: white text in the Netflix scheme. */
+  --on-bright: #ffffff;
+
+  /* CBT palette */
+  --answered: #46d369;
+  --notanswered: #f40612;
+  --marked: #b16cff;
+  --notvisited: #4d4d4d;
+  --notvisited-soft: rgba(77, 77, 77, 0.4);
+
+  /* elevation — deeper, cinematic */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.65), 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 8px 28px rgba(229, 9, 20, 0.25);
+  --focus-ring: 0 0 0 4px rgba(229, 9, 20, 0.4);
+
+  --glass: rgba(20, 20, 20, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --scrollbar: rgba(50, 50, 50, 0.6);
+
+  --surface-shine: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+
+  /* Ambient — a subtle red glow off the near-black field. */
+  --ambient-1: radial-gradient(60rem 40rem at 12% -10%, rgba(229, 9, 20, 0.12), transparent 60%);
+  --ambient-2: radial-gradient(50rem 36rem at 105% 0%, rgba(229, 9, 20, 0.07), transparent 60%);
+
+  /* ── Exam skin (Netflix-dark based) ─────────────────────────── */
+  --tcs-ink: #141414;
+  --tcs-ink-2: #1c1c1c;
+  --tcs-header: #1c1c1c;
+  --tcs-panel: #1f1f1f;
+  --tcs-panel-2: #2a2a2a;
+  --tcs-border: #2f2f2f;
+  --tcs-muted: #808080;
+  --tcs-text: #ffffff;
+  --tcs-action-bg: #1c1c1c;
+
+  --tcs-save: #46d369;
+  --tcs-save-fg: #000000;
+  --tcs-mark: #b16cff;
+  --tcs-mark-fg: #000000;
+  --tcs-clear: #ffa00a;
+  --tcs-clear-fg: #000000;
+  --tcs-submit: #e50914;
+  --tcs-submit-fg: #ffffff;
+  --tcs-answer-dot: #ffffff;
+
+  /* Exam timer warning */
+  --tcs-warn-bg: #4a1010;
+  --tcs-warn-border: #f40612;
+  --tcs-warn-text: #ffb3b3;
+
+  /* Chart palette — red-led series on near-black */
+  --chart-1: #e50914;
+  --chart-2: #54b9c5;
+  --chart-3: #46d369;
+  --chart-4: #f40612;
+  --chart-5: #4d4d4d;
+}
+
+/* Base — global element styles bound to the semantic tokens. */
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    letter-spacing: -0.005em;
+  }
+  ::selection { background: rgba(0, 113, 227, 0.18); color: var(--text); }
+  * { scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 99px; }
+  *::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  *::-webkit-scrollbar-track { background: transparent; }
+  button { font-family: inherit; }
+  :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+}
+
+/* Theme utilities — map semantic tokens to Tailwind color names so
+   utilities like bg-surface / text-muted / bg-primary work and flip
+   with the theme automatically. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-muted: var(--text-muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-fg: var(--success-fg);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-fg: var(--warning-fg);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-fg: var(--danger-fg);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-fg: var(--info-fg);
+
+  --color-on-bright: var(--on-bright);
+
+  --color-answered: var(--answered);
+  --color-notanswered: var(--notanswered);
+  --color-marked: var(--marked);
+  --color-notvisited: var(--notvisited);
+  --color-notvisited-soft: var(--notvisited-soft);
+
+  /* Exam skin exports */
+  --color-tcs-ink: var(--tcs-ink);
+  --color-tcs-ink-2: var(--tcs-ink-2);
+  --color-tcs-header: var(--tcs-header);
+  --color-tcs-panel: var(--tcs-panel);
+  --color-tcs-panel-2: var(--tcs-panel-2);
+  --color-tcs-border: var(--tcs-border);
+  --color-tcs-muted: var(--tcs-muted);
+  --color-tcs-text: var(--tcs-text);
+  --color-tcs-action-bg: var(--tcs-action-bg);
+  --color-tcs-save: var(--tcs-save);
+  --color-tcs-save-fg: var(--tcs-save-fg);
+  --color-tcs-mark: var(--tcs-mark);
+  --color-tcs-mark-fg: var(--tcs-mark-fg);
+  --color-tcs-clear: var(--tcs-clear);
+  --color-tcs-clear-fg: var(--tcs-clear-fg);
+  --color-tcs-submit: var(--tcs-submit);
+  --color-tcs-submit-fg: var(--tcs-submit-fg);
+  --color-tcs-answer-dot: var(--tcs-answer-dot);
+  --color-tcs-active-caret: var(--tcs-submit);
+  --color-tcs-notvisited: var(--notvisited);
+  --color-tcs-notanswered: var(--notanswered);
+  --color-tcs-answered: var(--answered);
+  --color-tcs-marked: var(--marked);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-glow: var(--shadow-glow);
+
+  /* Z-index scale → z-raised / z-sticky / z-overlay / z-modal / z-toast */
+  --z-raised: var(--z-raised);
+  --z-sticky: var(--z-sticky);
+  --z-overlay: var(--z-overlay);
+  --z-modal: var(--z-modal);
+  --z-toast: var(--z-toast);
+
+  /* Chart tokens → text-chart-1 / bg-chart-3 / stroke / fill etc. */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Exam timer-warning → bg-tcs-warn-bg / border-tcs-warn-border / text-tcs-warn-text */
+  --color-tcs-warn-bg: var(--tcs-warn-bg);
+  --color-tcs-warn-border: var(--tcs-warn-border);
+  --color-tcs-warn-text: var(--tcs-warn-text);
+
+  /* Ambient gradients — usable as bg-ambient-1 / bg-ambient-2 */
+  --background-image-ambient-1: var(--ambient-1);
+  --background-image-ambient-2: var(--ambient-2);
+}
+
+/* Page backdrop: subtle ambient glow layered under the base bg. Apply to the
+   top-level page container alongside bg-bg. Purely decorative. */
+@utility page-surface {
+  background-color: var(--bg);
+  background-image: var(--ambient-1), var(--ambient-2);
+  background-attachment: fixed;
+}
+
+/* Elevated card treatment shared across the app — spring-eased lift +
+   soft brand glow on hover (transform/box-shadow only). */
+@utility card-elevated-hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+  transition: transform var(--duration-standard) var(--ease-spring), box-shadow var(--duration-standard) var(--ease-standard), border-color var(--duration-standard) var(--ease-standard);
+}
+.card-elevated-hover:hover {
+  box-shadow: 0 12px 30px -8px rgba(0, 113, 227, 0.12), var(--shadow-lg);
+}
+[data-theme='dark'] .card-elevated-hover:hover {
+  box-shadow: 0 14px 34px -6px rgba(41, 151, 255, 0.16), var(--shadow-lg);
+}
+
+/* Specular Light Sheen sweep overlay on card hover */
+.mockcard-sheen-container {
+  position: relative;
+  overflow: hidden;
+}
+.mockcard-sheen-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: transform 0.65s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+.group:hover .mockcard-sheen-container::before {
+  transform: skewX(-20deg) translateX(360%);
+}
+
+/* ── Premium Netflix Ease-Out Transitions ── */
+[data-theme='netflix'] .transition-out {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Top-down navigation scrim for legible nav over any hero background.
+   Rendered as a ::before layer *inside* the nav, stacked below the nav's
+   content (which sits at the default z-index within the nav's stacking
+   context). Fades from near-opaque black to transparent so links, logo,
+   and icons stay legible over bright hero art before the user scrolls. */
+[data-theme='netflix'] .nav-scrim {
+  position: relative;
+  isolation: isolate;
+}
+[data-theme='netflix'] .nav-scrim::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.78) 0%,
+    rgba(0, 0, 0, 0.45) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+  opacity: 1;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Once scrolled to solid #141414 the scrim is redundant — fade it away. */
+[data-theme='netflix'] .nav-scrim.scrolled::before {
+  opacity: 0;
+}
+
+[data-theme='netflix'] nav.scrolled {
+  background-color: #141414;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+  transition:
+    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='netflix'] nav:not(.scrolled) {
+  background-color: transparent;
+  box-shadow: none;
+  transition:
+    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Premium Netflix wordmark — curved, 3D-extruded red logotype.
+   Recreates the official identity in pure CSS: a heavy condensed grotesk,
+   tight tracking, a perspective "arch" (Netflix's signature curve), and a
+   stacked dark-red extrusion that reads as dimensional without any image. */
+.netflix-wordmark {
+  font-family: 'Arial Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  color: #E50914;
+  text-transform: uppercase;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  /* Stacked extrusion — darker red steps receding into shadow, capped with
+     a long soft ambient shadow. Reads as the classic beveled "NETFLIX". */
+  text-shadow:
+    0 1px 0 #b20710,
+    0 2px 0 #a30610,
+    0 3px 0 #8f050e,
+    0 4px 0 #7a040c,
+    0 5px 0 #66040a,
+    0 6px 0 #520308,
+    0 7px 14px rgba(0, 0, 0, 0.75);
+  /* The signature Netflix arch: slight forward tilt with perspective, so
+     the wordmark bows toward the viewer like the official curved logo. */
+  transform: perspective(520px) rotateX(9deg) scaleY(1.04);
+  transform-origin: center bottom;
+  will-change: transform, text-shadow;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    text-shadow 0.3s ease;
+}
+
+.netflix-wordmark:hover,
+.group:hover .netflix-wordmark {
+  transform: perspective(520px) rotateX(2deg) scaleY(1.04) scale(1.05);
+  text-shadow:
+    0 1px 0 #b20710,
+    0 2px 0 #a30610,
+    0 3px 0 #8f050e,
+    0 4px 0 #7a040c,
+    0 5px 0 #66040a,
+    0 6px 0 #520308,
+    0 8px 18px rgba(229, 9, 20, 0.4);
+}
+
+/* Glow/shadow utilities scoped to Netflix */
+[data-theme='netflix'] .glow-red {
+  box-shadow: 0 0 24px rgba(229, 9, 20, 0.25);
+}
+[data-theme='netflix'] .glow-red-sm {
+  box-shadow: 0 0 16px rgba(229, 9, 20, 0.2);
+}
+[data-theme='netflix'] .shadow-elevated {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
+}
+
+/* Premium dark-glow: hovered Netflix cards cast a deep cinematic shadow
+   with a faint red underlight, and active/pressed controls pulse a tight
+   red glow — the "just clicked" feel of the real Netflix TV UI. */
+[data-theme='netflix'] .mockcard:hover {
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 6px 28px rgba(229, 9, 20, 0.16);
+}
+
+[data-theme='netflix'] button:active,
+[data-theme='netflix'] a:active {
+  text-shadow: 0 0 12px rgba(229, 9, 20, 0.35);
+}
+
+/* Primary red CTAs get a persistent soft red halo on hover — the button
+   "wakes up" as the cursor arrives. */
+[data-theme='netflix'] .bg-primary:hover,
+[data-theme='netflix'] .hover\:glow-red:hover {
+  box-shadow: 0 0 22px rgba(229, 9, 20, 0.35);
+}
+
+/* Skeleton shimmer — a soft highlight sweeps the placeholder block. The
+   ::before highlight travels via transform so it's GPU-cheap; the base block
+   uses the surface-2 token so it reads on both themes. */
+@keyframes skeleton-sheen {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@utility skeleton {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--surface-shine);
+    animation: skeleton-sheen 1.4s var(--ease-standard) infinite;
+  }
+}
+
+/* NETFLIX BRAND IMMERSION — scoped entirely to [data-theme='netflix'] so
+   the Apple schemes are byte-for-byte unaffected. */
+[data-theme='netflix'] {
+  /* Display headlines: heavier, tighter, with a faint cinematic letterform. */
+  & h1, & h2, & h3, & h4 {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* Cinematic card hover — cards lift with a subtle red-tinted glow. Applies to
+   the shared elevated-hover treatment only under Netflix. */
+[data-theme='netflix'] .card-elevated-hover:hover {
+  box-shadow: var(--shadow-lg), 0 4px 24px rgba(229, 9, 20, 0.18);
+}
+
+/* ── Netflix corners, part 2: pills → rectangles. `.rounded-full` is hardcoded
+   (border-radius: 2147483647px), so the radius-token override above can't reach
+   it. Netflix uses near-square corners everywhere — buttons, inputs, chips,
+   avatars, tags — so flatten pills to the Netflix radius. The only TRUE circle
+   that must survive is the SVG accuracy ring (unaffected — it's an SVG stroke,
+   not a rounded-* box). ── */
+[data-theme='netflix'] .rounded-full {
+  border-radius: 4px;
+}
+
+/* Flatten inputs for Netflix */
+[data-theme='netflix'] input {
+  border-radius: 4px !important;
+}
+
+/* ── Cover art dual-look toggle. Both layers always render (no JS theme
+   subscription); CSS shows exactly one per theme. Apple default hides the
+   poster layer; Netflix hides the app-icon layer. ── */
+.coverart-netflix {
+  display: none;
+}
+[data-theme='netflix'] .coverart-apple {
+  display: none;
+}
+[data-theme='netflix'] .coverart-netflix {
+  display: block;
+}
+
+/* ── Netflix mock cards: 16:9 landscape posters in dense rows. The Apple card
+   is a padded square-icon tile; under Netflix it becomes a flat, sharp-cornered
+   poster with the title/meta below and a red Start action. ── */
+[data-theme='netflix'] .mockcard-art {
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+[data-theme='netflix'] .mockcard {
+  background: transparent;
+  --tw-ring-shadow: 0 0 #0000;
+  box-shadow: none;
+  padding: 0;
+  gap: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), z-index 0s 0.28s, filter 0.28s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: visible !important;
+}
+
+[data-theme='netflix'] .mockcard:hover {
+  transform: scale(1.28) translateY(-6px);
+  z-index: 100 !important;
+  filter: drop-shadow(0 16px 36px rgba(0,0,0,0.95));
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), z-index 0s 0s, filter 0.28s ease;
+}
+
+[data-theme='netflix'] .mockcard:hover .coverart {
+  border-radius: 4px 4px 0 0;
+}
+
+[data-theme='netflix'] .mockcard .coverart {
+  position: relative;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border-radius: 4px;
+  transition: box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='netflix'] .mockcard .coverart::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.9) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+[data-theme='netflix'] .mockcard:hover .coverart::after {
+  opacity: 1;
+}
+
+/* Meta & Title highlights on hover */
+[data-theme='netflix'] .mockcard h3 {
+  transition: color 0.2s ease;
+}
+
+[data-theme='netflix'] .mockcard:hover h3 {
+  color: #FFFFFF;
+}
+
+/* Netflix mock card metadata drawer — smooth ease-out reveal.
+   The panel sits flush below the poster, hidden at rest with a slight
+   upward collapse + scale-down. On hover it unfolds with the same
+   cubic-bezier(0.16, 1, 0.3, 1) curve as the card scale, so the whole
+   expansion reads as one continuous cinematic motion. */
+[data-theme='netflix'] .mockcard-drawer {
+  position: absolute;
+  top: 98%;
+  left: 0;
+  right: 0;
+  background: #181818;
+  border-radius: 0 0 4px 4px;
+  border-left: 1px solid #2a2a2a;
+  border-right: 1px solid #2a2a2a;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 0.75rem;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.94);
+  transform-origin: top center;
+  pointer-events: none;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.92);
+  will-change: opacity, transform;
+  transition:
+    opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    pointer-events 0s 0.24s;
+  z-index: 50;
+}
+
+[data-theme='netflix'] .mockcard:hover .mockcard-drawer,
+[data-theme='netflix'] .mockcard:focus-within .mockcard-drawer {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  transition:
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    pointer-events 0s 0s;
+}
+
+[data-theme='netflix'] .mockcard-drawer .drawer-action {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+[data-theme='netflix'] .mockcard-drawer .drawer-action:hover {
+  transform: scale(1.08);
+}
+
+[data-theme='netflix'] .mockcard-drawer .drawer-action:active {
+  transform: scale(0.88);
+}
+
+/* ── Netflix brand mark: swap the Apple squircle for the red "N". ── */
+.brandmark-netflix {
+  display: none;
+}
+[data-theme='netflix'] .brandmark-apple {
+  display: none;
+}
+[data-theme='netflix'] .brandmark-netflix {
+  display: grid;
+}
+
+/* ── Netflix billboard hero. The centered Apple greeting becomes a tall,
+   left-aligned cinematic banner with a heavy condensed headline and a subtle
+   red-lit scrim rising off the page background. ── */
+[data-theme='netflix'] .hero-band {
+  text-align: left;
+  padding-top: 8rem;
+  padding-bottom: 4rem;
+  position: relative;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+}
+[data-theme='netflix'] .hero-headline {
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  text-transform: none;
+  line-height: 1.1;
+  font-size: clamp(3rem, 8vw, 5rem);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+[data-theme='netflix'] .hero-sub {
+  color: var(--text-2);
+  max-width: 40rem;
+}
+
+/* ── Netflix rows: bolder, tighter row titles and a denser card gap, like the
+   "Because you watched…" shelves. ── */
+[data-theme='netflix'] .rail-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+[data-theme='netflix'] .rail-track {
+  gap: 8px;
+  padding-right: 40px;
+  /* Padding hack to prevent clipping the expanded MockCard metadata panel */
+  padding-bottom: 100px;
+  margin-bottom: -100px;
+  padding-top: 20px;
+  margin-top: -20px;
+}
+
+/* ── Netflix Full-Height Carousel Handles ── */
+[data-theme='netflix'] .rail-handle {
+  position: absolute;
+  top: 0;
+  bottom: 8px;
+  width: 44px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+  border-radius: 4px;
+}
+
+[data-theme='netflix'] .rail-handle:hover:not(:disabled) {
+  background: rgba(20, 20, 20, 0.85);
+  color: #ffffff;
+}
+
+[data-theme='netflix'] section:hover .rail-handle:not(:disabled) {
+  opacity: 1;
+}
+
+/* ── Top 10 Rank Number ── */
+.top10-rank {
+  font-size: 8.5rem;
+  line-height: 0.8;
+  font-weight: 900;
+  color: #141414;
+  -webkit-text-stroke: 4px #595959;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+  font-family: var(--font-sans);
+  user-select: none;
+}
+
+/* ── Netflix Modal Overlay ── */
+[data-theme='netflix'] .netflix-modal-backdrop {
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+/* Cinematic Netflix detail modal — premium overlay card */
+[data-theme='netflix'] .netflix-modal-card {
+  background: #181818;
+  color: #ffffff;
+  border-radius: 6px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+/* 16:9 cinematic hero banner inside the detail modal */
+[data-theme='netflix'] .netflix-modal-hero {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(80% 120% at 85% 10%, rgba(229, 9, 20, 0.28), transparent 55%),
+    linear-gradient(135deg, #2d2d2d 0%, #141414 70%);
+  overflow: hidden;
+}
+
+[data-theme='netflix'] .netflix-modal-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, #181818 0%, transparent 48%),
+    linear-gradient(to right, rgba(24, 24, 24, 0.9) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Inside the modal hero, the CoverArt poster is pure atmospheric backdrop —
+   its own bottom-left mini title would collide with the modal's display
+   title, so suppress it here. The gradient field and ghost monogram stay. */
+[data-theme='netflix'] .netflix-modal-hero .coverart-netflix > span:last-child {
+  display: none;
+}
+
+/* The poster fills the hero as a flat field — kill the card chrome that
+   CoverArt carries by default (rounding, hover scale, sheen sweep). */
+[data-theme='netflix'] .netflix-modal-hero .coverart {
+  border-radius: 0;
+  transform: none !important;
+}
+[data-theme='netflix'] .netflix-modal-hero .coverart-netflix {
+  transform: none !important;
+}
+
+/* Giant display title layered over the hero scrim */
+[data-theme='netflix'] .netflix-modal-title {
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-shadow: 0 4px 22px rgba(0, 0, 0, 0.9);
+}
+
+/* Modal CTA buttons — flat Netflix chrome with snappy active states */
+[data-theme='netflix'] .netflix-modal-actions button,
+[data-theme='netflix'] .netflix-modal-actions a {
+  border-radius: 4px;
+  font-weight: 700;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Exception to the pill-flattening rule: the round ring icon buttons in the
+   Netflix detail modal are TRUE circles on the real product (Play's white
+   pill stays rectilinear, but the +/check/thumbs rings are circular). The
+   theme-wide `.rounded-full → 4px` flatten would square them off, so force
+   the circle back here with higher specificity. */
+[data-theme='netflix'] .netflix-modal-actions button.rounded-full,
+[data-theme='netflix'] .netflix-modal-hero button.rounded-full,
+[data-theme='netflix'] .hero-band button.rounded-full {
+  border-radius: 9999px;
+}
+
+[data-theme='netflix'] .netflix-modal-actions button:active,
+[data-theme='netflix'] .netflix-modal-actions a:active {
+  transform: scale(0.95);
+}
+
+[data-theme='netflix'] .netflix-stat-card {
+  background: rgba(42, 42, 42, 0.7);
+  border: 1px solid #2f2f2f;
+  border-radius: 4px;
+  padding: 0.875rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme='netflix'] .netflix-stat-card:hover {
+  background: rgba(51, 51, 51, 0.9);
+  border-color: #404040;
+}
+
+[data-theme='netflix'] .netflix-stat-label {
+  color: #a3a3a3;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-theme='netflix'] .netflix-stat-value {
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+}
+
+[data-theme='netflix'] .netflix-chapter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  background: rgba(42, 42, 42, 0.4);
+  border-bottom: 1px solid #2f2f2f;
+  transition: background-color 0.2s ease;
+}
+
+[data-theme='netflix'] .netflix-chapter:hover {
+  background: rgba(42, 42, 42, 0.8);
+}
+
+[data-theme='netflix'] .netflix-chapter:last-child {
+  border-bottom: none;
+}
+
+[data-theme='netflix'] .netflix-chapter-index {
+  color: #808080;
+  font-weight: 900;
+  font-size: 1rem;
+  min-width: 1.5rem;
+}
+
+[data-theme='netflix'] .netflix-chapter-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+[data-theme='netflix'] .netflix-chapter-range {
+  color: #a3a3a3;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+[data-theme='netflix'] .netflix-meta-chip {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e5e5e5;
+  padding: 0.125rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ── Netflix Scrollbars & Text Selection ── */
+[data-theme='netflix'] ::selection {
+  background: rgba(229, 9, 20, 0.4);
+  color: #ffffff;
+}
+
+[data-theme='netflix'] *::-webkit-scrollbar-thumb {
+  background: rgba(80, 80, 80, 0.6);
+  border-radius: 4px;
+}
+
+[data-theme='netflix'] *::-webkit-scrollbar-thumb:hover {
+  background: #E50914;
+}
+
+
