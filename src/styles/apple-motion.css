@@ -1,23 +1,9 @@
-/* ── Locomotive Scroll v5 + Apple design-motion integration ──
-   Smooth scrolling with spring-like lerp, parallax depth, and
-   staggered reveal animations — all styled via LS's is-inview
-   class lifecycle. Respects prefers-reduced-motion. */
-
-/* ── Scroll container (LS takes over the viewport) ────────── */
-html.locomotive-scroll-enabled,
-html.locomotive-scroll-enabled body {
-  overflow: hidden;
-  height: 100%;
-}
-
-[data-scroll-container] {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+/* ── Apple design-motion — reveal, hover & press ────────────
+   Staggered reveal animations driven by the `is-inview` class,
+   which is toggled by an IntersectionObserver (see
+   `src/hooks/useScrollReveal.ts`). Lenis smooths the window
+   scroll natively, so there is no fixed-viewport container.
+   Respects prefers-reduced-motion. */
 
 /* ── Apple Reveal — fade-up + scale-in on is-inview ──────── */
 /* Container: children are hidden until in view. Each child
@@ -40,11 +26,11 @@ html.locomotive-scroll-enabled body {
   transform: translateY(0) scale(1);
 }
 
-/* Fallback: if LS is not actively scoping or in static render, avoid hidden content */
-html:not(.locomotive-scroll-enabled) .apple-reveal > * {
-  opacity: 1;
-  transform: none;
-}
+/* Note: `.apple-reveal > *` starts hidden (opacity: 0) by design. The
+   IntersectionObserver in `useScrollReveal` adds `is-inview` on mount/scroll
+   to reveal them. This is a pure SPA — JS always runs — so there is no
+   no-JS hidden-content risk. The reduced-motion block below forces content
+   visible (opacity: 1) for users who prefer reduced motion. */
 
 /* nth-child stagger — children appear one after another, capped at 14
    so deep sections still cascade without dragging the last items. */
@@ -130,21 +116,11 @@ html:not(.locomotive-scroll-enabled) .apple-reveal > * {
   will-change: transform;
 }
 
-/* ── Reduced motion: snap everything, kill smooth scroll ── */
+/* ── Reduced motion: reveal everything instantly, no smooth scroll ──
+   (Lenis is not constructed under reduced-motion — see useLenisScroll — so
+   native scrolling applies. This block just forces all reveal content
+   visible with no transition.) */
 @media (prefers-reduced-motion: reduce) {
-  html.locomotive-scroll-enabled,
-  html.locomotive-scroll-enabled body {
-    overflow: auto;
-    height: auto;
-  }
-
-  [data-scroll-container] {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-  }
-
   .apple-reveal > *,
   .apple-fade-up,
   .apple-scale-in {

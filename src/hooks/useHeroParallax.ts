@@ -9,17 +9,6 @@ import { useSmoothScroll } from '@/components/layout/SmoothScroll';
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Locomotive Scroll v5 exposes `.on('scroll', cb)` / `.off(...)` at runtime,
- * but its type defs don't declare them (the LS instance is typed as the class
- * without the EventEmitter surface). This minimal interface types just the
- * event surface we use, so we avoid `any` while staying honest about the cast.
- */
-interface LocomotiveScrollEventEmitter {
-  on(event: 'scroll', cb: (args: { scroll: { y: number } }) => void): void;
-  off(event: 'scroll', cb: (args: { scroll: { y: number } }) => void): void;
-}
-
-/**
  * Signature scrubbed, layered-parallax hero (GSAP ScrollTrigger).
  *
  * As the user scrolls past the hero band, the headline rises slowly and fades
@@ -28,21 +17,22 @@ interface LocomotiveScrollEventEmitter {
  * scrollbar position) rather than time-based. This is the canonical
  * ScrollTrigger pattern the gsap-scrolltrigger skill targets.
  *
- * Locomotive Scroll v5 integration: ScrollTrigger uses the default window
- * scroller, but LS smooths the actual scroll position. We drive trigger
- * recalculation off the LS `scroll` event (which fires on the smoothed
- * position) via `ScrollTrigger.update()`, so the parallax tracks the eased
- * scroll rather than the raw wheel input.
+ * Lenis integration: ScrollTrigger uses the default window scroller, but Lenis
+ * smooths the actual scroll position. We drive trigger recalculation off the
+ * Lenis `scroll` event (which fires on the smoothed position) via
+ * `ScrollTrigger.update()`, so the parallax tracks the eased scroll rather
+ * than the raw wheel input. Lenis natively types `.on('scroll')`/`.off(...)` —
+ * no cast needed.
  *
  * Reduced-motion: no ScrollTrigger is created — the hero stays in place.
- * Cleanup: all triggers are killed on unmount and the LS scroll listener is
+ * Cleanup: all triggers are killed on unmount and the Lenis scroll listener is
  * detached so navigation away from the Dashboard leaves nothing dangling.
  *
  * @param rootRef ref to the hero band root element (the ScrollTrigger trigger)
  */
 export function useHeroParallax(rootRef: React.RefObject<HTMLElement | null>) {
   const { instance } = useSmoothScroll();
-  // Keep a stable ref to the LS scroll handler so cleanup can remove it even
+  // Keep a stable ref to the Lenis scroll handler so cleanup can remove it even
   // if `instance` changes identity between renders.
   const lsScrollUnsubscribe = useRef<(() => void) | null>(null);
 
@@ -78,11 +68,10 @@ export function useHeroParallax(rootRef: React.RefObject<HTMLElement | null>) {
       }
 
       // Recalculate triggers on the smoothed scroll position.
-      const onLsScroll = () => ScrollTrigger.update();
+      const onLenisScroll = () => ScrollTrigger.update();
       if (instance) {
-        const emittable = instance as unknown as LocomotiveScrollEventEmitter;
-        emittable.on('scroll', onLsScroll);
-        lsScrollUnsubscribe.current = () => emittable.off('scroll', onLsScroll);
+        instance.on('scroll', onLenisScroll);
+        lsScrollUnsubscribe.current = () => instance.off('scroll', onLenisScroll);
       }
 
       return () => {

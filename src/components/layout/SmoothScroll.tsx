@@ -1,16 +1,15 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import { useLocomotiveScroll } from '@/hooks/useLocomotiveScroll';
-import type LocomotiveScroll from 'locomotive-scroll';
-
-type ScrollInstance = InstanceType<typeof LocomotiveScroll>;
+import { useLenisScroll } from '@/hooks/useLenisScroll';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+import type Lenis from 'lenis';
 
 interface SmoothScrollContextValue {
   /** Programmatic scroll-to with Apple easing */
   scrollTo: (target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => void;
-  /** Force LS to recalculate scroll bounds */
+  /** Recalculate scroll bounds after layout shifts */
   update: () => void;
-  /** The raw Locomotive Scroll instance (null until mounted) */
-  instance: ScrollInstance | null;
+  /** The raw Lenis instance (null until mounted) */
+  instance: Lenis | null;
 }
 
 const SmoothScrollContext = createContext<SmoothScrollContextValue | null>(null);
@@ -32,20 +31,21 @@ interface SmoothScrollProviderProps {
   children: ReactNode;
   /** Lerp factor — lower = springier. Apple default: 0.08 */
   lerp?: number;
-  /** Scroll multiplier — 0.95 for premium feel */
-  multiplier?: number;
 }
 
 /**
- * Context provider that initialises Locomotive Scroll and exposes
+ * Context provider that initialises Lenis smooth scroll and exposes
  * scrollTo / update / instance to the entire tree.
  *
  * Wrap around your page routes. The provider renders a single
- * `[data-scroll-container]` div wrapping children — that div is
- * the LS viewport.
+ * `[data-scroll-container]` div wrapping children — Lenis smooths the
+ * window scroll, so that div is only a mount anchor.
  */
-export function SmoothScrollProvider({ children, lerp = 0.08, multiplier = 0.95 }: SmoothScrollProviderProps) {
-  const { containerRef, scrollTo, update, instance } = useLocomotiveScroll({ lerp, multiplier });
+export function SmoothScrollProvider({ children, lerp = 0.08 }: SmoothScrollProviderProps) {
+  const { containerRef, scrollTo, update, instance } = useLenisScroll({ lerp });
+  // Drive the `.apple-reveal` / `.apple-fade-up` / `.apple-scale-in` lifecycle
+  // (`is-inview`) — Lenis has no scroll-spy, so an IntersectionObserver does it.
+  useScrollReveal(containerRef);
 
   return (
     <SmoothScrollContext.Provider value={{ scrollTo, update, instance }}>
