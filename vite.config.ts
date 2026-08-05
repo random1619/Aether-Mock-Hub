@@ -34,6 +34,7 @@ export default defineConfig({
   // vitest picks this up; vite itself ignores the field.
   test: {
     environment: 'jsdom',
+    setupFiles: ['src/test/setup.ts'],
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     // Run test files sequentially in a single worker. The default parallel fork
     // pool has a jsdom-across-workers startup race on Windows that intermittently
