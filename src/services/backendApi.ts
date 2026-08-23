@@ -5,6 +5,7 @@
  * Supports offline-first fallbacks, automatic background synchronization, and dynamic queries.
  */
 
+import { isNativeMobile } from '@/services/nativeMobile';
 import type { Attempt, MockEntry, SavedQuestionRecord } from '@/types';
 import { getDb, saveAttempt } from '@/services/attemptStore';
 
@@ -15,10 +16,15 @@ function getApiUrl(endpoint: string): string {
   if (envUrl) {
     return `${envUrl.replace(/\/+$/, '')}/api${endpoint}`;
   }
+  // Native mobile APK container connects directly to Render
+  if (isNativeMobile()) {
+    return `${RENDER_BACKEND_URL}/api${endpoint}`;
+  }
   if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null') {
     if (
       window.location.origin.includes('onrender.com') ||
-      window.location.origin.includes('localhost') ||
+      window.location.origin.includes('localhost:5173') ||
+      window.location.origin.includes('localhost:8080') ||
       window.location.origin.includes('127.0.0.1')
     ) {
       return `${window.location.origin}/api${endpoint}`;
