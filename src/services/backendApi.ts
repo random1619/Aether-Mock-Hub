@@ -8,11 +8,23 @@
 import type { Attempt, MockEntry, SavedQuestionRecord } from '@/types';
 import { getDb, saveAttempt } from '@/services/attemptStore';
 
+const RENDER_BACKEND_URL = 'https://aether-mock-hub.onrender.com';
+
 function getApiUrl(endpoint: string): string {
-  if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null') {
-    return `${window.location.origin}/api${endpoint}`;
+  const envUrl = typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_URL;
+  if (envUrl) {
+    return `${envUrl.replace(/\/+$/, '')}/api${endpoint}`;
   }
-  return `http://127.0.0.1:8080/api${endpoint}`;
+  if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null') {
+    if (
+      window.location.origin.includes('onrender.com') ||
+      window.location.origin.includes('localhost') ||
+      window.location.origin.includes('127.0.0.1')
+    ) {
+      return `${window.location.origin}/api${endpoint}`;
+    }
+  }
+  return `${RENDER_BACKEND_URL}/api${endpoint}`;
 }
 
 export interface BackendSystemInfo {
