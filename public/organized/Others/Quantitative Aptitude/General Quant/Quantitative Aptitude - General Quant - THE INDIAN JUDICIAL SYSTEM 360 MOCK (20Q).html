@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27522290</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">20</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">40.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27522290</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 20</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 20</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/40.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p data-start=\"133\" data-end=\"266\">Arrange the following developments related to the historical background of the Indian Judiciary in the correct chronological order:</p>\n<p data-start=\"268\" data-end=\"377\">भारतीय न्यायपालिका के ऐतिहासिक विकास से संबंधित निम्नलिखित घटनाओं को कालानुक्रमिक क्रम में व्यवस्थित कीजिए:</p>\n<ol data-start=\"379\" data-end=\"820\">\n<li data-start=\"379\" data-end=\"466\">\n<p data-start=\"382\" data-end=\"466\">Establishment of the Federal Court of India<br data-start=\"425\" data-end=\"428\" />भारत के संघीय न्यायालय की स्थापना</p>\n</li>\n<li data-start=\"468\" data-end=\"554\">\n<p data-start=\"471\" data-end=\"554\">Creation of High Courts in provinces<br data-start=\"507\" data-end=\"510\" />प्रांतों में उच्च न्यायालयों की स्थापना</p>\n</li>\n<li data-start=\"556\" data-end=\"663\">\n<p data-start=\"559\" data-end=\"663\">Establishment of the Supreme Court of Judicature at Calcutta<br data-start=\"619\" data-end=\"622\" />कलकत्ता में सुप्रीम कोर्ट की स्थापना</p>\n</li>\n<li data-start=\"665\" data-end=\"820\">\n<p data-start=\"668\" data-end=\"820\">Provision for a common High Court for two or more States/UTs<br data-start=\"728\" data-end=\"731\" />दो या दो से अधिक राज्यों/केंद्र शासित प्रदेशों के लिए साझा उच्च न्यायालय का प्रावधान</p>\n</li>\n</ol>\n<h3 data-start=\"827\" data-end=\"849\">Options / विकल्प</h3>\n<p data-start=\"851\" data-end=\"926\">A. 3 &ndash; 2 &ndash; 1 &ndash; 4<br data-start=\"867\" data-end=\"870\" />B. 2 &ndash; 3 &ndash; 1 &ndash; 4<br data-start=\"886\" data-end=\"889\" />C. 3 &ndash; 1 &ndash; 2 &ndash; 4<br data-start=\"905\" data-end=\"908\" />D. 2 &ndash; 1 &ndash; 3 &ndash; 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h2 data-start=\"933\" data-end=\"966\">✅ Correct Answer / सही उत्तर</h2>\n<p data-start=\"968\" data-end=\"988\"><strong data-start=\"968\" data-end=\"988\">A. 3 &ndash; 2 &ndash; 1 &ndash; 4</strong></p>\n<hr style=\"width: 1138.39px;\" data-start=\"990\" data-end=\"993\" />\n<h2 data-start=\"995\" data-end=\"1059\">✅ Explanation (Quick Revision for SSC) / संक्षिप्त व्याख्या</h2>\n<p></p>\n<ul data-start=\"1061\" data-end=\"1601\">\n<li data-start=\"1061\" data-end=\"1184\">\n<p data-start=\"1063\" data-end=\"1184\"><strong data-start=\"1063\" data-end=\"1088\">1773 (Regulating Act)</strong>&nbsp;&rarr; Supreme Court at Calcutta (1774)<br data-start=\"1123\" data-end=\"1126\" /><strong data-start=\"1128\" data-end=\"1154\">1773 (रेगुलेटिंग एक्ट)</strong>&nbsp;&rarr; कलकत्ता में सुप्रीम कोर्ट</p>\n</li>\n<li data-start=\"1186\" data-end=\"1323\">\n<p data-start=\"1188\" data-end=\"1323\"><strong data-start=\"1188\" data-end=\"1221\">1861 (Indian High Courts Act)</strong>&nbsp;&rarr; High Courts in provinces<br data-start=\"1248\" data-end=\"1251\" /><strong data-start=\"1253\" data-end=\"1292\">1861 (भारतीय उच्च न्यायालय अधिनियम)</strong>&nbsp;&rarr; प्रांतों में उच्च न्यायालय</p>\n</li>\n<li data-start=\"1325\" data-end=\"1439\">\n<p data-start=\"1327\" data-end=\"1439\"><strong data-start=\"1327\" data-end=\"1361\">1935 (Government of India Act)</strong>&nbsp;&rarr; Federal Court of India<br data-start=\"1386\" data-end=\"1389\" /><strong data-start=\"1391\" data-end=\"1420\">1935 (भारत सरकार अधिनियम)</strong>&nbsp;&rarr; संघीय न्यायालय</p>\n</li>\n<li data-start=\"1441\" data-end=\"1601\">\n<p data-start=\"1443\" data-end=\"1601\"><strong data-start=\"1443\" data-end=\"1482\">1956 (7th Constitutional Amendment)</strong>&nbsp;&rarr; Common High Court for two or more States/UTs<br data-start=\"1529\" data-end=\"1532\" /><strong data-start=\"1534\" data-end=\"1566\">1956 (सातवाँ संविधान संशोधन)</strong>&nbsp;&rarr; साझा उच्च न्यायालय का प्रावधान</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"155\" data-end=\"299\">With reference to the Structure of the Indian Judiciary and the evolution of the Collegium System in India, consider the following statements:</p>\n<p data-start=\"301\" data-end=\"408\">भारतीय न्यायपालिका की संरचना तथा कॉलेजियम प्रणाली के विकास के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"410\" data-end=\"1556\">\n<li data-start=\"410\" data-end=\"700\">\n<p data-start=\"413\" data-end=\"700\">India has an integrated judicial system where both Central and State laws are enforced by the same courts, with the Supreme Court at the apex.<br data-start=\"555\" data-end=\"558\" />भारत में एक एकीकृत न्यायिक प्रणाली है जिसमें केंद्र और राज्य के कानूनों को समान न्यायालय लागू करते हैं, और सर्वोच्च न्यायालय शीर्ष पर है।</p>\n</li>\n<li data-start=\"702\" data-end=\"927\">\n<p data-start=\"705\" data-end=\"927\">The High Courts are established under <strong data-start=\"743\" data-end=\"758\">Article 214</strong>, and there are currently 25 High Courts in India.<br data-start=\"808\" data-end=\"811\" />उच्च न्यायालयों की स्थापना <strong data-start=\"841\" data-end=\"857\">अनुच्छेद 214</strong> के अंतर्गत की गई है, तथा वर्तमान में भारत में 25 उच्च न्यायालय हैं।</p>\n</li>\n<li data-start=\"929\" data-end=\"1173\">\n<p data-start=\"932\" data-end=\"1173\">Under <strong data-start=\"938\" data-end=\"953\">Article 141</strong>, the advice of the Chief Justice of India in judicial appointments is binding on the President.<br data-start=\"1049\" data-end=\"1052\" /><strong data-start=\"1055\" data-end=\"1071\">अनुच्छेद 141</strong> के अंतर्गत न्यायिक नियुक्तियों में भारत के मुख्य न्यायाधीश की सलाह राष्ट्रपति पर बाध्यकारी होती है।</p>\n</li>\n<li data-start=\"1175\" data-end=\"1556\">\n<p data-start=\"1178\" data-end=\"1556\">The Supreme Court in the Fourth Judges Case (2015) declared the <strong data-start=\"1242\" data-end=\"1285\">99th Constitutional Amendment Act, 2014</strong> and the <strong data-start=\"1294\" data-end=\"1312\">NJAC Act, 2014</strong> unconstitutional, thereby restoring the Collegium system.<br data-start=\"1370\" data-end=\"1373\" />सर्वोच्च न्यायालय ने चौथे न्यायाधीश प्रकरण (2015) में <strong data-start=\"1430\" data-end=\"1468\">99वाँ संविधान संशोधन अधिनियम, 2014</strong> तथा <strong data-start=\"1473\" data-end=\"1495\">NJAC अधिनियम, 2014</strong> को असंवैधानिक घोषित कर कॉलेजियम प्रणाली को पुनः लागू किया।</p>\n</li>\n</ol>\n<h3 data-start=\"1563\" data-end=\"1585\">Options / विकल्प</h3>\n<p></p>\n<p data-start=\"1587\" data-end=\"1662\">A. 1, 2 and 4 only<br data-start=\"1605\" data-end=\"1608\" />B. 1 and 3 only<br data-start=\"1623\" data-end=\"1626\" />C. 1, 2, 3 and 4<br data-start=\"1642\" data-end=\"1645\" />D. 2 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<ul data-start=\"106\" data-end=\"749\">\n<li data-start=\"106\" data-end=\"237\">\n<p data-start=\"108\" data-end=\"237\"><strong data-start=\"108\" data-end=\"123\">Article 141</strong> states that the law declared by the Supreme Court shall be binding on all courts within the territory of India.</p>\n</li>\n<li data-start=\"239\" data-end=\"416\">\n<p data-start=\"241\" data-end=\"281\">Judicial appointments are governed by:</p>\n<ul data-start=\"284\" data-end=\"416\">\n<li data-start=\"284\" data-end=\"351\">\n<p data-start=\"286\" data-end=\"351\"><strong data-start=\"286\" data-end=\"304\">Article 124(2)</strong> &ndash; Appointment of Judges of the Supreme Court</p>\n</li>\n<li data-start=\"354\" data-end=\"416\">\n<p data-start=\"356\" data-end=\"416\"><strong data-start=\"356\" data-end=\"371\">Article 217</strong> &ndash; Appointment of Judges of the High Courts</p>\n</li>\n</ul>\n</li>\n<li data-start=\"418\" data-end=\"625\">\n<p data-start=\"420\" data-end=\"554\">The binding nature of the Chief Justice of India&rsquo;s (CJI) advice in judicial appointments evolved through judicial interpretation in:</p>\n<ul data-start=\"557\" data-end=\"625\">\n<li data-start=\"557\" data-end=\"590\">\n<p data-start=\"559\" data-end=\"590\"><strong data-start=\"559\" data-end=\"588\">Second Judges Case (1993)</strong></p>\n</li>\n<li data-start=\"593\" data-end=\"625\">\n<p data-start=\"595\" data-end=\"625\"><strong data-start=\"595\" data-end=\"623\">Third Judges Case (1998)</strong></p>\n</li>\n</ul>\n</li>\n<li data-start=\"627\" data-end=\"749\">\n<p data-start=\"629\" data-end=\"749\">Therefore, the binding effect of the CJI&rsquo;s recommendation is based on judicial interpretation, not on <strong data-start=\"731\" data-end=\"746\">Article 141</strong>.</p>\n</li>\n</ul>\n<p></p>\n<ul data-start=\"771\" data-end=\"1399\">\n<li data-start=\"771\" data-end=\"908\">\n<p data-start=\"773\" data-end=\"908\"><strong data-start=\"773\" data-end=\"789\">अनुच्छेद 141</strong> के अनुसार, सर्वोच्च न्यायालय द्वारा घोषित विधि भारत के क्षेत्राधिकार के अंतर्गत सभी न्यायालयों पर बाध्यकारी होती है।</p>\n</li>\n<li data-start=\"910\" data-end=\"1113\">\n<p data-start=\"912\" data-end=\"974\">न्यायाधीशों की नियुक्ति निम्न अनुच्छेदों के अंतर्गत होती है:</p>\n<ul data-start=\"977\" data-end=\"1113\">\n<li data-start=\"977\" data-end=\"1047\">\n<p data-start=\"979\" data-end=\"1047\"><strong data-start=\"979\" data-end=\"998\">अनुच्छेद 124(2)</strong> &ndash; सर्वोच्च न्यायालय के न्यायाधीशों की नियुक्ति</p>\n</li>\n<li data-start=\"1050\" data-end=\"1113\">\n<p data-start=\"1052\" data-end=\"1113\"><strong data-start=\"1052\" data-end=\"1068\">अनुच्छेद 217</strong> &ndash; उच्च न्यायालय के न्यायाधीशों की नियुक्ति</p>\n</li>\n</ul>\n</li>\n<li data-start=\"1115\" data-end=\"1292\">\n<p data-start=\"1117\" data-end=\"1210\">मुख्य न्यायाधीश (CJI) की सलाह की बाध्यता न्यायिक व्याख्या के माध्यम से विकसित हुई, विशेषकर:</p>\n<ul data-start=\"1213\" data-end=\"1292\">\n<li data-start=\"1213\" data-end=\"1252\">\n<p data-start=\"1215\" data-end=\"1252\"><strong data-start=\"1215\" data-end=\"1250\">द्वितीय न्यायाधीश प्रकरण (1993)</strong></p>\n</li>\n<li data-start=\"1255\" data-end=\"1292\">\n<p data-start=\"1257\" data-end=\"1292\"><strong data-start=\"1257\" data-end=\"1290\">तृतीय न्यायाधीश प्रकरण (1998)</strong></p>\n</li>\n</ul>\n</li>\n<li data-start=\"1294\" data-end=\"1399\">\n<p data-start=\"1296\" data-end=\"1399\">अतः CJI की सिफारिश की बाध्यता <strong data-start=\"1326\" data-end=\"1342\">अनुच्छेद 141</strong> के कारण नहीं, बल्कि न्यायालयों की व्याख्या के कारण है।</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"183\" data-end=\"339\">With reference to the <strong data-start=\"205\" data-end=\"249\">Supreme Court (Part V: Articles 124&ndash;147)</strong> and the <strong data-start=\"258\" data-end=\"301\">High Courts (Part VI: Articles 214&ndash;231)</strong>, consider the following statements:</p>\n<p data-start=\"341\" data-end=\"478\">सर्वोच्च न्यायालय (भाग V: अनुच्छेद 124&ndash;147) तथा उच्च न्यायालय (भाग VI: अनुच्छेद 214&ndash;231) के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"480\" data-end=\"1411\">\n<li data-start=\"480\" data-end=\"709\">\n<p data-start=\"483\" data-end=\"709\">The maximum strength of the Supreme Court is determined by Parliament, and currently it consists of 34 judges.<br data-start=\"593\" data-end=\"596\" />सर्वोच्च न्यायालय की अधिकतम संख्या संसद द्वारा निर्धारित की जाती है, तथा वर्तमान में इसमें 34 न्यायाधीश हैं।</p>\n</li>\n<li data-start=\"711\" data-end=\"844\">\n<p data-start=\"714\" data-end=\"844\">The strength of a High Court is fixed in the Constitution.<br data-start=\"772\" data-end=\"775\" />उच्च न्यायालय की न्यायाधीशों की संख्या संविधान में निर्धारित है।</p>\n</li>\n<li data-start=\"846\" data-end=\"1082\">\n<p data-start=\"849\" data-end=\"1082\">A Judge of the Supreme Court retires at the age of 65 years, whereas a Judge of a High Court retires at 62 years.<br data-start=\"962\" data-end=\"965\" />सर्वोच्च न्यायालय का न्यायाधीश 65 वर्ष की आयु तक तथा उच्च न्यायालय का न्यायाधीश 62 वर्ष की आयु तक पद पर रहता है।</p>\n</li>\n<li data-start=\"1084\" data-end=\"1411\">\n<p data-start=\"1087\" data-end=\"1411\">The expenses of the Supreme Court are charged on the Consolidated Fund of India, whereas the salaries of High Court judges are charged on the Consolidated Fund of the State.<br data-start=\"1260\" data-end=\"1263\" />सर्वोच्च न्यायालय के व्यय भारत की संचित निधि पर भारित होते हैं, जबकि उच्च न्यायालय के न्यायाधीशों का वेतन राज्य की संचित निधि पर भारित होता है।</p>\n</li>\n</ol>\n<h3 data-start=\"1413\" data-end=\"1435\">Options / विकल्प</h3>\n<p data-start=\"1437\" data-end=\"1512\">A. 1, 3 and 4 only<br data-start=\"1455\" data-end=\"1458\" />B. 1 and 2 only<br data-start=\"1473\" data-end=\"1476\" />C. 2 and 4 only<br data-start=\"1491\" data-end=\"1494\" />D. 1, 2, 3 and 4</p>\n<p data-start=\"1554\" data-end=\"1576\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<ul>\n<li data-start=\"1614\" data-end=\"1752\">\n<p data-start=\"1616\" data-end=\"1752\"><strong data-start=\"1616\" data-end=\"1643\">Statement 1 &ndash; Correct&nbsp;</strong><br data-start=\"1643\" data-end=\"1646\" />Under <strong data-start=\"1654\" data-end=\"1669\">Article 124</strong>, Parliament determines the strength. Present strength: <strong data-start=\"1725\" data-end=\"1749\">34 judges (CJI + 33)</strong>.</p>\n</li>\n<li data-start=\"1754\" data-end=\"1876\">\n<p data-start=\"1756\" data-end=\"1876\"><strong data-start=\"1756\" data-end=\"1785\">Statement 2 &ndash; Incorrect&nbsp;</strong><br data-start=\"1785\" data-end=\"1788\" />HC strength is <strong data-start=\"1805\" data-end=\"1818\">not fixed</strong> in the Constitution. It is determined by the President.</p>\n</li>\n<li data-start=\"1878\" data-end=\"1981\">\n<p data-start=\"1880\" data-end=\"1981\"><strong data-start=\"1880\" data-end=\"1907\">Statement 3 &ndash; Correct&nbsp;</strong><br data-start=\"1907\" data-end=\"1910\" />SC retirement age &ndash; <strong data-start=\"1932\" data-end=\"1944\">65 years</strong>; HC retirement age &ndash; <strong data-start=\"1966\" data-end=\"1978\">62 years</strong>.</p>\n</li>\n</ul>\n<p></p>\n<ul>\n<li data-start=\"1983\" data-end=\"2118\">\n<p data-start=\"1985\" data-end=\"2118\"><strong data-start=\"1985\" data-end=\"2012\">Statement 4 &ndash; Correct&nbsp;</strong><br data-start=\"2012\" data-end=\"2015\" />SC expenses &rarr; <strong data-start=\"2031\" data-end=\"2061\">Consolidated Fund of India</strong>.<br data-start=\"2062\" data-end=\"2065\" />HC salaries &rarr; <strong data-start=\"2081\" data-end=\"2115\">Consolidated Fund of the State</strong>.</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"2154\" data-end=\"2289\">With reference to the appointment and independence of judges of the Supreme Court and High Courts, consider the following statements:</p>\n<p data-start=\"2291\" data-end=\"2417\">सर्वोच्च न्यायालय एवं उच्च न्यायालय के न्यायाधीशों की नियुक्ति तथा स्वतंत्रता के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2419\" data-end=\"3705\">\n<li data-start=\"2419\" data-end=\"2670\">\n<p data-start=\"2422\" data-end=\"2670\">The Chief Justice of India is appointed on the basis of seniority as established in the Second Judges Case (1993).<br data-start=\"2536\" data-end=\"2539\" />भारत के मुख्य न्यायाधीश की नियुक्ति वरिष्ठता के आधार पर होती है, जैसा कि द्वितीय न्यायाधीश प्रकरण (1993) में स्थापित किया गया।</p>\n</li>\n<li data-start=\"2672\" data-end=\"3029\">\n<p data-start=\"2675\" data-end=\"3029\">Under Article 217, a High Court judge is appointed by the President after consultation with the CJI, the Governor of the State, and the Chief Justice of the concerned High Court.<br data-start=\"2853\" data-end=\"2856\" />अनुच्छेद 217 के अंतर्गत उच्च न्यायालय के न्यायाधीश की नियुक्ति राष्ट्रपति द्वारा CJI, राज्यपाल और संबंधित उच्च न्यायालय के मुख्य न्यायाधीश से परामर्श के बाद की जाती है।</p>\n</li>\n<li data-start=\"3031\" data-end=\"3404\">\n<p data-start=\"3034\" data-end=\"3404\">A retired Judge of the Supreme Court is prohibited from practising in any court, whereas a retired High Court judge can practise in the Supreme Court or other High Courts.<br data-start=\"3205\" data-end=\"3208\" />सेवानिवृत्त सर्वोच्च न्यायालय का न्यायाधीश किसी भी न्यायालय में वकालत नहीं कर सकता, जबकि सेवानिवृत्त उच्च न्यायालय का न्यायाधीश सर्वोच्च न्यायालय या अन्य उच्च न्यायालयों में वकालत कर सकता है।</p>\n</li>\n<li data-start=\"3406\" data-end=\"3705\">\n<p data-start=\"3409\" data-end=\"3705\">Both the Supreme Court and the High Courts derive independence from Article 50, which provides for separation of the judiciary from the executive.<br data-start=\"3555\" data-end=\"3558\" />सर्वोच्च न्यायालय एवं उच्च न्यायालय दोनों की स्वतंत्रता का आधार अनुच्छेद 50 है, जो न्यायपालिका को कार्यपालिका से अलग करने का प्रावधान करता है।</p>\n</li>\n</ol>\n<h3 data-start=\"3707\" data-end=\"3729\">Options / विकल्प</h3>\n<p data-start=\"3731\" data-end=\"3806\">A. 1, 2 and 3 only<br data-start=\"3749\" data-end=\"3752\" />B. 1, 2, 3 and 4<br data-start=\"3768\" data-end=\"3771\" />C. 2 and 4 only<br data-start=\"3786\" data-end=\"3789\" />D. 1 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<h2 data-start=\"3875\" data-end=\"3904\">&nbsp;Explanation / व्याख्या</h2>\n<p></p>\n<ul data-start=\"3906\" data-end=\"4372\">\n<li data-start=\"3906\" data-end=\"4005\">\n<p data-start=\"3908\" data-end=\"4005\"><strong data-start=\"3908\" data-end=\"3935\">Statement 1 &ndash; Correct&nbsp;</strong><br data-start=\"3935\" data-end=\"3938\" />Second Judges Case (1993) &rarr; Senior-most judge appointed as CJI.</p>\n</li>\n<li data-start=\"4007\" data-end=\"4086\">\n<p data-start=\"4009\" data-end=\"4086\"><strong data-start=\"4009\" data-end=\"4036\">Statement 2 &ndash; Correct&nbsp;</strong><br data-start=\"4036\" data-end=\"4039\" />Appointment of HC judges &rarr;&nbsp;<strong data-start=\"4068\" data-end=\"4083\">Article 217</strong>.</p>\n</li>\n<li data-start=\"4088\" data-end=\"4228\">\n<p data-start=\"4090\" data-end=\"4228\"><strong data-start=\"4090\" data-end=\"4117\">Statement 3 &ndash; Correct&nbsp;</strong><br data-start=\"4117\" data-end=\"4120\" />SC retired judge &rarr; Cannot practise in any court.<br data-start=\"4170\" data-end=\"4173\" />HC retired judge &rarr; Can practise in SC or other HCs.</p>\n</li>\n<li data-start=\"4230\" data-end=\"4372\">\n<p data-start=\"4232\" data-end=\"4372\"><strong data-start=\"4232\" data-end=\"4259\">Statement 4 &ndash; Correct&nbsp;</strong><br data-start=\"4259\" data-end=\"4262\" /><strong data-start=\"4264\" data-end=\"4285\">Article 50 (DPSP)</strong>&nbsp;ensures separation of judiciary from executive, strengthening judicial independence.</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"225\" data-end=\"349\">With reference to the <strong data-start=\"247\" data-end=\"311\">jurisdiction and powers of the Supreme Court and High Courts</strong>, consider the following statements:</p>\n<p data-start=\"351\" data-end=\"465\">सर्वोच्च न्यायालय एवं उच्च न्यायालय के अधिकार-क्षेत्र और शक्तियों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"467\" data-end=\"1461\">\n<li data-start=\"467\" data-end=\"820\">\n<p data-start=\"470\" data-end=\"820\">Under <strong data-start=\"476\" data-end=\"491\">Article 131</strong>, the Supreme Court has original and exclusive jurisdiction in disputes between the Centre and States, provided the dispute involves a legal right.<br data-start=\"638\" data-end=\"641\" /><strong data-start=\"644\" data-end=\"660\">अनुच्छेद 131</strong> के अंतर्गत सर्वोच्च न्यायालय को केंद्र और राज्यों के बीच विवादों में मूल एवं विशिष्ट अधिकार-क्षेत्र प्राप्त है, बशर्ते विवाद किसी विधिक अधिकार से संबंधित हो।</p>\n</li>\n<li data-start=\"822\" data-end=\"1013\">\n<p data-start=\"825\" data-end=\"1013\">Private individuals can directly file a suit against the Government of India under Article 131.<br data-start=\"920\" data-end=\"923\" />निजी व्यक्ति अनुच्छेद 131 के अंतर्गत सीधे भारत सरकार के विरुद्ध वाद दायर कर सकते हैं।</p>\n</li>\n<li data-start=\"1015\" data-end=\"1231\">\n<p data-start=\"1018\" data-end=\"1231\">Under <strong data-start=\"1024\" data-end=\"1038\">Article 32</strong>, the Supreme Court can issue writs only for the enforcement of Fundamental Rights.<br data-start=\"1121\" data-end=\"1124\" /><strong data-start=\"1127\" data-end=\"1142\">अनुच्छेद 32</strong> के अंतर्गत सर्वोच्च न्यायालय केवल मौलिक अधिकारों के प्रवर्तन हेतु रिट जारी कर सकता है।</p>\n</li>\n<li data-start=\"1233\" data-end=\"1461\">\n<p data-start=\"1236\" data-end=\"1461\">Under <strong data-start=\"1242\" data-end=\"1257\">Article 226</strong>, High Courts can issue writs for both Fundamental Rights and other legal rights.<br data-start=\"1338\" data-end=\"1341\" /><strong data-start=\"1344\" data-end=\"1360\">अनुच्छेद 226</strong> के अंतर्गत उच्च न्यायालय मौलिक अधिकारों तथा अन्य विधिक अधिकारों दोनों के लिए रिट जारी कर सकते हैं।</p>\n</li>\n</ol>\n<h3 data-start=\"1463\" data-end=\"1485\">Options / विकल्प</h3>\n<p data-start=\"1487\" data-end=\"1562\">A. 1, 3 and 4 only<br data-start=\"1505\" data-end=\"1508\" />B. 1 and 2 only<br data-start=\"1523\" data-end=\"1526\" />C. 2 and 4 only<br data-start=\"1541\" data-end=\"1544\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1666\" data-end=\"1811\"><strong data-start=\"1666\" data-end=\"1693\">Statement 1 &ndash; Correct ✅</strong><br data-start=\"1693\" data-end=\"1696\" />Article 131 &rarr; Original &amp; exclusive jurisdiction in Centre&ndash;State or inter-State disputes involving legal rights.</p>\n<ul data-start=\"1664\" data-end=\"2098\">\n<li data-start=\"1813\" data-end=\"1901\">\n<p data-start=\"1815\" data-end=\"1901\"><strong data-start=\"1815\" data-end=\"1844\">Statement 2 &ndash; Incorrect&nbsp;</strong><br data-start=\"1844\" data-end=\"1847\" />Private individuals&nbsp;<strong data-start=\"1869\" data-end=\"1879\">cannot</strong>&nbsp;invoke Article 131.</p>\n</li>\n<li data-start=\"1903\" data-end=\"1995\">\n<p data-start=\"1905\" data-end=\"1995\"><strong data-start=\"1905\" data-end=\"1932\">Statement 3 &ndash; Correct ✅</strong><br data-start=\"1932\" data-end=\"1935\" />Article 32 &rarr; Only for enforcement of Fundamental Rights.</p>\n</li>\n<li data-start=\"1997\" data-end=\"2098\">\n<p data-start=\"1999\" data-end=\"2098\"><strong data-start=\"1999\" data-end=\"2026\">Statement 4 &ndash; Correct ✅</strong><br data-start=\"2026\" data-end=\"2029\" />Article 226 &rarr; Wider than Article 32; includes other legal rights.</p>\n</li>\n</ul>\n<p></p>\n<p data-start=\"2100\" data-end=\"2200\">&nbsp;Remember: HC writ jurisdiction is&nbsp;<strong data-start=\"2137\" data-end=\"2146\">wider</strong>, but SC&rsquo;s Article 32 is itself a Fundamental Right.</p>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"2236\" data-end=\"2352\">With reference to the powers and position of the Supreme Court and High Courts, consider the following statements:</p>\n<p data-start=\"2354\" data-end=\"2470\">सर्वोच्च न्यायालय एवं उच्च न्यायालय की शक्तियों और संवैधानिक स्थिति के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2472\" data-end=\"3870\">\n<li data-start=\"2472\" data-end=\"2763\">\n<p data-start=\"2475\" data-end=\"2763\">The Supreme Court under <strong data-start=\"2499\" data-end=\"2514\">Article 129</strong> and High Courts under <strong data-start=\"2537\" data-end=\"2552\">Article 215</strong> are Courts of Record and have the power to punish for contempt.<br data-start=\"2616\" data-end=\"2619\" />सर्वोच्च न्यायालय (<strong data-start=\"2641\" data-end=\"2657\">अनुच्छेद 129</strong>) तथा उच्च न्यायालय (<strong data-start=\"2678\" data-end=\"2694\">अनुच्छेद 215</strong>) अभिलेख न्यायालय हैं और अवमानना के लिए दंड देने की शक्ति रखते हैं।</p>\n</li>\n<li data-start=\"2765\" data-end=\"3201\">\n<p data-start=\"2768\" data-end=\"3201\">Salaries of Supreme Court judges are charged on the Consolidated Fund of India under <strong data-start=\"2853\" data-end=\"2868\">Article 125</strong>, whereas salaries of High Court judges are charged on the Consolidated Fund of the State under <strong data-start=\"2964\" data-end=\"2979\">Article 221</strong>.<br data-start=\"2980\" data-end=\"2983\" />सर्वोच्च न्यायालय के न्यायाधीशों का वेतन <strong data-start=\"3027\" data-end=\"3043\">अनुच्छेद 125</strong> के अंतर्गत भारत की संचित निधि पर भारित होता है, जबकि उच्च न्यायालय के न्यायाधीशों का वेतन <strong data-start=\"3134\" data-end=\"3150\">अनुच्छेद 221</strong> के अंतर्गत राज्य की संचित निधि पर भारित होता है।</p>\n</li>\n<li data-start=\"3203\" data-end=\"3587\">\n<p data-start=\"3206\" data-end=\"3587\">A judge of the Supreme Court can be removed by the President on the recommendation of Parliament on the grounds of proved misbehaviour or incapacity, as per the <strong data-start=\"3367\" data-end=\"3395\">Judges Enquiry Act, 1968</strong>.<br data-start=\"3396\" data-end=\"3399\" />सर्वोच्च न्यायालय के न्यायाधीश को सिद्ध दुराचार या अक्षमता के आधार पर संसद की संस्तुति पर राष्ट्रपति द्वारा हटाया जा सकता है, जैसा कि <strong data-start=\"3536\" data-end=\"3568\">न्यायाधीश जांच अधिनियम, 1968</strong> में प्रावधान है।</p>\n</li>\n<li data-start=\"3589\" data-end=\"3870\">\n<p data-start=\"3592\" data-end=\"3870\">The Supreme Court is the final interpreter and guardian of the Constitution and acts as both a federal court and the final appellate court.<br data-start=\"3731\" data-end=\"3734\" />सर्वोच्च न्यायालय संविधान का अंतिम व्याख्याकार एवं संरक्षक है तथा संघीय न्यायालय और अंतिम अपीलीय न्यायालय के रूप में कार्य करता है।</p>\n</li>\n</ol>\n<h3 data-start=\"3872\" data-end=\"3894\">Options / विकल्प</h3>\n<p data-start=\"3896\" data-end=\"3971\">A. 1, 2 and 3 only<br data-start=\"3914\" data-end=\"3917\" />B. 1 and 4 only<br data-start=\"3932\" data-end=\"3935\" />C. 1, 2, 3 and 4<br data-start=\"3951\" data-end=\"3954\" />D. 2 and 3 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<h2 data-start=\"4040\" data-end=\"4069\">&nbsp;</h2>\n<p></p>\n<ul data-start=\"4071\" data-end=\"4535\">\n<li data-start=\"4071\" data-end=\"4177\">\n<p data-start=\"4073\" data-end=\"4177\"><strong data-start=\"4073\" data-end=\"4100\">Statement 1 &ndash; Correct ✅</strong><br data-start=\"4100\" data-end=\"4103\" />SC &rarr; Article 129; HC &rarr; Article 215 &rarr; Court of Record + Contempt power.</p>\n</li>\n<li data-start=\"4179\" data-end=\"4292\">\n<p data-start=\"4181\" data-end=\"4292\"><strong data-start=\"4181\" data-end=\"4208\">Statement 2 &ndash; Correct ✅</strong><br data-start=\"4208\" data-end=\"4211\" />SC salary &rarr; CFI (Art 125).<br data-start=\"4239\" data-end=\"4242\" />HC salary &rarr; State Consolidated Fund (Art 221).</p>\n</li>\n<li data-start=\"4294\" data-end=\"4432\">\n<p data-start=\"4296\" data-end=\"4432\"><strong data-start=\"4296\" data-end=\"4323\">Statement 3 &ndash; Correct ✅</strong><br data-start=\"4323\" data-end=\"4326\" />Removal &rarr; Proved misbehaviour/incapacity &rarr; Special majority in both Houses &rarr; Judges Enquiry Act, 1968.</p>\n</li>\n<li data-start=\"4434\" data-end=\"4535\">\n<p data-start=\"4436\" data-end=\"4535\"><strong data-start=\"4436\" data-end=\"4463\">Statement 4 &ndash; Correct ✅</strong><br data-start=\"4463\" data-end=\"4466\" />SC = Guardian, Custodian &amp; Final Interpreter of the Constitution.</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"205\" data-end=\"344\">With reference to the <strong data-start=\"227\" data-end=\"306\">additional constitutional provisions relating to the Supreme Court of India</strong>, consider the following statements:</p>\n<p data-start=\"346\" data-end=\"461\">भारत के सर्वोच्च न्यायालय से संबंधित अतिरिक्त संवैधानिक प्रावधानों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"463\" data-end=\"1685\">\n<li data-start=\"463\" data-end=\"883\">\n<p data-start=\"466\" data-end=\"883\">Under <strong data-start=\"472\" data-end=\"487\">Article 127</strong>, the Chief Justice of India can appoint a High Court judge as an Ad Hoc Judge with the consent of the President and after consultation with the Chief Justice of the concerned High Court.<br data-start=\"674\" data-end=\"677\" /><strong data-start=\"680\" data-end=\"696\">अनुच्छेद 127</strong> के अंतर्गत भारत के मुख्य न्यायाधीश राष्ट्रपति की सहमति तथा संबंधित उच्च न्यायालय के मुख्य न्यायाधीश से परामर्श के बाद उच्च न्यायालय के न्यायाधीश को तदर्थ न्यायाधीश नियुक्त कर सकते हैं।</p>\n</li>\n<li data-start=\"885\" data-end=\"1120\">\n<p data-start=\"888\" data-end=\"1120\">Under <strong data-start=\"894\" data-end=\"909\">Article 136</strong>, the right to appeal to the Supreme Court by Special Leave is a fundamental right of the litigant.<br data-start=\"1008\" data-end=\"1011\" /><strong data-start=\"1014\" data-end=\"1030\">अनुच्छेद 136</strong> के अंतर्गत विशेष अनुमति द्वारा सर्वोच्च न्यायालय में अपील करना वादी का मौलिक अधिकार है।</p>\n</li>\n<li data-start=\"1122\" data-end=\"1396\">\n<p data-start=\"1125\" data-end=\"1396\">Under <strong data-start=\"1131\" data-end=\"1146\">Article 143</strong>, the President may seek the advisory opinion of the Supreme Court, and such opinion is binding on the President.<br data-start=\"1259\" data-end=\"1262\" /><strong data-start=\"1265\" data-end=\"1281\">अनुच्छेद 143</strong> के अंतर्गत राष्ट्रपति सर्वोच्च न्यायालय से परामर्श मांग सकते हैं, और यह परामर्श राष्ट्रपति पर बाध्यकारी होता है।</p>\n</li>\n<li data-start=\"1398\" data-end=\"1685\">\n<p data-start=\"1401\" data-end=\"1685\">Under <strong data-start=\"1407\" data-end=\"1422\">Article 142</strong>, the Supreme Court can pass any decree or order necessary to do complete justice in any pending matter before it.<br data-start=\"1536\" data-end=\"1539\" /><strong data-start=\"1542\" data-end=\"1558\">अनुच्छेद 142</strong> के अंतर्गत सर्वोच्च न्यायालय किसी भी लंबित मामले में पूर्ण न्याय सुनिश्चित करने हेतु आवश्यक आदेश या डिक्री पारित कर सकता है।</p>\n</li>\n</ol>\n<h3 data-start=\"1687\" data-end=\"1709\">Options / विकल्प</h3>\n<p data-start=\"1711\" data-end=\"1788\">A. 1 and 4 only<br data-start=\"1726\" data-end=\"1729\" />B. 1, 2 and 4 only<br data-start=\"1747\" data-end=\"1750\" />C. 2 and 3 only<br data-start=\"1765\" data-end=\"1768\" />D. 1, 3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h2 data-start=\"1856\" data-end=\"1885\">&nbsp;</h2>\n<ul data-start=\"1887\" data-end=\"2325\">\n<li data-start=\"1887\" data-end=\"1988\">\n<p data-start=\"1889\" data-end=\"1988\"><strong data-start=\"1889\" data-end=\"1916\">Statement 1 &ndash; Correct&nbsp;</strong><br data-start=\"1916\" data-end=\"1919\" />Article 127 &rarr; Ad Hoc Judge appointment with Presidential consent.</p>\n</li>\n<li data-start=\"1990\" data-end=\"2117\">\n<p data-start=\"1992\" data-end=\"2117\"><strong data-start=\"1992\" data-end=\"2021\">Statement 2 &ndash; Incorrect&nbsp;</strong><br data-start=\"2021\" data-end=\"2024\" />Article 136 &rarr; Special Leave Petition (SLP) is&nbsp;<strong data-start=\"2072\" data-end=\"2089\">discretionary</strong>, not a fundamental right.</p>\n</li>\n<li data-start=\"2119\" data-end=\"2224\">\n<p data-start=\"2121\" data-end=\"2224\"><strong data-start=\"2121\" data-end=\"2150\">Statement 3 &ndash; Incorrect&nbsp;</strong><br data-start=\"2150\" data-end=\"2153\" />Article 143 &rarr; Advisory opinion is&nbsp;<strong data-start=\"2189\" data-end=\"2204\">not binding</strong>&nbsp;on the President.</p>\n</li>\n<li data-start=\"2226\" data-end=\"2325\">\n<p data-start=\"2228\" data-end=\"2325\"><strong data-start=\"2228\" data-end=\"2255\">Statement 4 &ndash; Correct&nbsp;</strong><br data-start=\"2255\" data-end=\"2258\" />Article 142 &rarr; Complete justice power (Judicial activism basis).</p>\n</li>\n</ul>\n<p></p>\n<p data-start=\"2327\" data-end=\"2409\">Trap Area: Article 136 = Discretionary; Article 143 = Advisory &amp; non-binding.</p>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"2445\" data-end=\"2569\">With reference to the constitutional position and powers of the Supreme Court of India, consider the following statements:</p>\n<p data-start=\"2571\" data-end=\"2678\">भारत के सर्वोच्च न्यायालय की संवैधानिक स्थिति एवं शक्तियों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2680\" data-end=\"3570\">\n<li data-start=\"2680\" data-end=\"2915\">\n<p data-start=\"2683\" data-end=\"2915\">Under <strong data-start=\"2689\" data-end=\"2704\">Article 141</strong>, the law declared by the Supreme Court is binding on all courts within the territory of India.<br data-start=\"2799\" data-end=\"2802\" /><strong data-start=\"2805\" data-end=\"2821\">अनुच्छेद 141</strong> के अंतर्गत सर्वोच्च न्यायालय द्वारा घोषित विधि भारत के सभी न्यायालयों पर बाध्यकारी होती है।</p>\n</li>\n<li data-start=\"2917\" data-end=\"3149\">\n<p data-start=\"2920\" data-end=\"3149\">Under <strong data-start=\"2926\" data-end=\"2941\">Article 130</strong>, the seat of the Supreme Court is fixed permanently in Delhi and cannot be changed.<br data-start=\"3025\" data-end=\"3028\" /><strong data-start=\"3031\" data-end=\"3047\">अनुच्छेद 130</strong> के अंतर्गत सर्वोच्च न्यायालय का स्थान स्थायी रूप से दिल्ली में निश्चित है और इसे बदला नहीं जा सकता।</p>\n</li>\n<li data-start=\"3151\" data-end=\"3350\">\n<p data-start=\"3154\" data-end=\"3350\">The Supreme Court has the power to review its own judgments under <strong data-start=\"3220\" data-end=\"3235\">Article 137</strong>.<br data-start=\"3236\" data-end=\"3239\" />सर्वोच्च न्यायालय को <strong data-start=\"3263\" data-end=\"3279\">अनुच्छेद 137</strong> के अंतर्गत अपने निर्णयों की पुनरावलोकन (review) की शक्ति प्राप्त है।</p>\n</li>\n<li data-start=\"3352\" data-end=\"3570\">\n<p data-start=\"3355\" data-end=\"3570\">A constitutional case or a Presidential reference must be decided by a bench of at least five judges.<br data-start=\"3456\" data-end=\"3459\" />संवैधानिक मामलों या राष्ट्रपति के संदर्भ को कम से कम पाँच न्यायाधीशों की पीठ द्वारा निर्णयित किया जाता है।</p>\n</li>\n</ol>\n<h3 data-start=\"3572\" data-end=\"3594\">Options / विकल्प</h3>\n<p data-start=\"3596\" data-end=\"3671\">A. 1 and 3 only<br data-start=\"3611\" data-end=\"3614\" />B. 1, 3 and 4 only<br data-start=\"3632\" data-end=\"3635\" />C. 2 and 4 only<br data-start=\"3650\" data-end=\"3653\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p data-start=\"115\" data-end=\"180\"><strong data-start=\"115\" data-end=\"178\">Article 141 &rarr; Binding authority of Supreme Court judgments.</strong></p>\n<p data-start=\"182\" data-end=\"301\"></p>\n<p data-start=\"182\" data-end=\"301\"><strong data-start=\"182\" data-end=\"197\">कथन 1 &ndash; सही</strong><br data-start=\"197\" data-end=\"200\" /><strong data-start=\"200\" data-end=\"299\">अनुच्छेद 141 &rarr; सर्वोच्च न्यायालय द्वारा घोषित विधि भारत के सभी न्यायालयों पर बाध्यकारी होती है।</strong></p>\n<h3 data-start=\"308\" data-end=\"339\">&nbsp;Statement 2 &ndash; Incorrect</h3>\n<p data-start=\"340\" data-end=\"505\"><strong data-start=\"340\" data-end=\"503\">Article 130 &rarr; The seat of the Supreme Court is generally in Delhi, but the Chief Justice of India can appoint another place with the approval of the President.</strong></p>\n<p data-start=\"507\" data-end=\"703\"><strong data-start=\"507\" data-end=\"522\">कथन 2 &ndash; गलत</strong><br data-start=\"522\" data-end=\"525\" /><strong data-start=\"525\" data-end=\"701\">अनुच्छेद 130 &rarr; सर्वोच्च न्यायालय का स्थान सामान्यतः दिल्ली में होता है, परंतु भारत के मुख्य न्यायाधीश राष्ट्रपति की स्वीकृति से किसी अन्य स्थान को भी निर्धारित कर सकते हैं।</strong></p>\n<h3 data-start=\"710\" data-end=\"739\">&nbsp;Statement 3 &ndash; Correct</h3>\n<p data-start=\"740\" data-end=\"820\"><strong data-start=\"740\" data-end=\"818\">Article 137 &rarr; The Supreme Court has the power to review its own judgments.</strong></p>\n<p data-start=\"822\" data-end=\"944\"><strong data-start=\"822\" data-end=\"837\">कथन 3 &ndash; सही</strong><br data-start=\"837\" data-end=\"840\" /><strong data-start=\"840\" data-end=\"942\">अनुच्छेद 137 &rarr; सर्वोच्च न्यायालय को अपने निर्णयों की पुनरावलोकन (Review) करने की शक्ति प्राप्त है।</strong></p>\n<h3 data-start=\"951\" data-end=\"980\">&nbsp;Statement 4 &ndash; Correct</h3>\n<p data-start=\"981\" data-end=\"1088\"><strong data-start=\"981\" data-end=\"1086\">Constitutional matters or Presidential references must be decided by a bench of at least five judges.</strong></p>\n<p data-start=\"1090\" data-end=\"1220\"><strong data-start=\"1090\" data-end=\"1105\">कथन 4 &ndash; सही</strong><br data-start=\"1105\" data-end=\"1108\" /><strong data-start=\"1108\" data-end=\"1218\">संवैधानिक मामलों या राष्ट्रपति के संदर्भ को कम से कम पाँच न्यायाधीशों की पीठ द्वारा निर्णयित किया जाता है।</strong></p>\n<p data-start=\"1090\" data-end=\"1220\"></p>\n<p data-start=\"1268\" data-end=\"1438\"><strong data-start=\"1268\" data-end=\"1436\">The Supreme Court is the final interpreter, guardian, and custodian of the Constitution. It exercises significant powers under Articles 129, 136, 141, 142, and 147.</strong></p>\n<p></p>\n<p data-start=\"1440\" data-end=\"1607\"><strong data-start=\"1440\" data-end=\"1605\">सर्वोच्च न्यायालय संविधान का अंतिम व्याख्याकार, संरक्षक तथा अभिरक्षक है। यह अनुच्छेद 129, 136, 141, 142 तथा 147 के अंतर्गत महत्वपूर्ण शक्तियों का प्रयोग करता है।</strong></p>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"223\" data-end=\"329\">With reference to the <strong data-start=\"245\" data-end=\"268\">Advocates Act, 1961</strong> and types of advocates, consider the following statements:</p>\n<p data-start=\"331\" data-end=\"433\"><strong data-start=\"331\" data-end=\"357\">अधिवक्ता अधिनियम, 1961</strong> तथा अधिवक्ताओं के प्रकारों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"435\" data-end=\"1150\">\n<li data-start=\"435\" data-end=\"622\">\n<p data-start=\"438\" data-end=\"622\">Only Advocates are entitled to practise law in India under the Advocates Act, 1961.<br data-start=\"521\" data-end=\"524\" />अधिवक्ता अधिनियम, 1961 के अंतर्गत केवल अधिवक्ताओं को भारत में विधि-व्यवसाय करने का अधिकार है।</p>\n</li>\n<li data-start=\"624\" data-end=\"758\">\n<p data-start=\"627\" data-end=\"758\">A Senior Advocate is designated by the President of India.<br data-start=\"685\" data-end=\"688\" />वरिष्ठ अधिवक्ता की नियुक्ति भारत के राष्ट्रपति द्वारा की जाती है।</p>\n</li>\n<li data-start=\"760\" data-end=\"937\">\n<p data-start=\"763\" data-end=\"937\">Only an Advocate-on-Record can file and act for a party in the Supreme Court.<br data-start=\"840\" data-end=\"843\" />केवल एडवोकेट-ऑन-रिकॉर्ड ही सर्वोच्च न्यायालय में पक्षकार की ओर से याचिका दायर कर सकता है।</p>\n</li>\n<li data-start=\"939\" data-end=\"1150\">\n<p data-start=\"942\" data-end=\"1150\">An advocate must have 7 years of standing and pass the AoR examination to become an Advocate-on-Record.<br data-start=\"1045\" data-end=\"1048\" />एडवोकेट-ऑन-रिकॉर्ड बनने के लिए अधिवक्ता को 7 वर्ष का अनुभव तथा AoR परीक्षा उत्तीर्ण करनी होती है।</p>\n</li>\n</ol>\n<h3 data-start=\"1152\" data-end=\"1174\">Options / विकल्प</h3>\n<p data-start=\"1176\" data-end=\"1251\">A. 1, 3 and 4 only<br data-start=\"1194\" data-end=\"1197\" />B. 1 and 2 only<br data-start=\"1212\" data-end=\"1215\" />C. 2 and 3 only<br data-start=\"1230\" data-end=\"1233\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h3 data-start=\"1312\" data-end=\"1337\">&nbsp;</h3>\n<p></p>\n<ul data-start=\"1339\" data-end=\"1738\">\n<li data-start=\"1339\" data-end=\"1429\">\n<p data-start=\"1341\" data-end=\"1429\"><strong data-start=\"1341\" data-end=\"1368\">Statement 1 &ndash; Correct&nbsp;</strong><br data-start=\"1368\" data-end=\"1371\" />Advocates Act, 1961 &rarr; Only advocates can practise law.</p>\n</li>\n<li data-start=\"1431\" data-end=\"1559\">\n<p data-start=\"1433\" data-end=\"1559\"><strong data-start=\"1433\" data-end=\"1462\">Statement 2 &ndash; Incorrect&nbsp;</strong><br data-start=\"1462\" data-end=\"1465\" />Senior Advocates are designated by&nbsp;<strong data-start=\"1502\" data-end=\"1534\">Supreme Court or High Courts</strong>, not by the President.</p>\n</li>\n<li data-start=\"1561\" data-end=\"1644\">\n<p data-start=\"1563\" data-end=\"1644\"><strong data-start=\"1563\" data-end=\"1590\">Statement 3 &ndash; Correct&nbsp;</strong><br data-start=\"1590\" data-end=\"1593\" />Only AoR can file and act in the Supreme Court.</p>\n</li>\n<li data-start=\"1646\" data-end=\"1738\">\n<p data-start=\"1648\" data-end=\"1738\"><strong data-start=\"1648\" data-end=\"1675\">Statement 4 &ndash; Correct&nbsp;</strong><br data-start=\"1675\" data-end=\"1678\" />7 years&rsquo; standing + AoR exam + 1-year training required.</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"1774\" data-end=\"1859\">With reference to the powers of the High Courts, consider the following statements:</p>\n<p data-start=\"1861\" data-end=\"1935\">उच्च न्यायालय की शक्तियों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1937\" data-end=\"2771\">\n<li data-start=\"1937\" data-end=\"2195\">\n<p data-start=\"1940\" data-end=\"2195\">Under Article 222, the President can transfer a High Court judge after consultation with the Chief Justice of India.<br data-start=\"2056\" data-end=\"2059\" />अनुच्छेद 222 के अंतर्गत राष्ट्रपति, भारत के मुख्य न्यायाधीश से परामर्श के बाद उच्च न्यायालय के न्यायाधीश का स्थानांतरण कर सकते हैं।</p>\n</li>\n<li data-start=\"2197\" data-end=\"2385\">\n<p data-start=\"2200\" data-end=\"2385\">Under Article 224, additional judges can be appointed for a maximum period of two years.<br data-start=\"2288\" data-end=\"2291\" />अनुच्छेद 224 के अंतर्गत अतिरिक्त न्यायाधीश अधिकतम दो वर्ष के लिए नियुक्त किए जा सकते हैं।</p>\n</li>\n<li data-start=\"2387\" data-end=\"2599\">\n<p data-start=\"2390\" data-end=\"2599\">Under Article 227, the High Court has superintendence over all courts including military courts.<br data-start=\"2486\" data-end=\"2489\" />अनुच्छेद 227 के अंतर्गत उच्च न्यायालय को सभी न्यायालयों सहित सैन्य न्यायालयों पर पर्यवेक्षण का अधिकार है।</p>\n</li>\n<li data-start=\"2601\" data-end=\"2771\">\n<p data-start=\"2604\" data-end=\"2771\">Under Article 235, control over subordinate courts vests in the High Court.<br data-start=\"2679\" data-end=\"2682\" />अनुच्छेद 235 के अंतर्गत अधीनस्थ न्यायालयों पर नियंत्रण उच्च न्यायालय के पास होता है।</p>\n</li>\n</ol>\n<h3 data-start=\"2773\" data-end=\"2795\">Options / विकल्प</h3>\n<p data-start=\"2797\" data-end=\"2872\">A. 1, 2 and 4 only<br data-start=\"2815\" data-end=\"2818\" />B. 1 and 3 only<br data-start=\"2833\" data-end=\"2836\" />C. 2 and 4 only<br data-start=\"2851\" data-end=\"2854\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"2909\" data-end=\"2931\"><strong data-start=\"2909\" data-end=\"2931\">A. 1, 2 and 4 only</strong></p>\n<h3 data-start=\"2933\" data-end=\"2958\">✅ Solution / समाधान</h3>\n<p></p>\n<ul data-start=\"2960\" data-end=\"3199\">\n<li data-start=\"2960\" data-end=\"3005\">\n<p data-start=\"2962\" data-end=\"3005\"><strong data-start=\"2962\" data-end=\"2989\">Statement 1 &ndash; Correct </strong>&nbsp;(Article 222)</p>\n</li>\n<li data-start=\"3006\" data-end=\"3051\">\n<p data-start=\"3008\" data-end=\"3051\"><strong data-start=\"3008\" data-end=\"3035\">Statement 2 &ndash; Correct </strong>&nbsp;(Max 2 years)</p>\n</li>\n<li data-start=\"3052\" data-end=\"3119\">\n<p data-start=\"3054\" data-end=\"3119\"><strong data-start=\"3054\" data-end=\"3083\">Statement 3 &ndash; Incorrect&nbsp;</strong><br data-start=\"3083\" data-end=\"3086\" />Military courts are excluded.</p>\n</li>\n<li data-start=\"3120\" data-end=\"3199\">\n<p data-start=\"3122\" data-end=\"3199\"><strong data-start=\"3122\" data-end=\"3149\">Statement 4 &ndash; Correct </strong>&nbsp;(Article 235 &rarr; Control over subordinate courts)</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"3235\" data-end=\"3332\">With reference to Subordinate Courts under Articles 233&ndash;237, consider the following statements:</p>\n<p data-start=\"3334\" data-end=\"3429\">अनुच्छेद 233&ndash;237 के अंतर्गत अधीनस्थ न्यायालयों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"3431\" data-end=\"4125\">\n<li data-start=\"3431\" data-end=\"3610\">\n<p data-start=\"3434\" data-end=\"3610\">District Judges are appointed by the Governor in consultation with the High Court.<br data-start=\"3516\" data-end=\"3519\" />जिला न्यायाधीश की नियुक्ति राज्यपाल द्वारा उच्च न्यायालय से परामर्श के बाद की जाती है।</p>\n</li>\n<li data-start=\"3612\" data-end=\"3803\">\n<p data-start=\"3615\" data-end=\"3803\">A person in service of the Union or State government is eligible to be appointed as District Judge.<br data-start=\"3714\" data-end=\"3717\" />संघ या राज्य सरकार की सेवा में कार्यरत व्यक्ति जिला न्यायाधीश नियुक्त हो सकता है।</p>\n</li>\n<li data-start=\"3805\" data-end=\"3979\">\n<p data-start=\"3808\" data-end=\"3979\">The Sessions Judge can award capital punishment subject to High Court confirmation.<br data-start=\"3891\" data-end=\"3894\" />सत्र न्यायाधीश मृत्युदंड दे सकता है, जो उच्च न्यायालय की पुष्टि के अधीन होता है।</p>\n</li>\n<li data-start=\"3981\" data-end=\"4125\">\n<p data-start=\"3984\" data-end=\"4125\">Chief Judicial Magistrate can award imprisonment up to seven years.<br data-start=\"4051\" data-end=\"4054\" />मुख्य न्यायिक दंडाधिकारी अधिकतम सात वर्ष तक का कारावास दे सकता है।</p>\n</li>\n</ol>\n<h3 data-start=\"4127\" data-end=\"4149\">Options / विकल्प</h3>\n<p data-start=\"4151\" data-end=\"4226\">A. 1, 3 and 4 only<br data-start=\"4169\" data-end=\"4172\" />B. 1 and 2 only<br data-start=\"4187\" data-end=\"4190\" />C. 2 and 4 only<br data-start=\"4205\" data-end=\"4208\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h3 data-start=\"4287\" data-end=\"4312\">&nbsp;</h3>\n<p></p>\n<ul data-start=\"4314\" data-end=\"4500\">\n<li data-start=\"4314\" data-end=\"4359\">\n<p data-start=\"4316\" data-end=\"4359\"><strong data-start=\"4316\" data-end=\"4343\">Statement 1 &ndash; Correct </strong>&nbsp;(Article 233)</p>\n</li>\n<li data-start=\"4360\" data-end=\"4436\">\n<p data-start=\"4362\" data-end=\"4436\"><strong data-start=\"4362\" data-end=\"4391\">Statement 2 &ndash; Incorrect&nbsp;</strong><br data-start=\"4391\" data-end=\"4394\" />Must NOT be in service of Union/State.</p>\n</li>\n<li data-start=\"4437\" data-end=\"4468\">\n<p data-start=\"4439\" data-end=\"4468\"><strong data-start=\"4439\" data-end=\"4466\">Statement 3 &ndash; Correct&nbsp;</strong></p>\n</li>\n<li data-start=\"4469\" data-end=\"4500\">\n<p data-start=\"4471\" data-end=\"4500\"><strong data-start=\"4471\" data-end=\"4498\">Statement 4 &ndash; Correct&nbsp;</strong></p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"4536\" data-end=\"4616\">With reference to ADR mechanisms and NALSA, consider the following statements:</p>\n<p data-start=\"4618\" data-end=\"4704\">वैकल्पिक विवाद निपटान (ADR) तथा NALSA के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"4706\" data-end=\"5360\">\n<li data-start=\"4706\" data-end=\"4904\">\n<p data-start=\"4709\" data-end=\"4904\">Arbitration results in a binding decision under the Arbitration and Conciliation Act, 1996.<br data-start=\"4800\" data-end=\"4803\" />मध्यस्थता (Arbitration) का निर्णय मध्यस्थता एवं सुलह अधिनियम, 1996 के अंतर्गत बाध्यकारी होता है।</p>\n</li>\n<li data-start=\"4906\" data-end=\"5031\">\n<p data-start=\"4909\" data-end=\"5031\">Mediation results in a binding judicial decision.<br data-start=\"4958\" data-end=\"4961\" />मध्यस्थता (Mediation) का परिणाम बाध्यकारी न्यायिक निर्णय होता है।</p>\n</li>\n<li data-start=\"5033\" data-end=\"5180\">\n<p data-start=\"5036\" data-end=\"5180\">NALSA was established under the Legal Services Authorities Act, 1987.<br data-start=\"5105\" data-end=\"5108\" />NALSA की स्थापना विधिक सेवा प्राधिकरण अधिनियम, 1987 के अंतर्गत हुई।</p>\n</li>\n<li data-start=\"5182\" data-end=\"5360\">\n<p data-start=\"5185\" data-end=\"5360\">Article 39A provides for free legal aid to the poor and weaker sections.<br data-start=\"5257\" data-end=\"5260\" />अनुच्छेद 39A निर्धनों और कमजोर वर्गों को निःशुल्क विधिक सहायता प्रदान करने का प्रावधान करता है।</p>\n</li>\n</ol>\n<h3 data-start=\"5362\" data-end=\"5384\">Options / विकल्प</h3>\n<p data-start=\"5386\" data-end=\"5461\">A. 1, 3 and 4 only<br data-start=\"5404\" data-end=\"5407\" />B. 1 and 2 only<br data-start=\"5422\" data-end=\"5425\" />C. 2 and 3 only<br data-start=\"5440\" data-end=\"5443\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"5498\" data-end=\"5520\"><strong data-start=\"5498\" data-end=\"5520\">A. 1, 3 and 4 only</strong></p>\n<h3 data-start=\"5522\" data-end=\"5547\">✅ Solution / समाधान</h3>\n<p></p>\n<ul data-start=\"5549\" data-end=\"5752\">\n<li data-start=\"5549\" data-end=\"5596\">\n<p data-start=\"5551\" data-end=\"5596\"><strong data-start=\"5551\" data-end=\"5578\">Statement 1 &ndash; Correct </strong>&nbsp;(Binding award)</p>\n</li>\n<li data-start=\"5597\" data-end=\"5657\">\n<p data-start=\"5599\" data-end=\"5657\"><strong data-start=\"5599\" data-end=\"5628\">Statement 2 &ndash; Incorrect </strong>&nbsp;(Mediation is non-binding)</p>\n</li>\n<li data-start=\"5658\" data-end=\"5689\">\n<p data-start=\"5660\" data-end=\"5689\"><strong data-start=\"5660\" data-end=\"5687\">Statement 3 &ndash; Correct&nbsp;</strong></p>\n</li>\n<li data-start=\"5690\" data-end=\"5752\">\n<p data-start=\"5692\" data-end=\"5752\"><strong data-start=\"5692\" data-end=\"5719\">Statement 4 &ndash; Correct </strong>&nbsp;(Article 39A &rarr; Free legal aid)</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"269\" data-end=\"340\">With reference to <strong data-start=\"287\" data-end=\"302\">Lok Adalats</strong>, consider the following statements:</p>\n<p data-start=\"342\" data-end=\"400\">लोक अदालत के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"402\" data-end=\"1064\">\n<li data-start=\"402\" data-end=\"566\">\n<p data-start=\"405\" data-end=\"566\">Lok Adalats are established under the Legal Services Authorities Act, 1987.<br data-start=\"480\" data-end=\"483\" />लोक अदालतों की स्थापना विधिक सेवा प्राधिकरण अधिनियम, 1987 के अंतर्गत की गई है।</p>\n</li>\n<li data-start=\"568\" data-end=\"758\">\n<p data-start=\"571\" data-end=\"758\">The award of a Permanent Lok Adalat is final and binding, and no appeal lies against it.<br data-start=\"659\" data-end=\"662\" />स्थायी लोक अदालत का निर्णय अंतिम एवं बाध्यकारी होता है तथा उसके विरुद्ध कोई अपील नहीं होती।</p>\n</li>\n<li data-start=\"760\" data-end=\"934\">\n<p data-start=\"763\" data-end=\"934\">Permanent Lok Adalats have jurisdiction over non-compoundable criminal offences.<br data-start=\"843\" data-end=\"846\" />स्थायी लोक अदालतों को गैर-समझौता योग्य आपराधिक मामलों पर अधिकार-क्षेत्र प्राप्त है।</p>\n</li>\n<li data-start=\"936\" data-end=\"1064\">\n<p data-start=\"939\" data-end=\"1064\">The first Lok Adalat in India was held in Gujarat in 1982.<br data-start=\"997\" data-end=\"1000\" />भारत की पहली लोक अदालत 1982 में गुजरात में आयोजित की गई थी।</p>\n</li>\n</ol>\n<h3 data-start=\"1066\" data-end=\"1088\">Options / विकल्प</h3>\n<p data-start=\"1089\" data-end=\"1164\">A. 1, 2 and 4 only<br data-start=\"1107\" data-end=\"1110\" />B. 1 and 3 only<br data-start=\"1125\" data-end=\"1128\" />C. 2 and 3 only<br data-start=\"1143\" data-end=\"1146\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<ul data-start=\"1251\" data-end=\"1429\">\n<li data-start=\"1315\" data-end=\"1397\">\n<p data-start=\"1317\" data-end=\"1397\"><strong data-start=\"1317\" data-end=\"1346\">Statement 3 &ndash; Incorrect </strong>&nbsp;(No jurisdiction over non-compoundable offences</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"1464\" data-end=\"1539\">With reference to <strong data-start=\"1482\" data-end=\"1501\">Gram Nyayalayas</strong>, consider the following statements:</p>\n<p data-start=\"1541\" data-end=\"1606\">ग्राम न्यायालयों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1608\" data-end=\"2332\">\n<li data-start=\"1608\" data-end=\"1920\">\n<p data-start=\"1611\" data-end=\"1920\">The presiding officer (Nyayadhikari) is a Judicial Magistrate of the first class appointed by the State Government in consultation with the High Court.<br data-start=\"1762\" data-end=\"1765\" />ग्राम न्यायालय का अध्यक्ष (न्यायाधिकारी) प्रथम श्रेणी का न्यायिक दंडाधिकारी होता है, जिसकी नियुक्ति राज्य सरकार उच्च न्यायालय से परामर्श करके करती है।</p>\n</li>\n<li data-start=\"1922\" data-end=\"2042\">\n<p data-start=\"1925\" data-end=\"2042\">Gram Nyayalayas are bound by the Indian Evidence Act.<br data-start=\"1978\" data-end=\"1981\" />ग्राम न्यायालय भारतीय साक्ष्य अधिनियम से बाध्य होते हैं।</p>\n</li>\n<li data-start=\"2044\" data-end=\"2200\">\n<p data-start=\"2047\" data-end=\"2200\">Appeals in criminal cases from Gram Nyayalayas lie before the Sessions Court.<br data-start=\"2124\" data-end=\"2127\" />ग्राम न्यायालय के आपराधिक मामलों में अपील सत्र न्यायालय में जाती है।</p>\n</li>\n<li data-start=\"2202\" data-end=\"2332\">\n<p data-start=\"2205\" data-end=\"2332\">Appeals in civil cases lie before the District Court.<br data-start=\"2258\" data-end=\"2261\" />ग्राम न्यायालय के सिविल मामलों में अपील जिला न्यायालय में जाती है।</p>\n</li>\n</ol>\n<h3 data-start=\"2334\" data-end=\"2356\">Options / विकल्प</h3>\n<p data-start=\"2357\" data-end=\"2432\">A. 1, 3 and 4 only<br data-start=\"2375\" data-end=\"2378\" />B. 1 and 2 only<br data-start=\"2393\" data-end=\"2396\" />C. 2 and 4 only<br data-start=\"2411\" data-end=\"2414\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"2469\" data-end=\"2491\"></p>\n<ul data-start=\"2519\" data-end=\"2703\">\n<li data-start=\"2551\" data-end=\"2639\">\n<p data-start=\"2553\" data-end=\"2639\"><strong data-start=\"2553\" data-end=\"2582\">Statement 2 &ndash; Incorrect </strong>(Guided by natural justice, not bound by Evidence Act)</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"2738\" data-end=\"2816\">With reference to <strong data-start=\"2756\" data-end=\"2778\">Tribunals in India</strong>, consider the following statements:</p>\n<p data-start=\"2818\" data-end=\"2889\">भारत में न्यायाधिकरणों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2891\" data-end=\"3622\">\n<li data-start=\"2891\" data-end=\"3092\">\n<p data-start=\"2894\" data-end=\"3092\">Article 323A provides for Administrative Tribunals and can be established only by Parliament.<br data-start=\"2987\" data-end=\"2990\" />अनुच्छेद 323A प्रशासनिक न्यायाधिकरणों का प्रावधान करता है और इन्हें केवल संसद स्थापित कर सकती है।</p>\n</li>\n<li data-start=\"3094\" data-end=\"3277\">\n<p data-start=\"3097\" data-end=\"3277\">Article 323B allows both Parliament and State Legislatures to establish tribunals.<br data-start=\"3179\" data-end=\"3182\" />अनुच्छेद 323B संसद और राज्य विधानमंडल दोनों को न्यायाधिकरण स्थापित करने की अनुमति देता है।</p>\n</li>\n<li data-start=\"3279\" data-end=\"3391\">\n<p data-start=\"3282\" data-end=\"3391\">Tribunals are bound by the Civil Procedure Code.<br data-start=\"3330\" data-end=\"3333\" />न्यायाधिकरण सिविल प्रक्रिया संहिता से बाध्य होते हैं।</p>\n</li>\n<li data-start=\"3393\" data-end=\"3622\">\n<p data-start=\"3396\" data-end=\"3622\">After the L. Chandra Kumar case (1997), decisions of tribunals are subject to judicial review by High Courts.<br data-start=\"3505\" data-end=\"3508\" />एल. चंद्र कुमार मामला (1997) के बाद न्यायाधिकरणों के निर्णय उच्च न्यायालय द्वारा न्यायिक समीक्षा के अधीन हैं।</p>\n</li>\n</ol>\n<h3 data-start=\"3624\" data-end=\"3646\">Options / विकल्प</h3>\n<p data-start=\"3647\" data-end=\"3722\">A. 1, 2 and 4 only<br data-start=\"3665\" data-end=\"3668\" />B. 1 and 3 only<br data-start=\"3683\" data-end=\"3686\" />C. 2 and 3 only<br data-start=\"3701\" data-end=\"3704\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p></p>\n<ul data-start=\"3809\" data-end=\"3977\">\n<li data-start=\"3873\" data-end=\"3945\">\n<p data-start=\"3875\" data-end=\"3945\"><strong data-start=\"3875\" data-end=\"3904\">Statement 3 &ndash; Incorrect </strong>&nbsp;(Follow principles of natural justice</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"4012\" data-end=\"4095\">With reference to <strong data-start=\"4030\" data-end=\"4057\">Judicial Review and PIL</strong>, consider the following statements:</p>\n<p data-start=\"4097\" data-end=\"4184\">न्यायिक समीक्षा एवं जनहित याचिका (PIL) के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"4186\" data-end=\"4793\">\n<li data-start=\"4186\" data-end=\"4329\">\n<p data-start=\"4189\" data-end=\"4329\">The term &ldquo;Judicial Review&rdquo; is explicitly mentioned in the Constitution.<br data-start=\"4260\" data-end=\"4263\" />&ldquo;न्यायिक समीक्षा&rdquo; शब्द संविधान में स्पष्ट रूप से उल्लेखित है।</p>\n</li>\n<li data-start=\"4331\" data-end=\"4480\">\n<p data-start=\"4334\" data-end=\"4480\">Judicial Review is considered a part of the Basic Structure of the Constitution.<br data-start=\"4414\" data-end=\"4417\" />न्यायिक समीक्षा संविधान की मूल संरचना का भाग मानी जाती है।</p>\n</li>\n<li data-start=\"4482\" data-end=\"4615\">\n<p data-start=\"4485\" data-end=\"4615\">PIL can be filed under Article 32 and Article 226.<br data-start=\"4535\" data-end=\"4538\" />जनहित याचिका अनुच्छेद 32 तथा अनुच्छेद 226 के अंतर्गत दायर की जा सकती है।</p>\n</li>\n<li data-start=\"4617\" data-end=\"4793\">\n<p data-start=\"4620\" data-end=\"4793\">Private disputes such as landlord-tenant disputes are generally entertained as PILs.<br data-start=\"4704\" data-end=\"4707\" />मकान मालिक-भाड़ेदार विवाद सामान्यतः जनहित याचिका के रूप में स्वीकार किए जाते हैं।</p>\n</li>\n</ol>\n<h3 data-start=\"4795\" data-end=\"4817\">Options / विकल्प</h3>\n<p data-start=\"4818\" data-end=\"4893\">A. 2 and 3 only<br data-start=\"4833\" data-end=\"4836\" />B. 1 and 4 only<br data-start=\"4851\" data-end=\"4854\" />C. 2, 3 and 4 only<br data-start=\"4872\" data-end=\"4875\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"4930\" data-end=\"4949\"><strong data-start=\"4930\" data-end=\"4949\">A. 2 and 3 only</strong></p>\n<p></p>\n<ul data-start=\"4977\" data-end=\"5135\">\n<li data-start=\"4977\" data-end=\"5037\">\n<p data-start=\"4979\" data-end=\"5037\"><strong data-start=\"4979\" data-end=\"5008\">Statement 1 &ndash; Incorrect (</strong>Not explicitly mentioned)</p>\n</li>\n<li data-start=\"5038\" data-end=\"5069\">\n<p data-start=\"5040\" data-end=\"5069\"><strong data-start=\"5040\" data-end=\"5067\">Statement 2 &ndash; Correct ✅</strong></p>\n</li>\n<li data-start=\"5070\" data-end=\"5101\">\n<p data-start=\"5072\" data-end=\"5101\"><strong data-start=\"5072\" data-end=\"5099\">Statement 3 &ndash; Correct ✅</strong></p>\n</li>\n<li data-start=\"5102\" data-end=\"5135\">\n<p data-start=\"5104\" data-end=\"5135\"><strong data-start=\"5104\" data-end=\"5133\">Statement 4 &ndash; Incorrect&nbsp;</strong></p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"5170\" data-end=\"5272\">With reference to the <strong data-start=\"5192\" data-end=\"5234\">Indian, American and British Judiciary</strong>, consider the following statements:</p>\n<p data-start=\"5274\" data-end=\"5362\">भारतीय, अमेरिकी एवं ब्रिटिश न्यायपालिका के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"5364\" data-end=\"6011\">\n<li data-start=\"5364\" data-end=\"5561\">\n<p data-start=\"5367\" data-end=\"5561\">The Indian Judiciary follows a single integrated system with the Supreme Court at the top.<br data-start=\"5457\" data-end=\"5460\" />भारतीय न्यायपालिका एकल एवं एकीकृत प्रणाली का पालन करती है, जिसमें सर्वोच्च न्यायालय शीर्ष पर है।</p>\n</li>\n<li data-start=\"5563\" data-end=\"5690\">\n<p data-start=\"5566\" data-end=\"5690\">The American Judiciary follows a double system of courts.<br data-start=\"5623\" data-end=\"5626\" />अमेरिकी न्यायपालिका दोहरी न्यायालय प्रणाली का पालन करती है।</p>\n</li>\n<li data-start=\"5692\" data-end=\"5836\">\n<p data-start=\"5695\" data-end=\"5836\">The British Judiciary has advisory jurisdiction similar to India.<br data-start=\"5760\" data-end=\"5763\" />ब्रिटिश न्यायपालिका के पास भारत के समान परामर्शीय अधिकार-क्षेत्र है।</p>\n</li>\n<li data-start=\"5838\" data-end=\"6011\">\n<p data-start=\"5841\" data-end=\"6011\">Under the British system, Parliament is supreme and can override judicial decisions.<br data-start=\"5925\" data-end=\"5928\" />ब्रिटिश प्रणाली में संसद सर्वोच्च है और न्यायिक निर्णयों को निरस्त कर सकती है।</p>\n</li>\n</ol>\n<h3 data-start=\"6013\" data-end=\"6035\">Options / विकल्प</h3>\n<p data-start=\"6036\" data-end=\"6111\">A. 1, 2 and 4 only<br data-start=\"6054\" data-end=\"6057\" />B. 1 and 3 only<br data-start=\"6072\" data-end=\"6075\" />C. 2 and 3 only<br data-start=\"6090\" data-end=\"6093\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"6148\" data-end=\"6170\"><strong data-start=\"6148\" data-end=\"6170\">A. 1, 2 and 4 only</strong></p>\n<p></p>\n<ul data-start=\"6198\" data-end=\"6360\">\n<li data-start=\"6262\" data-end=\"6328\">\n<p data-start=\"6264\" data-end=\"6328\"><strong data-start=\"6264\" data-end=\"6293\">Statement 3 &ndash; Incorrect </strong>&nbsp;(No advisory jurisdiction in UK)</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"231\" data-end=\"290\">Match the following Articles with their correct subjects:</p>\n<p data-start=\"292\" data-end=\"343\">निम्नलिखित अनुच्छेदों को उनके सही विषयों से मिलाइए:</p>\n<h3 data-start=\"345\" data-end=\"387\">List I (Article) / सूची I (अनुच्छेद)</h3>\n<p data-start=\"388\" data-end=\"455\">A. Article 124<br data-start=\"402\" data-end=\"405\" />B. Article 131<br data-start=\"419\" data-end=\"422\" />C. Article 136<br data-start=\"436\" data-end=\"439\" />D. Article 142</p>\n<h3 data-start=\"457\" data-end=\"497\">List II (Subject) / सूची II (विषय)</h3>\n<ol data-start=\"498\" data-end=\"816\">\n<li data-start=\"498\" data-end=\"552\">\n<p data-start=\"501\" data-end=\"552\">Special Leave to Appeal<br data-start=\"524\" data-end=\"527\" />विशेष अनुमति से अपील</p>\n</li>\n<li data-start=\"554\" data-end=\"654\">\n<p data-start=\"557\" data-end=\"654\">Original Jurisdiction in Centre&ndash;State disputes<br data-start=\"603\" data-end=\"606\" />केंद्र&ndash;राज्य विवादों में मूल अधिकार-क्षेत्र</p>\n</li>\n<li data-start=\"656\" data-end=\"750\">\n<p data-start=\"659\" data-end=\"750\">Establishment and Constitution of Supreme Court<br data-start=\"706\" data-end=\"709\" />सर्वोच्च न्यायालय की स्थापना एवं गठन</p>\n</li>\n<li data-start=\"752\" data-end=\"816\">\n<p data-start=\"755\" data-end=\"816\">Power to do Complete Justice<br data-start=\"783\" data-end=\"786\" />पूर्ण न्याय करने की शक्ति</p>\n</li>\n</ol>\n<h3 data-start=\"818\" data-end=\"840\">Options / विकल्प</h3>\n<p data-start=\"842\" data-end=\"937\">A. A-3, B-2, C-1, D-4<br data-start=\"863\" data-end=\"866\" />B. A-2, B-3, C-4, D-1<br data-start=\"887\" data-end=\"890\" />C. A-3, B-1, C-2, D-4<br data-start=\"911\" data-end=\"914\" />D. A-4, B-2, C-1, D-3</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h3 data-start=\"1011\" data-end=\"1036\">&nbsp;</h3>\n<p></p>\n<ul data-start=\"1038\" data-end=\"1429\">\n<li data-start=\"1038\" data-end=\"1167\">\n<p data-start=\"1040\" data-end=\"1167\"><strong data-start=\"1040\" data-end=\"1055\">Article 124</strong>&nbsp;&rarr; Establishment and Constitution of Supreme Court<br data-start=\"1105\" data-end=\"1108\" /><strong data-start=\"1110\" data-end=\"1126\">अनुच्छेद 124</strong>&nbsp;&rarr; सर्वोच्च न्यायालय की स्थापना एवं गठन</p>\n</li>\n<li data-start=\"1169\" data-end=\"1254\">\n<p data-start=\"1171\" data-end=\"1254\"><strong data-start=\"1171\" data-end=\"1186\">Article 131</strong>&nbsp;&rarr; Original Jurisdiction<br data-start=\"1210\" data-end=\"1213\" /><strong data-start=\"1215\" data-end=\"1231\">अनुच्छेद 131</strong>&nbsp;&rarr; मूल अधिकार-क्षेत्र</p>\n</li>\n<li data-start=\"1256\" data-end=\"1345\">\n<p data-start=\"1258\" data-end=\"1345\"><strong data-start=\"1258\" data-end=\"1273\">Article 136</strong>&nbsp;&rarr; Special Leave to Appeal<br data-start=\"1299\" data-end=\"1302\" /><strong data-start=\"1304\" data-end=\"1320\">अनुच्छेद 136</strong>&nbsp;&rarr; विशेष अनुमति से अपील</p>\n</li>\n<li data-start=\"1347\" data-end=\"1429\">\n<p data-start=\"1349\" data-end=\"1429\"><strong data-start=\"1349\" data-end=\"1364\">Article 142</strong>&nbsp;&rarr; Complete Justice<br data-start=\"1383\" data-end=\"1386\" /><strong data-start=\"1388\" data-end=\"1404\">अनुच्छेद 142</strong>&nbsp;&rarr; पूर्ण न्याय की शक्ति</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"1514\" data-end=\"1575\">Match the following Articles with their correct provisions:</p>\n<p data-start=\"1577\" data-end=\"1632\">निम्नलिखित अनुच्छेदों को उनके सही प्रावधानों से मिलाइए:</p>\n<h3 data-start=\"1634\" data-end=\"1676\">List I (Article) / सूची I (अनुच्छेद)</h3>\n<p data-start=\"1677\" data-end=\"1744\">A. Article 217<br data-start=\"1691\" data-end=\"1694\" />B. Article 226<br data-start=\"1708\" data-end=\"1711\" />C. Article 235<br data-start=\"1725\" data-end=\"1728\" />D. Article 231</p>\n<h3 data-start=\"1746\" data-end=\"1792\">List II (Provision) / सूची II (प्रावधान)</h3>\n<ol data-start=\"1794\" data-end=\"2202\">\n<li data-start=\"1794\" data-end=\"1866\">\n<p data-start=\"1797\" data-end=\"1866\">Control over Subordinate Courts<br data-start=\"1828\" data-end=\"1831\" />अधीनस्थ न्यायालयों पर नियंत्रण</p>\n</li>\n<li data-start=\"1868\" data-end=\"1980\">\n<p data-start=\"1871\" data-end=\"1980\">Establishment of Common High Court for two or more States<br data-start=\"1928\" data-end=\"1931\" />दो या अधिक राज्यों के लिए साझा उच्च न्यायालय</p>\n</li>\n<li data-start=\"1982\" data-end=\"2065\">\n<p data-start=\"1985\" data-end=\"2065\">Appointment of High Court Judges<br data-start=\"2017\" data-end=\"2020\" />उच्च न्यायालय के न्यायाधीशों की नियुक्ति</p>\n</li>\n<li data-start=\"2067\" data-end=\"2202\">\n<p data-start=\"2070\" data-end=\"2202\">Power to issue writs for Fundamental Rights and other purposes<br data-start=\"2132\" data-end=\"2135\" />मौलिक अधिकारों एवं अन्य उद्देश्यों हेतु रिट जारी करने की शक्ति</p>\n</li>\n</ol>\n<h3 data-start=\"2204\" data-end=\"2226\">Options / विकल्प</h3>\n<p data-start=\"2228\" data-end=\"2323\">A. A-3, B-4, C-1, D-2<br data-start=\"2249\" data-end=\"2252\" />B. A-4, B-3, C-2, D-1<br data-start=\"2273\" data-end=\"2276\" />C. A-3, B-1, C-4, D-2<br data-start=\"2297\" data-end=\"2300\" />D. A-2, B-4, C-1, D-3</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h3 data-start=\"2397\" data-end=\"2422\">&nbsp;</h3>\n<p></p>\n<ul data-start=\"2424\" data-end=\"2813\">\n<li data-start=\"2424\" data-end=\"2534\">\n<p data-start=\"2426\" data-end=\"2534\"><strong data-start=\"2426\" data-end=\"2441\">Article 217</strong>&nbsp;&rarr; Appointment of HC Judges<br data-start=\"2468\" data-end=\"2471\" /><strong data-start=\"2473\" data-end=\"2489\">अनुच्छेद 217</strong>&nbsp;&rarr; उच्च न्यायालय के न्यायाधीशों की नियुक्ति</p>\n</li>\n<li data-start=\"2536\" data-end=\"2621\">\n<p data-start=\"2538\" data-end=\"2621\"><strong data-start=\"2538\" data-end=\"2553\">Article 226</strong>&nbsp;&rarr; Writ Jurisdiction<br data-start=\"2573\" data-end=\"2576\" /><strong data-start=\"2578\" data-end=\"2594\">अनुच्छेद 226</strong>&nbsp;&rarr; रिट जारी करने की शक्ति</p>\n</li>\n<li data-start=\"2623\" data-end=\"2730\">\n<p data-start=\"2625\" data-end=\"2730\"><strong data-start=\"2625\" data-end=\"2640\">Article 235</strong>&nbsp;&rarr; Control over Subordinate Courts<br data-start=\"2674\" data-end=\"2677\" /><strong data-start=\"2679\" data-end=\"2695\">अनुच्छेद 235</strong>&nbsp;&rarr; अधीनस्थ न्यायालयों पर नियंत्रण</p>\n</li>\n<li data-start=\"2732\" data-end=\"2813\">\n<p data-start=\"2734\" data-end=\"2813\"><strong data-start=\"2734\" data-end=\"2749\">Article 231</strong>&nbsp;&rarr; Common High Court<br data-start=\"2769\" data-end=\"2772\" /><strong data-start=\"2774\" data-end=\"2790\">अनुच्छेद 231</strong>&nbsp;&rarr; साझा उच्च न्यायालय</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  },
+  {
+    "question": "<p data-start=\"2897\" data-end=\"2956\">Match the following Articles with their correct subjects:</p>\n<p data-start=\"2958\" data-end=\"3009\">निम्नलिखित अनुच्छेदों को उनके सही विषयों से मिलाइए:</p>\n<h3 data-start=\"3011\" data-end=\"3053\">List I (Article) / सूची I (अनुच्छेद)</h3>\n<p data-start=\"3054\" data-end=\"3120\">A. Article 32<br data-start=\"3067\" data-end=\"3070\" />B. Article 50<br data-start=\"3083\" data-end=\"3086\" />C. Article 323A<br data-start=\"3101\" data-end=\"3104\" />D. Article 141</p>\n<h3 data-start=\"3122\" data-end=\"3162\">List II (Subject) / सूची II (विषय)</h3>\n<ol data-start=\"3164\" data-end=\"3507\">\n<li data-start=\"3164\" data-end=\"3220\">\n<p data-start=\"3167\" data-end=\"3220\">Administrative Tribunals<br data-start=\"3191\" data-end=\"3194\" />प्रशासनिक न्यायाधिकरण</p>\n</li>\n<li data-start=\"3222\" data-end=\"3310\">\n<p data-start=\"3225\" data-end=\"3310\">Separation of Judiciary from Executive<br data-start=\"3263\" data-end=\"3266\" />न्यायपालिका को कार्यपालिका से पृथक करना</p>\n</li>\n<li data-start=\"3312\" data-end=\"3437\">\n<p data-start=\"3315\" data-end=\"3437\">Law declared by Supreme Court binding on all courts<br data-start=\"3366\" data-end=\"3369\" />सर्वोच्च न्यायालय द्वारा घोषित विधि सभी न्यायालयों पर बाध्यकारी</p>\n</li>\n<li data-start=\"3439\" data-end=\"3507\">\n<p data-start=\"3442\" data-end=\"3507\">Right to Constitutional Remedies<br data-start=\"3474\" data-end=\"3477\" />संवैधानिक उपचार का अधिकार</p>\n</li>\n</ol>\n<h3 data-start=\"3509\" data-end=\"3531\">Options / विकल्प</h3>\n<p data-start=\"3533\" data-end=\"3628\">A. A-4, B-2, C-1, D-3<br data-start=\"3554\" data-end=\"3557\" />B. A-2, B-4, C-3, D-1<br data-start=\"3578\" data-end=\"3581\" />C. A-4, B-1, C-2, D-3<br data-start=\"3602\" data-end=\"3605\" />D. A-3, B-2, C-4, D-1</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<h3 data-start=\"3702\" data-end=\"3727\">&nbsp;</h3>\n<p></p>\n<ul data-start=\"3729\" data-end=\"4179\">\n<li data-start=\"3729\" data-end=\"3830\">\n<p data-start=\"3731\" data-end=\"3830\"><strong data-start=\"3731\" data-end=\"3745\">Article 32</strong>&nbsp;&rarr; Right to Constitutional Remedies<br data-start=\"3780\" data-end=\"3783\" /><strong data-start=\"3785\" data-end=\"3800\">अनुच्छेद 32</strong>&nbsp;&rarr; संवैधानिक उपचार का अधिकार</p>\n</li>\n<li data-start=\"3832\" data-end=\"3953\">\n<p data-start=\"3834\" data-end=\"3953\"><strong data-start=\"3834\" data-end=\"3848\">Article 50</strong>&nbsp;&rarr; Separation of Judiciary from Executive<br data-start=\"3889\" data-end=\"3892\" /><strong data-start=\"3894\" data-end=\"3909\">अनुच्छेद 50</strong>&nbsp;&rarr; न्यायपालिका को कार्यपालिका से पृथक करना</p>\n</li>\n<li data-start=\"3955\" data-end=\"4048\">\n<p data-start=\"3957\" data-end=\"4048\"><strong data-start=\"3957\" data-end=\"3973\">Article 323A</strong>&nbsp;&rarr; Administrative Tribunals<br data-start=\"4000\" data-end=\"4003\" /><strong data-start=\"4005\" data-end=\"4022\">अनुच्छेद 323A</strong>&nbsp;&rarr; प्रशासनिक न्यायाधिकरण</p>\n</li>\n<li data-start=\"4050\" data-end=\"4179\">\n<p data-start=\"4052\" data-end=\"4179\"><strong data-start=\"4052\" data-end=\"4067\">Article 141</strong>&nbsp;&rarr; Binding Nature of SC Judgments<br data-start=\"4100\" data-end=\"4103\" /><strong data-start=\"4105\" data-end=\"4121\">अनुच्छेद 141</strong>&nbsp;&rarr; सर्वोच्च न्यायालय की विधि सभी न्यायालयों पर बाध्यकारी</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "THE INDIAN JUDICIAL SYSTEM"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

@@ -33,7 +33,8 @@ export function BecauseYouWatchedRail({
     <Rail
       title={
         isNetflix ? (
-          <span className="border-l-4 border-[#E50914] pl-2.5 inline-block text-white">
+          <span className="flex items-center gap-2.5 text-white">
+            <span className="w-1.5 h-6 bg-[#E50914] rounded-full inline-block shadow-[0_0_12px_#E50914]" />
             Because you watched {watchedTitle}
           </span>
         ) : (

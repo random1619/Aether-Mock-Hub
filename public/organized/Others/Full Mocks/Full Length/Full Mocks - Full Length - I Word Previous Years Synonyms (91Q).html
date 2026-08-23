@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRI Mock Hub — Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+    --tan:#e9e1cf;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px 40px;}
+
+  /* ---------- HEADER (start screen only) ---------- */
+  header{
+    text-align:center;
+    padding:28px 16px 20px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 14px;letter-spacing:-0.01em;
+  }
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    background:#29a9eb;color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 20px;border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #topicLine{
+    margin-top:14px;font-family:'Fraunces',serif;font-weight:700;font-size:15px;
+    color:var(--accent);background:var(--card);display:inline-block;
+    padding:6px 18px;border:1px solid var(--rule);border-radius:20px;
+  }
+
+  /* ---------- START SCREEN ---------- */
+  .divider{
+    max-width:720px;margin:0 auto;border-top:3px double var(--rule);
+  }
+  #startScreen{text-align:center;padding:28px 16px 0;}
+  .start-card{
+    background:var(--card);border:1px solid var(--rule);border-radius:18px;
+    padding:32px 20px;margin:24px 0;
+  }
+  .start-card h2{
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;margin:0 0 24px;line-height:1.3;
+  }
+  .info-boxes{display:flex;gap:12px;justify-content:center;margin-bottom:26px;flex-wrap:nowrap;}
+  .info-box{
+    background:var(--tan);border-radius:12px;
+    padding:14px 16px;flex:1;min-width:0;text-align:left;
+  }
+  .info-box .lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;white-space:nowrap;}
+  .info-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--accent);}
+  #startBtn{
+    background:var(--accent);color:#fff;border:none;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:16px;
+    padding:15px 36px;border-radius:10px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(138,90,43,0.35);
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  #startBtn:hover{transform:translateY(-1px);}
+  #startBtn .playIcon{
+    background:#e8912f;border-radius:6px;width:26px;height:26px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+  }
+  .start-footnote{
+    text-align:center;font-size:13.5px;color:var(--muted);line-height:1.6;
+    padding:0 20px 30px;max-width:600px;margin:0 auto;
+  }
+
+  /* ---------- TOP BAR (test + review) ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--card);border-bottom:1px solid var(--rule);
+    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+  }
+  .topbar .brand{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;flex-shrink:0;}
+  .topbar .center-info{
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);
+    flex:1;justify-content:center;min-width:0;
+  }
+  .topbar .timer{
+    font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--wrong);
+    white-space:nowrap;
+  }
+  .topbar .progress{white-space:nowrap;color:var(--muted);}
+  .paletteWrap{position:relative;flex-shrink:0;}
+  .paletteBtn{
+    background:var(--paper);border:1px solid var(--rule);border-radius:8px;
+    padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
+    white-space:nowrap;
+  }
+  .paletteDropdown{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:12px;
+    width:240px;max-height:320px;overflow-y:auto;z-index:30;
+  }
+  .paletteDropdown.show{display:block;}
+  .paletteLegend{display:flex;gap:10px;font-size:11px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;}
+  .legendDot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+  .paletteGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .paletteNum{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;
+    border:1px solid transparent;
+  }
+  .paletteNum.answered{background:var(--correct-bg);color:var(--correct);border-color:var(--correct);}
+  .paletteNum.notanswered{background:var(--wrong-bg);color:var(--wrong);border-color:var(--wrong);}
+  .paletteNum.notvisited{background:var(--tan);color:var(--muted);}
+  .paletteNum.current{outline:2px solid var(--accent);outline-offset:1px;}
+
+  /* ---------- TEST SCREEN ---------- */
+  #testScreen{display:none;}
+  .qcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:20px 18px;margin:18px 0;position:relative;
+  }
+  .qcard .tag{
+    float:right;font-size:10.5px;color:var(--muted);background:var(--paper);
+    border:1px solid var(--rule);padding:2px 8px;border-radius:20px;
+  }
+  .qcard .qmeta{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .qcard .marks-note{font-size:11.5px;color:var(--accent);margin-bottom:10px;font-weight:600;}
+  .qcard .qtext{font-size:17px;line-height:1.55;margin:6px 0 16px;clear:both;}
+  .qcard .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;
+    padding:11px 14px;font-size:15px;cursor:pointer;
+    transition:border-color .15s, background .15s;font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .opt:hover{border-color:var(--accent);background:#fff;}
+  .opt .lab{font-weight:700;color:var(--accent);min-width:18px;}
+  .opt.selected{background:#efe3cf;border-color:var(--accent);}
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .navrow{
+    display:flex;gap:8px;margin-top:16px;flex-wrap:nowrap;
+  }
+  .navrow button{
+    flex:1;min-width:0;
+    border:1px solid var(--rule);background:var(--card);
+    border-radius:8px;padding:10px 6px;font-size:12.5px;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .navrow button:hover{border-color:var(--accent);}
+  .navrow button:disabled{opacity:.4;cursor:not-allowed;}
+  .submitRow{margin-top:10px;}
+  .submitRow button{
+    width:100%;background:var(--accent);color:#fff;border:none;
+    border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ---------- MODAL ---------- */
+  .modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(27,26,23,0.5);
+    z-index:50;align-items:center;justify-content:center;padding:20px;
+  }
+  .modalOverlay.show{display:flex;}
+  .modalBox{
+    background:var(--card);border-radius:14px;padding:24px 22px;max-width:340px;width:100%;
+    text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.25);
+  }
+  .modalBox h3{font-family:'Fraunces',serif;font-size:19px;margin:0 0 10px;}
+  .modalBox p{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5;}
+  .modalBtns{display:flex;gap:10px;}
+  .modalBtns button{
+    flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .modalBtns .yesBtn{background:var(--accent);color:#fff;border:none;}
+  .modalBtns .cancelBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- RESULT SCREEN ---------- */
+  #resultScreen{display:none;text-align:center;padding:30px 16px;}
+  #resultScreen h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 24px;}
+  .result-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;
+  }
+  .result-box{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 10px;
+  }
+  .result-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;}
+  .result-box .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .result-box.correct .num{color:var(--correct);}
+  .result-box.wrong .num{color:var(--wrong);}
+  .score-box{
+    background:var(--accent);color:#fff;border-radius:14px;padding:20px;margin-bottom:26px;
+  }
+  .score-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:36px;}
+  .score-box .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.1em;opacity:.85;margin-top:2px;}
+  .resultBtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .resultBtns button{
+    padding:12px 22px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .resultBtns .reviewBtn{background:var(--accent);color:#fff;border:none;}
+  .resultBtns .retakeBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- REVIEW SCREEN ---------- */
+  #reviewScreen{display:none;}
+  .statustag{
+    font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;
+  }
+  .statustag.correct{background:var(--correct-bg);color:var(--correct);}
+  .statustag.wrong{background:var(--wrong-bg);color:var(--wrong);}
+  .statustag.unattempted{background:var(--tan);color:var(--muted);}
+  .review-topbar-title{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;}
+  .yourans{font-size:13px;margin:10px 0 2px;color:var(--muted);}
+  .yourans b{color:var(--ink);}
+  .solution{
+    margin-top:14px;padding:14px 16px;background:#fbf7ee;
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    font-size:14.5px;line-height:1.65;
+  }
+  .solution .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+  <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+  <h1>YATRI Mock Hub</h1>
+  <a href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank" rel="noopener" id="tgBtn">
+    <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+      <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+    </svg>
+    <span>Join Telegram</span>
+  </a>
+  <div id="topicLine">Topic: I Words — Previous Years Synonyms</div>
+</header>
+
+<div class="divider"></div>
+
+<div class="wrap">
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Vocabulary Synonyms Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="lbl">Total Questions</div><div class="num" id="totalQCount">0</div></div>
+        <div class="info-box"><div class="lbl">Total Time</div><div class="num" id="totalTimeDisplay">0 Min</div></div>
+      </div>
+      <button id="startBtn"><span class="playIcon">▶</span> Start Test</button>
+    </div>
+    <div class="start-footnote">Submit ke baad hi answers, score aur explanation dikhenge — pura test pehle imandari se attempt karein.</div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="center-info">
+        <span class="timer" id="timerDisplay">00:00</span>
+        <span class="progress" id="progressDisplay">Question 1 / 1</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnTest">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownTest">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Answered</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Not Answered</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Not Visited</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridTest"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="qTag"></span>
+      <div class="qmeta" id="qMeta">Question 1 of 1</div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="qOpts"></div>
+    </div>
+
+    <div class="navrow">
+      <button id="prevBtn">⬅️ Previous</button>
+      <button id="clearBtn">Clear Response</button>
+      <button id="nextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="submitBtn">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen">
+    <h2>Test Complete!</h2>
+    <div class="result-grid">
+      <div class="result-box"><div class="num" id="rTotal">0</div><div class="lbl">Total Questions</div></div>
+      <div class="result-box"><div class="num" id="rAttempted">0</div><div class="lbl">Attempted</div></div>
+      <div class="result-box"><div class="num" id="rUnattempted">0</div><div class="lbl">Unattempted</div></div>
+      <div class="result-box correct"><div class="num" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="result-box wrong"><div class="num" id="rWrong">0</div><div class="lbl">Wrong</div></div>
+    </div>
+    <div class="score-box">
+      <div class="num" id="rScore">0</div>
+      <div class="lbl">Final Score</div>
+    </div>
+    <div class="resultBtns">
+      <button class="reviewBtn" id="reviewBtn">🔍 Review Solutions</button>
+      <button class="retakeBtn" id="retakeBtn">🔁 Retake Test</button>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen">
+    <div class="topbar" style="z-index:20;">
+      <div class="review-topbar-title">Review Solutions</div>
+      <div class="center-info" style="justify-content:flex-end;">
+        <span class="statustag" id="reviewStatusTag">—</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnReview">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownReview">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Correct</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Wrong</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Unattempted</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridReview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="rvTag"></span>
+      <div class="qmeta" id="rvMeta">Question 1 of 1</div>
+      <div class="qtext" id="rvText"></div>
+      <div class="options" id="rvOpts"></div>
+      <div class="yourans" id="rvYourAns"></div>
+      <div class="solution" id="rvSolution">
+        <div class="lbl">Solution</div>
+        <div id="rvSolutionText"></div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button id="rvPrevBtn">⬅️ Previous</button>
+      <button id="rvNextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="backToResultBtn">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUBMIT CONFIRMATION MODAL -->
+<div class="modalOverlay" id="submitModal">
+  <div class="modalBox">
+    <h3>Submit Test?</h3>
+    <p id="submitModalText">Aap sure hain ki test submit karna chahte hain?</p>
+    <div class="modalBtns">
+      <button class="cancelBtn" id="modalCancelBtn">Cancel</button>
+      <button class="yesBtn" id="modalYesBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Choose the word nearest in meaning to the one given below : Imperious",
+"tag": "KVS PRT 21-02-2023 (Shift-II)",
+"opts": [
+"Timid",
+"Royal",
+"Spurious",
+"Commanding"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Imperious' का अर्थ है <b>रोबीला/आदेशात्मक</b>। Synonym 'Commanding' (<b>आदेशात्मक</b>) है।</span><br>Timid – डरपोक, Royal – शाही, Spurious – नकली।"
+},
+{
+"q": "Drinking inordinate amount of liquor is not good for health.",
+"tag": "UPSC NDA & NA 16/04/2023 (Shift-I)",
+"opts": [
+"temperate",
+"exorbitant",
+"moderate",
+"regular"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Inordinate' का अर्थ है <b>अत्यधिक</b>। Synonym 'Exorbitant' (<b>अत्यधिक</b>) है।</span><br>Temperate – संयमित, Moderate – मध्यम, Regular – नियमित।"
+},
+{
+"q": "During the pandemic the indigent people had to suffer a lot.",
+"tag": "UPSC NDA & NA 16/04/2023 (Shift-I)",
+"opts": [
+"very poor",
+"opulent",
+"solvent",
+"prosperous"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Indigent' का अर्थ है <b>निर्धन</b>। Synonym 'Very poor' (<b>बहुत गरीब</b>) है।</span><br>Opulent – धनी, Solvent – साधन-संपन्न, Prosperous – समृद्ध।"
+},
+{
+"q": "Choose the word that means the same as the given word. Impede",
+"tag": "SSC MTS 08/05/2023 (Shift-III)",
+"opts": [
+"Stalwart",
+"Stampede",
+"Sore",
+"Thwart"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Impede' का अर्थ है <b>बाधा डालना</b>। Synonym 'Thwart' (<b>विफल करना</b>) है।</span><br>Stalwart – मजबूत, Stampede – भगदड़, Sore – पीड़ादायक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Introvert",
+"tag": "SSC GD 13/02/2023 (Shift-I)",
+"opts": [
+"Bold",
+"Shy",
+"Forward",
+"Outgoing"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Introvert' का अर्थ है <b>अंतर्मुखी</b>। Synonym 'Shy' (<b>शर्मीला</b>) है।</span><br>Bold – साहसी, Forward – आगे बढ़ने वाला, Outgoing – मिलनसार।"
+},
+{
+"q": "Select the most appropriate synonym of the underlined word. The outcome document of the Rio+20 Conference, the Future We Want, underscores climate change as “an inevitable and urgent global challenge with long-term implications for the sustainable development of all countries”. Through the document, Member States express their concern about the continuous rising of emissions of greenhouse gases and the vulnerability of all countries, particularly developing countries, to the adverse impacts of climate change.",
+"tag": "SSC CGL (Tier-I) 18/07/2023 (Shift-III)",
+"opts": [
+"escapable",
+"immemorable",
+"undeniable",
+"adventurous"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Inevitable' का अर्थ है <b>अनिवार्य/अपरिहार्य</b>। Synonym 'Undeniable' (<b>निर्विवाद</b>) है।</span><br>Escapable – बचने योग्य, Immemorable – अस्मरणीय, Adventurous – साहसिक।"
+},
+{
+"q": "Select the most appropriate option that can substitute the underlined segment in the given sentence. We must remember that what we teach our children is what we inculcate in them.",
+"tag": "SSC CGL (Tier-I) 14/07/2023 (Shift-I)",
+"opts": [
+"endanger",
+"import",
+"inspire",
+"instill"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Inculcate' का अर्थ है <b>मन में बिठाना</b>। Synonym 'Instill' (<b>भरना/बिठाना</b>) है।</span><br>Endanger – खतरे में डालना, Import – आयात करना, Inspire – प्रेरित करना।"
+},
+{
+"q": "Choose the word that means the same as the given word. INSTIGATE",
+"tag": "SSC CHSL (Tier-I) 10/03/2023 (Shift-III)",
+"opts": [
+"Deterrence",
+"Settle",
+"Raise",
+"Complaisance"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Instigate' का अर्थ है <b>उकसाना</b>। Synonym 'Raise' (<b>भड़काना</b>) है।</span><br>Deterrence – निवारण, Settle – निपटाना, Complaisance – विनम्रता।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Intricate",
+"tag": "SSC MTS-12/07/2022 Shift-I",
+"opts": [
+"Basic",
+"Complicated",
+"Painted",
+"Developed"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Intricate' का अर्थ है <b>जटिल</b>। Synonym 'Complicated' (<b>जटिल</b>) है।</span><br>Basic – मौलिक, Painted – रंगा हुआ, Developed – विकसित।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Imminent",
+"tag": "SSC CGL (Tier-I) 11/04/2022 Shift-III",
+"opts": [
+"Impending",
+"Ignorant",
+"Distant",
+"Unyielding"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Imminent' का अर्थ है <b>निकट भविष्य में होने वाला</b>। Synonym 'Impending' (<b>आसन्न</b>) है।</span><br>Ignorant – अज्ञानी, Distant – दूर, Unyielding – अटल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Inscrutable",
+"tag": "SSC CGL (Tier-I) 12/04/2022 Shift-II",
+"opts": [
+"Inevitable",
+"Indelible",
+"Inexplicable",
+"Incredible"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Inscrutable' का अर्थ है <b>रहस्यमय/समझ से परे</b>। Synonym 'Inexplicable' (<b>अव्याख्येय</b>) है।</span><br>Inevitable – अपरिहार्य, Indelible – अमिट, Incredible – अविश्वसनीय।"
+},
+{
+"q": "Select the most appropriate synonym of the highlighted word He is inclined to stay with the present organisation.",
+"tag": "SSC CHSL 26.05.2022 (Shift-II)",
+"opts": [
+"declined",
+"motivated",
+"struggled",
+"mystified"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Inclined' का अर्थ है <b>इच्छुक</b>। Synonym 'Motivated' (<b>प्रेरित</b>) है।</span><br>Declined – अस्वीकार किया, Struggled – संघर्ष किया, Mystified – हैरान किया।"
+},
+{
+"q": "The itinerary of the group\\'s visit to the hills was given to everyone.",
+"tag": "UPSC NDA & NA 04/09/2022 (Shift-II)",
+"opts": [
+"Invitation",
+"Information",
+"Schedule",
+"Names"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Itinerary' का अर्थ है <b>यात्रा कार्यक्रम</b>। Synonym 'Schedule' (<b>कार्यक्रम</b>) है।</span><br>Invitation – निमंत्रण, Information – जानकारी, Names – नाम।"
+},
+{
+"q": "The growth and development of the peasant movement was indissolubly linked with the national struggle for freedom.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I)",
+"opts": [
+"firmly",
+"vaguely",
+"individually",
+"steadily"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Indissolubly' का अर्थ है <b>अटूट रूप से</b>। Synonym 'Firmly' (<b>दृढ़ता से</b>) है।</span><br>Vaguely – अस्पष्ट रूप से, Individually – व्यक्तिगत रूप से, Steadily – स्थिरता से।"
+},
+{
+"q": "Weather conditions have been improving over the past few days.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I)",
+"opts": [
+"mending",
+"amending",
+"becoming better",
+"advancing"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Improving' का अर्थ है <b>सुधर रहा है</b>। Synonym 'Becoming better' (<b>बेहतर होना</b>) है।</span><br>Mending – मरम्मत करना, Amending – संशोधन करना, Advancing – आगे बढ़ना।"
+},
+{
+"q": "The police officer tried to intimidate the witness but in vain.",
+"tag": "UPSC NDA & NA 10/09/2017 (Shift-II)",
+"opts": [
+"inform",
+"reward",
+"frighten",
+"persuade"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Intimidate' का अर्थ है <b>धमकाना</b>। Synonym 'Frighten' (<b>डराना</b>) है।</span><br>Inform – सूचित करना, Reward – पुरस्कृत करना, Persuade – मनाना।"
+},
+{
+"q": "The police fired indiscriminately at the crowd, killing many innocent women and children.",
+"tag": "UPSC NDA & NA 23/04/2017 (Shift-I)",
+"opts": [
+"continuously",
+"without distinguishing",
+"foolishly",
+"rapidly"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Indiscriminately' का अर्थ है <b>बिना भेदभाव के</b>। Synonym 'Without distinguishing' (<b>बिना अंतर किए</b>) है।</span><br>Continuously – लगातार, Foolishly – मूर्खतापूर्ण ढंग से, Rapidly – तेज़ी से।"
+},
+{
+"q": "Many of the villagers were ISOLATED by heavy showers of rains.",
+"tag": "UPSC NDA & NA 11/08/2013 (Shift-II)",
+"opts": [
+"Destroyed",
+"Separated from others",
+"Battered",
+"Devastated"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Isolated' का अर्थ है <b>अलग-थलग</b>। Synonym 'Separated from others' (<b>दूसरों से अलग</b>) है।</span><br>Destroyed – नष्ट किया गया, Battered – पीटा हुआ, Devastated – तबाह।"
+},
+{
+"q": "Your INTERVENTION was required.",
+"tag": "UPSC NDA & NA 14/04/2013 (Shift-I)",
+"opts": [
+"Interference",
+"Interruption",
+"Disturbance",
+"Connection"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Intervention' का अर्थ है <b>हस्तक्षेप</b>। Synonym 'Interference' (<b>हस्तक्षेप</b>) है।</span><br>Interruption – बाधा, Disturbance – गड़बड़ी, Connection – संबंध।"
+},
+{
+"q": "Ant is believed to be the most INDUSTRIOUS creature.",
+"tag": "UPSC NDA & NA 14/04/2013 (Shift-I)",
+"opts": [
+"Sensible",
+"Successful",
+"Diligent",
+"Punctual"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Industrious' का अर्थ है <b>परिश्रमी</b>। Synonym 'Diligent' (<b>परिश्रमी</b>) है।</span><br>Sensible – समझदार, Successful – सफल, Punctual – समयनिष्ठ।"
+},
+{
+"q": "He is an INDEFATIGABLE worker.",
+"tag": "UPSC NDA & NA 19/08/2012 (Shift-II)",
+"opts": [
+"tired",
+"tireless",
+"brave",
+"skilful"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Indefatigable' का अर्थ है <b>अथक</b>। Synonym 'Tireless' (<b>अथक</b>) है।</span><br>Tired – थका हुआ, Brave – बहादुर, Skilful – कुशल।"
+},
+{
+"q": "She is pretty INSIPID young lady.",
+"tag": "UPSC NDA & NA 19/08/2012 (Shift-II)",
+"opts": [
+"clever",
+"lazy",
+"dull",
+"lean"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Insipid' का अर्थ है <b>नीरस/फीका</b>। Synonym 'Dull' (<b>नीरस</b>) है।</span><br>Clever – चतुर, Lazy – आलसी, Lean – दुबला।"
+},
+{
+"q": "After his father\\'s death, he became INSOLVENT.",
+"tag": "UPSC NDA & NA 15/04/2012 (Shift-I)",
+"opts": [
+"Rich",
+"Poor",
+"Bankrupt",
+"Nonchalant"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Insolvent' का अर्थ है <b>दिवालिया</b>। Synonym 'Bankrupt' (<b>दिवालिया</b>) है।</span><br>Rich – अमीर, Poor – गरीब, Nonchalant – उदासीन।"
+},
+{
+"q": "The convict\\'s INGENUOUS explanation brought tears in every eye.",
+"tag": "UPSC NDA & NA 15/04/2012 (Shift-I)",
+"opts": [
+"Candid",
+"Secret",
+"Insincere",
+"Consistent"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Ingenuous' का अर्थ है <b>सरल/निष्कपट</b>। Synonym 'Candid' (<b>स्पष्टवादी</b>) है।</span><br>Secret – गुप्त, Insincere – अप्रामाणिक, Consistent – सुसंगत।"
+},
+{
+"q": "INVEIGHED her for her different outlook.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II)",
+"opts": [
+"criticized",
+"rebuked",
+"disliked",
+"appreciated"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Inveighed' का अर्थ है <b>कड़ी आलोचना की</b>। Synonym 'Criticized' (<b>आलोचना की</b>) है।</span><br>Rebuked – फटकारा, Disliked – नापसंद किया, Appreciated – सराहा।"
+},
+{
+"q": "Her habits are INNOCUOUS.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II)",
+"opts": [
+"useful",
+"injurious",
+"causing no harm",
+"bad"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Innocuous' का अर्थ है <b>हानिरहित</b>। Synonym 'Causing no harm' (<b>कोई नुकसान न पहुंचाने वाला</b>) है।</span><br>Useful – उपयोगी, Injurious – हानिकारक, Bad – बुरा।"
+},
+{
+"q": "The queen was aware of the INSOLENT behaviour of the lords.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I)",
+"opts": [
+"violent",
+"polite",
+"insulting",
+"frivolous"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Insolent' का अर्थ है <b>अभद्र/ढीठ</b>। Synonym 'Insulting' (<b>अपमानजनक</b>) है।</span><br>Violent – हिंसक, Polite – विनम्र, Frivolous – तुच्छ।"
+},
+{
+"q": "He became known as an IMPLACABLE foe of fundamentalism.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I)",
+"opts": [
+"relentless",
+"pleasing",
+"dangerous",
+"courageous"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Implacable' का अर्थ है <b>अटल/अडिग</b>। Synonym 'Relentless' (<b>निरंतर/अडिग</b>) है।</span><br>Pleasing – सुखद, Dangerous – खतरनाक, Courageous – साहसी।"
+},
+{
+"q": "He was the court appointed lawyer for fifty-six INDIGENT defendants.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I) NDA/NA 10/04/2023 (Shift–I)",
+"opts": [
+"Indian men",
+"poor",
+"guilty",
+"untried"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Indigent' का अर्थ है <b>गरीब</b>। Synonym 'Poor' (<b>गरीब</b>) है।</span><br>Indian men – भारतीय पुरुष, Guilty – दोषी, Untried – बिना मुकदमा चलाया गया।"
+},
+{
+"q": "INCREDIBLE",
+"tag": "UPSC NDA & NA 30/08/2009 (Shift-II)",
+"opts": [
+"Hard to believe",
+"Considerable",
+"Inconsistent",
+"Unsatisfactory"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Incredible' का अर्थ है <b>अविश्वसनीय</b>। Synonym 'Hard to believe' (<b>विश्वास करने में कठिन</b>) है।</span><br>Considerable – महत्वपूर्ण, Inconsistent – असंगत, Unsatisfactory – असंतोषजनक।"
+},
+{
+"q": "IMBECILE",
+"tag": "UPSC NDA & NA 19/04/2009 (Shift-I)",
+"opts": [
+"Astute",
+"Cunning",
+"Stupid",
+"Ludicrous"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Imbecile' का अर्थ है <b>मूर्ख</b>। Synonym 'Stupid' (<b>मूर्ख</b>) है।</span><br>Astute – चतुर, Cunning – धूर्त, Ludicrous – हास्यास्पद।"
+},
+{
+"q": "INSCRUTABLE",
+"tag": "UPSC NDA & NA 19/04/2009 (Shift-I)",
+"opts": [
+"Strange",
+"Mysterious",
+"Marvelous",
+"Sublime"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Inscrutable' का अर्थ है <b>रहस्यमय</b>। Synonym 'Mysterious' (<b>रहस्यमय</b>) है।</span><br>Strange – अजीब, Marvelous – अद्भुत, Sublime – उदात्त।"
+},
+{
+"q": "INAPT",
+"tag": "DSSSB Stenographer Exam (27-07-2014)",
+"opts": [
+"Include",
+"Unfit",
+"Neglect",
+"Sharp"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Inapt' का अर्थ है <b>अनुपयुक्त</b>। Synonym 'Unfit' (<b>अयोग्य</b>) है।</span><br>Include – शामिल करना, Neglect – उपेक्षा करना, Sharp – तेज़।"
+},
+{
+"q": "Interpret",
+"tag": "DSSSB Lower Division Clerk Exam (16-11-2014)",
+"opts": [
+"hide",
+"explain",
+"obstruct",
+"support"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Interpret' का अर्थ है <b>व्याख्या करना</b>। Synonym 'Explain' (<b>समझाना</b>) है।</span><br>Hide – छिपाना, Obstruct – बाधा डालना, Support – समर्थन करना।"
+},
+{
+"q": "INFRINGE",
+"tag": "DSSSB Primary Teacher Exam (25-08-2013)",
+"opts": [
+"discuss",
+"transpire",
+"violate",
+"None of the above"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Infringe' का अर्थ है <b>उल्लंघन करना</b>। Synonym 'Violate' (<b>उल्लंघन करना</b>) है।</span><br>Discuss – चर्चा करना, Transpire – घटित होना, None of the above – इनमें से कोई नहीं।"
+},
+{
+"q": "Ignominy",
+"tag": "DSSSB Grade-II (DASS) Tier-II Exam (29-03-2015)",
+"opts": [
+"Defeat",
+"Victory",
+"Dishonour",
+"Misery"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Ignominy' का अर्थ है <b>अपमान</b>। Synonym 'Dishonour' (<b>अपमान</b>) है।</span><br>Defeat – हार, Victory – जीत, Misery – दुख।"
+},
+{
+"q": "IMPROMPTU",
+"tag": "DSSSB Motor Vehicle Inspector Exam (28-12-2014)",
+"opts": [
+"Important",
+"Improper",
+"Improved",
+"Offhand"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Impromptu' का अर्थ है <b>बिना तैयारी के</b>। Synonym 'Offhand' (<b>बिना पूर्वाभ्यास के</b>) है।</span><br>Important – महत्वपूर्ण, Improper – अनुचित, Improved – सुधरा हुआ।"
+},
+{
+"q": "Indelible",
+"tag": "DSSSB Prashasnik Adhikari Exam (31-05-2015)",
+"opts": [
+"Track",
+"Revolt",
+"Enforce",
+"Permanent"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Indelible' का अर्थ है <b>अमिट</b>। Synonym 'Permanent' (<b>स्थायी</b>) है।</span><br>Track – पथ, Revolt – विद्रोह, Enforce – लागू करना।"
+},
+{
+"q": "Impervious",
+"tag": "DSSSB Prashasnik Adhikari Exam (31-05-2015)",
+"opts": [
+"Audacious",
+"Haphazard",
+"Impenetrable",
+"Illogical"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Impervious' का अर्थ है <b>अभेद्य</b>। Synonym 'Impenetrable' (<b>अभेद्य</b>) है।</span><br>Audacious – साहसी, Haphazard – अव्यवस्थित, Illogical – अतार्किक।"
+},
+{
+"q": "Select the synonym of the given word. \\'INSIPID\\'",
+"tag": "DSSSB TGT (Hindi) Exam 28/08/2018 Shift-III",
+"opts": [
+"lucid",
+"talkative",
+"flat",
+"exciting"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Insipid' का अर्थ है <b>फीका/नीरस</b>। Synonym 'Flat' (<b>नीरस</b>) है।</span><br>Lucid – स्पष्ट, Talkative – बातूनी, Exciting – रोमांचक।"
+},
+{
+"q": "Incite",
+"tag": "DSSSB TGT (English) Exam 02/09/2018",
+"opts": [
+"Provoke",
+"laugh",
+"open",
+"bliss"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Incite' का अर्थ है <b>उकसाना</b>। Synonym 'Provoke' (<b>उकसाना</b>) है।</span><br>Laugh – हंसना, Open – खोलना, Bliss – आनंद।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IMMUNE",
+"tag": "DSSSB TGT (Social Science) Exam 14-11-2018 Shift-I",
+"opts": [
+"vulnerable",
+"resistant",
+"susceptible",
+"helpless"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Immune' का अर्थ है <b>प्रतिरक्षित</b>। Synonym 'Resistant' (<b>प्रतिरोधी</b>) है।</span><br>Vulnerable – असुरक्षित, Susceptible – संवेदनशील, Helpless – असहाय।"
+},
+{
+"q": "Choose the word that means the same as the given word. Imperative",
+"tag": "DSSSB PRT 24/03/2022 (Shift-I)",
+"opts": [
+"Impish",
+"Imperial",
+"Mandatory",
+"Immigrant"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Imperative' का अर्थ है <b>अनिवार्य</b>। Synonym 'Mandatory' (<b>अनिवार्य</b>) है।</span><br>Impish – शरारती, Imperial – शाही, Immigrant – आप्रवासी।"
+},
+{
+"q": "The budget incorporated a number of tax reforms which included higher taxes for the very rich.",
+"tag": "CDS 2020 (Shift-I)",
+"opts": [
+"excluded",
+"integrated",
+"laid down",
+"removed"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Incorporated' का अर्थ है <b>शामिल किया</b>। Synonym 'Integrated' (<b>एकीकृत किया</b>) है।</span><br>Excluded – बाहर रखा, Laid down – निर्धारित किया, Removed – हटाया गया।"
+},
+{
+"q": "All the developments that took place in the 20th century have had implications for the next century.",
+"tag": "CDS 2020 (Shift-I)",
+"opts": [
+"consequences",
+"interferences",
+"feedback",
+"planning"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Implications' का अर्थ है <b>परिणाम/प्रभाव</b>। Synonym 'Consequences' (<b>परिणाम</b>) है।</span><br>Interferences – हस्तक्षेप, Feedback – प्रतिक्रिया, Planning – योजना।"
+},
+{
+"q": "The properties of the family have been impounded by the order of the court.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Confiscated",
+"Permitted",
+"Sold",
+"Put on hold"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Impounded' का अर्थ है <b>जब्त किया गया</b>। Synonym 'Confiscated' (<b>जब्त किया गया</b>) है।</span><br>Permitted – अनुमति दी गई, Sold – बेचा गया, Put on hold – रोका गया।"
+},
+{
+"q": "Cognitivist and linguists believe that every child is born with innate qualities.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Biological",
+"Intrinsic",
+"Extrinsic",
+"Unnatural"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Innate' का अर्थ है <b>सहज/जन्मजात</b>। Synonym 'Intrinsic' (<b>अंतर्निहित</b>) है।</span><br>Biological – जैविक, Extrinsic – बाह्य, Unnatural – अप्राकृतिक।"
+},
+{
+"q": "A good work place shall not encourage ineptitude even in a hidden manner.",
+"tag": "CDS 2018 (Shift-II)",
+"opts": [
+"incompetence",
+"courage",
+"gossip",
+"radical thinking"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Ineptitude' का अर्थ है <b>अक्षमता</b>। Synonym 'Incompetence' (<b>अक्षमता</b>) है।</span><br>Courage – साहस, Gossip – गपशप, Radical thinking – क्रांतिकारी सोच।"
+},
+{
+"q": "He is very intelligent, but ill-favoured by nature.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"unlucky",
+"weak in health",
+"short-tempered",
+"ugly"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Ill-favoured' का अर्थ है <b>बदसूरत</b>। Synonym 'Ugly' (<b>बदसूरत</b>) है।</span><br>Unlucky – अभागा, Weak in health – कमजोर स्वास्थ्य वाला, Short-tempered – चिड़चिड़ा।"
+},
+{
+"q": "INDIFFRENT",
+"tag": "CDS 2011 (Shift-II) CDS-2014 (Shift-II)",
+"opts": [
+"Dissimilar",
+"Various",
+"Interference",
+"Unconcerned"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Indifferent' का अर्थ है <b>उदासीन</b>। Synonym 'Unconcerned' (<b>निश्चिंत/उदासीन</b>) है।</span><br>Dissimilar – असमान, Various – विविध, Interference – हस्तक्षेप।"
+},
+{
+"q": "IGNOMINY",
+"tag": "CDS 2011 (Shift-I) / DSSSB Grade-II (Tier-II) 29/03/2015",
+"opts": [
+"Condemnation",
+"Disgrace",
+"Failure",
+"Criticism"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Ignominy' का अर्थ है <b>अपमान</b>। Synonym 'Disgrace' (<b>अपमान</b>) है।</span><br>Condemnation – निंदा, Failure – असफलता, Criticism – आलोचना।"
+},
+{
+"q": "INDOMITABLE",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Extraordinary",
+"Uncontrollable",
+"Dominating",
+"Unyielding"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Indomitable' का अर्थ है <b>अजेय</b>। Synonym 'Unyielding' (<b>अटल</b>) है।</span><br>Extraordinary – असाधारण, Uncontrollable – अनियंत्रित, Dominating – प्रभुत्वशाली।"
+},
+{
+"q": "What is the synonym of the word \"inane\"?",
+"tag": "High Court RO 12/12/2023 (Shift-I)",
+"opts": [
+"eloquent",
+"expressive",
+"frivolous",
+"substantial"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Inane' का अर्थ है <b>निरर्थक/बेवकूफी भरा</b>। Synonym 'Frivolous' (<b>तुच्छ</b>) है।</span><br>Eloquent – वाक्पटु, Expressive – अभिव्यंजक, Substantial – ठोस।"
+},
+{
+"q": "What is the synonym of the word “Imbroglio”",
+"tag": "High Court RO 07/01/2022",
+"opts": [
+"complicated",
+"simple",
+"dangerous",
+"calm"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Imbroglio' का अर्थ है <b>जटिल उलझन</b>। Synonym 'Complicated' (<b>जटिल</b>) है।</span><br>Simple – सरल, Dangerous – खतरनाक, Calm – शांत।"
+},
+{
+"q": "Choose from the options, the synonym of the given word: INCONGRUOUS",
+"tag": "High Court RO 10/12/2021 (Shift-II)",
+"opts": [
+"Inefficient",
+"Abetted",
+"Apposite",
+"Incompatible"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Incongruous' का अर्थ है <b>असंगत</b>। Synonym 'Incompatible' (<b>असंगत</b>) है।</span><br>Inefficient – अक्षम, Abetted – उकसाया गया, Apposite – उपयुक्त।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ISOLATED",
+"tag": "SSC CHSL (Tier-I) –13/04/2021 (Shift-I)",
+"opts": [
+"Open",
+"Mingling",
+"Secluded",
+"Included"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Isolated' का अर्थ है <b>अलग-थलग</b>। Synonym 'Secluded' (<b>एकांत में</b>) है।</span><br>Open – खुला, Mingling – मेलजोल, Included – शामिल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Integrate",
+"tag": "SSC CGL (Tier-I) –24/08/2021 (Shift-I)",
+"opts": [
+"Assimilate",
+"Disburse",
+"Distribute",
+"Separate"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Integrate' का अर्थ है <b>एकीकृत करना</b>। Synonym 'Assimilate' (<b>आत्मसात करना</b>) है।</span><br>Disburse – वितरित करना, Distribute – बांटना, Separate – अलग करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTRIGUING",
+"tag": "SSC CPO-SI – 24/11/2020 (Shift-II)",
+"opts": [
+"monotonous",
+"investigating",
+"simultaneous",
+"gripping"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Intriguing' का अर्थ है <b>दिलचस्प/रहस्यपूर्ण</b>। Synonym 'Gripping' (<b>रोचक</b>) है।</span><br>Monotonous – नीरस, Investigating – जांच करना, Simultaneous – समवर्ती।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IMITATION",
+"tag": "SSC CPO-SI – 23/11/2020 (Shift-I)",
+"opts": [
+"fake",
+"genuine",
+"real",
+"original"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Imitation' का अर्थ है <b>नकल</b>। Synonym 'Fake' (<b>नकली</b>) है।</span><br>Genuine – असली, Real – वास्तविक, Original – मूल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INSULT",
+"tag": "SSC CGL (Tier-I) – 13/06/2019 (Shift-II)",
+"opts": [
+"apply",
+"offend",
+"offer",
+"remove"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Insult' का अर्थ है <b>अपमान करना</b>। Synonym 'Offend' (<b>अपमान करना</b>) है।</span><br>Apply – लागू करना, Offer – प्रस्ताव देना, Remove – हटाना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTRICATE",
+"tag": "SSC CGL (Tier-I) – 12/06/2019 (Shift-II)",
+"opts": [
+"Connected",
+"Complete",
+"Complex",
+"Colorful"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Intricate' का अर्थ है <b>जटिल</b>। Synonym 'Complex' (<b>जटिल</b>) है।</span><br>Connected – जुड़ा हुआ, Complete – पूर्ण, Colorful – रंगीन।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INITIATE",
+"tag": "SSC CGL (Tier-I) – 12/06/2019 (Shift-III)",
+"opts": [
+"show",
+"start",
+"sign",
+"slow"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Initiate' का अर्थ है <b>शुरू करना</b>। Synonym 'Start' (<b>आरंभ करना</b>) है।</span><br>Show – दिखाना, Sign – हस्ताक्षर करना, Slow – धीमा।"
+},
+{
+"q": "Select the synonym of the given word. INDELIBLE",
+"tag": "SSC CGL (Tier-I) – 06/06/2019 (Shift-I)",
+"opts": [
+"illegible",
+"inerasable",
+"ineffective",
+"illegal"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Indelible' का अर्थ है <b>अमिट</b>। Synonym 'Inerasable' (<b>अमिट</b>) है।</span><br>Illegible – अपठनीय, Ineffective – अप्रभावी, Illegal – अवैध।"
+},
+{
+"q": "Select the synonym of the given word. INEPT",
+"tag": "SSC CGL (Tier-I) – 04/06/2019 (Shift-III)",
+"opts": [
+"Clumsy",
+"fit",
+"strong",
+"capable"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Inept' का अर्थ है <b>अयोग्य</b>। Synonym 'Clumsy' (<b>अनाड़ी</b>) है।</span><br>Fit – उपयुक्त, Strong – मजबूत, Capable – सक्षम।"
+},
+{
+"q": "Select the synonym of the given word. INARTICULATE",
+"tag": "SSC CGL (Tier-I) – 04/06/2019 (Shift-III)",
+"opts": [
+"eloquent",
+"incoherent",
+"inevitable",
+"fluent"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Inarticulate' का अर्थ है <b>अस्पष्ट वक्ता</b>। Synonym 'Incoherent' (<b>असंगत/अस्पष्ट</b>) है।</span><br>Eloquent – वाक्पटु, Inevitable – अपरिहार्य, Fluent – धाराप्रवाह।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INIMICAL",
+"tag": "SSC CPO-SI – 11/12/2019 (Shift-II)",
+"opts": [
+"Deliberate",
+"Comparable",
+"Hostile",
+"Influential"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Inimical' का अर्थ है <b>शत्रुतापूर्ण</b>। Synonym 'Hostile' (<b>शत्रुतापूर्ण</b>) है।</span><br>Deliberate – जानबूझकर, Comparable – तुलनीय, Influential – प्रभावशाली।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INCREDIBLE",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-II)",
+"opts": [
+"unnoticed",
+"unwilling",
+"disturbing",
+"unbelievable"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Incredible' का अर्थ है <b>अविश्वसनीय</b>। Synonym 'Unbelievable' (<b>अविश्वसनीय</b>) है।</span><br>Unnoticed – अनदेखा, Unwilling – अनिच्छुक, Disturbing – परेशान करने वाला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTENSIFY",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-II)",
+"opts": [
+"destroy",
+"strengthen",
+"eliminate",
+"terminate"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Intensify' का अर्थ है <b>तीव्र करना</b>। Synonym 'Strengthen' (<b>मजबूत करना</b>) है।</span><br>Destroy – नष्ट करना, Eliminate – समाप्त करना, Terminate – समाप्त करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IGNOMINY",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-I)",
+"opts": [
+"morality",
+"virtue",
+"disgrace",
+"esteem"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Ignominy' का अर्थ है <b>अपमान</b>। Synonym 'Disgrace' (<b>अपमान</b>) है।</span><br>Morality – नैतिकता, Virtue – सद्गुण, Esteem – सम्मान।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INCESSANT",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-I)",
+"opts": [
+"inconstant",
+"intermittent",
+"persistent",
+"transient"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Incessant' का अर्थ है <b>लगातार</b>। Synonym 'Persistent' (<b>सतत</b>) है।</span><br>Inconstant – अस्थिर, Intermittent – रुक-रुक कर, Transient – क्षणिक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IDENTICAL",
+"tag": "SSC CHSL (Tier-I) –10/07/2019 (Shift-I)",
+"opts": [
+"similar",
+"legible",
+"detailed",
+"perfect"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Identical' का अर्थ है <b>समरूप</b>। Synonym 'Similar' (<b>समान</b>) है।</span><br>Legible – पठनीय, Detailed – विस्तृत, Perfect – उत्तम।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IDEOLOGY",
+"tag": "SSC CHSL (Tier-I) –09/07/2019 (Shift-II)",
+"opts": [
+"contract",
+"belief",
+"mark",
+"recognition"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Ideology' का अर्थ है <b>विचारधारा</b>। Synonym 'Belief' (<b>विश्वास</b>) है।</span><br>Contract – अनुबंध, Mark – चिन्ह, Recognition – पहचान।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTREPID",
+"tag": "SSC CHSL (Tier-I) –08/07/2019 (Shift-I)",
+"opts": [
+"gallant",
+"cowardly",
+"insecure",
+"invisible"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Intrepid' का अर्थ है <b>निडर</b>। Synonym 'Gallant' (<b>वीर</b>) है।</span><br>Cowardly – कायर, Insecure – असुरक्षित, Invisible – अदृश्य।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. IGNOMINIOUS",
+"tag": "SSC CHSL (Tier-I) –08/07/2019 (Shift-III)",
+"opts": [
+"wonderful",
+"disgraceful",
+"innocuous",
+"generous"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Ignominious' का अर्थ है <b>अपमानजनक</b>। Synonym 'Disgraceful' (<b>अपमानजनक</b>) है।</span><br>Wonderful – अद्भुत, Innocuous – हानिरहित, Generous – उदार।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INNUENDO",
+"tag": "SSC CHSL (Tier-I) –02/07/2019 (Shift-I)",
+"opts": [
+"implication",
+"evidence",
+"verification",
+"proof"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Innuendo' का अर्थ है <b>कटाक्ष/व्यंग्योक्ति</b>। Synonym 'Implication' (<b>संकेत</b>) है।</span><br>Evidence – प्रमाण, Verification – सत्यापन, Proof – सबूत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Idleness",
+"tag": "SSC CHSL (Tier-I) 26/10/2020 (Shift-II)",
+"opts": [
+"Energy",
+"Industry",
+"Cheerfulness",
+"Lethargy"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Idleness' का अर्थ है <b>आलस्य</b>। Synonym 'Lethargy' (<b>सुस्ती</b>) है।</span><br>Energy – ऊर्जा, Industry – उद्योग, Cheerfulness – प्रसन्नता।"
+},
+{
+"q": "Select the most appropriate synonym of the given word: Indomitable",
+"tag": "SSC CHSL (Tier-I) 21/10/2020 (Shift-I) CDS 2010 (Shift–I)",
+"opts": [
+"Accessible",
+"Invincible",
+"Justifiable",
+"Changeable"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Indomitable' का अर्थ है <b>अजेय</b>। Synonym 'Invincible' (<b>अजेय</b>) है।</span><br>Accessible – सुलभ, Justifiable – न्यायोचित, Changeable – परिवर्तनशील।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTERSPERSED",
+"tag": "SSC CHSL (Tier-I) 15/10/2020 (Shift-III)",
+"opts": [
+"Scattered",
+"Met",
+"Collected",
+"Wore"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Interspersed' का अर्थ है <b>बिखरा हुआ</b>। Synonym 'Scattered' (<b>बिखरा हुआ</b>) है।</span><br>Met – मिला, Collected – एकत्र किया, Wore – पहना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTEGRATE",
+"tag": "SSC CHSL (Tier-I) 15/10/2020 (Shift-II)",
+"opts": [
+"Disappear",
+"Unite",
+"Increase",
+"Divide"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Integrate' का अर्थ है <b>एकीकृत करना</b>। Synonym 'Unite' (<b>एकजुट करना</b>) है।</span><br>Disappear – गायब होना, Increase – बढ़ना, Divide – विभाजित करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Insidious",
+"tag": "SSC CHSL (Tier-I) 12/10/2020 (Shift-III)",
+"opts": [
+"Callous",
+"Benevolent",
+"Crafty",
+"Sincere"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Insidious' का अर्थ है <b>कपटपूर्ण/धोखेबाज़</b>। Synonym 'Crafty' (<b>धूर्त</b>) है।</span><br>Callous – निर्दयी, Benevolent – परोपकारी, Sincere – ईमानदार।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INSTIGATE",
+"tag": "SSC CHSL (Tier-I) 18/03/2020 (Shift-III)",
+"opts": [
+"Instill",
+"Stagnate",
+"Kindle",
+"Imbibe"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Instigate' का अर्थ है <b>उकसाना</b>। Synonym 'Kindle' (<b>भड़काना</b>) है।</span><br>Instill – भरना, Stagnate – रुकना, Imbibe – आत्मसात करना।"
+},
+{
+"q": "In the following question, out of given four alternatives, select the one which best expresses the meaning of the given word. Invade",
+"tag": "SSC MTS 10-10-2017 (Shift-I)",
+"opts": [
+"Abuse",
+"Ravage",
+"Trash",
+"Shred"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Invade' का अर्थ है <b>आक्रमण करना</b>। Synonym 'Ravage' (<b>तबाह करना</b>) है।</span><br>Abuse – दुरुपयोग करना, Trash – नष्ट करना, Shred – टुकड़े करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Infuriate",
+"tag": "SSC MTS 05/08/2019 (Shift-III)",
+"opts": [
+"Endow",
+"Enhance",
+"Enrage",
+"Engage"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Infuriate' का अर्थ है <b>क्रोधित करना</b>। Synonym 'Enrage' (<b>क्रोधित करना</b>) है।</span><br>Endow – प्रदान करना, Enhance – बढ़ाना, Engage – व्यस्त करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Immense",
+"tag": "SSC MTS – 05/08/2019 (Shift-I)",
+"opts": [
+"Insignificant",
+"Dull",
+"Minute",
+"Massive"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Immense' का अर्थ है <b>विशाल</b>। Synonym 'Massive' (<b>विशाल</b>) है।</span><br>Insignificant – तुच्छ, Dull – नीरस, Minute – बहुत छोटा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTRICATE",
+"tag": "SSC MTS – 16/08/2019 (Shift-II)",
+"opts": [
+"Complicated",
+"Simple",
+"Plain",
+"Straightforward"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Intricate' का अर्थ है <b>जटिल</b>। Synonym 'Complicated' (<b>जटिल</b>) है।</span><br>Simple – सरल, Plain – सादा, Straightforward – सीधा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. INTEGRATION",
+"tag": "SSC MTS – 14/08/2019 (Shift-II)",
+"opts": [
+"Separation",
+"Unification",
+"Segregation",
+"Division"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Integration' का अर्थ है <b>एकीकरण</b>। Synonym 'Unification' (<b>एकीकरण</b>) है।</span><br>Separation – अलगाव, Segregation – पृथक्करण, Division – विभाजन।"
+},
+{
+"q": "Select the synonym of the given word. Impolite",
+"tag": "SSC MTS – 09/08/2019 (Shift-II)",
+"opts": [
+"Intelligent",
+"Brave",
+"Rude",
+"Irrelevant"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Impolite' का अर्थ है <b>अशिष्ट</b>। Synonym 'Rude' (<b>असभ्य</b>) है।</span><br>Intelligent – बुद्धिमान, Brave – बहादुर, Irrelevant – अप्रासंगिक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word Inclination",
+"tag": "SSC MTS 21/08/2019 (Shift-I)",
+"opts": [
+"Aptitude",
+"Indifference",
+"Repulsion",
+"Aversion"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Inclination' का अर्थ है <b>झुकाव/रुचि</b>। Synonym 'Aptitude' (<b>योग्यता/रुचि</b>) है।</span><br>Indifference – उदासीनता, Repulsion – विकर्षण, Aversion – घृणा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Impious",
+"tag": "SSC MTS – 21/08/2019 (Shift-II)",
+"opts": [
+"Irreligious",
+"Devout",
+"Skilled",
+"Loyal"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Impious' का अर्थ है <b>अधार्मिक</b>। Synonym 'Irreligious' (<b>अधार्मिक</b>) है।</span><br>Devout – धर्मपरायण, Skilled – कुशल, Loyal – वफादार।"
+},
+{
+"q": "Select the synonym of the given word. INDUSTRIOUS",
+"tag": "SSC GD – 18/02/2019 (Shift-II) UPSC NDA/NA 14/04/2013",
+"opts": [
+"Fruitful",
+"Practical",
+"Prompt",
+"Diligent"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Industrious' का अर्थ है <b>परिश्रमी</b>। Synonym 'Diligent' (<b>परिश्रमी</b>) है।</span><br>Fruitful – फलदायक, Practical – व्यावहारिक, Prompt – तत्पर।"
+},
+{
+"q": "Select the synonym of the given word. IMPECCABLE",
+"tag": "SSC GD – 14/02/2019 (Shift-I) UPSC NDA/NA 17/04/2011 (Shift-I)",
+"opts": [
+"Imperfect",
+"Flawless",
+"Smooth",
+"Clean"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Impeccable' का अर्थ है <b>निर्दोष/त्रुटिरहित</b>। Synonym 'Flawless' (<b>त्रुटिरहित</b>) है।</span><br>Imperfect – अपूर्ण, Smooth – चिकना, Clean – साफ।"
+}
+];
+
+const TEST_MINUTES = 45;
+const TOTAL_SECONDS = TEST_MINUTES * 60;
+const labels = ['A','B','C','D'];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null); // null = not answered
+let visited = new Array(questions.length).fill(false);
+let timeLeft = TOTAL_SECONDS;
+let timerInterval = null;
+let testSubmitted = false;
+
+document.getElementById('totalQCount').textContent = questions.length;
+document.getElementById('totalTimeDisplay').textContent = TEST_MINUTES + ' Min';
+
+// ---------- START ----------
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('mainHeader').style.display = 'none';
+  document.querySelector('.divider').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  startTimer();
+});
+
+function startTimer(){
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest(true);
+    }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s = (timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = m+':'+s;
+}
+updateTimerDisplay();
+
+// ---------- TEST SCREEN RENDER ----------
+function renderQuestion(){
+  const q = questions[currentQ];
+  document.getElementById('qTag').textContent = q.tag || '';
+  document.getElementById('qMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('progressDisplay').textContent = `Question ${currentQ+1} / ${questions.length}`;
+  document.getElementById('qText').innerHTML = q.q;
+
+  const optsDiv = document.getElementById('qOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(userAnswers[currentQ] === oi) btn.classList.add('selected');
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectOption(oi);
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('prevBtn').disabled = currentQ === 0;
+  document.getElementById('nextBtn').textContent = currentQ === questions.length-1 ? 'Next ➡️' : 'Next ➡️';
+  renderPalette('Test');
+}
+
+function selectOption(oi){
+  userAnswers[currentQ] = oi;
+  renderQuestion();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  userAnswers[currentQ] = null;
+  renderQuestion();
+});
+
+// ---------- PALETTE ----------
+function renderPalette(which){
+  const grid = document.getElementById('paletteGrid' + which);
+  grid.innerHTML = '';
+  questions.forEach((q, i) => {
+    const cell = document.createElement('div');
+    let cls = 'notvisited';
+    if(which === 'Test'){
+      if(userAnswers[i] !== null) cls = 'answered';
+      else if(visited[i]) cls = 'notanswered';
+      else cls = 'notvisited';
+    } else {
+      if(userAnswers[i] === null) cls = 'notvisited';
+      else if(userAnswers[i] === q.ans) cls = 'answered';
+      else cls = 'notanswered';
+    }
+    cell.className = 'paletteNum ' + cls + (i===currentQ ? ' current' : '');
+    cell.textContent = i+1;
+    cell.onclick = () => {
+      currentQ = i;
+      visited[i] = true;
+      if(which === 'Test'){
+        renderQuestion();
+        document.getElementById('paletteDropdownTest').classList.remove('show');
+      } else {
+        renderReview();
+        document.getElementById('paletteDropdownReview').classList.remove('show');
+      }
+      window.scrollTo(0,0);
+    };
+    grid.appendChild(cell);
+  });
+}
+
+document.getElementById('paletteBtnTest').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownTest').classList.toggle('show');
+});
+document.getElementById('paletteBtnReview').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownReview').classList.toggle('show');
+});
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.paletteWrap')){
+    document.getElementById('paletteDropdownTest').classList.remove('show');
+    document.getElementById('paletteDropdownReview').classList.remove('show');
+  }
+});
+
+// ---------- SUBMIT ----------
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const unattempted = userAnswers.filter(a => a === null).length;
+  document.getElementById('submitModalText').textContent =
+    `Aap sure hain? ${unattempted} question(s) abhi bhi unattempted hain.`;
+  document.getElementById('submitModal').classList.add('show');
+});
+document.getElementById('modalCancelBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('submitModal').addEventListener('click', (e) => {
+  if(e.target.id === 'submitModal') document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('modalYesBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+  submitTest(false);
+});
+
+function submitTest(auto){
+  if(testSubmitted) return;
+  testSubmitted = true;
+  clearInterval(timerInterval);
+
+  let correct = 0, wrong = 0, attempted = 0;
+  questions.forEach((q, i) => {
+    if(userAnswers[i] !== null){
+      attempted++;
+      if(userAnswers[i] === q.ans) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = questions.length - attempted;
+  const score = (correct*1 - wrong*0.25).toFixed(2);
+
+  document.getElementById('rTotal').textContent = questions.length;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rScore').textContent = score;
+
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ---------- REVIEW ----------
+document.getElementById('reviewBtn').addEventListener('click', () => {
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  currentQ = 0;
+  renderReview();
+  window.scrollTo(0,0);
+});
+document.getElementById('backToResultBtn').addEventListener('click', () => {
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+document.getElementById('rvPrevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; renderReview(); window.scrollTo(0,0);}
+});
+document.getElementById('rvNextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; renderReview(); window.scrollTo(0,0);}
+});
+
+function renderReview(){
+  const q = questions[currentQ];
+  const userAns = userAnswers[currentQ];
+  document.getElementById('rvTag').textContent = q.tag || '';
+  document.getElementById('rvMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('rvText').innerHTML = q.q;
+
+  let statusCls, statusText;
+  if(userAns === null){ statusCls='unattempted'; statusText='Unattempted'; }
+  else if(userAns === q.ans){ statusCls='correct'; statusText='Correct'; }
+  else { statusCls='wrong'; statusText='Wrong'; }
+  const tagEl = document.getElementById('reviewStatusTag');
+  tagEl.className = 'statustag ' + statusCls;
+  tagEl.textContent = statusText;
+
+  const optsDiv = document.getElementById('rvOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(oi === q.ans) btn.classList.add('correct');
+    else if(oi === userAns) btn.classList.add('wrong');
+    let mark = '';
+    if(oi === q.ans) mark = '<span class="mark c">✓</span>';
+    else if(oi === userAns) mark = '<span class="mark w">✗</span>';
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>${mark}`;
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('rvYourAns').innerHTML =
+    userAns === null
+      ? 'Aapne ye question attempt nahi kiya.'
+      : `Your answer: <b>${labels[userAns]}</b> &nbsp;|&nbsp; Correct answer: <b>${labels[q.ans]}</b>`;
+
+  document.getElementById('rvSolutionText').innerHTML = q.sol;
+
+  document.getElementById('rvPrevBtn').disabled = currentQ === 0;
+  document.getElementById('rvNextBtn').disabled = currentQ === questions.length-1;
+  renderPalette('Review');
+}
+
+// ---------- RETAKE ----------
+document.getElementById('retakeBtn').addEventListener('click', () => {
+  userAnswers = new Array(questions.length).fill(null);
+  visited = new Array(questions.length).fill(false);
+  currentQ = 0;
+  timeLeft = TOTAL_SECONDS;
+  testSubmitted = false;
+  updateTimerDisplay();
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('mainHeader').style.display = 'block';
+  document.querySelector('.divider').style.display = 'block';
+  document.getElementById('startScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+</script>
+</body>
+</html>

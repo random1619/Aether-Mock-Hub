@@ -34,7 +34,7 @@ export function useHeroParallax(rootRef: React.RefObject<HTMLElement | null>) {
   const { instance } = useSmoothScroll();
   // Keep a stable ref to the Lenis scroll handler so cleanup can remove it even
   // if `instance` changes identity between renders.
-  const lsScrollUnsubscribe = useRef<(() => void) | null>(null);
+  const lenisScrollUnsubscribe = useRef<(() => void) | null>(null);
 
   useGSAP(
     () => {
@@ -71,12 +71,12 @@ export function useHeroParallax(rootRef: React.RefObject<HTMLElement | null>) {
       const onLenisScroll = () => ScrollTrigger.update();
       if (instance) {
         instance.on('scroll', onLenisScroll);
-        lsScrollUnsubscribe.current = () => instance.off('scroll', onLenisScroll);
+        lenisScrollUnsubscribe.current = () => instance.off('scroll', onLenisScroll);
       }
 
       return () => {
-        lsScrollUnsubscribe.current?.();
-        lsScrollUnsubscribe.current = null;
+        lenisScrollUnsubscribe.current?.();
+        lenisScrollUnsubscribe.current = null;
         tl.scrollTrigger?.kill();
         tl.kill();
       };

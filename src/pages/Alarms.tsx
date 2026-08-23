@@ -71,31 +71,31 @@ export default function Alarms() {
   };
 
   return (
-    <div className="min-h-screen page-surface flex flex-col pb-16">
+    <div className="min-h-screen page-surface flex flex-col pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0">
       <AppChrome title="Mock Exam Alarms" icon={<Clock size={16} />} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-8 space-y-6">
         {/* Header Hero Banner */}
         <Reveal>
-          <div className="p-6 sm:p-8 rounded-3xl bg-surface-2 border border-[var(--glass-border)] shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning-soft text-warning-fg text-xs font-bold">
-                <Bell size={13} className="animate-pulse" /> Desktop Exam Reminders
+          <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-surface-2 border border-[var(--glass-border)] shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+            <div className="space-y-1.5 sm:space-y-2 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-warning-soft text-warning-fg text-[11px] sm:text-xs font-bold">
+                <Bell size={12} className="animate-pulse" /> Desktop Exam Reminders
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-text tracking-[-0.02em]">
+              <h1 className="text-xl sm:text-3xl font-extrabold text-text tracking-[-0.02em]">
                 Scheduled Practice Alarms
               </h1>
-              <p className="text-sm text-muted">
+              <p className="text-xs sm:text-sm text-muted">
                 Never miss your daily test targets. Set alarms that fire desktop alerts, sound chimes, and system tray notifications.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-              <Button onClick={handleTestAlarm} variant="outline" size="sm" className="gap-2 cursor-pointer">
-                <Volume2 size={15} /> {testTriggered ? 'Testing Alarm Sound…' : 'Test Sound & Notification'}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
+              <Button onClick={handleTestAlarm} variant="outline" size="sm" className="gap-2 cursor-pointer w-full sm:w-auto h-9 sm:h-8 text-xs">
+                <Volume2 size={14} /> {testTriggered ? 'Testing Alarm Sound…' : 'Test Sound'}
               </Button>
-              <Button onClick={() => setShowAddForm(true)} variant="primary" size="sm" className="gap-2 cursor-pointer">
-                <Plus size={15} /> Add New Alarm
+              <Button onClick={() => setShowAddForm(true)} variant="primary" size="sm" className="gap-2 cursor-pointer w-full sm:w-auto h-9 sm:h-8 text-xs font-bold">
+                <Plus size={14} /> Add New Alarm
               </Button>
             </div>
           </div>
@@ -103,66 +103,68 @@ export default function Alarms() {
 
         {/* Desktop Status Card */}
         <Reveal delay={0.05}>
-          <div className="p-4 rounded-2xl bg-surface-2/60 border border-[var(--glass-border)] flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className={clsx('w-8 h-8 rounded-xl grid place-items-center text-xs font-bold', isElectron ? 'bg-success-soft text-success-fg' : 'bg-info-soft text-info-fg')}>
-                <Laptop size={16} />
+          <div className="p-3 sm:p-4 rounded-2xl bg-surface-2/60 border border-[var(--glass-border)] flex items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className={clsx('w-8 h-8 rounded-xl grid place-items-center text-xs font-bold shrink-0', isElectron ? 'bg-success-soft text-success-fg' : 'bg-info-soft text-info-fg')}>
+                <Laptop size={15} />
               </div>
-              <div>
-                <div className="text-xs font-bold text-text flex items-center gap-2">
-                  {isElectron ? 'Electron Desktop Mode Active' : 'Web & Browser Mode Active'}
-                  <span className="px-2 py-0.5 rounded-full bg-primary-soft text-primary text-[10px]">
-                    {isElectron ? 'EXE Build' : 'Web App'}
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-text flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <span>{isElectron ? 'Electron Active' : 'Browser Mode Active'}</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-primary-soft text-primary text-[10px]">
+                    {isElectron ? 'EXE' : 'Web'}
                   </span>
                 </div>
-                <div className="text-[11px] text-muted">
+                <div className="text-[10px] sm:text-[11px] text-muted truncate">
                   {isElectron
-                    ? 'Alarms monitor in background & fire even when window is minimized to System Tray.'
+                    ? 'Alarms monitor in background & fire in System Tray.'
                     : 'Alarms trigger while browser tab remains active.'}
                 </div>
               </div>
             </div>
-            {isElectron && <ShieldCheck size={18} className="text-success-fg shrink-0" />}
+            {isElectron && <ShieldCheck size={16} className="text-success-fg shrink-0" />}
           </div>
         </Reveal>
 
         {/* Quick Presets */}
         <Reveal delay={0.1}>
           <Card>
-            <CardHeader title="One-Click Study Presets" icon={<Sparkles size={16} />} />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <button
-                onClick={() => addPreset('Morning Quant Warmup', '08:30')}
-                className="p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer"
-              >
-                <div className="text-xs font-bold text-text flex items-center justify-between">
-                  <span>Morning Quant Warmup</span>
-                  <span className="font-mono text-primary font-extrabold">08:30 AM</span>
-                </div>
-                <div className="text-[11px] text-muted mt-1">20 target practice questions</div>
-              </button>
+            <CardHeader title="One-Click Study Presets" icon={<Sparkles size={15} />} />
+            <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto sm:overflow-visible scrollbar-none pt-2">
+              <div className="flex sm:grid sm:grid-cols-3 gap-2.5 sm:gap-3 min-w-max sm:min-w-0">
+                <button
+                  onClick={() => addPreset('Morning Quant Warmup', '08:30')}
+                  className="w-[15rem] sm:w-auto p-3 sm:p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer shrink-0 sm:shrink"
+                >
+                  <div className="text-xs font-bold text-text flex items-center justify-between gap-2">
+                    <span className="truncate">Morning Quant</span>
+                    <span className="font-mono text-primary font-extrabold shrink-0">08:30 AM</span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-muted mt-0.5">20 target questions</div>
+                </button>
 
-              <button
-                onClick={() => addPreset('Afternoon Reasoning Drill', '14:00')}
-                className="p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer"
-              >
-                <div className="text-xs font-bold text-text flex items-center justify-between">
-                  <span>Afternoon Reasoning Drill</span>
-                  <span className="font-mono text-info-fg font-extrabold">02:00 PM</span>
-                </div>
-                <div className="text-[11px] text-muted mt-1">Speed and accuracy practice</div>
-              </button>
+                <button
+                  onClick={() => addPreset('Afternoon Reasoning Drill', '14:00')}
+                  className="w-[15rem] sm:w-auto p-3 sm:p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer shrink-0 sm:shrink"
+                >
+                  <div className="text-xs font-bold text-text flex items-center justify-between gap-2">
+                    <span className="truncate">Afternoon Reasoning</span>
+                    <span className="font-mono text-info-fg font-extrabold shrink-0">02:00 PM</span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-muted mt-0.5">Speed & accuracy drill</div>
+                </button>
 
-              <button
-                onClick={() => addPreset('Evening Full Mains Mock', '19:00')}
-                className="p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer"
-              >
-                <div className="text-xs font-bold text-text flex items-center justify-between">
-                  <span>Evening Full Mains Mock</span>
-                  <span className="font-mono text-warning-fg font-extrabold">07:00 PM</span>
-                </div>
-                <div className="text-[11px] text-muted mt-1">Full-length exam simulation</div>
-              </button>
+                <button
+                  onClick={() => addPreset('Evening Full Mains Mock', '19:00')}
+                  className="w-[15rem] sm:w-auto p-3 sm:p-3.5 rounded-2xl bg-surface-2/70 hover:bg-surface-2 border border-[var(--glass-border)] text-left transition-all group cursor-pointer shrink-0 sm:shrink"
+                >
+                  <div className="text-xs font-bold text-text flex items-center justify-between gap-2">
+                    <span className="truncate">Evening Full Mock</span>
+                    <span className="font-mono text-warning-fg font-extrabold shrink-0">07:00 PM</span>
+                  </div>
+                  <div className="text-[10px] sm:text-[11px] text-muted mt-0.5">Full exam simulation</div>
+                </button>
+              </div>
             </div>
           </Card>
         </Reveal>
@@ -170,40 +172,40 @@ export default function Alarms() {
         {/* Add New Alarm Form Modal/Card */}
         {showAddForm && (
           <Reveal delay={0.12}>
-            <form onSubmit={handleCreateAlarm} className="p-6 rounded-3xl bg-surface-2 border border-[var(--glass-border)] space-y-4 shadow-lg">
+            <form onSubmit={handleCreateAlarm} className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface-2 border border-[var(--glass-border)] space-y-3 sm:space-y-4 shadow-lg">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-text">Create Practice Alarm</h3>
-                <button type="button" onClick={() => setShowAddForm(false)} className="text-xs text-muted hover:text-text">Close</button>
+                <h3 className="text-xs sm:text-sm font-bold text-text">Create Practice Alarm</h3>
+                <button type="button" onClick={() => setShowAddForm(false)} className="text-xs text-muted hover:text-text cursor-pointer p-1">Close</button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-muted mb-1">Alarm Name / Target</label>
+                  <label className="block text-[11px] sm:text-xs font-medium text-muted mb-1">Alarm Name / Target</label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. English Vocabulary & Grammar Drill"
+                    placeholder="e.g. English Grammar Drill"
                     required
-                    className="w-full h-10 px-3.5 rounded-xl bg-bg-raised border border-[var(--glass-border)] text-text text-sm focus:outline-none focus:border-primary"
+                    className="w-full h-10 px-3 rounded-xl bg-bg-raised border border-[var(--glass-border)] text-text text-xs sm:text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-muted mb-1">Time (24-Hour)</label>
+                  <label className="block text-[11px] sm:text-xs font-medium text-muted mb-1">Time (24-Hour)</label>
                   <input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     required
-                    className="w-full h-10 px-3.5 rounded-xl bg-bg-raised border border-[var(--glass-border)] text-text text-sm focus:outline-none focus:border-primary font-mono"
+                    className="w-full h-10 px-3 rounded-xl bg-bg-raised border border-[var(--glass-border)] text-text text-xs sm:text-sm focus:outline-none focus:border-primary font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted mb-2">Repeat Days</label>
-                <div className="flex flex-wrap gap-2">
+                <label className="block text-[11px] sm:text-xs font-medium text-muted mb-1.5">Repeat Days</label>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {DAYS_OF_WEEK.map((day) => {
                     const active = selectedDays.includes(day);
                     return (
@@ -212,7 +214,7 @@ export default function Alarms() {
                         type="button"
                         onClick={() => toggleDay(day)}
                         className={clsx(
-                          'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer',
+                          'h-8 px-2.5 sm:px-3 rounded-xl text-xs font-bold transition-all cursor-pointer select-none',
                           active ? 'bg-primary text-white shadow-xs' : 'bg-surface text-muted hover:text-text'
                         )}
                       >
@@ -223,11 +225,11 @@ export default function Alarms() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-[var(--glass-border)]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--glass-border)]">
                 <Button type="button" variant="ghost" size="sm" onClick={() => setShowAddForm(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" size="sm">
+                <Button type="submit" variant="primary" size="sm" className="font-bold">
                   Save Alarm
                 </Button>
               </div>
@@ -255,27 +257,27 @@ export default function Alarms() {
                   <div
                     key={alarm.id}
                     className={clsx(
-                      'flex items-center justify-between p-4 rounded-2xl border transition-all',
+                      'flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all gap-3',
                       alarm.enabled
                         ? 'bg-surface-2 border-[var(--glass-border)] shadow-xs'
                         : 'bg-surface/30 border-transparent opacity-60'
                     )}
                   >
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="text-2xl font-black text-text font-mono tracking-tight shrink-0">
-                        {alarm.time}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-sm font-bold text-text truncate">{alarm.title}</div>
-                        <div className="text-xs text-muted truncate mt-0.5 flex items-center gap-2">
-                          <span>{alarm.days.join(', ')}</span>
-                          <span>•</span>
-                          <span className={alarm.enabled ? 'text-success-fg font-semibold' : 'text-muted'}>
-                            {alarm.enabled ? 'Active' : 'Disabled'}
-                          </span>
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="text-xl sm:text-2xl font-black text-text font-mono tracking-tight shrink-0">
+                          {alarm.time}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-text truncate">{alarm.title}</div>
+                          <div className="text-xs text-muted truncate mt-0.5 flex items-center gap-2">
+                            <span>{alarm.days.join(', ')}</span>
+                            <span>•</span>
+                            <span className={alarm.enabled ? 'text-success-fg font-semibold' : 'text-muted'}>
+                              {alarm.enabled ? 'Active' : 'Disabled'}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
                     <div className="flex items-center gap-3 shrink-0">
                       {/* Toggle switch */}

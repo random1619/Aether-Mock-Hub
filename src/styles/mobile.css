@@ -1,0 +1,245 @@
+/* ── MOBILE-FIRST PREMIUM POLISH ─────────────────────────────────────────
+   Everything here is scoped to max-width: 768px so desktop is untouched.
+   Goal: make the app feel like a native iOS/Android app, not a shrunken
+   desktop site. Inspired by Apple HIG + Netflix mobile.
+*/
+
+/* ── 0. Utility — hide scrollbar for touch-swipe areas ─────────────────── */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ── 1. Global mobile rhythm ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Tighter page gutters, but safe */
+  .max-w-7xl {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Bottom bar clearance is handled per-page, but ensure no horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Cards: softer shadow, more radius on mobile feels premium */
+  .card-elevated-hover,
+  .bg-surface,
+  .bg-bg-raised {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06) !important;
+  }
+
+  /* Reduce backdrop-blur on mobile for perf (60fps) */
+  .backdrop-blur-xl {
+    backdrop-filter: blur(12px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+  }
+}
+
+/* ── 2. Hero — mobile compact, bolder ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .hero-band {
+    padding-top: 28px !important;
+    padding-bottom: 20px !important;
+  }
+  .hero-headline {
+    font-size: clamp(1.75rem, 8vw, 2.25rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.028em !important;
+  }
+  .hero-sub {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    opacity: 0.9;
+  }
+  /* Netflix billboard on mobile: less height, tighter text */
+  .hero-band.bg-gradient-to-b {
+    min-height: 44vh !important;
+    padding-top: 18px !important;
+  }
+  .hero-band .hero-headline {
+    font-size: clamp(1.5rem, 7vw, 2rem) !important;
+  }
+}
+
+/* ── 3. Rails — mobile peeks 1.4 cards, snap, no desktop arrows ───────── */
+@media (max-width: 640px) {
+  .rail-track {
+    gap: 12px !important;
+    scroll-padding-left: 16px !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rail-track > * {
+    scroll-snap-align: start !important;
+  }
+  /* Show 1.2 cards peek on very small */
+  .mockcard {
+    min-width: 0;
+  }
+  /* Hide desktop fade */
+  .from-bg {
+    display: none !important;
+  }
+}
+
+/* ── 4. Mock cards — mobile 2-col, larger tap, no hover lift ───────────── */
+@media (max-width: 640px) {
+  /* Kill hover lift on touch */
+  .mockcard {
+    transform: none !important;
+  }
+  .mockcard:hover {
+    transform: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+  }
+  /* Title clamp tighter */
+  .mockcard h3 {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    min-height: 0 !important;
+  }
+  /* Cover art slightly shorter on mobile for denser grid */
+  .mockcard-art {
+    border-radius: 14px !important;
+  }
+}
+
+/* ── 5. Dashboard sections — mobile stacking ────────────────────────────── */
+@media (max-width: 768px) {
+  /* StatStrip: 2-col on mobile, not 4 */
+  .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  /* CommandDeck + WeakSections stack with tighter gap */
+  .space-y-6 {
+    row-gap: 16px !important;
+  }
+  .space-y-12 {
+    row-gap: 28px !important;
+  }
+  /* Filter pills: horizontal scroll instead of wrap on mobile */
+  .flex.flex-wrap.gap-1\.5 {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .flex.flex-wrap.gap-1\.5::-webkit-scrollbar { display: none; }
+}
+
+/* ── 6. Exam — mobile thumb zone ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Question header stacks already, make it even more thumb */
+  [data-question-heading] {
+    border-radius: 8px 8px 0 0;
+  }
+  /* Options: larger, more breathing */
+  [role="radiogroup"] button {
+    font-size: 15px !important;
+  }
+  /* Palette drawer: full-width handle + safe bottom */
+  .fixed.inset-0.z-modal {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ── 7. Bottom bar — floating premium pill on mobile ────────────────────── */
+@media (max-width: 768px) {
+  nav[aria-label="Primary"] {
+    /* Floating pill instead of edge-to-edge bar on very premium feel */
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important;
+    border-radius: 24px !important;
+    padding: 6px 8px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16), 0 1px 3px rgba(0,0,0,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    /* Slight scale for premium */
+    transform: translateZ(0);
+  }
+  /* When scrolled, bar gets more opaque */
+  nav[aria-label="Primary"] a {
+    font-size: 10px !important;
+  }
+  nav[aria-label="Primary"] svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* ── 8. Modals — true bottom sheets on mobile ──────────────────────────── */
+@media (max-width: 640px) {
+  .z-modal {
+    align-items: flex-end !important;
+  }
+  .z-modal > div[role="dialog"] {
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 88dvh !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  /* Command palette on mobile: full-screen */
+  [role="dialog"] + div, .fixed.inset-0.z-\[10000\] {
+    padding-top: 0 !important;
+  }
+  .fixed.inset-0.z-\[10000\] > div {
+    border-radius: 0 !important;
+    max-height: 100dvh !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+  }
+}
+
+/* ── 9. Typography — mobile scale ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  h1 { font-size: clamp(1.5rem, 6vw, 1.875rem) !important; }
+  h2 { font-size: clamp(1.125rem, 4.5vw, 1.375rem) !important; }
+  /* Prevent tiny text */
+  .text-\[11px\], .text-\[10px\] {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+  .text-\[13px\] {
+    font-size: 13.5px !important;
+  }
+}
+
+/* ── 10. Performance — reduce motion on low-end mobile ─────────────────── */
+@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+  /* Keep springs but slightly less heavy */
+  .apple-reveal > * {
+    transition-duration: 0.32s !important;
+  }
+  /* Less blur on mobile for 60fps */
+  [style*="backdrop-filter"] {
+    backdrop-filter: blur(12px) !important;
+  }
+}
+
+/* ── 11. Search — mobile full-width ────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* SearchPill on mobile: expand */
+  input[placeholder*="mocks"] {
+    font-size: 15px !important;
+  }
+  /* CommandPalette on mobile: tighter */
+  .max-w-2xl {
+    max-width: 100% !important;
+  }
+}
+
+/* ── 12. Analytics / Charts — mobile: stack, hide heavy grid ───────────── */
+@media (max-width: 640px) {
+  .recharts-wrapper {
+    font-size: 11px !important;
+  }
+  /* Provider cards: 1-col on mobile */
+  .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+}

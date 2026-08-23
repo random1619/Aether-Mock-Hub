@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>devgagan</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --p:#4F46E5;
+            --s:#10B981;
+            --d:#EF4444;
+            --w:#F59E0B;
+            --y:#FCD34D;
+            --bg:#F8FAFC;
+            --card:#FFF;
+            --txt:#1F2937;
+            --txtL:#6B7280;
+            --brd:#E5E7EB;
+            --shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+            --radius:12px;
+            --transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dark mode variables */
+            --dark-bg:#1a1a2e;
+            --dark-card:#16213e;
+            --dark-txt:#e6e6e6;
+            --dark-txtL:#b8b8b8;
+            --dark-brd:#2a2a3a;
+        }
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+            background:var(--bg);
+            color:var(--txt);
+            line-height:1.5;
+            padding-bottom:80px;
+            transition:var(--transition);
+        }
+        
+        body.dark-mode {
+            background:var(--dark-bg);
+            color:var(--dark-txt);
+        }
+        
+        /* Improved math expression and table styling */
+        .math-exp {
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            margin: 0 2px;
+        }
+        
+        .math-num {
+            text-align: center;
+            display: block;
+            padding: 0;
+        }
+        
+        .welcome-instructions {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .dark-mode .welcome-instructions {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .welcome-instructions h3 {
+            margin-bottom: 12px;
+            color: var(--s);
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-instructions li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .math-line {
+            display: block;
+            border-top: 1px solid;
+            padding: 0;
+            text-align: center;
+        }
+        
+        /* Table overflow container */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 12px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--brd);
+        }
+        
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .dark-mode table, 
+        .dark-mode th, 
+        .dark-mode td {
+            border-color: var(--dark-brd);
+        }
+        
+        /* Image containment styles */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        /* Ensure images don't overflow in any container */
+        .q-txt img, .opt-txt img, .sol img, .comp img {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        /* Specific image containers */
+        .img-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        
+        /* Welcome screen styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--card);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .dark-mode .welcome-screen {
+            background: var(--dark-card);
+        }
+        
+        .welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--p);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--p);
+        }
+        
+        .welcome-details {
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+        }
+        
+        .dark-mode .welcome-details {
+            background: rgba(79, 70, 229, 0.2);
+        }
+        
+        .welcome-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .welcome-detail:last-child {
+            margin-bottom: 0;
+        }
+        
+        .welcome-detail-label {
+            font-weight: 600;
+            color: var(--txtL);
+        }
+        
+        .dark-mode .welcome-detail-label {
+            color: var(--dark-txtL);
+        }
+        
+        .welcome-detail-value {
+            font-weight: 500;
+        }
+        
+        .section-info {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .dark-mode .section-info {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .section-info h3 {
+            margin-bottom: 12px;
+            color: var(--s);
+        }
+        
+        .section-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        
+        .section-list th, .section-list td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--brd);
+        }
+        
+        .dark-mode .section-list th, 
+        .dark-mode .section-list td {
+            border-bottom-color: var(--dark-brd);
+        }
+        
+        .section-list th {
+            font-weight: 600;
+            color: var(--txtL);
+        }
+        
+        .dark-mode .section-list th {
+            color: var(--dark-txtL);
+        }
+        
+        .welcome-button {
+            background: var(--p);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .join-channel {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--p);
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 16px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            background: rgba(79, 70, 229, 0.1);
+            transition: var(--transition);
+        }
+        
+        .dark-mode .join-channel {
+            background: rgba(79, 70, 229, 0.2);
+        }
+        
+        .join-channel:hover {
+            background: rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .dark-mode .join-channel:hover {
+            background: rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Section header styles */
+        .section-header {
+            background: var(--p);
+            color: white;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .section-timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .hdr{
+            background:var(--card);
+            border-bottom:1px solid var(--brd);
+            padding:12px 16px;
+            display:grid;
+            grid-template-columns:1fr auto 1fr;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:100;
+            box-shadow:var(--shadow);
+            transition:var(--transition);
+        }
+        
+        .dark-mode .hdr {
+            background:var(--dark-card);
+            border-bottom-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        
+        .hdr-l{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            justify-self:start
+        }
+        .hdr-c{
+            text-align:center;
+            font-weight:600;
+            font-size:15px
+        }
+        .hdr-r{
+            display:flex;
+            justify-self:end;
+            align-items:center;
+            gap:8px
+        }
+        .q-info{
+            font-size:14px;
+            font-weight:600
+        }
+        .timer{
+            background:#FEF3C7;
+            color:#92400E;
+            padding:6px 12px;
+            border-radius:16px;
+            font-size:13px;
+            font-weight:600
+        }
+        .btn{
+            border:none;
+            border-radius:8px;
+            font-weight:500;
+            cursor:pointer;
+            transition:var(--transition);
+            font-size:13px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+        }
+        .btn-sm{
+            padding:8px 12px
+        }
+        .btn-p{
+            background:var(--p);
+            color:white
+        }
+        .btn-o{
+            background:transparent;
+            border:1px solid var(--brd);
+            color:var(--txt)
+        }
+        .dark-mode .btn-o {
+            border-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .btn-w{
+            background:var(--y);
+            color:#78350F;
+            font-weight:600;
+        }
+        .btn-w.active{
+            background:var(--w);
+            color:white;
+        }
+        .btn:active{
+            transform:scale(.98)
+        }
+        .cont{
+            padding:16px;
+            max-width:100%;
+            overflow-x:hidden;
+        }
+        .dark-mode .cont {
+            background:var(--dark-bg);
+        }
+        .q-card{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:20px;
+            margin-bottom:16px;
+            border:1px solid var(--brd);
+            overflow:hidden;
+            box-shadow:var(--shadow);
+            transition:var(--transition);
+        }
+        .dark-mode .q-card {
+            background:var(--dark-card);
+            border-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .lang{
+            display:flex;
+            background:#F3F4F6;
+            border-radius:8px;
+            padding:2px;
+            margin-bottom:16px
+        }
+        .dark-mode .lang {
+            background:#2a2a3a;
+        }
+        .lang-btn{
+            flex:1;
+            padding:8px;
+            border:none;
+            background:transparent;
+            border-radius:6px;
+            font-size:13px;
+            cursor:pointer;
+            transition:var(--transition)
+        }
+        .lang-btn.active{
+            background:white;
+            color:var(--p);
+            box-shadow:0 1px 3px rgba(0,0,0,.1)
+        }
+        .dark-mode .lang-btn.active {
+            background:var(--dark-card);
+            color:var(--p);
+        }
+        .comp{
+            background:#F0F9FF;
+            border:1px solid #BAE6FD;
+            border-radius:8px;
+            padding:16px;
+            margin-bottom:20px;
+            overflow:hidden
+        }
+        .dark-mode .comp {
+            background:#1e3a8a;
+            border-color:#1e40af;
+        }
+        .comp h4{
+            color:#0369A1;
+            font-size:14px;
+            margin-bottom:8px
+        }
+        .dark-mode .comp h4 {
+            color:#93c5fd;
+        }
+        .q-txt{
+            font-size:16px;
+            line-height:1.6;
+            margin-bottom:20px;
+            color:var(--txt);
+            overflow:hidden;
+            word-wrap:break-word
+        }
+        .dark-mode .q-txt {
+            color:var(--dark-txt);
+        }
+        .opts{
+            display:flex;
+            flex-direction:column;
+            gap:12px
+        }
+        .opt{
+            display:flex;
+            align-items:center;
+            padding:16px;
+            background:var(--card);
+            border:2px solid var(--brd);
+            border-radius:12px;
+            cursor:pointer;
+            transition:var(--transition);
+            gap:12px;
+            overflow:hidden
+        }
+        .dark-mode .opt {
+            background:var(--dark-card);
+            border-color:var(--dark-brd);
+        }
+        .opt:hover:not(.submitted){
+            border-color:var(--p);
+            transform:translateY(-2px);
+            box-shadow:var(--shadow);
+        }
+        .opt.sel{
+            border-color:var(--p);
+            background:#F0F9FF
+        }
+        .dark-mode .opt.sel {
+            background:#1e3a8a;
+        }
+        .opt.correct{
+            border-color:var(--s);
+            background:#F0FDF4 !important
+        }
+        .dark-mode .opt.correct {
+            background:#064e3b !important;
+            border-color:#047857;
+        }
+        .opt.wrong{
+            border-color:var(--d);
+            background:#FEF2F2 !important
+        }
+        .dark-mode .opt.wrong {
+            background:#7f1d1d !important;
+            border-color:#b91c1c;
+        }
+        .opt.submitted{
+            cursor:default
+        }
+        .opt-radio{
+            width:20px;
+            height:20px;
+            border:2px solid var(--brd);
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0
+        }
+        .dark-mode .opt-radio {
+            border-color:var(--dark-brd);
+        }
+        .opt.sel .opt-radio{
+            border-color:var(--p);
+            background:var(--p)
+        }
+        .opt.sel .opt-radio::after{
+            content:'✓';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt.correct .opt-radio{
+            border-color:var(--s) !important;
+            background:var(--s) !important
+        }
+        .opt.correct .opt-radio::after{
+            content:'✓';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt.wrong .opt-radio{
+            border-color:var(--d) !important;
+            background:var(--d) !important
+        }
+        .opt.wrong .opt-radio::after{
+            content:'✗';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt-txt{
+            flex:1;
+            font-size:15px;
+            overflow:hidden;
+            word-wrap:break-word
+        }
+        .dark-mode .opt-txt {
+            color:var(--dark-txt);
+        }
+        .sol{
+            background:#F0FDF4;
+            border:1px solid #BBF7D0;
+            border-radius:8px;
+            padding:16px;
+            margin-top:20px;
+            display:none;
+            overflow:hidden
+        }
+        .dark-mode .sol {
+            background:#064e3b;
+            border-color:#047857;
+        }
+        .sol.show{
+            display:block
+        }
+        .sol h4{
+            color:var(--s);
+            font-size:14px;
+            margin-bottom:8px;
+            display:flex;
+            align-items:center;
+            gap:6px
+        }
+        .dark-mode .sol h4 {
+            color:#34d399;
+        }
+        .sol-info{
+            display:flex;
+            gap:12px;
+            margin-bottom:12px;
+            font-size:13px;
+            color:var(--txtL);
+        }
+        .dark-mode .sol-info {
+            color:var(--dark-txtL);
+        }
+        .sol-info span{
+            display:flex;
+            align-items:center;
+            gap:4px;
+        }
+        .nav{
+            position:fixed;
+            bottom:0;
+            left:0;
+            right:0;
+            background:var(--card);
+            border-top:1px solid var(--brd);
+            padding:12px 16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            z-index:100;
+            box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+            transition:var(--transition);
+        }
+        .dark-mode .nav {
+            background:var(--dark-card);
+            border-top-color:var(--dark-brd);
+        }
+        .nav-btn{
+            padding:12px 20px;
+            border-radius:8px;
+            font-weight:600;
+            min-width:80px
+        }
+        .nav-btn:disabled{
+            opacity:.5;
+            cursor:not-allowed
+        }
+        .prog{
+            text-align:center;
+            font-size:13px;
+            color:var(--txtL)
+        }
+        .dark-mode .prog {
+            color:var(--dark-txtL);
+        }
+        .panel{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:var(--card);
+            z-index:200;
+            transform:translateY(100%);
+            transition:transform .3s ease;
+            overflow-y:auto;
+            display:none;
+        }
+        .dark-mode .panel {
+            background:var(--dark-card);
+        }
+        .panel.open{
+            transform:translateY(0);
+            display:block;
+        }
+        .panel-hdr{
+            background:var(--p);
+            color:white;
+            padding:16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:1;
+        }
+        .panel-close{
+            background:none;
+            border:none;
+            color:white;
+            font-size:18px;
+            cursor:pointer
+        }
+        .q-grid{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:12px;
+            padding:20px
+        }
+        .q-num{
+            aspect-ratio:1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#F3F4F6;
+            border-radius:8px;
+            font-weight:600;
+            cursor:pointer;
+            transition:var(--transition);
+            font-size:14px
+        }
+        .dark-mode .q-num {
+            background:#2a2a3a;
+            color:var(--dark-txt);
+        }
+        .q-num.cur{
+            background:var(--p);
+            color:white
+        }
+        .q-num.ans{
+            background:var(--s);
+            color:white
+        }
+        .q-num.wrong{
+            background:var(--d);
+            color:white
+        }
+        .q-num.review{
+            background:var(--y);
+            color:#78350F;
+            font-weight:bold;
+        }
+        .q-num.unattempted {
+            background:#E5E7EB;
+            color:#6B7280;
+        }
+        .dark-mode .q-num.unattempted {
+            background:#4B5563;
+            color:#D1D5DB;
+        }
+        .q-num.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .q-num:hover{
+            transform:scale(1.05)
+        }
+        .modal{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:rgba(0,0,0,.5);
+            z-index:300;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px
+        }
+        .modal.show{
+            display:flex
+        }
+        .result{
+            background:var(--card);
+            border-radius:16px;
+            padding:24px;
+            width:100%;
+            max-width:400px;
+            text-align:center
+        }
+        .dark-mode .result {
+            background:var(--dark-card);
+        }
+        .score{
+            font-size:2rem;
+            font-weight:bold;
+            color:var(--p);
+            margin:16px 0
+        }
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:12px;
+            margin:20px 0
+        }
+        .stat{
+            text-align:center;
+            padding:12px;
+            border-radius:8px;
+            border:1px solid var(--brd)
+        }
+        .dark-mode .stat {
+            border-color:var(--dark-brd);
+        }
+        .stat-val{
+            font-size:1.5rem;
+            font-weight:bold;
+            margin-bottom:4px
+        }
+        .stat-lbl{
+            font-size:12px;
+            color:var(--txtL)
+        }
+        .dark-mode .stat-lbl {
+            color:var(--dark-txtL);
+        }
+        .stat.c{
+            border-color:var(--s);
+            background:#F0FDF4
+        }
+        .dark-mode .stat.c {
+            background:#064e3b;
+            border-color:#047857;
+        }
+        .stat.w{
+            border-color:var(--d);
+            background:#FEF2F2
+        }
+        .dark-mode .stat.w {
+            background:#7f1d1d;
+            border-color:#b91c1c;
+        }
+        .stat.c .stat-val{
+            color:var(--s)
+        }
+        .dark-mode .stat.c .stat-val {
+            color:#34d399;
+        }
+        .stat.w .stat-val{
+            color:var(--d)
+        }
+        .dark-mode .stat.w .stat-val {
+            color:#f87171;
+        }
+        .modal-acts{
+            display:flex;
+            gap:12px;
+            margin-top:20px
+        }
+        .modal-btn{
+            flex:1;
+            padding:12px;
+            border-radius:8px;
+            font-weight:600
+        }
+        .print-btn{
+            position:fixed;
+            bottom:100px;
+            right:20px;
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:var(--p);
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow:0 4px 10px rgba(0,0,0,0.2);
+            z-index:50;
+            cursor:pointer;
+            transition:var(--transition);
+            border:none;
+        }
+        .print-btn:hover{
+            transform:scale(1.1);
+        }
+        .dark-mode .print-btn {
+            background:var(--p);
+        }
+        .desktop-sidebar{
+            display:none;
+            position:fixed;
+            right:0;
+            top:0;
+            bottom:0;
+            width:300px;
+            background:var(--card);
+            border-left:1px solid var(--brd);
+            padding:20px;
+            overflow-y:auto;
+            z-index:90;
+            transition:var(--transition);
+        }
+        .dark-mode .desktop-sidebar {
+            background:var(--dark-card);
+            border-left-color:var(--dark-brd);
+        }
+        .desktop-sidebar h3{
+            margin-bottom:16px;
+            padding-bottom:12px;
+            border-bottom:1px solid var(--brd);
+            color:var(--txt);
+        }
+        .dark-mode .desktop-sidebar h3 {
+            border-bottom-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .theme-toggle{
+            background:none;
+            border:none;
+            color:var(--txt);
+            font-size:18px;
+            cursor:pointer;
+            margin-left:8px;
+        }
+        .dark-mode .theme-toggle {
+            color:var(--dark-txt);
+        }
+        @media (min-width: 1024px) {
+            .cont{
+                padding-right:320px;
+            }
+            .desktop-sidebar{
+                display:block;
+            }
+            .panel{
+                display:none !important;
+            }
+        }
+        @media (max-width:375px){
+            .hdr{padding:10px 12px}
+            .cont{padding:12px}
+            .q-card{padding:16px}
+            .q-grid{grid-template-columns:repeat(4,1fr)}
+        }
+        
+    </style>
+</head>
+<body>
+
+<!-- Welcome Screen -->
+<div class="welcome-screen" id="welcomeScreen">
+    <h1 class="welcome-title">Exam ID : SUPER_BATCH</h1>
+    
+    <div class="welcome-details">
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Test ID</span>
+            <span class="welcome-detail-value">38552 </span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Total Questions:</span>
+            <span class="welcome-detail-value">20</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Total Marks:</span>
+            <span class="welcome-detail-value">20</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Duration:</span>
+            <span class="welcome-detail-value">20 minutes</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Marking:</span>
+            <span class="welcome-detail-value">+1 / -0.25</span>
+        </div>
+    </div>
+    
+    <div class="welcome-instructions">
+        <h3>Instructions</h3>
+        <ul>
+            <li>Read each question carefully before answering</li>
+            <li>You can mark questions for review and come back later</li>
+            <li>The timer will automatically submit the test when time is up</li>
+            <li>Negative marking applies for wrong answers</li>
+        </ul>
+    </div>
+    
+    <div class="welcome-buttons">
+        <button class="welcome-button" id="startTestBtn">
+            <i class="fas fa-play"></i> Start Test
+        </button>
+        
+        <a href="https://t.me/mocks_wallah" target="_blank" class="join-channel">
+            <i class="fab fa-telegram"></i> Join Our Channel
+        </a>
+    </div>
+ </div>
+
+    <!-- Main Test Interface (hidden initially) -->
+    <div style="display:none" id="mainTestInterface">
+        <div class="hdr">
+            <div class="hdr-l">
+                <div class="q-info" id="qInfo">Q1/20</div>
+                <div class="timer" id="timer">20:00</div>
+            </div>
+            <div class="hdr-c">Mocks Wallah</div>
+            <div class="hdr-r">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button class="btn btn-o btn-sm" id="menuBtn"><i class="fas fa-th"></i></button>
+                <button class="btn btn-p btn-sm" id="subBtn">Submit</button>
+            </div>
+        </div>
+
+        <div class="cont">
+            
+            <div class="q-card">
+                <div class="lang">
+                    <button class="lang-btn active" id="engBtn">English</button>
+                    <button class="lang-btn" id="hinBtn">हिंदी</button>
+                </div>
+
+                <div id="compSec" class="comp" style="display:none">
+                    <h4><i class="fas fa-book"></i> Comprehension</h4>
+                    <div id="compCont"></div>
+                </div>
+
+                <div class="q-txt" id="qTxt"></div>
+                <div class="opts" id="opts"></div>
+
+                <div class="sol" id="sol">
+                    <div class="sol-info" id="solInfo"></div>
+                    <h4><i class="fas fa-lightbulb"></i> Solution</h4>
+                    <div id="solCont"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="btn btn-o nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+            <button class="btn btn-w nav-btn" id="reviewBtn"><i class="fas fa-flag"></i> Review</button>
+            <div class="prog">
+                <div id="progTxt">1 of 20</div>
+                <div style="font-size:11px">Answered: <span id="ansCnt">0</span> | <a href="https://t.me/mocks_wallah">Mocks Wallah</a></div>
+            </div>
+            <button class="btn btn-p nav-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div class="desktop-sidebar" id="desktopSidebar">
+            <h3>Questions Navigator</h3>
+            <div class="q-grid" id="desktopQGrid"></div>
+            <div style="margin-top:20px;font-size:12px;color:var(--txtL)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num ans" style="width:24px;height:24px">✓</div><span>Answered</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num review" style="width:24px;height:24px">!</div><span>Marked for Review</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num wrong" style="width:24px;height:24px">✗</div><span>Incorrect</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="q-num unattempted" style="width:24px;height:24px">?</div><span>Unattempted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel">
+            <div class="panel-hdr">
+                <h3>All Questions</h3>
+                <button class="panel-close" id="panelClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="q-grid" id="qGrid"></div>
+            <div style="padding:20px;font-size:12px;color:var(--txtL)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num ans" style="width:24px;height:24px">✓</div><span>Answered</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num review" style="width:24px;height:24px">!</div><span>Marked for Review</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num wrong" style="width:24px;height:24px">✗</div><span>Incorrect</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="q-num unattempted" style="width:24px;height:24px">?</div><span>Unattempted</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="print-btn" id="printBtn" style="display:none">
+            <i class="fas fa-print"></i>
+        </button>
+
+        <div class="modal" id="modalOver">
+            <div class="result">
+                <h2>Test Complete!</h2>
+                <div class="score" id="scoreDisp">0/20</div>
+                <div class="stats">
+                    <div class="stat c"><div class="stat-val" id="corrStat">0</div><div class="stat-lbl">Correct</div></div>
+                    <div class="stat w"><div class="stat-val" id="incStat">0</div><div class="stat-lbl">Incorrect</div></div>
+                    <div class="stat"><div class="stat-val" id="unaStat">0</div><div class="stat-lbl">Unattempted</div></div>
+                    <div class="stat"><div class="stat-val" id="timeStat">0</div><div class="stat-lbl">Minutes</div></div>
+                </div>
+                <div class="modal-acts">
+                    <button class="btn btn-o modal-btn" id="closeModal">Close</button>
+                    <button class="btn btn-p modal-btn" id="revBtn">Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TestApp {
+            constructor() {
+            this.qs = [
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b> Study the data carefully and answer the following question.</p><p>Below pie chart shows the percentage distribution of employees who were hired by a company from 2012 to 2016:</p><p>Total number of employees who hired by the company from 2012 to 2016 = 8000</p><p><img width=480 height=288 id=\"Chart 7\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18825/image007.png\"></p><p>Below pie chart shows the break-up (in degree) of male employees who were hired by the company from 2012 to 2016:</p><p>Total number of males employees who hired by the company from 2012 to 2016 = 5400</p><p><img width=480 height=288 id=\"Chart 8\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18825/image008.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358;:</b> &#2337;&#2375;&#2335;&#2366; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2352;&#2375;&#2306; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344; &#2325;&#2366; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2375;&#2306;&#2404;</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; 2012 &#2360;&#2375; 2016 &#2340;&#2325; &#2319;&#2325; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;:</p><p>2012 &#2360;&#2375; 2016 &#2340;&#2325; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 8000</p><p><img width=480 height=288 id=\"Chart 7\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18825/image007.png\"></p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; 2012 &#2360;&#2375; 2016 &#2340;&#2325; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2346;&#2369;&#2352;&#2369;&#2359; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2366; &#2348;&#2381;&#2352;&#2375;&#2325;-&#2309;&#2346; (&#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2350;&#2375;&#2306;) &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;:</p><p>2012 &#2360;&#2375; 2016 &#2340;&#2325; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2346;&#2369;&#2352;&#2369;&#2359; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 5400</p><p><img width=480 height=288 id=\"&#2330;&#2366;&#2352;&#2381;&#2335; 8\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18825/image008.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>24% and 36% employees who were hired by the company in 2013 are from IT and HR departments, respectively, then how many employees who hired by the company in 2013 are from other than IT and HR departments?</p></span><span class=\"hqt\" style=\"display:none\"><p>2013 &#2350;&#2375;&#2306; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2325;&#2367;&#2319; &#2327;&#2319; 24% &#2324;&#2352; 36% &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2368; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; &#2310;&#2312;&#2335;&#2368; &#2324;&#2352; &#2319;&#2330;&#2310;&#2352; &#2357;&#2367;&#2349;&#2366;&#2327;&#2379;&#2306; &#2360;&#2375; &#2361;&#2376;&#2306;, &#2340;&#2379; 2013 &#2350;&#2375;&#2306; &#2325;&#2306;&#2346;&#2344;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2344;&#2367;&#2351;&#2369;&#2325;&#2381;&#2340; &#2325;&#2367;&#2319; &#2327;&#2319; &#2325;&#2367;&#2340;&#2344;&#2375; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2368; &#2310;&#2312;&#2335;&#2368; &#2324;&#2352; &#2319;&#2330;&#2310;&#2352; &#2357;&#2367;&#2349;&#2366;&#2327;&#2379;&#2306; &#2325;&#2375; &#2309;&#2354;&#2366;&#2357;&#2366; &#2309;&#2344;&#2381;&#2351; &#2357;&#2367;&#2349;&#2366;&#2327;&#2379;&#2306; &#2360;&#2375; &#2361;&#2376;&#2306;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">344</span><span class=\"hqt\" style=\"display:none\">344</span>",
+      "<span class=\"eqt\">324</span><span class=\"hqt\" style=\"display:none\">324</span>",
+      "<span class=\"eqt\">384</span><span class=\"hqt\" style=\"display:none\">384</span>",
+      "<span class=\"eqt\">354</span><span class=\"hqt\" style=\"display:none\">354</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Number of employees hired in 2012 = 8000 * 20/100 = 1600</p><p>Number of male employees hired in 2012 = 5400 * 72/360 = 1080</p><p>So, number of female employees hired in 2012 = 1600  -  1080 = 520 </p><p>Similarly, calculating the remaining data: </p><table style=\"border-collapse:collapse;\"><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Total</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Male</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Female</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2012</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1600</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1080</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">520</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2013</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">960</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">675</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">285</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2014</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2240</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1620</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">620</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2015</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1200</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">900</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">300</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2016</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">2000</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1125</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">875</td></tr></table><br><p>The number of employees who were hired by the company in 2013 are from other than IT and HR departments = 960 * (100  -  24  -  36)/100 = 384</p>",
+    "question_index": 0
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b> The following pie charts show the distribution (percentage wise) of students who have given different exams from institutes A and B.</p><p>Total number of students who have given exams from institute A and B are 1800 and 1600 respectively.</p><p><img width=369 height=336 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18870/image002.png\"><img width=359 height=336 id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18870/image003.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358;:</b> &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; &#2360;&#2306;&#2360;&#2381;&#2341;&#2366;&#2344; A &#2324;&#2352; B &#2360;&#2375; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; &#2342;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2366; &#2357;&#2367;&#2340;&#2352;&#2339; (&#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2325;&#2375; &#2309;&#2344;&#2369;&#2360;&#2366;&#2352;) &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2360;&#2306;&#2360;&#2381;&#2341;&#2366;&#2344; A &#2324;&#2352; B &#2360;&#2375; &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; &#2342;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 1800 &#2324;&#2352; 1600 &#2361;&#2376;&#2404;</p><p><img width=369 height=336 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18870/image002.png\"><img width=359 height=336 id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18870/image003.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>Number of students who have given CHSL exam from institute A are what percentage of number of students who have given CPO exam from institute B?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2360;&#2306;&#2360;&#2381;&#2341;&#2366;&#2344; A &#2360;&#2375; CHSL &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; &#2342;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2360;&#2306;&#2360;&#2381;&#2341;&#2366;&#2344; B &#2360;&#2375; CPO &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; &#2342;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2325;&#2367;&#2340;&#2344;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">113.25%</span><span class=\"hqt\" style=\"display:none\">113.25%</span>",
+      "<span class=\"eqt\">127.5%</span><span class=\"hqt\" style=\"display:none\">127.5%</span>",
+      "<span class=\"eqt\">118.75%</span><span class=\"hqt\" style=\"display:none\">118.75%</span>",
+      "<span class=\"eqt\">124.5%</span><span class=\"hqt\" style=\"display:none\">124.5%</span>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Number of students who have given CHSL exam from institute A = 1800 * 17/100 = 18 * 17</p><p>Number of students who have given CPO exam from institute B = 1600 * 15/100 = 16 * 15</p><p>Required% = (18 * 17) * 100/ (16 * 15) = 1275/10 = 127.5%</p>",
+    "question_index": 1
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The pie chart 1 shows the percentage distribution of number of men who visited 5 shops in a day. The pie chart 2 shows the percentage distribution of total number of women who visited 5 shops in a day.</p><p>Total number of men who visited 5 shops in a day = 2500</p><p>Total number of women who visited 5 shops in a day = 1000</p><p><img width=509 height=379 id=\"Chart 9\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image011.png\"></p><p><img width=513 height=379 id=\"Chart 10\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image012.png\"></p><p>Total number of men who visited shop A, B and C in a day is approximately what percent of total number of women who visited shop C, D and E in a day (Correct to two decimal places)?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; 1 &#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; 5 &#2342;&#2369;&#2325;&#2366;&#2344;&#2379;&#2306; &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2346;&#2369;&#2352;&#2369;&#2359;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; 2 &#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; 5 &#2342;&#2369;&#2325;&#2366;&#2344;&#2379;&#2306; &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2368; &#2350;&#2361;&#2367;&#2354;&#2366;&#2323;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; 5 &#2342;&#2369;&#2325;&#2366;&#2344;&#2379;&#2306; &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2346;&#2369;&#2352;&#2369;&#2359;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 2500</p><p>&#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; 5 &#2342;&#2369;&#2325;&#2366;&#2344;&#2379;&#2306; &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2368; &#2350;&#2361;&#2367;&#2354;&#2366;&#2323;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 1000</p><p><img width=509 height=379 id=\"Chart 9\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image011.png\"></p><p><img width=513 height=379 id=\"Chart 10\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image012.png\"></p><p>&#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; &#2342;&#2369;&#2325;&#2366;&#2344; A, B &#2324;&#2352; C &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2346;&#2369;&#2352;&#2369;&#2359;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2319;&#2325; &#2342;&#2367;&#2344; &#2350;&#2375;&#2306; &#2342;&#2369;&#2325;&#2366;&#2344; C, D &#2324;&#2352; E &#2346;&#2352; &#2332;&#2366;&#2344;&#2375; &#2357;&#2366;&#2354;&#2368; &#2350;&#2361;&#2367;&#2354;&#2366;&#2323;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2354;&#2327;&#2349;&#2327; &#2325;&#2367;&#2340;&#2344;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2361;&#2376; (&#2342;&#2379; &#2342;&#2358;&#2350;&#2354;&#2357; &#2360;&#2381;&#2341;&#2366;&#2344;&#2379;&#2306; &#2340;&#2325; &#2360;&#2361;&#2368;)?</p></span>",
+    "options": [
+      "<span class=\"eqt\">179.77%</span><span class=\"hqt\" style=\"display:none\">179.77%</span>",
+      "<span class=\"eqt\">334.33%</span><span class=\"hqt\" style=\"display:none\">334.33%</span>",
+      "<span class=\"eqt\">214.29%</span><span class=\"hqt\" style=\"display:none\">214.29%</span>",
+      "<span class=\"eqt\">126.46%</span><span class=\"hqt\" style=\"display:none\">126.46%</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Total number of men who visited shop A, B and C in a day = 2500 * (18+12+30) % = 1500</p><p>Total number of women who visited shop C, D and E in a day = 1000 * (21+28+21) % = 700</p><p>Required percentage = <img width=79 height=37 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image013.png\"> = 214.29%</p>",
+    "question_index": 2
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The following pie chart shows the percentage distribution of total number of headphones sold by 7 companies. Total number of headphones sold by 7 companies are 54000.</p><p><img width=407 height=336 id=\"Chart 11\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image018.png\"></p><p>Find the difference between the average number of headphones sold by company P, Q, R and S together and the average number of headphones sold by company M, N and O together?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; 7 &#2325;&#2306;&#2346;&#2344;&#2367;&#2351;&#2379;&#2306; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2361;&#2375;&#2337;&#2347;&#2364;&#2379;&#2344; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; 7 &#2325;&#2306;&#2346;&#2344;&#2367;&#2351;&#2379;&#2306; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2361;&#2375;&#2337;&#2347;&#2364;&#2379;&#2344; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 54000 &#2361;&#2376;&#2404;</p><p><img width=407 height=336 id=\"Chart 11\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image018.png\"></p><p>&#2325;&#2306;&#2346;&#2344;&#2368; P, Q, R &#2324;&#2352; S &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2361;&#2375;&#2337;&#2347;&#2364;&#2379;&#2344; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2324;&#2352; &#2325;&#2306;&#2346;&#2344;&#2368; M, N &#2324;&#2352; O &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2361;&#2375;&#2337;&#2347;&#2364;&#2379;&#2344; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2348;&#2368;&#2330; &#2309;&#2306;&#2340;&#2352; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">1305</span><span class=\"hqt\" style=\"display:none\">1305</span>",
+      "<span class=\"eqt\">3450</span><span class=\"hqt\" style=\"display:none\">3450</span>",
+      "<span class=\"eqt\">1224</span><span class=\"hqt\" style=\"display:none\">1224</span>",
+      "<span class=\"eqt\">1000</span><span class=\"hqt\" style=\"display:none\">1000</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Total number of headphones sold by company P, Q, R and S together = 54000 * (12+20+15+6)% = 28620</p><p>Average number of headphones sold by company P, Q, R and S together = <img width=49 height=36 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image019.png\"> = 7155</p><p>Total number of headphones sold by company M, N and O together = 54000 * (21+16+10) % = 25380</p><p>Average number of headphones sold by company M, N and O together = <img width=49 height=37 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20812/image020.png\"> = 8460</p><p>Required difference = 8460  -  7155 = 1305</p>",
+    "question_index": 3
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Read the following data carefully and answer the following questions. The following pie chart shows the percentage distribution of five different fruits sold by shop A. The total fruits sold by shop A = 1600 kgs.</p><p><img width=576 height=336 id=\"Chart 4\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p24968/image006.png\"></p><p>Find the average of the total number of Bananas, Mangos, and peaches together sold by shop A.</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2337;&#2375;&#2335;&#2366; &#2325;&#2379; &#2343;&#2381;&#2351;&#2366;&#2344; &#2360;&#2375; &#2346;&#2338;&#2364;&#2375;&#2306; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2375;&#2306;&#2404; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2366;&#2312; &#2330;&#2366;&#2352;&#2381;&#2335; &#2342;&#2369;&#2325;&#2366;&#2344; A &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2346;&#2366;&#2305;&#2330; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2347;&#2354;&#2379;&#2306; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2342;&#2369;&#2325;&#2366;&#2344; A &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2325;&#2369;&#2354; &#2347;&#2354; = 1600 &#2325;&#2367;&#2354;&#2379;&#2327;&#2381;&#2352;&#2366;&#2350;&#2404;</p><p><img width=576 height=336 id=\"Chart 4\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p24968/image006.png\"></p><p>&#2342;&#2369;&#2325;&#2366;&#2344; A &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2375; &#2327;&#2319; &#2325;&#2375;&#2354;&#2375;, &#2310;&#2350; &#2324;&#2352; &#2310;&#2337;&#2364;&#2370; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2324;&#2360;&#2340; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2352;&#2375;&#2306;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">366</span><span class=\"hqt\" style=\"display:none\">366</span>",
+      "<span class=\"eqt\">362</span><span class=\"hqt\" style=\"display:none\">362</span>",
+      "<span class=\"eqt\">364</span><span class=\"hqt\" style=\"display:none\">364</span>",
+      "<span class=\"eqt\">368</span><span class=\"hqt\" style=\"display:none\">368</span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>The percentage of Bananas sold by shop A = 18%</p><p>The percentage of Mangos sold by shop A = 26%</p><p>The percentage of Peaches sold by shop A = 25%</p><p>Hence, the required average = [1600 * (18 + 26 + 25) %/100]/ 3</p><p>= 16 * 69/3</p><p>= 368</p>",
+    "question_index": 4
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b></p><p>Following graph shows the percentage of people likes different cold drinks out of total number of people likes cold drinks from a village.</p><p><img width=576 height=336 id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p3683/image001.png\"></p><p>The Total Population = The number of persons who like cold drink + the number of persons who do not like cold drink</p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; [4 &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2366; &#2360;&#2350;&#2370;&#2361;]:</b></p><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2327;&#2366;&#2305;&#2357; &#2325;&#2375; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2350;&#2375;&#2306; &#2360;&#2375; &#2357;&#2367;&#2349;&#2367;&#2344;&#2381;&#2344; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;|</p><p><img width=\"576\" height=\"336\" id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p3683/image001.png\"></p><p>&#2325;&#2369;&#2354; &#2332;&#2344;&#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; + &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2344;&#2361;&#2368;&#2306; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366;</p></span>",
+    "question": "<span class=\"eqt\"><p>If 20% people do not like any cold drinks and 640 people like Sprite, then how many people do not like any cold drink?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; 20% &#2354;&#2379;&#2327; &#2325;&#2379;&#2312; &#2349;&#2368; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2344;&#2361;&#2368;&#2306; &#2325;&#2352;&#2340;&#2375; &#2361;&#2376;&#2306; &#2324;&#2352; 640 &#2354;&#2379;&#2327; &#2360;&#2381;&#2346;&#2381;&#2352;&#2366;&#2311;&#2335; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2340;&#2375; &#2361;&#2376;&#2306;, &#2340;&#2379; &#2325;&#2367;&#2340;&#2344;&#2375; &#2354;&#2379;&#2327; &#2325;&#2379;&#2312; &#2349;&#2368; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2344;&#2361;&#2368;&#2306; &#2325;&#2352;&#2340;&#2375; &#2361;&#2376;&#2306;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">1000</span><span class=\"hqt\" style=\"display:none\">1000</span>",
+      "<span class=\"eqt\">1200</span><span class=\"hqt\" style=\"display:none\">1200</span>",
+      "<span class=\"eqt\">1500</span><span class=\"hqt\" style=\"display:none\">1500</span>",
+      "<span class=\"eqt\">Other than above</span><span class=\"hqt\" style=\"display:none\">&#2313;&#2346;&#2352;&#2379;&#2325;&#2381;&#2340; &#2360;&#2375; &#2309;&#2344;&#2381;&#2351;</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Let total population of village be P</p><p>20% people do not like any cold drink.</p><p>Number of people like sprite = 0.8 x 0.16P</p><p>(0.8 x 0.16) P = 640</p><p>P = (640000)/(16x 8)</p><p>= 5000</p><p>Number of people who do not like any cold drink = 0.2 x 5000 = 1000</p>",
+    "question_index": 5
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b>Read the data carefully and answer the following questions.</p><p>Following pie chart shows the degree distribution of marks obtained by a student in 7 different subjects. Total marks obtained by him in all the 7 subjects together is 3240.</p><p><img width=480 height=288 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12160/image002.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358;: </b>&#2310;&#2306;&#2325;&#2396;&#2379;&#2306; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2319;&#2404;</p><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; 7 &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2357;&#2367;&#2359;&#2351;&#2379;&#2306; &#2350;&#2375;&#2306; &#2346;&#2381;&#2352;&#2366;&#2346;&#2381;&#2340;&#2366;&#2306;&#2325;&#2379;&#2306; &#2325;&#2375; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2313;&#2360;&#2325;&#2375; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2360;&#2349;&#2368; 7 &#2357;&#2367;&#2359;&#2351;&#2379;&#2306; &#2350;&#2375;&#2306; &#2325;&#2369;&#2354; &#2346;&#2381;&#2352;&#2366;&#2346;&#2381;&#2340;&#2366;&#2306;&#2325; 3240 &#2361;&#2376;&#2404;</p><p><img width=\"480\" height=\"288\" id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12160/image002.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>If in subject F, maximum marks is 800, then what percent of the maximum marks was scored by the student in that subject?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; &#2357;&#2367;&#2359;&#2351; F &#2350;&#2375;&#2306;, &#2309;&#2343;&#2367;&#2325;&#2340;&#2350; &#2309;&#2306;&#2325; 800 &#2361;&#2376;, &#2340;&#2379; &#2313;&#2360; &#2357;&#2367;&#2359;&#2351; &#2350;&#2375;&#2306; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2368; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2310;&#2343;&#2367;&#2325;&#2340;&#2350; &#2309;&#2306;&#2325;&#2379;&#2306; &#2325;&#2366; &#2325;&#2367;&#2340;&#2344;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2346;&#2381;&#2352;&#2366;&#2346;&#2381;&#2340; &#2325;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2341;&#2366;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">63%</span><span class=\"hqt\" style=\"display:none\">63%</span>",
+      "<span class=\"eqt\">72%</span><span class=\"hqt\" style=\"display:none\">72%</span>",
+      "<span class=\"eqt\">81%</span><span class=\"hqt\" style=\"display:none\">81%</span>",
+      "<span class=\"eqt\">90%</span><span class=\"hqt\" style=\"display:none\">90%</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Marks scored in subject F = 3240 * (72/360) = 648</p><p>Maximum marks in subject F = 800</p><p>Required percentage value = (648/800) * 100</p><p>= 81%</p>",
+    "question_index": 6
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions [Set of 4 Questions]: </b> The Pie chart given below shows the percent distribution of the number of students that participate in an event from five different classes A, B, C, D and E out of total students that participate in the event.</p><p>Total number of students who participated in the event from five classes together = 180</p><p><img width=453 height=336 id=\"Chart 16\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p8601/image003.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; [4 &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2366; &#2360;&#2350;&#2370;&#2361;]: </b>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2325;&#2367;&#2360;&#2368; &#2325;&#2366;&#2352;&#2381;&#2351;&#2325;&#2381;&#2352;&#2350; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2325;&#2369;&#2354; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2350;&#2375;&#2306; &#2360;&#2375; &#2346;&#2366;&#2305;&#2330; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2325;&#2325;&#2381;&#2359;&#2366;&#2323;&#2306; A, B, C, D &#2324;&#2352; E &#2360;&#2375; &#2325;&#2366;&#2352;&#2381;&#2351;&#2325;&#2381;&#2352;&#2350; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2319;&#2325; &#2360;&#2366;&#2341; &#2346;&#2366;&#2305;&#2330; &#2325;&#2325;&#2381;&#2359;&#2366;&#2323;&#2306; &#2360;&#2375; &#2325;&#2366;&#2352;&#2381;&#2351;&#2325;&#2381;&#2352;&#2350; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 180</p><p><img width=\"453\" height=\"336\" id=\"Chart 16\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p8601/image003.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>What is the respective ratio of the average number of students that participated from classes A and E together to the average number of students that participated from classes B, C and D together?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325;-&#2360;&#2366;&#2341; &#2325;&#2325;&#2381;&#2359;&#2366; A &#2324;&#2352; E &#2360;&#2375; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2340;&#2341;&#2366; &#2319;&#2325;-&#2360;&#2366;&#2341; &#2325;&#2325;&#2381;&#2359;&#2366; B, C &#2324;&#2352; D &#2360;&#2375; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2360;&#2350;&#2381;&#2348;&#2306;&#2343;&#2367;&#2340; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2352;&#2375;&#2306;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">7: 2</span><span class=\"hqt\" style=\"display:none\">7: 2</span>",
+      "<span class=\"eqt\">17: 12</span><span class=\"hqt\" style=\"display:none\">17: 12</span>",
+      "<span class=\"eqt\">27: 22</span><span class=\"hqt\" style=\"display:none\">27: 22</span>",
+      "<span class=\"eqt\">37: 32</span><span class=\"hqt\" style=\"display:none\">37: 32</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Table given below shows the number of students from different classes who participated in the event:</p><p><table style=\"border-collapse:collapse;\"><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>Classes</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>Number of students that participated in the event</b></td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>A</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">25% of 180 = 45</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>B</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">30% of 180 = 54</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>C</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">15% of 180 = 27</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>D</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">10% of 180 = 18</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\"><b>E</b></td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">20% of 180 = 36</td></tr></table></p><br><p>Average number of students that participated from classes A and E together = (45 + 36)/2 = 40.5</p><p>Average number of students that participated from classes B, C and D together = (54 + 27 + 18)/3 = 33</p><p>Required ratio = 40.5: 33 = 27: 22</p>",
+    "question_index": 7
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions : </b>Study the data carefully and answer the following questions.</p><p>The below pie chart shows the number of people participated from five district of UP in plantation campaign.</p><p>Total number of people participated in plantation campaign = 450000</p><p><img width=491 height=336 id=\"Chart 5\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p6839/image001.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; : </b>&#2310;&#2305;&#2325;&#2396;&#2379;&#2306; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2319;&#2404;</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2319; &#2327;&#2319; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2350;&#2375;&#2306; UP &#2325;&#2375; &#2346;&#2366;&#2305;&#2330; &#2332;&#2367;&#2354;&#2379;&#2306; &#2360;&#2375; &#2357;&#2371;&#2325;&#2381;&#2359;&#2366;&#2352;&#2379;&#2346;&#2339; &#2309;&#2349;&#2367;&#2351;&#2366;&#2344; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2357;&#2371;&#2325;&#2381;&#2359;&#2366;&#2352;&#2379;&#2346;&#2339; &#2309;&#2349;&#2367;&#2351;&#2366;&#2344; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 450000</p><p><img width=\"491\" height=\"336\" id=\"Chart 5\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p6839/image001.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>The number of people who participated in plantation campaign from Jaunpur and Chandauli is what percentage of the number of people who participated in plantation campaign from Varanasi and Ghazipur?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2332;&#2380;&#2344;&#2346;&#2369;&#2352; &#2324;&#2352; &#2330;&#2306;&#2342;&#2380;&#2354;&#2368; &#2360;&#2375; &#2357;&#2371;&#2325;&#2381;&#2359;&#2366;&#2352;&#2379;&#2346;&#2339; &#2309;&#2349;&#2367;&#2351;&#2366;&#2344; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366;, &#2357;&#2366;&#2352;&#2366;&#2339;&#2360;&#2368; &#2324;&#2352; &#2327;&#2366;&#2332;&#2368;&#2346;&#2369;&#2352; &#2360;&#2375; &#2357;&#2371;&#2325;&#2381;&#2359;&#2366;&#2352;&#2379;&#2346;&#2339; &#2309;&#2349;&#2367;&#2351;&#2366;&#2344; &#2350;&#2375;&#2306; &#2349;&#2366;&#2327; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2325;&#2367;&#2340;&#2344;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">105%</span><span class=\"hqt\" style=\"display:none\">105%</span>",
+      "<span class=\"eqt\">102%</span><span class=\"hqt\" style=\"display:none\">102%</span>",
+      "<span class=\"eqt\">100%</span><span class=\"hqt\" style=\"display:none\">100%</span>",
+      "<span class=\"eqt\">95%</span><span class=\"hqt\" style=\"display:none\">95%</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<table style=\"border-collapse:collapse;\"><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">District</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Number of people</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Chandauli</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">20% of 450000 = 90000</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Ghazipur</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">15% of 450000 = 67500</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Jaunpur</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">22% of 450000 = 99000</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Varanasi</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">25% of 450000 = 112500</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Rampur</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">18% of 450000 = 81000</td></tr></table><br><p>Required % = (22 + 20)/(25 + 15) * 100 = 105%</p>",
+    "question_index": 8
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Following first pie-chart represents the percentage break-up of the number of employees in company P, Q, R, S and T; and the second pie-chart represents the percentage break-up of the number of male employees in company P, Q, R, S and T.</p><p>Total number of employees in company P, Q, R, S and T together = 5500</p><p><img width=420 height=296 id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16898/image008.png\"></p><p>Number of male employees in company P, Q, R, S and T together = 3500</p><p><img width=422 height=310 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16898/image009.png\"></p><p>In which of the following companies, the number of female employees is a multiple of 15?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2361;&#2354;&#2366; &#2357;&#2371;&#2340;&#2368;&#2351;-&#2310;&#2352;&#2375;&#2326; &#2325;&#2306;&#2346;&#2344;&#2368; P, Q, R, S &#2324;&#2352; T &#2350;&#2375;&#2306; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376; &#2340;&#2341;&#2366; &#2342;&#2370;&#2360;&#2352;&#2366; &#2357;&#2371;&#2340;&#2368;&#2351;-&#2310;&#2352;&#2375;&#2326; &#2325;&#2306;&#2346;&#2344;&#2368; P, Q, R, S &#2324;&#2352; T &#2350;&#2375;&#2306; &#2346;&#2369;&#2352;&#2369;&#2359; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2319;&#2325; &#2360;&#2366;&#2341; &#2325;&#2306;&#2346;&#2344;&#2368; P, Q, R, S &#2324;&#2352; T &#2350;&#2375;&#2306; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 5500</p><p><img width=\"420\" height=\"296\" id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16898/image008.png\"></p><p>&#2319;&#2325; &#2360;&#2366;&#2341; &#2325;&#2306;&#2346;&#2344;&#2368; P, Q, R, S &#2324;&#2352; T &#2350;&#2375;&#2306; &#2346;&#2369;&#2352;&#2369;&#2359; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 3500</p><p><img width=\"422\" height=\"310\" id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16898/image009.png\"></p><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2350;&#2375;&#2306; &#2360;&#2375; &#2325;&#2367;&#2360; &#2325;&#2306;&#2346;&#2344;&#2368; &#2350;&#2375;&#2306; &#2350;&#2361;&#2367;&#2354;&#2366; &#2325;&#2352;&#2381;&#2350;&#2330;&#2366;&#2352;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 15 &#2325;&#2366; &#2327;&#2369;&#2339;&#2332; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">Only Q</span><span class=\"hqt\" style=\"display:none\">&#2325;&#2375;&#2357;&#2354; Q</span>",
+      "<span class=\"eqt\">S and T</span><span class=\"hqt\" style=\"display:none\">S &#2324;&#2352; T</span>",
+      "<span class=\"eqt\">P and R</span><span class=\"hqt\" style=\"display:none\">P &#2324;&#2352; R</span>",
+      "<span class=\"eqt\">Only S</span><span class=\"hqt\" style=\"display:none\">&#2325;&#2375;&#2357;&#2354; S</span>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Total number of employees in company P = 16% of 5500 = 880</p><p>Number of male employees in company P = 22% of 3500 = 770</p><p>Then, number of female employees in company P = 880  -  770 = 110</p><p>Similarly,</p><table style=\"border-collapse:collapse;\"><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\" rowspan=\"2\">Company</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\" colspan=\"3\">Number of employees</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Total</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Male</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Female</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">P</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">880</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">770</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">110</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">Q</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">550</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">630</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">80</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">R</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1320</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">700</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">620</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">S</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1540</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">490</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1050 (multiple of 15)</td></tr><tr><td align=\"left\" style=\"border:1px solid black;padding:5px;\">T</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">1210</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">910</td><td align=\"left\" style=\"border:1px solid black;padding:5px;\">300 (multiple of 15)</td></tr></table><p>Hence, the number of female employees in company S and T is a multiple of 15.</p>",
+    "question_index": 9
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The following pie chart shows the degree distribution of number of marbles five children named as A, B, C, D and E have.</p><p><img width=332 height=336 id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17287/image009.png\"></p><p>B lost 20% of his total marbles, D lost 30% of his total marbles, and E, lost 1/4<sup>th</sup> of his total marbles. C bought 25% more than his total marbles and A gave 40% of his total marbles to E. If D lost 2/5<sup>th</sup> of his remaining marbles, then the central angle (to the nearest degree) of the sector corresponding to child C in the pie chart will become:</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351;-&#2310;&#2352;&#2375;&#2326; A, B, C, D &#2324;&#2352; E &#2344;&#2366;&#2350; &#2325;&#2375; &#2346;&#2366;&#2305;&#2330; &#2348;&#2330;&#2381;&#2330;&#2379;&#2306; &#2325;&#2375; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p><img width=\"332\" height=\"336\" id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17287/image009.png\"></p><p>B &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2325;&#2369;&#2354; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2366; 20% &#2326;&#2379; &#2342;&#2367;&#2351;&#2366;, D &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2325;&#2369;&#2354; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2366; 30% &#2326;&#2379; &#2342;&#2367;&#2351;&#2366; &#2324;&#2352; E &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2325;&#2369;&#2354; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2366; 1/4 &#2349;&#2366;&#2327; &#2326;&#2379; &#2342;&#2367;&#2351;&#2366;&#2404; C &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2325;&#2369;&#2354; &#2325;&#2306;&#2330;&#2379;&#2306; &#2360;&#2375; 25% &#2309;&#2343;&#2367;&#2325; &#2326;&#2352;&#2368;&#2342;&#2366; &#2324;&#2352; A &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2325;&#2369;&#2354; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2366; 40%, E &#2325;&#2379; &#2342;&#2375; &#2342;&#2367;&#2351;&#2366;&#2404; &#2351;&#2342;&#2367; D &#2344;&#2375; &#2309;&#2346;&#2344;&#2375; &#2358;&#2375;&#2359; &#2325;&#2306;&#2330;&#2379;&#2306; &#2325;&#2366; 2/5 &#2349;&#2366;&#2327; &#2326;&#2379; &#2342;&#2367;&#2351;&#2366;, &#2340;&#2379; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2350;&#2375;&#2306; &#2348;&#2330;&#2381;&#2330;&#2375; C &#2325;&#2375; &#2360;&#2306;&#2327;&#2340; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2326;&#2306;&#2337; &#2325;&#2366; &#2325;&#2375;&#2306;&#2342;&#2381;&#2352;&#2368;&#2351; &#2325;&#2379;&#2339; (&#2344;&#2367;&#2325;&#2335;&#2340;&#2350; &#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2340;&#2325;) &#2325;&#2367;&#2340;&#2344;&#2366; &#2348;&#2344; &#2332;&#2366;&#2319;&#2327;&#2366;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">113</span><span class=\"hqt\" style=\"display:none\">113</span>",
+      "<span class=\"eqt\">120</span><span class=\"hqt\" style=\"display:none\">120</span>",
+      "<span class=\"eqt\">104</span><span class=\"hqt\" style=\"display:none\">104</span>",
+      "<span class=\"eqt\">95</span><span class=\"hqt\" style=\"display:none\">95</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Let the total number of marbles all children together have initially = 360</p><p>Number of marbles A has after giving 40% to E = 90 * 60/100 = 54</p><p>Number of marbles B has after losing 20% of his total marbles = 60 * 80/100 = 48</p><p>Number of marbles C has after buying 25% more = 80 * 125/100 = 100</p><p>Number of marbles D has after losing 30% of his total = 50 * 70/100 = 35</p><p>Number of marbles D has after losing 2/5<sup>th</sup> of 35 = 35 * 3/5 = 21</p><p>Number of marbles E has after losing 1/4<sup>th</sup> of his total = 80 * 3/4 = 60</p><p>Number of marbles E has after receiving 36 marbles from A = 60 + 36 = 96</p><p>Required angle = 100 * 360/319 = 112.8 = 113&deg;</p>",
+    "question_index": 10
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Study the data carefully and answer the following question:</p><p>The below pie charts show the percentage distribution of students who play five different sports (Soccer, Golf, Swimming, Boxing, and Karate) from two states (Maharashtra and Gujrat):</p><p><img width=437 height=336 id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12070/image002.png\"></p><p><img width=425 height=336 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12070/image003.png\"></p><p>If number of students who play Golf from Maharashtra and Gujrat are 12000 and 1920, respectively, then what is the ratio of number of students who play boxing and soccer together from Maharashtra to the number of students who play swimming and Karate together from Gujrat?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2310;&#2305;&#2325;&#2396;&#2379;&#2306; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344; &#2325;&#2366; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2319;:</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2319; &#2327;&#2319; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351;-&#2310;&#2352;&#2375;&#2326; &#2342;&#2379; &#2352;&#2366;&#2332;&#2381;&#2351;&#2379;&#2306; (&#2350;&#2361;&#2366;&#2352;&#2366;&#2359;&#2381;&#2335;&#2381;&#2352; &#2324;&#2352; &#2327;&#2369;&#2332;&#2352;&#2366;&#2340;) &#2360;&#2375; &#2346;&#2366;&#2305;&#2330; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2326;&#2375;&#2354; (&#2360;&#2377;&#2325;&#2352;, &#2327;&#2379;&#2354;&#2381;&#2347;, &#2340;&#2376;&#2352;&#2366;&#2325;&#2368;, &#2350;&#2369;&#2325;&#2381;&#2325;&#2375;&#2348;&#2366;&#2332;&#2368; &#2324;&#2352; &#2325;&#2352;&#2366;&#2335;&#2375;) &#2326;&#2375;&#2354;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2375; &#2361;&#2376;&#2306;:</p><p><img width=\"437\" height=\"336\" id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12070/image002.png\"></p><p><img width=\"425\" height=\"336\" id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p12070/image003.png\"></p><p>&#2351;&#2342;&#2367; &#2350;&#2361;&#2366;&#2352;&#2366;&#2359;&#2381;&#2335;&#2381;&#2352; &#2324;&#2352; &#2327;&#2369;&#2332;&#2352;&#2366;&#2340; &#2360;&#2375; &#2327;&#2379;&#2354;&#2381;&#2347; &#2326;&#2375;&#2354;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 12000 &#2324;&#2352; 1920 &#2361;&#2376;, &#2340;&#2379; &#2350;&#2361;&#2366;&#2352;&#2366;&#2359;&#2381;&#2335;&#2381;&#2352; &#2360;&#2375; &#2319;&#2325; &#2360;&#2366;&#2341; &#2348;&#2377;&#2325;&#2381;&#2360;&#2367;&#2306;&#2327; &#2324;&#2352; &#2360;&#2377;&#2325;&#2352; &#2326;&#2375;&#2354;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2340;&#2341;&#2366; &#2327;&#2369;&#2332;&#2352;&#2366;&#2340; &#2360;&#2375; &#2319;&#2325; &#2360;&#2366;&#2341; &#2340;&#2376;&#2352;&#2366;&#2325;&#2368; &#2324;&#2352; &#2325;&#2352;&#2366;&#2335;&#2375; &#2326;&#2375;&#2354;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2367;&#2340;&#2344;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">2: 5</span><span class=\"hqt\" style=\"display:none\">2: 5</span>",
+      "<span class=\"eqt\">3: 2</span><span class=\"hqt\" style=\"display:none\">3: 2</span>",
+      "<span class=\"eqt\">3: 1</span><span class=\"hqt\" style=\"display:none\">3: 1</span>",
+      "<span class=\"eqt\">5: 3</span><span class=\"hqt\" style=\"display:none\">5: 3</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Total number of students from Maharashtra = 12000 * 100/25 = 48000</p><p>Total number of students from Gujrat = 1920 * 100/15 = 12800</p><p>So, required ratio = (48000 * (20 + 12)/100): (12800 * (30 + 10)/100) = 3: 1</p>",
+    "question_index": 11
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b>Study the data carefully and answer the following questions:</p><p>Below pie chart shows the percentage distribution of the number of ice creams sold by a shopkeeper in five days:</p><p><img width=576 height=336 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17859/image002.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; [3 &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2366; &#2360;&#2350;&#2370;&#2361;]: </b>&#2360;&#2370;&#2330;&#2344;&#2366; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2319; :</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2319; &#2327;&#2319; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2350;&#2375;&#2306; &#2319;&#2325; &#2342;&#2369;&#2325;&#2366;&#2344;&#2342;&#2366;&#2352; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2346;&#2366;&#2305;&#2330; &#2342;&#2367;&#2344;&#2379;&#2306; &#2350;&#2375;&#2306; &#2348;&#2375;&#2330;&#2368; &#2327;&#2312; &#2310;&#2311;&#2360;&#2325;&#2381;&#2352;&#2368;&#2350; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2351;&#2366; &#2327;&#2351;&#2366; &#2361;&#2376;:</p><p><img width=\"576\" height=\"336\" id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17859/image002.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>The number of ice creams sold by the shopkeeper on Thursday is what percentage more or less than the number of ice creams sold by the shopkeeper on Wednesday? (Correct to two decimal place)</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2327;&#2369;&#2352;&#2369;&#2357;&#2366;&#2352; &#2325;&#2379; &#2342;&#2369;&#2325;&#2366;&#2344;&#2342;&#2366;&#2352; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2368; &#2327;&#2312; &#2310;&#2311;&#2360;&#2325;&#2381;&#2352;&#2368;&#2350; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366;, &#2348;&#2369;&#2343;&#2357;&#2366;&#2352; &#2325;&#2379; &#2342;&#2369;&#2325;&#2366;&#2344;&#2342;&#2366;&#2352; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2348;&#2375;&#2330;&#2368; &#2327;&#2312; &#2310;&#2311;&#2360;&#2325;&#2381;&#2352;&#2368;&#2350; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2360;&#2375; &#2325;&#2367;&#2340;&#2344;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2309;&#2343;&#2367;&#2325; &#2351;&#2366; &#2325;&#2350; &#2361;&#2376;? ( &#2342;&#2358;&#2350;&#2354;&#2357; &#2325;&#2375; &#2342;&#2379; &#2360;&#2381;&#2341;&#2366;&#2344; &#2340;&#2325; &#2360;&#2361;&#2368;)</p></span>",
+    "options": [
+      "<span class=\"eqt\">82.24%</span><span class=\"hqt\" style=\"display:none\">82.24%</span>",
+      "<span class=\"eqt\">66.67%</span><span class=\"hqt\" style=\"display:none\">66.67%</span>",
+      "<span class=\"eqt\">53.84%</span><span class=\"hqt\" style=\"display:none\">53.84%</span>",
+      "<span class=\"eqt\">76.48%</span><span class=\"hqt\" style=\"display:none\">76.48%</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Required % = (20  -  13)/13 * 100 = 53.84%</p>",
+    "question_index": 12
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions [Set of 3 Questions]:</b>Study the data carefully and answer the following questions:</p><p>Below pie chart shows the degree distribution of students who enrolled in six course in an institute:</p><p><img width=576 height=336 id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17859/image003.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; [3 &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2366; &#2360;&#2350;&#2370;&#2361;]: </b>&#2360;&#2370;&#2330;&#2344;&#2366; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2319; :</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2360;&#2306;&#2360;&#2381;&#2341;&#2366;&#2344; &#2350;&#2375;&#2306; &#2331;&#2361; &#2346;&#2366;&#2336;&#2381;&#2351;&#2325;&#2381;&#2352;&#2350;&#2379;&#2306; &#2350;&#2375;&#2306; &#2342;&#2366;&#2326;&#2367;&#2354;&#2366; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2375; &#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;:</p><p><img width=\"576\" height=\"336\" id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p17859/image003.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>If the number of students who enrolled in M.Com is 54, then what is the average number of students who enrolled in B.A, and M.Sc together?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; &#2319;&#2350;.&#2325;&#2377;&#2350; &#2350;&#2375;&#2306; &#2342;&#2366;&#2326;&#2367;&#2354;&#2366; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 54 &#2361;&#2376;, &#2340;&#2379; &#2319;&#2325; &#2360;&#2366;&#2341; &#2348;&#2368;.&#2319; &#2324;&#2352; &#2319;&#2350;.&#2319;&#2360;&#2360;&#2368; &#2350;&#2375;&#2306; &#2342;&#2366;&#2326;&#2367;&#2354;&#2366; &#2354;&#2375;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2367;&#2340;&#2344;&#2368; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">128</span><span class=\"hqt\" style=\"display:none\">128</span>",
+      "<span class=\"eqt\">144</span><span class=\"hqt\" style=\"display:none\">144</span>",
+      "<span class=\"eqt\">108</span><span class=\"hqt\" style=\"display:none\">108</span>",
+      "<span class=\"eqt\">120</span><span class=\"hqt\" style=\"display:none\">120</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>The number of students who enrolled in M.Com is 54.</p><p>Required average = [(72 + 36)/27 * 54]/2 = 108</p>",
+    "question_index": 13
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions:</b></p><p>Following graph shows the percentage of people likes different cold drinks out of total number of people likes cold drinks from a village.</p><p><img width=576 height=336 id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p3683/image001.png\"></p><p>The Total Population = The number of persons who like cold drink + the number of persons who do not like cold drink</p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358; [4 &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2366; &#2360;&#2350;&#2370;&#2361;]:</b></p><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2327;&#2366;&#2305;&#2357; &#2325;&#2375; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2350;&#2375;&#2306; &#2360;&#2375; &#2357;&#2367;&#2349;&#2367;&#2344;&#2381;&#2344; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;|</p><p><img width=\"576\" height=\"336\" id=\"Chart 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p3683/image001.png\"></p><p>&#2325;&#2369;&#2354; &#2332;&#2344;&#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; + &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2344;&#2361;&#2368;&#2306; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2357;&#2381;&#2351;&#2325;&#2381;&#2340;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366;</p></span>",
+    "question": "<span class=\"eqt\"><p>If difference between the number of people who likes Pepsi and number of people who likes Sprite is 48, then what is the total number of people who like any of the cool drinks?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2346;&#2375;&#2346;&#2381;&#2360;&#2368; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2324;&#2352; &#2360;&#2381;&#2346;&#2381;&#2352;&#2366;&#2311;&#2335; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2348;&#2368;&#2330; &#2325;&#2366; &#2309;&#2306;&#2340;&#2352; 48 &#2361;&#2376;, &#2340;&#2379; &#2325;&#2367;&#2360;&#2368; &#2349;&#2368; &#2325;&#2379;&#2354;&#2381;&#2337; &#2337;&#2381;&#2352;&#2367;&#2306;&#2325; &#2346;&#2360;&#2306;&#2342; &#2325;&#2352;&#2344;&#2375; &#2354;&#2379;&#2327;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2367;&#2340;&#2344;&#2368; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">1200</span><span class=\"hqt\" style=\"display:none\">1200</span>",
+      "<span class=\"eqt\">1800</span><span class=\"hqt\" style=\"display:none\">1800</span>",
+      "<span class=\"eqt\">1600</span><span class=\"hqt\" style=\"display:none\">1600</span>",
+      "<span class=\"eqt\">1300</span><span class=\"hqt\" style=\"display:none\">1300</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Let total number of people who like any of the 5 drinks be P</p><p>Difference between the number of people who likes Pepsi and number of people who likes Sprite</p><p>= 0.2P -0.16P = 0.04P =48</p><p>P = 1200</p>",
+    "question_index": 14
+  },
+  {
+    "comp": "<span class=\"eqt\"><p><b>Directions : </b>Study the data carefully and answer the following questions:</p><p>The below pie chart shows the breakup (in degree) of total number of female students of an university studying in five different departments (M, N, O, P and Q):</p><p><img width=605 height=341 id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p11056/image003.gif\"></p><p>The below pie chart shows the breakup (in degree) of total number of male students of an university studying in five different departments (M, N, O, P and Q):</p><p><img width=605 height=341 id=\"Chart 4\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p11056/image004.gif\"></p></span><span class=\"hqt\" style=\"display:none\"><p><b>&#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358;</b>: &#2310;&#2306;&#2325;&#2396;&#2379;&#2306; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2352;&#2375;&#2306; &#2324;&#2352; &#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2375;&#2306;:</p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2357;&#2371;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2346;&#2366;&#2305;&#2330; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2357;&#2367;&#2349;&#2366;&#2327;&#2379;&#2306; (M, N, O, P &#2324;&#2352; Q) &#2350;&#2375;&#2306; &#2346;&#2338;&#2364;&#2344;&#2375; &#2357;&#2366;&#2354;&#2368; &#2319;&#2325; &#2357;&#2367;&#2358;&#2381;&#2357;&#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2354;&#2351; &#2325;&#2368; &#2350;&#2361;&#2367;&#2354;&#2366; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2357;&#2367;&#2340;&#2352;&#2339; (&#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2350;&#2375;&#2306;) &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;:</p><p><img width=\"605\" height=\"341\" id=\"Chart 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p11056/image003.gif\"></p><p>&#2344;&#2368;&#2330;&#2375; &#2342;&#2367;&#2351;&#2366; &#2327;&#2351;&#2366; &#2357;&#2371;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2357;&#2367;&#2358;&#2381;&#2357;&#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2354;&#2351; &#2325;&#2375; &#2346;&#2366;&#2306;&#2330; &#2309;&#2354;&#2327;-&#2309;&#2354;&#2327; &#2357;&#2367;&#2349;&#2366;&#2327;&#2379;&#2306; (M, N, O, P &#2324;&#2352; Q) &#2350;&#2375;&#2306; &#2346;&#2338;&#2364;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2346;&#2369;&#2352;&#2369;&#2359; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2357;&#2367;&#2340;&#2352;&#2339; (&#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2350;&#2375;&#2306;) &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;:</p><p><img width=\"605\" height=\"341\" id=\"Chart 4\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p11056/image004.gif\"></p></span>",
+    "question": "<span class=\"eqt\"><p>What is the number of departments in which of the number of male students of the university is between 700 and 1300?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2357;&#2367;&#2358;&#2381;&#2357;&#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2354;&#2351; &#2325;&#2375; &#2325;&#2367;&#2340;&#2344;&#2375; &#2357;&#2367;&#2349;&#2366;&#2327; &#2350;&#2375;&#2306; &#2346;&#2369;&#2352;&#2369;&#2359; &#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 700 &#2324;&#2352; 1300 &#2325;&#2375; &#2348;&#2368;&#2330; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">3</span><span class=\"hqt\" style=\"display:none\">3</span>",
+      "<span class=\"eqt\">4</span><span class=\"hqt\" style=\"display:none\">4</span>",
+      "<span class=\"eqt\">2</span><span class=\"hqt\" style=\"display:none\">2</span>",
+      "<span class=\"eqt\">1</span><span class=\"hqt\" style=\"display:none\">1</span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>Number of male students:</p><p>In Dept M = 72/360 * 5400 = 1080</p><p>In Dept N = 108/360 * 5400 = 1620</p><p>In Dept O = 45/360 * 5400 = 675</p><p>In Dept P = 96/360 * 5400 = 1440</p><p>In Dept Q = 39/360 * 5400 = 585</p><p>There is only one department in which the number of male students is between 700 and 1300.</p>",
+    "question_index": 15
+  },
+  {
+    "comp": "<span class=\"eqt\"><p>The following pie chart shows the distribution (degree wise) of orders delivered by an e-commerce website in different cities in a month.</p><p>Total number of orders delivered in that month = 45000</p><p><img width=384 height=336 id=\"Chart 5\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18654/image005.png\"></p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2319;&#2325; &#2350;&#2361;&#2368;&#2344;&#2375; &#2350;&#2375;&#2306; &#2357;&#2367;&#2349;&#2367;&#2344;&#2381;&#2344; &#2358;&#2361;&#2352;&#2379;&#2306; &#2350;&#2375;&#2306; &#2319;&#2325; &#2312;-&#2325;&#2377;&#2350;&#2352;&#2381;&#2360; &#2357;&#2375;&#2348;&#2360;&#2366;&#2311;&#2335; &#2342;&#2381;&#2357;&#2366;&#2352;&#2366; &#2337;&#2367;&#2354;&#2368;&#2357;&#2352; &#2325;&#2367;&#2319; &#2327;&#2319; &#2321;&#2352;&#2381;&#2337;&#2352; &#2325;&#2375; &#2357;&#2367;&#2340;&#2352;&#2339; (&#2337;&#2367;&#2327;&#2381;&#2352;&#2368; &#2357;&#2366;&#2352;) &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2313;&#2360; &#2350;&#2361;&#2368;&#2344;&#2375; &#2350;&#2375;&#2306; &#2337;&#2367;&#2354;&#2368;&#2357;&#2352; &#2325;&#2367;&#2319; &#2327;&#2319; &#2321;&#2352;&#2381;&#2337;&#2352; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = 45000</p><p><img width=\"384\" height=\"336\" id=\"Chart 5\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p18654/image005.png\"></p></span>",
+    "question": "<span class=\"eqt\"><p>Total number of orders delivered in city B and C is:</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2358;&#2361;&#2352; B &#2324;&#2352; C &#2350;&#2375;&#2306; &#2337;&#2367;&#2354;&#2368;&#2357;&#2352; &#2325;&#2367;&#2319; &#2327;&#2319; &#2321;&#2352;&#2381;&#2337;&#2352; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2361;&#2376;:</p></span>",
+    "options": [
+      "<span class=\"eqt\">18750</span><span class=\"hqt\" style=\"display:none\">18750</span>",
+      "<span class=\"eqt\">24050</span><span class=\"hqt\" style=\"display:none\">24050</span>",
+      "<span class=\"eqt\">22025</span><span class=\"hqt\" style=\"display:none\">22025</span>",
+      "<span class=\"eqt\">20125</span><span class=\"hqt\" style=\"display:none\">20125</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Sum of degree wise distribution of orders delivered in city B and C = 70.2 + 106 = 176.2&deg;</p><p>Given,</p><p>360&deg; = 45000</p><p>1&deg; = 125</p><p>176.2&deg; = 125 * 176.2 = 22025.</p>",
+    "question_index": 16
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The following pie chart shows the percentage distribution of number of candidates who appeared in five exams- A, B, C, D and E. Total number of candidates are 25000.</p><p>Total number of candidates appeared = Selected candidates + Non- selected candidates</p><p><img width=576 height=336 id=\"Chart 19\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20650/image019.png\"></p><p>The ratio of selected and non-selected candidate for exam C is 4:5 respectively then how many candidates are selected in exam C?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2346;&#2366;&#2305;&#2330; &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366;- A, B, C, D &#2324;&#2352; E &#2350;&#2375;&#2306; &#2313;&#2346;&#2360;&#2381;&#2341;&#2367;&#2340; &#2361;&#2379;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 25000 &#2361;&#2376;&#2404;</p><p>&#2313;&#2346;&#2360;&#2381;&#2341;&#2367;&#2340; &#2361;&#2379;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; = &#2330;&#2351;&#2344;&#2367;&#2340; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; + &#2330;&#2351;&#2344;&#2367;&#2340; &#2344;&#2361;&#2368;&#2306; &#2361;&#2379;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366;</p><p><img width=\"576\" height=\"336\" id=\"Chart 19\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20650/image019.png\"></p><p>&#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; C &#2350;&#2375;&#2306; &#2330;&#2351;&#2344;&#2367;&#2340; &#2324;&#2352; &#2330;&#2351;&#2344;&#2367;&#2340; &#2344;&#2361;&#2368;&#2306; &#2361;&#2379;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2309;&#2349;&#2366;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 4:5 &#2361;&#2376;, &#2340;&#2379; &#2351;&#2361; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319; &#2325;&#2367; &#2346;&#2352;&#2368;&#2325;&#2381;&#2359;&#2366; C &#2350;&#2375;&#2306; &#2330;&#2351;&#2344;&#2367;&#2340; &#2309;&#2349;&#2381;&#2351;&#2352;&#2381;&#2341;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2367;&#2340;&#2344;&#2368; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">3000</span><span class=\"hqt\" style=\"display:none\">3000</span>",
+      "<span class=\"eqt\">3500</span><span class=\"hqt\" style=\"display:none\">3500</span>",
+      "<span class=\"eqt\">2000</span><span class=\"hqt\" style=\"display:none\">2000</span>",
+      "<span class=\"eqt\">2800</span><span class=\"hqt\" style=\"display:none\">2800</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Total number of candidates appeared for exam C = 18% of 25000 = 4500</p><p>Total number of candidates selected in exam C = 4500 * 4/9 = 2000</p>",
+    "question_index": 17
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The following pie chart shows the percentage distribution of number of students enrolled in different universities. Total number of students enrolled in all the universities together is 2.5 lakhs.</p><p><img width=576 height=336 id=\"Chart 17\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20650/image022.png\"></p><p>Find the ratio of average number of students enrolled DU and BHU together to average number of students enrolled IIT and JNU together.</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2357;&#2367;&#2349;&#2367;&#2344;&#2381;&#2344; &#2357;&#2367;&#2358;&#2381;&#2357;&#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2354;&#2351;&#2379;&#2306; &#2350;&#2375;&#2306; &#2344;&#2366;&#2350;&#2366;&#2306;&#2325;&#2367;&#2340; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2319;&#2325; &#2360;&#2366;&#2341; &#2360;&#2349;&#2368; &#2357;&#2367;&#2358;&#2381;&#2357;&#2357;&#2367;&#2342;&#2381;&#2351;&#2366;&#2354;&#2351;&#2379;&#2306; &#2350;&#2375;&#2306; &#2344;&#2366;&#2350;&#2366;&#2306;&#2325;&#2367;&#2340; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; 2.5 &#2354;&#2366;&#2326; &#2361;&#2376;&#2404;</p><p><img width=\"576\" height=\"336\" id=\"Chart 17\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20650/image022.png\"></p><p>&#2319;&#2325; &#2360;&#2366;&#2341; DU &#2324;&#2352; BHU &#2350;&#2375;&#2306; &#2344;&#2366;&#2350;&#2366;&#2306;&#2325;&#2367;&#2340; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2340;&#2341;&#2366; &#2319;&#2325; &#2360;&#2366;&#2341; IIT &#2324;&#2352; JNU &#2350;&#2375;&#2306; &#2344;&#2366;&#2350;&#2366;&#2306;&#2325;&#2367;&#2340; &#2331;&#2366;&#2340;&#2381;&#2352;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">19:20</span><span class=\"hqt\" style=\"display:none\">19:20</span>",
+      "<span class=\"eqt\">18:14</span><span class=\"hqt\" style=\"display:none\">18:14</span>",
+      "<span class=\"eqt\">10:11</span><span class=\"hqt\" style=\"display:none\">10:11</span>",
+      "<span class=\"eqt\">5:8</span><span class=\"hqt\" style=\"display:none\">5:8</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Total number of students enrolled DU and BHU together = (18+20)% of 2.5 lakhs = 95000</p><p>Average number of students enrolled DU and BHU together = 95000/2 = 47500</p><p>Total number of students enrolled IIT and JNU together = (25+15)% of 2.5 lakhs = 1,00,000</p><p>Average number of students enrolled IIT and JNU together = 1,00,000/2 = 50000</p><p>Required ratio = 47500:50000 = 19:20</p>",
+    "question_index": 18
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Study the following information carefully and answer the related questions.</p><p>Following pie-chart represents the percentage break-up of sales of watches in a store from Monday to Saturday. </p><p>Total sale of watches in the store from Monday to Sunday = 13880</p><p><img width=507 height=281 id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16840/image001.png\"></p><p>If 2880 watches sold on Sunday, then what is the difference between the average sale of watches from Monday to Tuesday and the average sale of watches from Thursday to Saturday? </p></span><span class=\"hqt\" style=\"display:none\"><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2360;&#2370;&#2330;&#2344;&#2366; &#2325;&#2366; &#2343;&#2381;&#2351;&#2366;&#2344;&#2346;&#2370;&#2352;&#2381;&#2357;&#2325; &#2309;&#2343;&#2381;&#2351;&#2351;&#2344; &#2325;&#2368;&#2332;&#2367;&#2319; &#2324;&#2352; &#2360;&#2306;&#2348;&#2306;&#2343;&#2367;&#2340; &#2346;&#2381;&#2352;&#2358;&#2381;&#2344;&#2379;&#2306; &#2325;&#2375; &#2313;&#2340;&#2381;&#2340;&#2352; &#2342;&#2368;&#2332;&#2367;&#2351;&#2375;&#2404;</p><p>&#2344;&#2367;&#2350;&#2381;&#2344;&#2354;&#2367;&#2326;&#2367;&#2340; &#2357;&#2371;&#2340;&#2381;&#2340;&#2368;&#2351; &#2310;&#2352;&#2375;&#2326; &#2360;&#2379;&#2350;&#2357;&#2366;&#2352; &#2360;&#2375; &#2358;&#2344;&#2367;&#2357;&#2366;&#2352; &#2340;&#2325; &#2319;&#2325; &#2360;&#2381;&#2335;&#2379;&#2352; &#2350;&#2375;&#2306; &#2328;&#2337;&#2364;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2348;&#2367;&#2325;&#2381;&#2352;&#2368; &#2325;&#2375; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2357;&#2367;&#2340;&#2352;&#2339; &#2325;&#2379; &#2342;&#2352;&#2381;&#2358;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404;</p><p>&#2360;&#2379;&#2350;&#2357;&#2366;&#2352; &#2360;&#2375; &#2352;&#2357;&#2367;&#2357;&#2366;&#2352; &#2340;&#2325; &#2360;&#2381;&#2335;&#2379;&#2352; &#2350;&#2375;&#2306; &#2328;&#2337;&#2364;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2325;&#2369;&#2354; &#2348;&#2367;&#2325;&#2381;&#2352;&#2368; = 13880</p><p><img width=\"507\" height=\"281\" id=\"Chart 2\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p16840/image001.png\"></p><p>&#2351;&#2342;&#2367; &#2352;&#2357;&#2367;&#2357;&#2366;&#2352; &#2325;&#2379; 2880 &#2328;&#2337;&#2364;&#2367;&#2351;&#2366;&#2305; &#2348;&#2375;&#2330;&#2368; &#2332;&#2366;&#2340;&#2368; &#2361;&#2376;&#2306;, &#2340;&#2379; &#2360;&#2379;&#2350;&#2357;&#2366;&#2352; &#2360;&#2375; &#2350;&#2306;&#2327;&#2354;&#2357;&#2366;&#2352; &#2340;&#2325; &#2328;&#2337;&#2364;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2348;&#2367;&#2325;&#2381;&#2352;&#2368; &#2324;&#2352; &#2327;&#2369;&#2352;&#2369;&#2357;&#2366;&#2352; &#2360;&#2375; &#2358;&#2344;&#2367;&#2357;&#2366;&#2352; &#2340;&#2325; &#2328;&#2337;&#2364;&#2367;&#2351;&#2379;&#2306; &#2325;&#2368; &#2324;&#2360;&#2340; &#2348;&#2367;&#2325;&#2381;&#2352;&#2368; &#2325;&#2375; &#2348;&#2368;&#2330; &#2325;&#2366; &#2309;&#2306;&#2340;&#2352; &#2325;&#2367;&#2340;&#2344;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">440</span><span class=\"hqt\" style=\"display:none\">440</span>",
+      "<span class=\"eqt\">660</span><span class=\"hqt\" style=\"display:none\">660</span>",
+      "<span class=\"eqt\">990</span><span class=\"hqt\" style=\"display:none\">990</span>",
+      "<span class=\"eqt\">1100</span><span class=\"hqt\" style=\"display:none\">1100</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Sale of watches on Sunday = 2880</p><p>Then, sale of watches from Monday to Saturday = 13880  -  2880 = 11000</p><p>Average sale of watches from Monday to Tuesday = (14% of 11000 + 10% of 11000)/2 = 1320</p><p>Average sale of watches from Thursday to Saturday = (16% of 11000 + 12% of 11000 + 20% of 11000)/3 = 1760</p><p>Therefore, difference = 1760  -  1320 = <b>440</b></p>",
+    "question_index": 19
+  }
+];
+            this.sections = null;
+            this.curQ = 0;
+            this.ans = new Array(this.qs.length).fill(null);
+            this.reviewed = new Array(this.qs.length).fill(false);
+            this.startT = Date.now();
+            this.timeLeft = 20 * 60;
+            this.timeSpent = new Array(this.qs.length).fill(0);
+            this.lastQTime = this.startT;
+            this.sub = false;
+            this.eng = true;
+            this.darkMode = false;
+            this.timer = null;
+            this.sectionTimer = null;
+            this.currentSection = this.sections ? 0 : null;
+            this.initEls();
+            this.setupWelcomeScreen();
+            this.validateData();
+            this.setupBeforeUnload();
+        }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startTestBtn').addEventListener('click', () => {
+                    // Hide welcome screen
+                    document.getElementById('welcomeScreen').classList.add('hidden');
+                    
+                    // Show main test interface
+                    document.getElementById('mainTestInterface').style.display = '';
+                    
+                    // Initialize the test
+                    setTimeout(() => {
+                        this.init();
+                    }, 300);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.sub) {
+                        e.preventDefault();
+                        e.returnValue = 'Are you sure you want to leave? Your test progress will be lost.';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            validateData() {
+                console.log('Validating question data...');
+                this.qs.forEach((q, idx) => {
+                    if (q.correct_option_id !== undefined) {
+                        console.log(`Q${idx + 1}: correct_option_id = ${q.correct_option_id}, options count = ${q.options ? q.options.length : 0}`);
+                        
+                        if (q.options && (q.correct_option_id < 0 || q.correct_option_id >= q.options.length)) {
+                            console.warn(`Q${idx + 1}: Invalid correct_option_id ${q.correct_option_id} for ${q.options.length} options`);
+                        }
+                    }
+                });
+            }
+            
+            initEls() {
+                this.els = {
+                    qInfo: document.getElementById('qInfo'),
+                    progTxt: document.getElementById('progTxt'),
+                    ansCnt: document.getElementById('ansCnt'),
+                    timer: document.getElementById('timer'),
+                    qTxt: document.getElementById('qTxt'),
+                    compSec: document.getElementById('compSec'),
+                    compCont: document.getElementById('compCont'),
+                    opts: document.getElementById('opts'),
+                    sol: document.getElementById('sol'),
+                    solCont: document.getElementById('solCont'),
+                    solInfo: document.getElementById('solInfo'),
+                    qGrid: document.getElementById('qGrid'),
+                    desktopQGrid: document.getElementById('desktopQGrid'),
+                    panel: document.getElementById('panel'),
+                    modalOver: document.getElementById('modalOver'),
+                    scoreDisp: document.getElementById('scoreDisp'),
+                    corrStat: document.getElementById('corrStat'),
+                    incStat: document.getElementById('incStat'),
+                    unaStat: document.getElementById('unaStat'),
+                    timeStat: document.getElementById('timeStat'),
+                    printBtn: document.getElementById('printBtn'),
+                    desktopSidebar: document.getElementById('desktopSidebar'),
+                    reviewBtn: document.getElementById('reviewBtn'),
+                    themeToggle: document.getElementById('themeToggle'),
+                    sectionHeader: this.sections ? document.getElementById('sectionHeader') : null,
+                    sectionTitle: this.sections ? document.getElementById('sectionTitle') : null,
+                    sectionTimer: this.sections ? document.getElementById('sectionTimer') : null
+                };
+            }
+            
+            init() {
+                this.createGrid();
+                this.startTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionHeader();
+                }
+                this.loadQ(0);
+                this.setupEvents();
+                this.updatePrintButton();
+                this.updateThemeToggleIcon();
+            }
+            
+            setupEvents() {
+                document.getElementById('menuBtn').onclick = () => this.togglePanel();
+                document.getElementById('subBtn').onclick = () => this.confirmSub();
+                document.getElementById('prevBtn').onclick = () => this.nav(-1);
+                document.getElementById('nextBtn').onclick = () => this.nav(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('engBtn').onclick = () => this.setLang(true);
+                document.getElementById('hinBtn').onclick = () => this.setLang(false);
+                document.getElementById('panelClose').onclick = () => this.closePanel();
+                document.getElementById('closeModal').onclick = () => this.closeModal();
+                document.getElementById('revBtn').onclick = () => this.review();
+                document.getElementById('printBtn').onclick = () => this.printTest();
+                document.getElementById('themeToggle').onclick = () => this.toggleTheme();
+            }
+            
+            // IMPROVED: Better handling of complex HTML content including math expressions
+            extractTxt(html, isEng) {
+                if (!html) return '';
+                
+                // Create a temporary div to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Process math expressions - convert them to proper HTML structure
+                const mathExps = tempDiv.querySelectorAll('div[style*="inline-block"][style*="vertical-align: middle"]');
+                mathExps.forEach(mathExp => {
+                    // Create a new math expression container
+                    const newMathExp = document.createElement('div');
+                    newMathExp.className = 'math-exp';
+                    
+                    // Get numerator and denominator
+                    const spans = mathExp.querySelectorAll('span');
+                    if (spans.length >= 3) {
+                        const numerator = spans[0].cloneNode(true);
+                        const line = spans[1].cloneNode(true);
+                        const denominator = spans[2].cloneNode(true);
+                        
+                        // Clean up the numerator
+                        const numDiv = document.createElement('div');
+                        numDiv.className = 'math-num';
+                        numDiv.innerHTML = numerator.innerHTML;
+                        
+                        // Create the dividing line
+                        const lineDiv = document.createElement('div');
+                        lineDiv.className = 'math-line';
+                        
+                        // Clean up the denominator
+                        const denDiv = document.createElement('div');
+                        denDiv.className = 'math-num';
+                        denDiv.innerHTML = denominator.innerHTML;
+                        
+                        // Build the new math expression
+                        newMathExp.appendChild(numDiv);
+                        newMathExp.appendChild(lineDiv);
+                        newMathExp.appendChild(denDiv);
+                        
+                        // Replace the original with our new structure
+                        mathExp.parentNode.replaceChild(newMathExp, mathExp);
+                    }
+                });
+                
+                // Handle language selection - show/hide appropriate spans
+                const langSpans = tempDiv.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                        // Remove the class to prevent future hiding
+                        span.classList.remove('eqt', 'hqt');
+                    }
+                });
+                
+                // Clean up any remaining display:none styles
+                const hiddenElements = tempDiv.querySelectorAll('[style*="display:none"]');
+                hiddenElements.forEach(el => {
+                    if (el.style.display === 'none' && 
+                        !el.classList.contains('hqt') && 
+                        !el.classList.contains('eqt')) {
+                        el.style.display = '';
+                    }
+                });
+                
+                // Handle tables - wrap them in a scrollable container
+                const tables = tempDiv.querySelectorAll('table');
+                tables.forEach(table => {
+                    const container = document.createElement('div');
+                    container.className = 'table-container';
+                    table.parentNode.insertBefore(container, table);
+                    container.appendChild(table);
+                });
+                
+                return tempDiv.innerHTML;
+            }
+            
+            createGrid() {
+                this.els.qGrid.innerHTML = '';
+                this.els.desktopQGrid.innerHTML = '';
+                
+                this.qs.forEach((_, i) => {
+                    // Create mobile grid element
+                    const mobileDiv = document.createElement('div');
+                    mobileDiv.className = 'q-num';
+                    mobileDiv.textContent = i + 1;
+                    mobileDiv.onclick = () => this.goToQ(i);
+                    this.els.qGrid.appendChild(mobileDiv);
+                    
+                    // Create desktop grid element
+                    const desktopDiv = document.createElement('div');
+                    desktopDiv.className = 'q-num';
+                    desktopDiv.textContent = i + 1;
+                    desktopDiv.onclick = () => this.goToQ(i);
+                    this.els.desktopQGrid.appendChild(desktopDiv);
+                });
+            }
+            
+            loadQ(idx) {
+                // Update time spent on previous question
+                if (this.curQ !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.curQ] += (now - this.lastQTime) / 1000;
+                    this.lastQTime = now;
+                }
+                
+                this.curQ = idx;
+                const q = this.qs[idx];
+                
+                // Check if question is in current section (if sections exist)
+                if (this.sections) {
+                    const inCurrentSection = this.isInCurrentSection(idx);
+                    if (!inCurrentSection) {
+                        // Find the section this question belongs to
+                        const sectionIdx = this.findSectionForQuestion(idx);
+                        if (sectionIdx !== null && !this.sections[sectionIdx].submitted) {
+                            this.currentSection = sectionIdx;
+                            this.startSectionTimer();
+                            this.updateSectionHeader();
+                        }
+                    }
+                }
+                
+                this.els.qInfo.textContent = `Q${idx + 1}/${this.qs.length}`;
+                this.els.progTxt.textContent = `${idx + 1} of ${this.qs.length}`;
+                this.updateAnsCnt();
+                this.updateNav();
+                this.updateGrid();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.compSec.style.display = 'block';
+                    this.els.compCont.innerHTML = this.extractTxt(q.comp, this.eng);
+                } else {
+                    this.els.compSec.style.display = 'none';
+                }
+                
+                this.els.qTxt.innerHTML = this.extractTxt(q.question, this.eng);
+                this.loadOpts(q, idx);
+                
+                if (this.sub && q.solution) {
+                    // Show time spent on question in solution
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const minutes = Math.floor(timeSpent / 60);
+                    const seconds = timeSpent % 60;
+                    const timeStr = minutes > 0 
+                        ? `${minutes}m ${seconds}s` 
+                        : `${seconds}s`;
+                    
+                    this.els.solInfo.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time spent: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct answer: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    
+                    this.els.solCont.innerHTML = this.extractTxt(q.solution, this.eng);
+                    this.els.sol.classList.add('show');
+                } else {
+                    this.els.sol.classList.remove('show');
+                }
+            }
+            
+            loadOpts(q, qIdx) {
+                this.els.opts.innerHTML = '';
+                const userAnswer = this.ans[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                console.log(`Loading Q${qIdx + 1} options:`, {
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer,
+                    submitted: this.sub,
+                    optionsCount: q.options ? q.options.length : 0
+                });
+                
+                if (!q.options || !Array.isArray(q.options)) {
+                    console.error(`Q${qIdx + 1}: No valid options array`);
+                    return;
+                }
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let cls = 'opt';
+                    
+                    if (this.sub) {
+                        cls += ' submitted';
+                    }
+                    
+                    if (userAnswer === i) {
+                        cls += ' sel';
+                        console.log(`Q${qIdx + 1}: User selected option ${i}`);
+                    }
+                    
+                    if (this.sub && correctAnswer !== undefined && correctAnswer !== null) {
+                        if (i === correctAnswer) {
+                            cls += ' correct';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as correct (is correct answer)`);
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            cls += ' wrong';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as wrong (user selected but incorrect)`);
+                        }
+                    }
+                    
+                    div.className = cls;
+                    div.innerHTML = `
+                        <div class="opt-radio"></div>
+                        <div class="opt-txt">${this.extractTxt(opt, this.eng)}</div>
+                    `;
+                    
+                    if (!this.sub) {
+                        div.onclick = () => this.selOpt(i, qIdx);
+                    }
+                    
+                    this.els.opts.appendChild(div);
+                });
+            }
+            
+            selOpt(optIdx, qIdx) {
+                if (this.sub) return;
+                this.ans[qIdx] = this.ans[qIdx] === optIdx ? null : optIdx;
+                console.log(`Q${qIdx + 1}: Selected option ${optIdx}, answer array:`, this.ans[qIdx]);
+                this.loadOpts(this.qs[qIdx], qIdx);
+                this.updateAnsCnt();
+                this.updateGrid();
+            }
+            
+            toggleReview() {
+                if (this.sub) return;
+                this.reviewed[this.curQ] = !this.reviewed[this.curQ];
+                this.updateGrid();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = this.els.reviewBtn;
+                if (this.reviewed[this.curQ]) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="fas fa-flag"></i>';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="fas fa-flag"></i>';
+                }
+            }
+            
+           nav(dir) {
+            const newIdx = this.curQ + dir;
+            
+            // If test is submitted, allow free navigation for review
+            if (this.sub) {
+                if (newIdx >= 0 && newIdx < this.qs.length) {
+                    this.loadQ(newIdx);
+                }
+                return;
+            }
+            
+            // During test, enforce section boundaries
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                    return; // Don't allow navigation outside current section
+                }
+            }
+            
+            if (newIdx >= 0 && newIdx < this.qs.length) {
+                this.loadQ(newIdx);
+            }
+        }
+        
+        goToQ(idx) {
+            // Always allow navigation when reviewing after submission
+            if (this.sub) {
+                this.loadQ(idx);
+                this.closePanel();
+                return;
+            }
+            
+            // During test, only allow navigation within current section
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                if (idx < currentSection.start || idx > currentSection.end) {
+                    return; // Block navigation outside current section
+                }
+            }
+            
+            this.loadQ(idx);
+            this.closePanel();
+        }
+        
+        updateGrid() {
+            const nums = this.els.qGrid.querySelectorAll('.q-num');
+            const desktopNums = this.els.desktopQGrid.querySelectorAll('.q-num');
+            
+            const updateNum = (el, i) => {
+                el.className = 'q-num';
+                
+                // Reset all special classes
+                el.classList.remove('cur', 'ans', 'wrong', 'review', 'unattempted', 'disabled');
+                
+                if (i === this.curQ) {
+                    el.classList.add('cur');
+                } else if (this.sub) {
+                    // After submission - prioritize correct/wrong over review status
+                    if (this.ans[i] !== null && this.qs[i].correct_option_id !== undefined) {
+                        if (this.ans[i] === this.qs[i].correct_option_id) {
+                            el.classList.add('ans');
+                        } else {
+                            el.classList.add('wrong');
+                        }
+                    } else if (this.ans[i] === null) {
+                        el.classList.add('unattempted');
+                    }
+                } else {
+                    // Before submission
+                    if (this.reviewed[i]) {
+                        el.classList.add('review');
+                    } else if (this.ans[i] !== null) {
+                        el.classList.add('ans');
+                    }
+                    
+                    // Disable questions from other sections (only if sections exist)
+                    if (this.sections) {
+                        const currentSection = this.sections[this.currentSection];
+                        if (i < currentSection.start || i > currentSection.end) {
+                            el.classList.add('disabled');
+                        }
+                    }
+                }
+            };
+            
+            nums.forEach(updateNum);
+            desktopNums.forEach(updateNum);
+        }
+        
+        updateNav() {
+            // Basic navigation limits
+            document.getElementById('prevBtn').disabled = this.curQ === 0;
+            document.getElementById('nextBtn').disabled = this.curQ === this.qs.length - 1;
+            document.getElementById('reviewBtn').style.display = this.sub ? 'none' : 'inline-flex';
+            
+            // Additional navigation restrictions for sections during test
+            if (this.sections && !this.sub) {
+                const currentSection = this.sections[this.currentSection];
+                document.getElementById('prevBtn').disabled = document.getElementById('prevBtn').disabled || 
+                    (this.curQ === currentSection.start);
+                document.getElementById('nextBtn').disabled = document.getElementById('nextBtn').disabled || 
+                    (this.curQ === currentSection.end);
+            }
+        }
+            
+            updateAnsCnt() {
+                const cnt = this.ans.filter(a => a !== null).length;
+                this.els.ansCnt.textContent = cnt;
+            }
+            
+            updatePrintButton() {
+                this.els.printBtn.style.display = this.sub ? 'flex' : 'none';
+            }
+            
+            updateThemeToggleIcon() {
+                const icon = this.darkMode ? 'fa-sun' : 'fa-moon';
+                this.els.themeToggle.innerHTML = `<i class="fas ${icon}"></i>`;
+            }
+            
+            updateSectionHeader() {
+                if (!this.sections || !this.els.sectionHeader) return;
+                
+                const section = this.sections[this.currentSection];
+                this.els.sectionTitle.textContent = section.name;
+                this.els.sectionTimer.textContent = this.formatTime(section.time_left);
+                
+                // Show the section header if we have sections
+                this.els.sectionHeader.style.display = 'flex';
+            }
+            
+            setLang(eng) {
+                this.eng = eng;
+                document.getElementById('engBtn').classList.toggle('active', eng);
+                document.getElementById('hinBtn').classList.toggle('active', !eng);
+                this.loadQ(this.curQ);
+            }
+            
+            toggleTheme() {
+                this.darkMode = !this.darkMode;
+                document.body.classList.toggle('dark-mode', this.darkMode);
+                this.updateThemeToggleIcon();
+                this.loadQ(this.curQ); // Refresh to apply dark mode styles
+            }
+            
+            startTimer() {
+                if (this.timer) clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.subTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.timeLeft / 60);
+                    const secs = this.timeLeft % 60;
+                    this.els.timer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                // Clear any existing section timer
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer; // Reset to initial time
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    this.els.sectionTimer.textContent = this.formatTime(section.time_left);
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitCurrentSection();
+                    }
+                }, 1000);
+            }
+            
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            stopTimers() {
+                if (this.timer) clearInterval(this.timer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+            }
+            
+            togglePanel() {
+                this.els.panel.classList.toggle('open');
+            }
+            
+            closePanel() {
+                this.els.panel.classList.remove('open');
+            }
+            
+            confirmSub() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.ans.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    const reviewed = this.reviewed.slice(section.start, section.end + 1)
+                        .filter(r => r).length;
+                    
+                    let msg = '';
+                    
+                    if (unanswered > 0 && reviewed > 0) {
+                        msg = `You have ${unanswered} unanswered questions and ${reviewed} marked for review in this section. Submit anyway?`;
+                    } else if (unanswered > 0) {
+                        msg = `You have ${unanswered} unanswered questions in this section. Submit anyway?`;
+                    } else if (reviewed > 0) {
+                        msg = `You have ${reviewed} questions marked for review in this section. Submit anyway?`;
+                    } else {
+                        msg = 'Submit this section?';
+                    }
+                    
+                    if (confirm(msg)) this.submitCurrentSection();
+                } else {
+                    const unanswered = this.ans.filter(a => a === null).length;
+                    const reviewed = this.reviewed.filter(r => r).length;
+                    let msg = '';
+                    
+                    if (unanswered > 0 && reviewed > 0) {
+                        msg = `You have ${unanswered} unanswered questions and ${reviewed} marked for review. Submit anyway?`;
+                    } else if (unanswered > 0) {
+                        msg = `You have ${unanswered} unanswered questions. Submit anyway?`;
+                    } else if (reviewed > 0) {
+                        msg = `You have ${reviewed} questions marked for review. Submit anyway?`;
+                    } else {
+                        msg = 'Submit test?';
+                    }
+                    
+                    if (confirm(msg)) this.subTest();
+                }
+            }
+            
+            submitCurrentSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                // Move to the next section if available
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionHeader();
+                    this.loadQ(this.sections[nextSectionIdx].start);
+                } else {
+                    // All sections completed
+                    this.subTest();
+                }
+                
+                this.updateGrid();
+            }
+            
+            subTest() {
+                if (this.sub) return;
+                
+                // Record time spent on current question
+                const now = Date.now();
+                this.timeSpent[this.curQ] += (now - this.lastQTime) / 1000;
+                
+                console.log('Submitting test. Final answers:', this.ans);
+                this.sub = true;
+                this.stopTimers();
+                document.getElementById('subBtn').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                const results = this.calcResults();
+                this.showResults(results);
+                this.loadQ(this.curQ);
+                this.updateGrid();
+                this.updatePrintButton();
+                
+                // Hide section header if it exists
+                if (this.els.sectionHeader) {
+                    this.els.sectionHeader.style.display = 'none';
+                }
+            }
+            
+            calcResults() {
+                const timeTaken = Math.round((Date.now() - this.startT) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                console.log('Calculating results...');
+                this.qs.forEach((q, i) => {
+                    const userAns = this.ans[i];
+                    const correctAns = q.correct_option_id;
+                    
+                    console.log(`Q${i + 1}: user=${userAns}, correct=${correctAns}`);
+                    
+                    if (userAns === null || userAns === undefined) {
+                        unattempted++;
+                    } else if (correctAns !== undefined && correctAns !== null && userAns === correctAns) {
+                        correct++;
+                        score += 1;
+                        console.log(`Q${i + 1}: CORRECT (+1 marks)`);
+                    } else {
+                        incorrect++;
+                        score -= 0.25;
+                        console.log(`Q${i + 1}: INCORRECT (-0.25 marks)`);
+                    }
+                });
+                
+                const results = { 
+                    score: Math.max(0, score), 
+                    correct, 
+                    incorrect, 
+                    unattempted, 
+                    timeTaken,
+                    timePerQ: this.timeSpent.map(t => Math.round(t))
+                };
+                console.log('Final results:', results);
+                return results;
+            }
+            
+            showResults(results) {
+                this.els.scoreDisp.textContent = `${results.score}/20`;
+                this.els.corrStat.textContent = results.correct;
+                this.els.incStat.textContent = results.incorrect;
+                this.els.unaStat.textContent = results.unattempted;
+                this.els.timeStat.textContent = results.timeTaken;
+                this.els.modalOver.classList.add('show');
+            }
+            
+            closeModal() {
+                this.els.modalOver.classList.remove('show');
+            }
+            
+            review() {
+                this.closeModal();
+                this.loadQ(0);
+            }
+            
+            isNavigationAllowed(idx) {
+            // Always allow navigation after submission
+            if (this.sub) return true;
+            
+            // During test, only allow within current section
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                return idx >= currentSection.start && idx <= currentSection.end;
+            }
+            
+            // If no sections, allow all navigation
+            return true;
+            }
+            
+            printTest() {
+                const printWindow = window.open('', '_blank');
+                const testTitle = document.title;
+                const questionsHtml = this.qs.map((q, i) => {
+                    const userAns = this.ans[i];
+                    const correctAns = q.correct_option_id;
+                    const isCorrect = userAns !== null && correctAns !== undefined && userAns === correctAns;
+                    const timeSpent = Math.round(this.timeSpent[i]);
+                    const wasReviewed = this.reviewed[i];
+                    const sectionName = this.sections ? this.getSectionNameForQuestion(i) : '';
+                    
+                    return `
+                        <div style="page-break-inside:avoid;margin-bottom:30px;border-bottom:1px solid #eee;padding-bottom:20px">
+                            <h3 style="color:#4F46E5">Question ${i + 1} ${wasReviewed ? '<span style="color:#F59E0B">(Marked for Review)</span>' : ''}</h3>
+                            ${sectionName ? `<div style="font-size:14px;color:#6B7280;margin-bottom:8px">Section: ${sectionName}</div>` : ''}
+                            ${q.comp ? `<div>${q.comp}</div>` : ''}
+                            <div>${q.question}</div>
+                            <div style="margin-top:15px">
+                                ${q.options.map((opt, j) => `
+                                    <div style="margin:5px 0;padding:5px;border-left:3px solid ${ 
+                                        j === correctAns ? '#10B981' : 
+                                        j === userAns ? '#EF4444' : '#E5E7EB' 
+                                    }">
+                                        ${opt}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="margin-top:15px;font-size:14px;color:#666">
+                                <strong>Your answer:</strong> ${userAns !== null ? String.fromCharCode(65 + userAns) : 'Not attempted'}
+                                ${userAns !== null && correctAns !== undefined ? 
+                                    `(<span style="color:${isCorrect ? '#10B981' : '#EF4444'}">${isCorrect ? 'Correct' : 'Incorrect'}</span>)` : ''}
+                                <br>
+                                <strong>Time spent:</strong> ${timeSpent} seconds
+                            </div>
+                            ${q.solution ? `
+                                <div style="margin-top:15px;background:#f0fdf4;padding:15px;border-radius:8px">
+                                    <h4 style="color:#10B981;margin-top:0">Solution</h4>
+                                    ${q.solution}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${testTitle} - Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+                            h2 { color: #4F46E5; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; }
+                            .math-exp { display: inline-block; vertical-align: middle; position: relative; margin: 0 2px; }
+                            .math-num { text-align: center; display: block; padding: 0; }
+                            .math-line { display: block; border-top: 1px solid; padding: 0; text-align: center; }
+                            .table-container { width: 100%; overflow-x: auto; margin: 12px 0; }
+                            table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+                            table, th, td { border: 1px solid #E5E7EB; }
+                            th, td { padding: 8px 12px; text-align: left; }
+                            @media print {
+                                body { padding: 0; }
+                                .page-break { page-break-after: always; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Mocks Wallah - Analysis</h2>
+                        <div style="margin-bottom:30px">
+                            <div><strong>Score:</strong> ${this.els.scoreDisp.textContent}</div>
+                            <div><strong>Correct:</strong> ${this.els.corrStat.textContent}</div>
+                            <div><strong>Incorrect:</strong> ${this.els.incStat.textContent}</div>
+                            <div><strong>Unattempted:</strong> ${this.els.unaStat.textContent}</div>
+                            <div><strong>Time taken:</strong> ${this.els.timeStat.textContent} minutes</div>
+                        </div>
+                        ${questionsHtml}
+                        <script>
+                            setTimeout(() => { window.print(); }, 500);
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            }
+            
+            // Section-related helper methods
+            isInCurrentSection(qIdx) {
+                if (!this.sections) return true;
+                const section = this.sections[this.currentSection];
+                return qIdx >= section.start && qIdx <= section.end;
+            }
+            
+            findSectionForQuestion(qIdx) {
+                if (!this.sections) return null;
+                for (let i = 0; i < this.sections.length; i++) {
+                    const section = this.sections[i];
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        return i;
+                    }
+                }
+                return null;
+            }
+            
+            getSectionNameForQuestion(qIdx) {
+                if (!this.sections) return '';
+                const sectionIdx = this.findSectionForQuestion(qIdx);
+                return sectionIdx !== null ? this.sections[sectionIdx].name : '';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => new TestApp());
+    </script>
+</body>
+</html>

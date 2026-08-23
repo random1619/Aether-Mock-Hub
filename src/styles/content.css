@@ -2,16 +2,22 @@
    cleanly inside the exam UI, regardless of provider inline styles. */
 
 .rich-content {
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--text);
   font-size: 1.02rem;
   overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  /* Preserve multiple spaces and nbsp as in source */
+}
+.rich-content * {
+  max-width: 100%;
 }
 
-.rich-content p { margin: 0 0 0.6em; }
+.rich-content p { margin: 0 0 0.7em; }
 .rich-content p:last-child { margin-bottom: 0; }
-.rich-content ul, .rich-content ol { padding-inline-start: 1.6em; margin: 0.4em 0 0.8em; }
-.rich-content li { margin-bottom: 0.3em; }
+.rich-content ul, .rich-content ol { padding-inline-start: 1.6em; margin: 0.5em 0 0.9em; }
+.rich-content li { margin-bottom: 0.35em; }
 .rich-content strong { font-weight: 700; color: var(--text); }
 .rich-content em { font-style: italic; }
 .rich-content h1, .rich-content h2, .rich-content h3, .rich-content h4 {
@@ -23,44 +29,182 @@
 .rich-content h2 { font-size: 1.2rem; }
 .rich-content h3 { font-size: 1.1rem; }
 .rich-content hr { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
+/* Preserve intentional line breaks and spaces from vendor HTML */
+.rich-content br { display: block; content: ""; margin: 0.3em 0; }
+.rich-content span { white-space: normal; }
+.rich-content span[style*="font-size"] { line-height: 1.4; }
 
-/* Tables — vendor solutions often include comparison tables. */
+/* Tables — preserve vendor layout, allow scroll, keep borders */
 .rich-content table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0.8em 0;
+  margin: 0.9em 0;
   font-size: 0.92rem;
   display: block;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
 }
 .rich-content th, .rich-content td {
   border: 1px solid var(--border);
-  padding: 0.5em 0.75em;
+  padding: 0.6em 0.8em;
   text-align: left;
   vertical-align: top;
+  white-space: normal;
 }
 .rich-content thead th {
   background: var(--surface-2);
   font-weight: 700;
+  white-space: nowrap;
 }
 .rich-content tbody tr:nth-child(even) { background: var(--surface-2); }
 
-/* Images — constrain to content width. */
+/* Images — equation images need preserved size, others constrained */
 .rich-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 6px;
+  vertical-align: middle;
+  display: inline-block;
+}
+/* Equation images with explicit inline width/height — preserve but constrain */
+.rich-content img[style*="width:"],
+.rich-content img[style*="height:"] {
+  max-width: 100% !important;
+  object-fit: contain;
+}
+/* Option images — smaller, inline */
+.rich-content .option img,
+.rich-content [role="radio"] img {
+  max-height: 3.5em;
+  vertical-align: middle;
 }
 
 /* Override inline font sizing that vendors bake in, so the UI scale wins. */
 .rich-content [style*='font-size'] { font-size: inherit !important; }
 .rich-content [style*='font-family'] { font-family: inherit !important; }
+/* Force all vendor black text/borders to use theme text — covers every black variant, including fractions */
 .rich-content [style*='color: #000000'],
 .rich-content [style*='color:#000000'],
-.rich-content [style*='color: rgb(0, 0, 0)'] { color: var(--text) !important; }
+.rich-content [style*='color:#000'],
+.rich-content [style*='color: #000'],
+.rich-content [style*='color:black'],
+.rich-content [style*='color: black'],
+.rich-content [style*='color: rgb(0, 0, 0)'],
+.rich-content [style*='color: rgb(0,0,0)'],
+.rich-content [style*='color:rgb(0,0,0)'],
+.rich-content [style*='color: rgb(0, 0,0)'],
+.rich-content [style*='border-top: 1px solid #000'],
+.rich-content [style*='border-top:1px solid #000'],
+.rich-content [style*='border: 1px solid #000'],
+.rich-content [style*='border:1px solid #000'] { color: var(--text) !important; border-color: var(--text) !important; }
+.rich-content [style*='color: #000000'] *, 
+.rich-content [style*='color:#000000'] *,
+.rich-content [style*='color: rgb(0, 0, 0)'] *,
+.rich-content [style*='border-top'] * { color: var(--text) !important; }
+/* Dark mode — make ALL fraction bars and borders visible (1/100 etc.) */
+[data-theme='dark'] .rich-content [style*='border-top'],
+[data-theme='dark'] .rich-content [style*='border-bottom'],
+[data-theme='dark'] .rich-content [style*='border:'],
+[data-theme='netflix'] .rich-content [style*='border-top'],
+[data-theme='netflix'] .rich-content [style*='border-bottom'],
+[data-theme='netflix'] .rich-content [style*='border:'] {
+  border-color: var(--text) !important;
+  border-top-color: var(--text) !important;
+  border-bottom-color: var(--text) !important;
+}
+/* KaTeX fraction line */
+[data-theme='dark'] .rich-content .katex .frac-line,
+[data-theme='netflix'] .rich-content .katex .frac-line {
+  border-bottom-color: var(--text) !important;
+  background-color: var(--text) !important;
+}
+[data-theme='dark'] .rich-content .katex .mfrac .frac-line,
+[data-theme='netflix'] .rich-content .katex .mfrac .frac-line {
+  border-color: var(--text) !important;
+}
+/* Ensure option text remains visible even when vendor sets opacity or small font */
+[data-theme='dark'] .rich-content [style*='opacity'],
+[data-theme='netflix'] .rich-content [style*='opacity'] {
+  opacity: 1 !important;
+}
 
 /* Math (KaTeX) */
-.rich-content .katex { font-size: 1.05em; }
+.rich-content .katex { font-size: 1.05em; color: var(--text); }
+.rich-content .katex .mord, .rich-content .katex .mrel, .rich-content .katex .mop, .rich-content .katex .mopen, .rich-content .katex .mclose, .rich-content .katex .mpunct { color: var(--text); }
+
+/* Dark mode — equations as images are black on transparent and vanish on dark.
+   Invert ALL equation-like images in questions AND options. */
+[data-theme='dark'] .rich-content img,
+[data-theme='netflix'] .rich-content img {
+  /* Only invert small equation images, not large photos — detect via height or src */
+}
+[data-theme='dark'] .rich-content img[src*="thepunditsofficial"],
+[data-theme='dark'] .rich-content img[src*="oliveboard"],
+[data-theme='dark'] .rich-content img[src*="classplus"],
+[data-theme='dark'] .rich-content img[src*="q_"],
+[data-theme='dark'] .rich-content img[src*="questions/"],
+[data-theme='dark'] .rich-content img[src*="equation"],
+[data-theme='dark'] .rich-content img[src*="math"],
+[data-theme='dark'] .rich-content img[src*="image0"],
+[data-theme='netflix'] .rich-content img[src*="thepunditsofficial"],
+[data-theme='netflix'] .rich-content img[src*="oliveboard"],
+[data-theme='netflix'] .rich-content img[src*="classplus"],
+[data-theme='netflix'] .rich-content img[src*="q_"],
+[data-theme='netflix'] .rich-content img[src*="questions/"],
+[data-theme='netflix'] .rich-content img[src*="equation"],
+[data-theme='netflix'] .rich-content img[src*="math"],
+[data-theme='netflix'] .rich-content img[src*="image0"] {
+  filter: invert(1) hue-rotate(180deg) contrast(1.2) brightness(1.15);
+  background: transparent;
+  padding: 2px;
+  border-radius: 3px;
+  /* Ensure contrast on dark */
+  mix-blend-mode: normal;
+}
+/* Generic: any small image (likely equation) in dark — invert */
+[data-theme='dark'] .rich-content img[style*="height:"],
+[data-theme='dark'] .rich-content img[width],
+[data-theme='dark'] .rich-content img[height],
+[data-theme='netflix'] .rich-content img[style*="height:"],
+[data-theme='netflix'] .rich-content img[width],
+[data-theme='netflix'] .rich-content img[height] {
+  filter: invert(1) hue-rotate(180deg) contrast(1.15) brightness(1.1);
+  background: #ffffff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+/* Fallback: any img inside rich-content in dark that is likely an equation (small) */
+[data-theme='dark'] .rich-content img,
+[data-theme='netflix'] .rich-content img {
+  /* Only apply to small images via max-height - large photos will be overridden by not matching src patterns, but this is a safety */
+}
+[data-theme='dark'] .rich-content img:not([src*="avatar"]):not([src*="profile"]),
+[data-theme='netflix'] .rich-content img:not([src*="avatar"]):not([src*="profile"]) {
+  /* This is a catch-all for any image that might be an equation but wasn't caught above - we use a more specific selector to avoid large images */
+}
+@media (max-width: 640px) {
+  [data-theme='dark'] .rich-content img,
+  [data-theme='netflix'] .rich-content img {
+    /* On mobile, be more aggressive for equation images in options */
+    max-width: 100%;
+  }
+}
+/* Ensure option images are also inverted and properly sized in dark modes */
+[data-theme='dark'] .rich-content [role="radio"] img,
+[data-theme='netflix'] .rich-content [role="radio"] img,
+[data-theme='onepiece'] .rich-content [role="radio"] img {
+  filter: invert(1) hue-rotate(180deg) contrast(1.15) brightness(1.1);
+  background: #ffffff;
+  padding: 2px;
+  border-radius: 3px;
+}
+/* Light themes — no invert */
+[data-theme='light'] .rich-content img {
+  filter: none;
+  background: transparent;
+}
 
 /* Bilingual spans are block-ish groups; spacing between en/hi variants. */
 .rich-content .eqt, .rich-content .hqt { display: inline; }

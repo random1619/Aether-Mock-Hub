@@ -29,6 +29,14 @@ export interface ExamProgressSnapshot {
   optionsShuffled?: boolean;
   /** Per-question display permutation: qIdx → original option indices. */
   optionOrder?: Record<number, number[]>;
+  /** Sectional timer enabled */
+  sectionalTimerEnabled?: boolean;
+  /** Wall-clock deadline for the current section (epoch ms). */
+  sectionEndsAt?: number;
+  /** Array of locked section indices. */
+  lockedSections?: number[];
+  /** Array of completed section indices. */
+  completedSections?: number[];
 }
 
 import { keySuffix } from '@/services/profileStore';
@@ -77,7 +85,11 @@ function isValidSnapshot(x: unknown): x is ExamProgressSnapshot {
     (x.tabSwitches === undefined || (typeof x.tabSwitches === 'number' && Number.isFinite(x.tabSwitches))) &&
     (x.clockTampered === undefined || typeof x.clockTampered === 'boolean') &&
     (x.optionsShuffled === undefined || typeof x.optionsShuffled === 'boolean') &&
-    (x.optionOrder === undefined || isOptionOrder(x.optionOrder));
+    (x.optionOrder === undefined || isOptionOrder(x.optionOrder)) &&
+    (x.sectionalTimerEnabled === undefined || typeof x.sectionalTimerEnabled === 'boolean') &&
+    (x.sectionEndsAt === undefined || (typeof x.sectionEndsAt === 'number' && Number.isFinite(x.sectionEndsAt))) &&
+    (x.lockedSections === undefined || isNumberArray(x.lockedSections)) &&
+    (x.completedSections === undefined || isNumberArray(x.completedSections));
   return (
     optionalOk &&
     x.version === 1 &&

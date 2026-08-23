@@ -54,7 +54,11 @@ export function ViolationOverlay({ label, title, body, actionLabel, actionIcon, 
       role="alertdialog"
       aria-modal="true"
       aria-label={label}
-      className="fixed inset-0 z-toast flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-toast flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      } as any}
     >
       <div
         ref={panelRef}

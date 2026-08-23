@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Mock Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+    --skip:#7a6f52;
+    --skip-bg:#efe9d6;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:0;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px;}
+
+  header{
+    text-align:center;
+    margin-bottom:20px;
+    padding-bottom:18px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:clamp(30px,6vw,48px);margin:0 0 6px;letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;margin-top:14px;
+    background:#29a9eb;color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 20px;border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #topicLine{
+    margin-top:14px;font-family:'Fraunces',serif;font-weight:600;font-size:15px;
+    color:var(--accent);background:var(--card);display:inline-block;
+    padding:6px 18px;border:1px solid var(--rule);border-radius:20px;
+  }
+
+  /* ===== START SCREEN ===== */
+  #startScreen{
+    background:var(--card);border:1px solid var(--rule);border-radius:14px;
+    padding:34px 28px;text-align:center;
+  }
+  #startScreen h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 14px;}
+  .info-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:14px;margin:22px 0;text-align:left;
+  }
+  .info-box{
+    background:var(--paper);border:1px solid var(--rule);border-radius:10px;
+    padding:14px 16px;
+  }
+  .info-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+  .info-box .val{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--accent);}
+  .instructions{
+    text-align:left;background:var(--paper);border:1px solid var(--rule);
+    border-radius:10px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.8;color:var(--ink);
+  }
+  .instructions li{margin-bottom:4px;}
+  .instructions b{color:var(--accent);}
+  #startBtn,#retakeBtn,#submitBtn,#reviewBtn,#backToResultBtn{
+    background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:14px 36px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;
+    cursor:pointer;transition:transform .15s, box-shadow .15s;
+    box-shadow:0 4px 12px rgba(138,90,43,0.3);
+  }
+  #startBtn:hover,#retakeBtn:hover,#submitBtn:hover,#reviewBtn:hover,#backToResultBtn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(138,90,43,0.4);}
+
+  /* ===== TOP BAR (during test) ===== */
+  #testTopBar{
+    position:sticky;top:0;z-index:20;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:12px 18px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  }
+  .topBarLeft{flex:0 0 auto;}
+  .brandMark{
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--accent);
+  }
+  .topBarCenter{display:flex;align-items:center;gap:12px;flex:1 1 auto;justify-content:center;}
+  .topBarRight{flex:0 0 auto;position:relative;}
+  #testTopBar .title{font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--accent);}
+  #timerBox{
+    display:flex;align-items:center;gap:8px;
+    background:#fdf2ec;border:1.5px solid var(--wrong);color:var(--wrong);
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+    padding:6px 16px;border-radius:8px;
+  }
+  #timerBox.low{animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{background:#fdf2ec;}50%{background:#f8d5c9;}}
+  #progressText{font-size:13px;color:var(--muted);white-space:nowrap;}
+
+  #paletteToggleBtn, #reviewPaletteToggleBtn{
+    background:var(--paper);color:var(--accent);border:1.5px solid var(--rule);border-radius:8px;
+    padding:8px 14px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;
+  }
+  #paletteToggleBtn:hover, #reviewPaletteToggleBtn:hover{border-color:var(--accent);}
+  #paletteDropdown, #reviewPaletteDropdown{
+    display:none;position:absolute;top:calc(100% + 8px);right:0;z-index:30;
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:14px;width:260px;box-shadow:0 10px 30px rgba(0,0,0,0.18);
+  }
+  #paletteDropdown.show, #reviewPaletteDropdown.show{display:block;}
+  .legend{display:flex;flex-direction:column;gap:6px;font-size:11.5px;margin-bottom:10px;color:var(--muted);}
+  .legend span{display:flex;align-items:center;gap:6px;}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block;flex-shrink:0;}
+  .dot.d-answered{background:var(--correct);}
+  .dot.d-notanswered{background:var(--wrong);}
+  .dot.d-notvisited{background:#cfc6ac;}
+  #paletteGrid, #reviewPaletteGrid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:280px;overflow-y:auto;padding-right:2px;
+  }
+  .pbtn{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;
+    border:1.5px solid var(--rule);background:#cfc6ac;color:#4a4433;
+    font-family:'Inter',sans-serif;
+  }
+  .pbtn.answered{background:var(--correct);color:#fff;border-color:var(--correct);}
+  .pbtn.notanswered{background:var(--wrong);color:#fff;border-color:var(--wrong);}
+  .pbtn.current{outline:3px solid var(--accent);outline-offset:1px;}
+
+  @media (max-width:560px){
+    .topBarCenter{gap:6px;}
+    #progressText{display:none;}
+    .paletteBtnLabel{display:none;}
+    #paletteDropdown, #reviewPaletteDropdown{width:220px;right:-8px;}
+  }
+  @media (max-width:560px){
+    #reviewProgress{display:none;}
+  }
+
+  /* ===== MAIN TEST LAYOUT ===== */
+  #testLayout{display:none;max-width:680px;margin:0 auto;}
+
+  .qcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:22px 22px 18px;margin-bottom:0;position:relative;
+  }
+  .qnum{font-family:'Fraunces',serif;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:4px;}
+  .qtag{
+    float:right;font-size:10.5px;color:var(--muted);background:var(--paper);
+    border:1px solid var(--rule);padding:2px 8px;border-radius:20px;
+  }
+  .qmarks{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .qtext{font-size:17px;line-height:1.5;margin:6px 0 14px;}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;
+    padding:11px 14px;font-size:15px;cursor:pointer;
+    transition:border-color .15s, background .15s;font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{font-weight:700;color:var(--accent);min-width:18px;}
+  .opt.selected{background:#eee1cf;border-color:var(--accent);}
+  .opt.selected .lab{color:var(--accent);}
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .navRow{
+    display:flex;flex-direction:row;justify-content:flex-start;gap:8px;margin-top:20px;
+  }
+  .navRow .navBtn{flex:1 1 0;min-width:0;}
+  .submitRow{margin-top:10px;}
+  .navBtnGroup{display:flex;gap:10px;}
+  .navBtn{
+    background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:8px;
+    padding:12px 8px;font-size:13.5px;font-weight:600;font-family:'Inter',sans-serif;
+    cursor:pointer;transition:.15s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .navBtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .navBtn:disabled{opacity:.4;cursor:not-allowed;}
+  .navBtn.clear{color:var(--wrong);border-color:var(--wrong-bg);}
+  .navBtn.clear:hover{border-color:var(--wrong);}
+  #submitTestBtn{
+    width:100%;background:var(--wrong);color:#fff;border:none;border-radius:8px;
+    padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 3px 10px rgba(161,61,46,0.3);
+  }
+  #submitTestBtn:hover{transform:translateY(-1px);}
+
+  @media (max-width:480px){
+    .navRow{gap:6px;}
+    .navRow .navBtn{padding:10px 4px;font-size:11.5px;}
+  }
+  .reviewNavRow{display:flex;flex-direction:row;gap:8px;margin-top:18px;}
+  .reviewNavRow .navBtn{flex:1 1 0;min-width:0;}
+  #backToResultBtn{
+    width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 3px 10px rgba(138,90,43,0.3);
+  }
+  #backToResultBtn:hover{transform:translateY(-1px);}
+  @media (max-width:480px){
+    .reviewNavRow{gap:6px;}
+    .reviewNavRow .navBtn{padding:10px 4px;font-size:11.5px;}
+  }
+
+  /* ===== RESULT SCREEN ===== */
+  #resultScreen{display:none;}
+  .result-hero{
+    background:var(--card);border:1px solid var(--rule);border-radius:14px;
+    padding:30px 26px;text-align:center;margin-bottom:20px;
+  }
+  .result-hero h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 4px;color:var(--accent);}
+  .score-big{font-family:'Fraunces',serif;font-size:56px;font-weight:700;margin:10px 0;}
+  .score-big span{font-size:24px;color:var(--muted);font-weight:500;}
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:22px;
+  }
+  .stat-box{
+    background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:14px 10px;
+  }
+  .stat-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+  .stat-box .val{font-family:'Fraunces',serif;font-weight:700;font-size:24px;}
+  .stat-box.total .val{color:var(--ink);}
+  .stat-box.attempted .val{color:var(--accent);}
+  .stat-box.unattempted .val{color:var(--skip);}
+  .stat-box.correct .val{color:var(--correct);}
+  .stat-box.wrong .val{color:var(--wrong);}
+  .result-actions{display:flex;justify-content:center;gap:14px;margin-top:24px;flex-wrap:wrap;}
+  #reviewBtn{background:var(--accent);}
+
+  /* ===== REVIEW SCREEN ===== */
+  #reviewScreen{display:none;}
+  #reviewTopBar{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;gap:10px;
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:12px 18px;margin-bottom:18px;
+  }
+  #reviewTopBar > div:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #reviewTopBar .title{font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--accent);}
+  .review-status{
+    display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;
+  }
+  .review-status.correct{background:var(--correct-bg);color:var(--correct);}
+  .review-status.wrong{background:var(--wrong-bg);color:var(--wrong);}
+  .review-status.skip{background:var(--skip-bg);color:var(--skip);}
+  .solution{
+    margin-top:14px;padding:14px 16px;background:#fbf7ee;border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;font-size:14.5px;line-height:1.65;
+  }
+  .solution .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .solution b{color:var(--accent);}
+  .solution .lbl{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .your-ans-note{font-size:13px;margin-top:10px;color:var(--muted);}
+  .your-ans-note b{color:var(--ink);}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px;}
+
+  #alertBanner{
+    display:none;background:#fdf2ec;border:1.5px solid var(--wrong);color:var(--wrong);
+    border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;margin-bottom:14px;text-align:center;
+  }
+
+  /* ===== CUSTOM CONFIRM MODAL ===== */
+  #modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(27,26,23,0.55);
+    z-index:100;align-items:center;justify-content:center;padding:20px;
+  }
+  #modalOverlay.show{display:flex;}
+  #modalBox{
+    background:var(--card);border-radius:14px;max-width:400px;width:100%;
+    padding:26px 24px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  }
+  #modalBox h3{font-family:'Fraunces',serif;font-size:20px;margin:0 0 12px;color:var(--accent);}
+  #modalBox p{font-size:14.5px;line-height:1.6;color:var(--ink);margin:0 0 22px;}
+  #modalBox .modalBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  #modalBox button{
+    border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:'Inter',sans-serif;transition:transform .15s;
+  }
+  #modalBox button:hover{transform:translateY(-1px);}
+  #modalConfirmBtn{background:var(--wrong);color:#fff;box-shadow:0 3px 10px rgba(161,61,46,0.3);}
+  #modalCancelBtn{background:var(--paper);color:var(--ink);border:1.5px solid var(--rule) !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="mainHeader">
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <a href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: B Words — Previous Years Synonyms</div>
+  </header>
+
+  <!-- ===== START SCREEN ===== -->
+  <div id="startScreen">
+    <h2>Vocabulary Synonyms Mock Test</h2>
+    <div class="info-grid">
+      <div class="info-box"><div class="lbl">Total Questions</div><div class="val" id="infoTotalQ">0</div></div>
+      <div class="info-box"><div class="lbl">Total Time</div><div class="val">20 Min</div></div>
+    </div>
+    <button id="startBtn" onclick="startTest()">▶️ Start Test</button>
+  </div>
+
+  <!-- ===== TEST SCREEN ===== -->
+  <div id="testTopBar" style="display:none;">
+    <div class="topBarLeft">
+      <span class="brandMark">YATRI</span>
+    </div>
+    <div class="topBarCenter">
+      <div id="progressText">Question 1 / 0</div>
+      <div id="timerBox">⏱️ <span id="timerVal">60:00</span></div>
+    </div>
+    <div class="topBarRight">
+      <button id="paletteToggleBtn" onclick="togglePalette()">📋 <span class="paletteBtnLabel">Palette</span></button>
+      <div id="paletteDropdown">
+        <div class="legend">
+          <span><span class="dot d-answered"></span> Answered</span>
+          <span><span class="dot d-notanswered"></span> Not Answered</span>
+          <span><span class="dot d-notvisited"></span> Not Visited</span>
+        </div>
+        <div id="paletteGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="alertBanner"></div>
+
+  <div id="testLayout">
+    <div id="qCol">
+      <div class="qcard">
+        <span class="qtag" id="qTag"></span>
+        <div class="qnum" id="qNumLabel"></div>
+        <div class="qmarks">+1 for correct, −0.25 for wrong</div>
+        <div class="qtext" id="qText"></div>
+        <div class="options" id="qOpts"></div>
+
+        <div class="navRow">
+          <button class="navBtn" id="prevBtn" onclick="goPrev()">⬅️ Previous</button>
+          <button class="navBtn clear" id="clearBtn" onclick="clearResponse()">Clear Response</button>
+          <button class="navBtn" id="nextBtn" onclick="goNext()">Next ➡️</button>
+        </div>
+        <div class="submitRow">
+          <button id="submitTestBtn" onclick="confirmSubmit()">📤 Submit Test</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="resultScreen">
+    <div class="result-hero">
+      <h2>Test Completed</h2>
+      <div class="sub" id="submitReasonText">Aapne test submit kar diya hai.</div>
+      <div class="score-big"><span id="finalScore">0</span><span> / <span id="finalMax">0</span></span></div>
+      <div class="stat-grid">
+        <div class="stat-box total"><div class="lbl">Total Questions</div><div class="val" id="statTotal">0</div></div>
+        <div class="stat-box attempted"><div class="lbl">Attempted</div><div class="val" id="statAttempted">0</div></div>
+        <div class="stat-box unattempted"><div class="lbl">Unattempted</div><div class="val" id="statUnattempted">0</div></div>
+        <div class="stat-box correct"><div class="lbl">Correct</div><div class="val" id="statCorrect">0</div></div>
+        <div class="stat-box wrong"><div class="lbl">Wrong</div><div class="val" id="statWrong">0</div></div>
+      </div>
+      <div class="result-actions">
+        <button id="reviewBtn" onclick="openReview(0)">🔍 Review Solutions</button>
+        <button id="retakeBtn" onclick="location.reload()">🔁 Retake Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REVIEW SCREEN ===== -->
+  <div id="reviewScreen">
+    <div id="reviewTopBar">
+      <div><span class="title">🔍 Review Solutions</span><span id="reviewStatusTag"></span></div>
+      <div id="reviewProgress">Question 1 / 0</div>
+      <div class="topBarRight">
+        <button id="reviewPaletteToggleBtn" onclick="toggleReviewPalette()">📋 <span class="paletteBtnLabel">Palette</span></button>
+        <div id="reviewPaletteDropdown">
+          <div class="legend">
+            <span><span class="dot d-answered"></span> Correct</span>
+            <span><span class="dot d-notanswered"></span> Wrong</span>
+            <span><span class="dot d-notvisited"></span> Unattempted</span>
+          </div>
+          <div id="reviewPaletteGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="qcard">
+      <span class="qtag" id="rQTag"></span>
+      <div class="qnum" id="rQNumLabel"></div>
+      <div class="qtext" id="rQText"></div>
+      <div class="options" id="rQOpts"></div>
+      <div class="your-ans-note" id="rYourAns"></div>
+      <div class="solution show" id="rSolution">
+        <div class="lbl">Solution</div>
+        <div id="rSolBody"></div>
+      </div>
+      <div class="reviewNavRow">
+        <button class="navBtn" id="rPrevBtn" onclick="reviewPrev()">⬅️ Previous</button>
+        <button class="navBtn" id="rNextBtn" onclick="reviewNext()">Next ➡️</button>
+      </div>
+      <div class="submitRow">
+        <button id="backToResultBtn" onclick="backToResult()">📊 Back to Result</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Submit ke baad hi answers, score aur explanation dikhenge — pura test pehle imandari se attempt karein.</footer>
+</div>
+
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h3>Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modalBtns">
+      <button id="modalCancelBtn" onclick="closeModal()">Cancel</button>
+      <button id="modalConfirmBtn" onclick="modalConfirmYes()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Beseech",
+"tag": "SSC CGL 19/09/2024 (Shift-III)",
+"opts": [
+"Pamper",
+"Implore",
+"Impart",
+"Bequeath"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Beseech' का अर्थ है <b>प्रार्थना करना/गिड़गिड़ाना</b>। Synonym 'Implore' (<b>प्रार्थना करना</b>) है।</span><br>Pamper – लाड़ करना, Impart – प्रदान करना, Bequeath – वसीयत करना।"
+},
+{
+"q": "Select the most appropriate synonym of the word in brackets to fill in the blank. Listening to the same lecture everyday appeared very ___________ to him. (boring)",
+"tag": "SSC CGL 12/09/2024 (Shift-II)",
+"opts": [
+"monotonous",
+"furious",
+"nervous",
+"monolithic"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Boring' का अर्थ है <b>उबाऊ</b>। Synonym 'Monotonous' (<b>नीरस/एकसुरा</b>) है।</span><br>Furious – क्रोधित, Nervous – घबराया हुआ, Monolithic – एकाश्म/विशाल।"
+},
+{
+"q": "Identify the words nearest in meaning to the given word. BREVITY",
+"tag": "KVS PRT 26-02-2023 (Shift-II)",
+"opts": [
+"abbreviation",
+"conciseness",
+"summary",
+"reduction"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Brevity' का अर्थ है <b>संक्षिप्तता</b>। Synonym 'Conciseness' (<b>संक्षिप्तता</b>) है।</span><br>Abbreviation – संक्षेपण, Summary – सारांश, Reduction – कमी।"
+},
+{
+"q": "BREACH (Noun) Choose the word similar in meaning to the one given above.",
+"tag": "KVS PRT 26-02-2023 (Shift-II) Synonyms 8",
+"opts": [
+"Lack",
+"Violation",
+"Virtue",
+"Blame"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Breach (noun)' का अर्थ है <b>उल्लंघन</b>। Synonym 'Violation' (<b>उल्लंघन</b>) है।</span><br>Lack – अभाव, Virtue – सद्गुण, Blame – दोष।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Blunt",
+"tag": "SSC GD 31/01/2023 (Shift-II)",
+"opts": [
+"Cheerful",
+"Dull",
+"Valiant",
+"Sharp"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Blunt' का अर्थ है <b>कुंद/स्पष्टवादी</b>। Synonym 'Dull' (<b>कुंद/मंद</b>) है।</span><br>Cheerful – प्रसन्न, Valiant – बहादुर, Sharp – तेज़।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Baffle",
+"tag": "SSC GD 13/02/2023 (Shift-I)",
+"opts": [
+"Amaze",
+"Enlighten",
+"Clear",
+"Comprehend"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Baffle' का अर्थ है <b>चकित करना/उलझाना</b>। Synonym 'Amaze' (<b>चकित करना</b>) है।</span><br>Enlighten – ज्ञान देना, Clear – स्पष्ट करना, Comprehend – समझना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Blast",
+"tag": "SSC GD 10/01/2023 (Shift-I)",
+"opts": [
+"Blow up",
+"Recall",
+"Plead",
+"Share"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Blast' का अर्थ है <b>विस्फोट</b>। Synonym 'Blow up' (<b>उड़ा देना</b>) है।</span><br>Recall – वापस बुलाना, Plead – विनती करना, Share – साझा करना।"
+},
+{
+"q": "Select the most appropriate synonym of the word ‘Bleak’ from the given sentence. He looked gloomy, frail, broken and slow after the sudden demise of his brother.",
+"tag": "SSC CHSL (Tier-I) 17/08/2023 (Shift-II)",
+"opts": [
+"slow",
+"sudden",
+"gloomy",
+"frail"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Bleak' का अर्थ है <b>उदास/निराशाजनक</b>। Synonym 'Gloomy' (<b>उदास/निराशाजनक</b>) है।</span><br>Slow – धीमा, Sudden – अचानक, Frail – कमजोर।"
+},
+{
+"q": "Select the most appropriate synonym for the underlined word in the following sentence. She’s so benevolent that she can’t even harm a fly, let alone hurting someone.",
+"tag": "SSC CHSL (Tier-I) 10/08/2023 (Shift-I) SSC MTS 6/08/2019 (Shift-II)",
+"opts": [
+"Gloomy",
+"Unfortunate",
+"Compassionate",
+"Grudging"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Benevolent' का अर्थ है <b>दयालु/परोपकारी</b>। Synonym 'Compassionate' (<b>दयालु</b>) है।</span><br>Gloomy – उदास, Unfortunate – दुर्भाग्यपूर्ण, Grudging – अनिच्छुक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Bafflement",
+"tag": "SSC CHSL 24.05.2022 Shift-III SSC CHSL (Tier-I) 08/08/2023 (Shift-II)",
+"opts": [
+"Clarity",
+"Confusion",
+"Pleasure",
+"Cleanliness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bafflement' का अर्थ है <b>असमंजस/उलझन</b>। Synonym 'Confusion' (<b>उलझन</b>) है।</span><br>Clarity – स्पष्टता, Pleasure – आनंद, Cleanliness – स्वच्छता।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below Bibulous",
+"tag": "DSSSB Junior Assistant 31/8/2021 Shift-II",
+"opts": [
+"Cantankerous",
+"Godly",
+"Sober",
+"Inebriated"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bibulous' का अर्थ है <b>शराब पीने का शौकीन</b>। Synonym 'Inebriated' (<b>नशे में धुत्त</b>) है।</span><br>Cantankerous – चिड़चिड़ा, Godly – धार्मिक, Sober – संयमी/होश में।"
+},
+{
+"q": "Choose the correct synonym for the following: “Bashful”.",
+"tag": "High Court RO 06/01/2022",
+"opts": [
+"Aggressive",
+"Gregarious",
+"Dashing",
+"Shy"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bashful' का अर्थ है <b>शर्मीला</b>। Synonym 'Shy' (<b>शर्मीला</b>) है।</span><br>Aggressive – आक्रामक, Gregarious – मिलनसार, Dashing – आकर्षक/फुर्तीला।"
+},
+{
+"q": "Identify the synonym for the word \'Benign\'.",
+"tag": "UPSSSC JE Exam 16/04/2022 / UPSSSC PET 16/04/2022 / SSC CPO 25/11/2020 (Shift-I)",
+"opts": [
+"favorable",
+"antagonistic",
+"indifferent",
+"Relaxed"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Benign' का अर्थ है <b>सौम्य/अनुकूल</b>। Synonym 'Favorable' (<b>अनुकूल</b>) है।</span><br>Antagonistic – विरोधी, Indifferent – उदासीन, Relaxed – शांत।"
+},
+{
+"q": "Choose the correct meaning of the given word from the options that follow: Bellicose",
+"tag": "Bihar Police Fireman Constable Exam 27/03/2022 (Shift-I)",
+"opts": [
+"comfortable",
+"aggressive",
+"calm",
+"Sad"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bellicose' का अर्थ है <b>युद्धप्रिय/आक्रामक</b>। Synonym 'Aggressive' (<b>आक्रामक</b>) है।</span><br>Comfortable – आरामदायक, Calm – शांत, Sad – दुखी।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Banish",
+"tag": "ACIO (Tier-II) 19/02/2021 (Shift-III)",
+"opts": [
+"Deport",
+"Persist",
+"Perish",
+"Accept"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Banish' का अर्थ है <b>निर्वासित करना</b>। Synonym 'Deport' (<b>निर्वासित करना</b>) है।</span><br>Persist – डटे रहना, Perish – नष्ट होना, Accept – स्वीकार करना।"
+},
+{
+"q": "His bounty is limitless.",
+"tag": "UPSC NDA & NA 05/09/2021 (Shift-II)",
+"opts": [
+"benevolence",
+"gallantry",
+"nepotism",
+"chivalry"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bounty' का अर्थ है <b>उदारता/दान</b>। Synonym 'Benevolence' (<b>उदारता</b>) है।</span><br>Gallantry – वीरता, Nepotism – भाई-भतीजावाद, Chivalry – शिष्टता।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Bowdlerize",
+"tag": "DSSSB Junior Assistant 25/8/2021 Shift-II 90 YCT",
+"opts": [
+"Adulterate",
+"Censor",
+"Crumble",
+"Abuse"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bowdlerize' का अर्थ है <b>अश्लील अंश हटाकर संशोधित करना</b>। Synonym 'Censor' (<b>संशोधित/सेंसर करना</b>) है।</span><br>Adulterate – मिलावट करना, Crumble – टूटना/चूर होना, Abuse – दुरुपयोग करना।"
+},
+{
+"q": "The harder we kick, the better the ball bounces back.",
+"tag": "UPSC NDA & NA 19/04/2020",
+"opts": [
+"recoils",
+"deflates",
+"inflates",
+"ascends"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bounces back' का अर्थ है <b>वापस उछलना</b>। Synonym 'Recoils' (<b>वापस उछलना</b>) है।</span><br>Deflates – पिचकना, Inflates – फुलाना, Ascends – ऊपर चढ़ना।"
+},
+{
+"q": "The Managing Director of the company declared that he is broke and there is a need to seek support from the government.",
+"tag": "UPSC NDA & NA 17/11/2019 (Shift-II)",
+"opts": [
+"bankrupt",
+"rich",
+"making profit",
+"having liabilities"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Broke' का अर्थ है <b>दिवालिया</b>। Synonym 'Bankrupt' (<b>दिवालिया</b>) है।</span><br>Rich – अमीर, Making profit – मुनाफा कमाना, Having liabilities – देनदारी होना।"
+},
+{
+"q": "Trees that BLOCK the view of oncoming traffic should be cut down.",
+"tag": "UPSC NDA & NA 11/08/2013 (Shift-II)",
+"opts": [
+"Alter",
+"Obstruct",
+"Improve",
+"Spoil"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Block' का अर्थ है <b>अवरुद्ध करना</b>। Synonym 'Obstruct' (<b>बाधा डालना</b>) है।</span><br>Alter – बदलना, Improve – सुधारना, Spoil – बिगाड़ना।"
+},
+{
+"q": "The youth was BEFOGGED when he was interrogated loudly by the police inspector.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II)",
+"opts": [
+"terrified",
+"panicky",
+"surprised",
+"puzzled"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Befogged' का अर्थ है <b>भ्रमित/चकराया हुआ</b>। Synonym 'Puzzled' (<b>हैरान/उलझन में</b>) है।</span><br>Terrified – भयभीत, Panicky – घबराया हुआ, Surprised – आश्चर्यचकित।"
+},
+{
+"q": "The priest pronounced BENEDICTION.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II) Synonyms 9",
+"opts": [
+"good wishes",
+"blessings",
+"punishment",
+"appreciation"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Benediction' का अर्थ है <b>आशीर्वाद</b>। Synonym 'Blessings' (<b>आशीर्वाद</b>) है।</span><br>Good wishes – शुभकामनाएं, Punishment – दंड, Appreciation – प्रशंसा।"
+},
+{
+"q": "BEWITCHING",
+"tag": "UPSC NDA & NA 17/08/2008 (Shift-II)",
+"opts": [
+"Enchanting",
+"Magical",
+"Affected",
+"Ensnaring"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bewitching' का अर्थ है <b>मोहक/जादुई</b>। Synonym 'Enchanting' (<b>मोहक</b>) है।</span><br>Magical – जादुई, Affected – प्रभावित, Ensnaring – फंसाने वाला।"
+},
+{
+"q": "Choose the one which best expesses the meaning of BEHOLD?",
+"tag": "DSSSB- hewjecesef[keâue DeefOekeâejer hejer#ee (25-05-2014)",
+"opts": [
+"take",
+"bring",
+"see",
+"bend"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Behold' का अर्थ है <b>देखना</b>। Synonym 'See' (<b>देखना</b>) है।</span><br>Take – लेना, Bring – लाना, Bend – झुकना।"
+},
+{
+"q": "Bonus",
+"tag": "DSSSB- ueesJej ef[Jeerpeve keäueke&â (16-11-2014)",
+"opts": [
+"terror",
+"reward",
+"bony",
+"punishment"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bonus' का अर्थ है <b>अतिरिक्त लाभ/इनाम</b>। Synonym 'Reward' (<b>इनाम</b>) है।</span><br>Terror – आतंक, Bony – हड्डीदार, Punishment – दंड।"
+},
+{
+"q": "Bitter",
+"tag": "DSSSB - uewye meneÙekeâ hejer#ee (26-04-2015)",
+"opts": [
+"harsh",
+"sweet",
+"pleasant",
+"mellow"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bitter' का अर्थ है <b>कड़वा/कटु</b>। Synonym 'Harsh' (<b>कठोर/कटु</b>) है।</span><br>Sweet – मीठा, Pleasant – सुखद, Mellow – मधुर/नरम।"
+},
+{
+"q": "They describe the act as a blatant betrayal of faith.",
+"tag": "CDS 2019 (Shift-II) 91 YCT",
+"opts": [
+"Loyal",
+"Faithfulness",
+"Treachery",
+"Honesty"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Blatant' का अर्थ है <b>खुली/स्पष्ट (बुरे अर्थ में)</b>। Synonym 'Treachery' (<b>विश्वासघात</b>) है।</span><br>Loyal – वफादार, Faithfulness – निष्ठा, Honesty – ईमानदारी।"
+},
+{
+"q": "Valiant Vicky used to boast of his bravery to his beloved wife.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"cry",
+"abuse",
+"hate",
+"brag"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Boast' का अर्थ है <b>डींग हांकना</b>। Synonym 'Brag' (<b>डींग मारना</b>) है।</span><br>Cry – रोना, Abuse – गाली देना, Hate – नफरत करना।"
+},
+{
+"q": "BROACHED",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Admonished",
+"Advised",
+"Discussed",
+"Raised"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Broached' का अर्थ है <b>विषय छेड़ना/उठाना</b>। Synonym 'Raised' (<b>उठाया गया</b>) है।</span><br>Admonished – डांटा गया, Advised – सलाह दी गई, Discussed – चर्चा की गई।"
+},
+{
+"q": "BECKONED",
+"tag": "Patna (District Court) Steno Exam 17.07.2016",
+"opts": [
+"Sent",
+"acquitted",
+"Called",
+"Accused"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Beckoned' का अर्थ है <b>इशारे से बुलाया</b>। Synonym 'Called' (<b>बुलाया</b>) है।</span><br>Sent – भेजा गया, Acquitted – बरी किया गया, Accused – आरोपित किया गया।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Bull-Headed",
+"tag": "SSC CHSL (Tier-I) –16/04/2021 (Shift-I)",
+"opts": [
+"Headstrong",
+"Clear-headed",
+"Muddle-headed",
+"Weak-minded"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bull-Headed' का अर्थ है <b>जिद्दी</b>। Synonym 'Headstrong' (<b>जिद्दी/हठी</b>) है।</span><br>Clear-headed – स्पष्ट सोच वाला, Muddle-headed – उलझन भरा दिमाग, Weak-minded – कमज़ोर मन वाला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Banner",
+"tag": "SSC CGL (Tier-I) –23/08/2021 (Shift-I) Synonyms 9",
+"opts": [
+"March",
+"Protest",
+"Poster",
+"Rally"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Banner' का अर्थ है <b>बैनर/झंडा</b>। Synonym 'Poster' (<b>पोस्टर</b>) है।</span><br>March – मार्च, Protest – विरोध प्रदर्शन, Rally – रैली।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BEGUILE",
+"tag": "SSC CPO-SI – 13/12/2019 (Shift-I)",
+"opts": [
+"Disenchant",
+"Hasten",
+"Repulse",
+"Deceive"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Beguile' का अर्थ है <b>धोखा देना/छलना</b>। Synonym 'Deceive' (<b>धोखा देना</b>) है।</span><br>Disenchant – मोहभंग करना, Hasten – जल्दी करना, Repulse – विकर्षित करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BARREN",
+"tag": "SSC CHSL (Tier-I) 16/10/2020 (Shift-II)",
+"opts": [
+"Fertile",
+"Bountiful",
+"Desolate",
+"Fruitful"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Barren' का अर्थ है <b>बंजर/निष्फल</b>। Synonym 'Desolate' (<b>उजाड़/बंजर</b>) है।</span><br>Fertile – उपजाऊ, Bountiful – उदार/भरपूर, Fruitful – फलदायक।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word: Bewitched",
+"tag": "SSC MTS 11-10-2017 (Shift-II) UPSC NDA & NA 17/08/2008 (Shif-II)",
+"opts": [
+"Disgusting",
+"Captivated",
+"Turn of",
+"Prevent"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bewitched' का अर्थ है <b>मोहित/मंत्रमुग्ध</b>। Synonym 'Captivated' (<b>मंत्रमुग्ध</b>) है।</span><br>Disgusting – घृणित, Turn of – मोड़ना, Prevent – रोकना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Benevolent",
+"tag": "SSC MTS – 06/08/2019 (Shift-II)",
+"opts": [
+"Miser",
+"Cruel",
+"Malevolent",
+"Generous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Benevolent' का अर्थ है <b>दयालु/परोपकारी</b>। Synonym 'Generous' (<b>उदार</b>) है।</span><br>Miser – कंजूस, Cruel – क्रूर, Malevolent – द्वेषपूर्ण।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BENEFICIAL",
+"tag": "SSC MTS – 16/08/2019 (Shift-III)",
+"opts": [
+"Worthless",
+"Harmful",
+"Advantageous",
+"Adverse"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Beneficial' का अर्थ है <b>लाभदायक</b>। Synonym 'Advantageous' (<b>लाभदायक</b>) है।</span><br>Worthless – बेकार, Harmful – हानिकारक, Adverse – प्रतिकूल।"
+},
+{
+"q": "Select the synonym of the given word. BOUNTIFUL",
+"tag": "SSC GD – 02/03/2019 (Shift-I)",
+"opts": [
+"Pretty",
+"Religious",
+"Spiritual",
+"Generous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bountiful' का अर्थ है <b>उदार/भरपूर</b>। Synonym 'Generous' (<b>उदार</b>) है।</span><br>Pretty – सुंदर, Religious – धार्मिक, Spiritual – आध्यात्मिक।"
+},
+{
+"q": "Select the synonym of the given word. BRITTLE",
+"tag": "SSC GD – 02/03/2019 (Shift-II)",
+"opts": [
+"Coarse",
+"Enduring",
+"Delicate",
+"Durable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Brittle' का अर्थ है <b>भंगुर/नाजुक</b>। Synonym 'Delicate' (<b>नाजुक</b>) है।</span><br>Coarse – खुरदरा, Enduring – टिकाऊ, Durable – टिकाऊ।"
+}
+];
+
+const labels=['A','B','C','D'];
+const TOTAL_TIME = 20*60; // 20 minutes in seconds
+const MARK_CORRECT = 1;
+const MARK_WRONG = -0.25;
+
+let currentQ = 0;
+let currentReviewQ = 0;
+let timeLeft = TOTAL_TIME;
+let timerInterval = null;
+let testSubmitted = false;
+
+// responses[i] = null (not visited/not answered) or option index (0-3)
+const responses = new Array(questions.length).fill(null);
+// visited[i] = true once user has landed on that question
+const visited = new Array(questions.length).fill(false);
+
+function $(id){ return document.getElementById(id); }
+
+function initInfo(){
+  $('infoTotalQ').textContent = questions.length;
+}
+initInfo();
+
+function startTest(){
+  $('mainHeader').style.display='none';
+  $('startScreen').style.display='none';
+  $('testTopBar').style.display='flex';
+  $('testLayout').style.display='block';
+  currentQ = 0;
+  buildPalette();
+  showQuestion(0);
+  startTimer();
+}
+
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    if(timeLeft <= 0){
+      timeLeft = 0;
+      updateTimerDisplay();
+      clearInterval(timerInterval);
+      doSubmit(true);
+      return;
+    }
+    updateTimerDisplay();
+  },1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  $('timerVal').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const box = $('timerBox');
+  if(timeLeft <= 300){ box.classList.add('low'); } else { box.classList.remove('low'); }
+}
+
+function buildPalette(){
+  const grid = $('paletteGrid');
+  grid.innerHTML='';
+  questions.forEach((_,i)=>{
+    const b = document.createElement('div');
+    b.className = 'pbtn';
+    b.textContent = i+1;
+    b.id = `pbtn-${i}`;
+    b.onclick = ()=> { showQuestion(i); closePalette(); };
+    grid.appendChild(b);
+  });
+  refreshPalette();
+}
+
+function refreshPalette(){
+  questions.forEach((_,i)=>{
+    const b = $(`pbtn-${i}`);
+    if(!b) return;
+    b.classList.remove('answered','notanswered','current');
+    if(responses[i] !== null){
+      b.classList.add('answered');
+    } else if(visited[i]){
+      b.classList.add('notanswered');
+    }
+    if(i === currentQ){ b.classList.add('current'); }
+  });
+}
+
+function togglePalette(){
+  $('paletteDropdown').classList.toggle('show');
+}
+function closePalette(){
+  $('paletteDropdown').classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  const dd = $('paletteDropdown');
+  const btn = $('paletteToggleBtn');
+  if(dd && dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    closePalette();
+  }
+});
+
+function buildReviewPalette(){
+  const grid = $('reviewPaletteGrid');
+  grid.innerHTML='';
+  questions.forEach((item,i)=>{
+    const b = document.createElement('div');
+    b.className = 'pbtn';
+    b.textContent = i+1;
+    b.id = `rpbtn-${i}`;
+    const userAns = responses[i];
+    if(userAns !== null && userAns === item.ans){
+      b.classList.add('answered'); // correct
+    } else if(userAns !== null && userAns !== item.ans){
+      b.classList.add('notanswered'); // wrong
+    }
+    b.onclick = ()=> { showReviewQuestion(i); closeReviewPalette(); };
+    grid.appendChild(b);
+  });
+  refreshReviewPalette();
+}
+
+function refreshReviewPalette(){
+  questions.forEach((_,i)=>{
+    const b = $(`rpbtn-${i}`);
+    if(!b) return;
+    b.classList.remove('current');
+    if(i === currentReviewQ){ b.classList.add('current'); }
+  });
+}
+
+function toggleReviewPalette(){
+  $('reviewPaletteDropdown').classList.toggle('show');
+}
+function closeReviewPalette(){
+  $('reviewPaletteDropdown').classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  const dd = $('reviewPaletteDropdown');
+  const btn = $('reviewPaletteToggleBtn');
+  if(dd && dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    closeReviewPalette();
+  }
+});
+
+function showQuestion(qi){
+  currentQ = qi;
+  visited[qi] = true;
+  const item = questions[qi];
+  $('qTag').textContent = item.tag;
+  $('qNumLabel').textContent = `Question ${qi+1} of ${questions.length}`;
+  $('qText').innerHTML = item.q;
+  $('progressText').textContent = `Question ${qi+1} / ${questions.length}`;
+
+  const optsDiv = $('qOpts');
+  optsDiv.innerHTML = '';
+  item.opts.forEach((opt,oi)=>{
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(responses[qi] === oi) btn.classList.add('selected');
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+    btn.onclick = ()=> selectOption(qi,oi);
+    optsDiv.appendChild(btn);
+  });
+
+  $('prevBtn').disabled = (qi === 0);
+  $('nextBtn').textContent = (qi === questions.length-1) ? 'Next ➡️' : 'Next ➡️';
+  refreshPalette();
+}
+
+function selectOption(qi,oi){
+  responses[qi] = oi;
+  showQuestion(qi);
+}
+
+function clearResponse(){
+  responses[currentQ] = null;
+  showQuestion(currentQ);
+}
+
+function goPrev(){
+  if(currentQ > 0) showQuestion(currentQ-1);
+}
+function goNext(){
+  if(currentQ < questions.length-1) showQuestion(currentQ+1);
+  else{
+    // last question -> nudge toward submit
+    confirmSubmit();
+  }
+}
+
+function confirmSubmit(){
+  if(testSubmitted) return;
+  const unattempted = responses.filter(r=>r===null).length;
+  const msg = unattempted > 0
+    ? `Aapne ${unattempted} question(s) attempt nahi kiye hain. Kya aap test submit karna chahte hain?`
+    : `Kya aap test submit karna chahte hain?`;
+  $('modalMsg').textContent = msg;
+  $('modalOverlay').classList.add('show');
+}
+
+function closeModal(){
+  $('modalOverlay').classList.remove('show');
+}
+
+function modalConfirmYes(){
+  closeModal();
+  doSubmit(false);
+}
+
+function doSubmit(autoSubmitted){
+  if(testSubmitted) return;
+  testSubmitted = true;
+  clearInterval(timerInterval);
+
+  let correct=0, wrong=0, attempted=0;
+  questions.forEach((item,i)=>{
+    if(responses[i] !== null){
+      attempted++;
+      if(responses[i] === item.ans) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = questions.length - attempted;
+  const score = (correct*MARK_CORRECT) + (wrong*MARK_WRONG);
+
+  $('submitReasonText').textContent = autoSubmitted
+    ? '⏰ Time khatam ho gaya — test auto-submit ho gaya hai.'
+    : 'Aapne test submit kar diya hai.';
+  $('finalScore').textContent = score.toFixed(2).replace(/\.00$/,'');
+  $('finalMax').textContent = questions.length;
+  $('statTotal').textContent = questions.length;
+  $('statAttempted').textContent = attempted;
+  $('statUnattempted').textContent = unattempted;
+  $('statCorrect').textContent = correct;
+  $('statWrong').textContent = wrong;
+
+  $('testTopBar').style.display='none';
+  $('testLayout').style.display='none';
+  $('alertBanner').style.display='none';
+  $('resultScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===== REVIEW SCREEN ===== */
+function openReview(qi){
+  $('resultScreen').style.display='none';
+  $('reviewScreen').style.display='block';
+  buildReviewPalette();
+  showReviewQuestion(qi);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function backToResult(){
+  $('reviewScreen').style.display='none';
+  $('resultScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showReviewQuestion(qi){
+  currentReviewQ = qi;
+  const item = questions[qi];
+  const userAns = responses[qi];
+
+  $('rQTag').textContent = item.tag;
+  $('rQNumLabel').textContent = `Question ${qi+1} of ${questions.length}`;
+  $('rQText').innerHTML = item.q;
+  $('reviewProgress').textContent = `Question ${qi+1} / ${questions.length}`;
+
+  const statusTag = $('reviewStatusTag');
+  if(userAns === null){
+    statusTag.textContent = 'Unattempted';
+    statusTag.className = 'review-status skip';
+  } else if(userAns === item.ans){
+    statusTag.textContent = 'Correct';
+    statusTag.className = 'review-status correct';
+  } else {
+    statusTag.textContent = 'Wrong';
+    statusTag.className = 'review-status wrong';
+  }
+
+  const optsDiv = $('rQOpts');
+  optsDiv.innerHTML = '';
+  item.opts.forEach((opt,oi)=>{
+    const btn = document.createElement('div');
+    btn.className = 'opt locked';
+    if(oi === item.ans) btn.classList.add('correct');
+    if(userAns !== null && oi === userAns && userAns !== item.ans) btn.classList.add('wrong');
+    let markHtml = '';
+    if(oi === item.ans) markHtml = '<span class="mark c">✓</span>';
+    else if(userAns !== null && oi === userAns) markHtml = '<span class="mark w">✗</span>';
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>${markHtml}`;
+    optsDiv.appendChild(btn);
+  });
+
+  $('rYourAns').innerHTML = userAns === null
+    ? `<b>Your Answer:</b> Not Attempted`
+    : `<b>Your Answer:</b> ${labels[userAns]} &nbsp;|&nbsp; <b>Correct Answer:</b> ${labels[item.ans]}`;
+
+  $('rSolBody').innerHTML = item.sol;
+
+  refreshReviewPalette();
+
+  $('rPrevBtn').disabled = (qi === 0);
+  $('rNextBtn').textContent = (qi === questions.length-1) ? 'Finish' : 'Next ➡️';
+}
+
+function reviewPrev(){
+  if(currentReviewQ > 0) showReviewQuestion(currentReviewQ-1);
+}
+function reviewNext(){
+  if(currentReviewQ < questions.length-1) showReviewQuestion(currentReviewQ+1);
+  else backToResult();
+}
+
+$('modalOverlay').addEventListener('click', function(e){
+  if(e.target === $('modalOverlay')) closeModal();
+});
+
+// Warn before leaving mid-test
+window.addEventListener('beforeunload', function(e){
+  if(!testSubmitted && timerInterval){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+</script>
+</body>
+</html>

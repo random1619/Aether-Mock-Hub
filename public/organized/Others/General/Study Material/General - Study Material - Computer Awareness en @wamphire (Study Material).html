@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computer Awareness</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    Computer Awareness 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A computer virus is a</div>
+  <div class="question lang-hi">कंप्यूटर वायरस एक _________ है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hardware</div><div class="option correct">Software</div><div class="option">Bacteria</div><div class="option">Freeware</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हार्डवेयर</div><div class="option correct">सॉफ़्टवेयर</div><div class="option">जीवाणु</div><div class="option">फ्रीवेयर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Software.</strong></u></p> <ul> <li>A computer virus is a malicious software that, when executed replicates itself by modifying other computer programs.</li> <li>The full form&nbsp;of VIRUS is&nbsp;Vital Information Resources Under Seize&nbsp;because they replicate and multiply and use up computer memory processing power with fake repetitive commands. It causes the system to become slow and keeps hanging.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<u><strong>सॉफ़्टवेयर</strong></u></p> <ul> <li>एक कंप्यूटर वायरस एक द्रोही सॉफ़्टवेयर है, जब इसे निष्पादित किया जाता है तो अन्य कंप्यूटर प्रोग्रामों को संशोधित करके यह स्वयं की प्रतिकृति बनता जाता है।</li> <li>वायरस का विस्तृत रूप<span style="font-weight: 700;">&nbsp;वाइटल</span>​&nbsp;<span style="font-weight: 700;">इनफार्मेशन रिकोर्स</span><span style="font-weight: 700;">&nbsp;अंडर सीज</span>&nbsp;है, क्योंकि वे प्रतिकृति बनाते हैं और अपने आप को गुणा करते रहते हैं और नकली दोहराव वाले आदेशों के साथ कंप्यूटर मैमरी प्रोसेसिंग पावर का उपयोग करते हैं। इससे सिस्टम धीमा हो जाता है और अटक अटक कर कार्य करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A file deleted from a folder can be recovered from</div>
+  <div class="question lang-hi">एक फ़ोल्डर से हटाई गई फ़ाइल को _______ से पुनःप्राप्त किया जा सकता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Workbook</div><div class="option">Folder</div><div class="option">Computer</div><div class="option correct">Recycle bin</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">वर्कबुक</div><div class="option">फोल्डर</div><div class="option">कम्प्यूटर</div><div class="option correct">रीसायकल बिन</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is the&nbsp;<u><strong>Recycle bin.</strong></u></p> <ul> <li>Recycle Bin is a location where deleted files or folders are temporarily stored in every version of Microsoft Windows since Windows 95.</li> <li>The Recycle Bin allows users to recover files that have been deleted in Windows.</li> <li>It is located on the desktop</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<u><strong>रीसायकल बिन</strong></u></p> <ul> <li>रीसायकल बिन एक ऐसा स्थान है जहाँ विंडोज 95 के बाद से माइक्रोसॉफ्ट विंडोज के हर संस्करण में अस्थायी रूप से हटाई गई फ़ाइलें या फ़ोल्डर संग्रहीत किए जाते हैं</li> <li>रीसायकल बिन उपयोगकर्ताओं को उन फ़ाइलों को पुनर्प्राप्त करने की अनुमति देता है जिन्हें विंडोज में से हटा दिया गया है</li> <li>यह डेस्कटॉप पर स्थित होता है</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is not an Operating System?</div>
+  <div class="question lang-hi">निम्न में से कौन सा ऑपरेटिंग सिस्टम नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Windows Vista</div><div class="option">Linux</div><div class="option correct">Microsoft Office</div><div class="option">Apple&#39;s Mac OS</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">विंडोज विस्टा</div><div class="option">लिनक्स</div><div class="option correct">माइक्रोसॉफ्ट ऑफिस</div><div class="option">ऐप्पल का मैक&nbsp;OS</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Microsoft Office</strong></u></p> <ul> <li>An <strong style="">operating system</strong> is the <strong style="">most important software</strong> that runs on a computer. It manages the computer&#39;s <strong style="">memory</strong> and <strong style="">processes</strong>, as well as all of its <strong style="">software</strong> and <strong style="">hardware</strong>. It also allows you to <strong style="">communicate</strong> with the computer without knowing how to speak the computer&#39;s language. <strong style="">Without an operating system, a computer is useless</strong>.</li> <li><strong>Laptops, tablets</strong>, and <strong>desktop computers</strong> all run <strong>operating systems</strong> that you&#39;ve probably heard of. Some examples include versions of <strong>Microsoft Windows</strong> (like <strong><span data-component="link" data-ordinal="1" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">Windows 10</span>, Windows 8, Windows 7, Windows Vista, and Windows XP</strong>),<strong> <span data-component="link" data-ordinal="2" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">Apple&#39;s macOS</span> </strong>(formerly <strong>OS X</strong>), <strong><span data-component="link" data-ordinal="3" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">Chrome OS</span></strong>, <strong>BlackBerry Tablet OS</strong>, and <span data-component="link" data-ordinal="4" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">flavors of<strong> Linux</strong>,</span> an <strong>open-source operating system</strong>.&nbsp;</li> <li>Your computer&#39;s <strong style="">operating system</strong> (<strong style="">OS</strong>) manages all of the<strong style=""> software </strong>and<strong style=""> hardware </strong>on the computer. Most of the time, there are several different computer programs running at the same time, and they all need to access your computer&#39;s <strong style="">central processing unit (CPU)</strong>, <strong style="">memory</strong>, and <strong style="">storage</strong>. The operating system coordinates all of this to make sure each program gets what it needs.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><span style="font-weight: 700;">माइक्रोसॉफ्ट ऑफिस</span></u> है&nbsp;</p> <ul> <li>एक <strong style="">ऑपरेटिंग सिस्टम</strong> <strong style="">सबसे महत्वपूर्ण सॉफ्टवेयर है</strong> जो कंप्यूटर पर चलता है। यह कंप्यूटर की <strong style="">मेमोरी</strong> और <strong style="">प्रक्रियाओं</strong>, साथ ही साथ इसके सभी <strong style="">सॉफ्टवेयर</strong> और <strong style="">हार्डवेयर का प्रबंधन करता है</strong>। यह आपको कंप्यूटर के साथ <strong style="">संवाद</strong> करने की अनुमति देता है बिना यह जाने कि कंप्यूटर की भाषा कैसे बोलनी है। <strong style="">ऑपरेटिंग सिस्टम के बिना, एक कंप्यूटर बेकार है</strong>।</li> <li><strong>लैपटॉप, टैबलेट</strong> और <strong>डेस्कटॉप कंप्यूटर</strong> सभी <strong>ऑपरेटिंग सिस्टम पर</strong> चलते <strong>हैं</strong> जो आपने शायद ही सुना हो। कुछ उदाहरणों में <strong>माइक्रोसॉफ्ट विंडोज के</strong> संस्करण शामिल हैं (जैसे <strong><span data-component="link" data-ordinal="1" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">विंडोज 10</span> , विंडोज 8, विंडोज 7, विंडोज विस्टा और विंडोज एक्सपी</strong>), <strong><span data-component="link" data-ordinal="2" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">ऐप्पल का मैकओएस</span></strong> (पूर्व में <strong>ओएस एक्स</strong> ), <strong><span data-component="link" data-ordinal="3" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style="">क्रोम ओएस</span></strong>, <strong>ब्लैकबेरी टैबलेट ओएस</strong> और <span data-component="link" data-ordinal="4" data-source="inlineLink" data-type="internalLink" rel="noopener noreferrer" style=""><strong>लिनक्स का</strong> फ्लेवर,</span> एक <strong>ओपन-सोर्स ऑपरेटिंग सिस्टम</strong>।</li> <li>आपके कंप्यूटर का <strong style="">ऑपरेटिंग सिस्टम</strong> (<strong style="">OS</strong>) कंप्यूटर पर सभी <strong style="">सॉफ्टवेयर</strong> और <strong style="">हार्डवेयर</strong> का प्रबंधन करता है। अधिकांश समय, एक ही समय में कई अलग-अलग कंप्यूटर प्रोग्राम चल रहे हैं, और वे सभी आपके कंप्यूटर की <strong style="">सेंट्रल प्रोसेसिंग यूनिट (सीपीयू)</strong> , <strong style="">मेमोरी</strong> और <strong style="">स्टोरेज</strong> तक पहुंचने की आवश्यकता है। ऑपरेटिंग सिस्टम यह सुनिश्चित करने के लिए सभी को समन्वित करता है कि प्रत्येक प्रोग्राम को इसकी आवश्यकता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the full form of PPP?&nbsp;</div>
+  <div class="question lang-hi">पीपीपी का विस्तृत रूप क्या है?&nbsp;</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Power to Process Point</div><div class="option correct">Point to Point Protocol</div><div class="option">Point to Power Protocol</div><div class="option">Protocol for powerpoint</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">पॉवर टू प्रोसेस पॉइंट&nbsp;</div><div class="option correct">पॉइंट टू पॉइंट प्रोटोकॉल&nbsp;</div><div class="option">पॉइंट टू पॉवर प्रोटोकॉल&nbsp;</div><div class="option">प्रोटोकॉल फॉर पॉवरपॉइंट&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Point to Point Protocol</strong></u></p> <ul> <li><strong>Point-to-Point Protocol (PPP)</strong> is a data link protocol commonly used in establishing a direct connection between two <strong>network entities</strong> or points (points here referred to as nodes, computers, hosts, etc).</li> <li>Point-to-Point Protocol (PPP) is a communication protocol of the data link layer that is used to transmit multiprotocol data between two directly connected (point-to-point) computers. It is a byte-oriented protocol that is widely used in broadband communications having heavy loads and high speeds.</li> <li>PPP is a byte-oriented protocol where each field of the frame is composed of one or more bytes.</li> <li> <p style="">The main services provided by Point-to-Point&nbsp;Protocol are &minus;</p> <ul> <li style=""> <p style="">Defining the frame format of the data to be transmitted.</p> </li> <li style=""> <p style="">Defining the procedure of establishing a link between two points and the exchange of data.</p> </li> <li style=""> <p style="">Stating the method of encapsulation of network layer data in the frame.</p> </li> <li style=""> <p style="">Stating authentication rules of the communicating devices etc.</p> </li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर <u><strong>पॉइंट </strong></u>टू<u><strong> पॉइंट प्रोटोकॉल&nbsp;है।</strong></u></p> <ul> <li style=""><strong>पॉइंट-टू-पॉइंट प्रोटोकॉल (पीपीपी)</strong> एक डेटा लिंक प्रोटोकॉल है जिसका उपयोग आमतौर पर दो <strong>नेटवर्क एंटिटीस</strong> या बिंदुओं के बीच एक सीधा संबंध स्थापित करने के लिए किया जाता है (यहां बिंदु जिन्हें नोड्स, कंप्यूटर, होस्ट आदि कहा जाता है)।</li> <li style="">पॉइंट-टू-पॉइंट प्रोटोकॉल (PPP) डेटा लिंक लेयर का एक संचार प्रोटोकॉल है, जिसका उपयोग दो सीधे कनेक्टेड (पॉइंट-टू-पॉइंट) कंप्यूटरों के बीच मल्टीरोटोकल डेटा संचारित करने के लिए किया जाता है। यह एक बाइट-ओरिएंटेड प्रोटोकॉल है जो व्यापक रूप से ब्रॉडबैंड संचार में उपयोग किया जाता है जिसमें भारी भार और उच्च गति होती है।</li> <li style="">पीपीपी एक बाइट-ओरिएंटेड प्रोटोकॉल है जो फ्रेम के प्रत्येक क्षेत्र में एक या अधिक बाइट्स से बना होता है।</li> <li style="">पॉइंट-टू-पॉइंट प्रोटोकॉल द्वारा प्रदान की जाने वाली मुख्य सेवाएं हैं - <ul> <li style="">प्रेषित किए जाने वाले डेटा के फ्रेम प्रारूप को परिभाषित करना।</li> <li style="">दो बिंदुओं और डेटा के आदान-प्रदान के बीच एक कड़ी स्थापित करने की प्रक्रिया को परिभाषित करना।</li> <li style="">फ़्रेम में नेटवर्क लेयर डेटा के इनकैप्सुलेशन की विधि को प्रस्थापित करना।</li> <li style="">संचार उपकरणों आदि के प्रमाणीकरण नियमों को प्रस्थापित&nbsp;करना।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">HTML stands for _________.</div>
+  <div class="question lang-hi"><p>HTML का अर्थ है ________।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hyper Text Making Links</div><div class="option correct">Hyper Text Markup Language</div><div class="option">Higher Textual Marking of Links</div><div class="option">Hyper Text Mixer of Links</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हाइपर टेक्स्ट मेकिंग लिंक</div><div class="option correct">हाइपर टेक्स्ट मार्कअप लैंग्वेज</div><div class="option">हाइयर टेक्स्ट मार्किंग लिंक</div><div class="option">हाइपर टेक्स्ट मिक्सर ऑफ लिंक</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &nbsp;<u><strong>HyperText Markup Language</strong></u>.</p> <ul style="list-style-type: disc;"> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">First developed by Tim Berners-Lee in 1990, <b style="">HTML</b> is short for Hypertext Markup Language. </span></span></li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style=""><b style="">HTML</b> is <b style="">used</b> to create electronic documents (called pages) that are displayed on the World Wide Web.</span></span></li> <li>It is a language used for writing source codes for developing a webpage, inserting content, and other components in it.</li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style=""><b style="">HTML</b> is a&nbsp;markup language because it is used to distinguish <b style="">HTML</b> elements from text. </span></span></li> <li><span style="font-size:14px;"><span style="font-family:arial,helvetica,sans-serif;">HTML is not a programming language, meaning it doesn&rsquo;t have the ability to create dynamic functionality. Instead, it makes it possible to organize and format documents, similar to Microsoft Word.</span></span></li> <li>When working with HTML, we use simple code structures (tags and attributes) to mark up a website page. For example, we can create a paragraph by placing the enclosed text within a starting <strong style=""><em style="">&lt;p&gt;</em></strong> and closing <strong style=""><em style="">&lt;/p&gt;</em></strong> tag.</li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर <u><strong><span style=" ">&nbsp;</span>हाइपर टेक्स्ट मार्कअप लैंग्वेज है।</strong></u></p> <ul style="list-style-type: disc;"> <li style="">पहली बार 1990 में टिम बर्नर्स-ली द्वारा विकसित है, हाइपरटेक्स्ट मार्कअप लैंग्वेज&nbsp;<strong>HTML </strong>के लिए संक्षिप्त रूप है।</li> <li style="">HTML का उपयोग इलेक्ट्रॉनिक दस्तावेज़ (पृष्ठ कहा जाता है) बनाने के लिए किया जाता है जो वर्ल्ड वाइड वेब पर प्रदर्शित होते हैं।</li> <li style="">यह एक वेबपेज विकसित करने के लिए सोर्स कोड लिखने के लिए उपयोग की जाने वाली भाषा है, इसमें सामग्री और अन्य घटक सम्मिलित हैं।</li> <li style=""><strong>HTML </strong>एक मार्कअप भाषा है क्योंकि इसका उपयोग टेक्स्ट से <strong>HTML </strong>तत्वों को अलग करने के लिए किया जाता है।</li> <li style="">HTML एक प्रोग्रामिंग भाषा नहीं है, जिसका अर्थ है कि इसमें गतिशील कार्यक्षमता बनाने की क्षमता नहीं है। इसके बजाय, यह माइक्रोसॉफ्ट वर्ड के समान दस्तावेजों को व्यवस्थित और प्रारूपित करना संभव बनाता है।</li> <li style="">HTML के साथ काम करते समय, हम एक वेबसाइट पृष्ठ को चिह्नित करने के लिए सरल कोड संरचनाओं (टैग और विशेषताओं) का उपयोग करते हैं। उदाहरण के लिए, हम संलग्न <span style=" ">अनुच्छेद&nbsp;</span>को शुरू &lt;p&gt; के भीतर रखकर और &lt;/ p&gt; टैग को बंद करके एक <span style=" ">अनुच्छेद&nbsp;</span>बना सकते हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">CPU stands for __________.</div>
+  <div class="question lang-hi">CPU _______ का संक्षिप्त रूप है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Central Programming Unit</div><div class="option correct">Central Processing Unit</div><div class="option">Central Planning Unit</div><div class="option">Central Progress Unit</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सेंट्रल प्रोग्रामिंग यूनिट (केन्द्रीय प्रोग्रामिंग इकाई)</div><div class="option correct">सेंट्रल प्रोसेसिंग यूनिट (केन्द्रीय प्रचालन इकाई)</div><div class="option">सेंट्रल प्लानिंग यूनिट (केन्द्रीय आयोजन इकाई)</div><div class="option">सेंट्रल प्रोग्रेस यूनिट (केन्द्रीय प्रगमन इकाई)</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Central Processing Unit</strong></u>.</p> <ul> <li><span style="font-weight: 700;">Central Processing Unit (CPU):&nbsp;</span>It is the most important unit, where all the processing jobs take place. CPU is the control centre of the computer and hence it is said to be the brain of the computer.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>CPU has three main components:</strong> <ul> <li><span style="font-weight: 700;">Arithmetic Logic Unit (ALU):&nbsp;</span>It performs all the arithmetic operations like addition (+), multiplication (*), subtraction (-), division (/) on the numerical data directed by the control unit. All the logical operations, like less than (&lt;), greater than (&gt;), equal to (=), not equal to (&ne;) etc. are also carried out by ALU.</li> <li><span style="font-weight: 700;">Control Unit (CU):&nbsp;</span>It controls and coordinates all the operations taking place in the system. It controls the flow of data and information from one unit to the other.</li> <li><span style="font-weight: 700;">Registers/Memory Unit (MU):&nbsp;</span>To execute a program, data and instructions need to be stored temporarily. This storage is done in the MU. The data and instructions are retrieved from MU by Control Unit for supplying to ALU as when required by the program.</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/18/03/gate%20SSC_EE_80.PNG" style="height: 192px; width: 407px;" /></p></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>सेंट्रल प्रोसेसिंग यूनिट (केन्द्रीय प्रचालन इकाई)</strong></u> है।</p> <ul> <li><strong>सेंट्रल प्रोसेसिंग यूनिट​ [</strong><span style="font-weight: 700;">केंद्रीय&nbsp;<span style="font-family: arial, sans-serif;">प्रचालन</span>&nbsp;<font face="roboto, sans-serif">इकाई</font>&nbsp;(CPU):</span>&nbsp;यह कंप्यूटर की सबसे महत्वपूर्ण इकाई है, जहाँ सभी प्रसंस्करण कार्य किए&nbsp;जाते हैं। CPU कंप्यूटर का नियंत्रण केंद्र है और इसलिए इसे कंप्यूटर का मस्तिष्क कहा जाता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>CPU के तीन मुख्य घटक हैं;</strong> <ul> <li><span style="font-weight: 700;">अरिथमेटिक लॉजिक यूनिट अंकगणितीय&nbsp;<span style="font-family: &quot;open sans&quot;, sans-serif;">तार्किक</span>&nbsp;</span><span style="font-family: roboto, sans-serif; font-weight: 700;">इकाई&nbsp;</span><span style="font-weight: 700;">(ALU)] :&nbsp;&nbsp;</span>यह&nbsp;इकाई<span style="font-family: roboto, sans-serif;">&nbsp;</span>नियंत्रण&nbsp;इकाई&nbsp;द्वारा निर्देशित सभी अंकगणितीय संक्रियाओं जैसे जोड़ना (+), घटाना (-), गुणा करना&nbsp;(*), भागाकार&nbsp;(/) इत्यादि को निष्पादित करती है और सभी तार्किक संक्रियायें जैसे- से कम (&lt;), से अधिक (&gt;), के बराबर (=), के बराबर नहीं (&ne;) इत्यादि अंकगणितीय तर्क भी इसी <font face="roboto, sans-serif">इकाई</font>&nbsp;द्वारा ही की जाती हैं।</li> <li><span style="font-weight: 700;">कंट्रोल यूनिट [नियंत्रण&nbsp;</span><span style="font-family: roboto, sans-serif; font-weight: 700;">इकाई</span><span style="font-weight: 700;">&nbsp;(CU)]:</span>&nbsp;यह कंप्यूटर प्रणाली में होने वाली सभी प्रक्रियाओं को निर्देशित करता है। यह एक <font face="roboto, sans-serif">इकाई</font>&nbsp;से दूसरी इकाई&nbsp;में डेटा&nbsp;और सूचना के प्रवाह को नियंत्रित करता है।</li> <li><span style="font-weight: 700;">रजिस्टर्स</span>/<span style="font-weight: 700;">मेमोरी</span>&nbsp;<span style="font-family: roboto, sans-serif; font-weight: 700;">इकाई</span>&nbsp;<span style="font-weight: 700;">(MU):&nbsp;</span>कंप्यूटर प्रणाली में किसी भी प्रोग्राम को निष्पादित करने के लिए डेटा और निर्देशों को अस्थायी रूप से संगृहीत करना आवश्यक होता है और यह संचयन मेमोरी <font face="roboto, sans-serif">इकाई</font>&nbsp;में ही होता है। नियंत्रण&nbsp;<span style="font-family: roboto, sans-serif;">इकाई</span>&nbsp;द्वारा मेमोरी&nbsp;<span style="font-family: roboto, sans-serif;">इकाई</span>&nbsp;से आंकड़ों और निर्देशों को पुनः प्राप्त कर लिया जाता है ताकि प्रोग्राम की आवश्यकतानुसार अंकगणितीय&nbsp;<span style="font-family: &quot;open sans&quot;, sans-serif;">तार्किक</span>&nbsp;<span style="font-family: roboto, sans-serif;">इकाई</span>&nbsp;को उसकी आपूर्ति की जा सके।</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/18/03/gate%20SSC_EE_80.PNG" style="height: 192px; width: 407px;" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The expansion of RAM is _______.</div>
+  <div class="question lang-hi">RAM का विस्तृत रूप __________ है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Read Octet Machine</div><div class="option correct">Random Access Memory</div><div class="option">Read Access Memory</div><div class="option">Random Access Machine</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">रीड ओक्टेट मशीन</div><div class="option correct">रैंडम एक्सेस मैमोरी</div><div class="option">रीड एक्सेस मैमोरी</div><div class="option">रैंडम एक्सेस मशीन</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Random Access Memory</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>Primary Memory (Main Memory)</strong>:</p> <ul> <li>Primary memory is also known as main memory. It holds only those data and instructions on which computer is currently working. It has limited capacity and data is lost when power is switched off.</li> <li>Primary memory can be divided into <strong>RAM (Random Access Memory) </strong>and <strong>ROM (Read Only Memory)</strong></li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width:480px;"> <tbody> <tr> <td><strong>RAM</strong></td> <td><strong>ROM</strong></td> </tr> <tr> <td>It is Volatile or temporary memory</td> <td>It is Non Volatile or permanent memory</td> </tr> <tr> <td style="width: 240px;">Data gets erased when&nbsp;the power supply is off</td> <td>Data stored permanently</td> </tr> <tr> <td>Faster memory</td> <td>Slow memory</td> </tr> <tr> <td>It is used in the normal operations of a computer after starting up and loading the operating system</td> <td>A ROM chip is used primarily in the start-up process of a computer</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<u><strong>रैंडम एक्सेस मैमोरी</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>प्राथमिक मैमोरी (मुख्य मैमोरी): </strong></p> <ul> <li>प्राथमिक मैमोरी को मुख्य मैमोरी के रूप में भी जाना जाता है। इसमें केवल वे डेटा और निर्देश होते हैं जिन पर कंप्यूटर वर्तमान में काम कर रहा होता है। इसकी&nbsp;क्षमता&nbsp;सीमित होती है और बिजली बंद होने पर डेटा खो देती है।</li> <li>प्राथमिक मैमोरी को <span style="font-weight: 700;">RAM</span><strong> (रैंडम एक्सेस मेमोरी) </strong>और <span style="font-weight: 700;">ROM</span><strong> (रीड ओनली मैमोरी) </strong>में विभाजित किया जा सकता है&nbsp;</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</p> <table border="1" cellpadding="1" cellspacing="1" style="background-color: rgb(255, 255, 255); width: 480px;"> <tbody> <tr> <td>RAM</td> <td>ROM</td> </tr> <tr> <td>यह अस्थिर या अस्थायी मैमोरी है</td> <td>यह गैर-अस्थिर या स्थायी मैमोरी है</td> </tr> <tr> <td style="width: 240px;">बिजली की आपूर्ति बंद होने पर डेटा खो देती है</td> <td>डेटा स्थायी रूप से संग्रहीत करती है</td> </tr> <tr> <td>तेज मैमोरी</td> <td>धीमी मैमोरी</td> </tr> <tr> <td>यह ऑपरेटिंग सिस्टम के शुरू होने और लोड होने के बाद कंप्यूटर के सामान्य संचालन में उपयोग किया जाता है।</td> <td>मुख्य रूप से कंप्यूटर की स्टार्ट-अप प्रक्रिया में एक ROM चिप का उपयोग किया जाता है।</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">DVD stands for</div>
+  <div class="question lang-hi">DVD का विस्तृत रूप क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Datum Versatile Disc</div><div class="option correct">Digital Versatile Disc</div><div class="option">Digimetric Versatile Disc</div><div class="option">None of these</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">डेटम वेर्सेटाइल डिस्क</div><div class="option correct">डिजिटल वेर्सेटाइल डिस्क</div><div class="option">डिजिमीट्रिक वेर्सेटाइल डिस्क</div><div class="option">इनमें से कोई नहीं।&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Digital Versatile Disc.</strong></u></p> <ul> <li>A digital Versatile Disc or DVD is a digital optic disc storage device. It can store any kind of digital data and is widely used for software, computer files, and video storage.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>डिजिटल वेर्सेटाइल डिस्क</strong></u>&nbsp;<span style="color: rgb(33, 37, 41);">है।&nbsp;&nbsp;</span></p> <ul> <li>डिजिटल वेर्सेटाइल डिस्क या DVD एक डिजिटल ऑप्टिक संचयन उपकरण&nbsp;है। यह किसी भी प्रकार की डिजिटल जानकारी (डेटा) को संचित कर सकती&nbsp;है और सॉफ्टवेयर, कंप्यूटर फ़ाइल&nbsp;और विडियो संचयन के लिए बड़े पैमाने पर प्रयुक्त है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is an operating system?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन एक ऑपरेटिंग सिस्टम है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Linux</div><div class="option">Microsoft Windows</div><div class="option">Mac OS X</div><div class="option correct">All of these</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">लिनक्स (<span style="color: rgb(33, 37, 41);">Linux</span>)</div><div class="option">माइक्रोसॉफ्ट विंडोज़</div><div class="option">मैक <span style="color: rgb(33, 37, 41);">OS X</span></div><div class="option correct">उपरोक्त सभी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>All of these</strong></u></p> <ul> <li>An operating system (OS) is system software that <strong>manages computer hardware and software resources</strong> and provides common services for computer programs.</li> <li>The three most common operating systems for personal computers are<u><strong> </strong></u><strong>Microsoft Windows, Mac OS X, and Linux.</strong></li> <li>Modern operating systems use a<strong> graphical user interface(GUI).</strong></li> <li style="">An <strong>Operating System (OS)</strong> is an <strong>interface</strong> between a computer <strong>user and computer hardware</strong>. An operating system is a <strong>software</strong> that performs all the basic tasks like file <strong>management, memory management, process management, handling input and output, and controlling peripheral devices</strong> such as <strong>disk drives</strong> and <strong>printers</strong>.</li> <li style="">Some popular Operating Systems include <strong>Linux Operating System, Windows Operating System, VMS, OS/400, AIX, z/OS, </strong>etc.</li> <li style="">The following are some of the important functions of an operating system: <ul> <li><strong>Memory Management</strong></li> <li><strong>Processor Management</strong></li> <li><strong>Device Management</strong></li> <li><strong>File Management</strong></li> <li><strong>Security</strong></li> <li><strong>Control over system performance</strong></li> <li><strong>Job accounting</strong></li> <li><strong>Error detecting aids</strong></li> <li><strong>Coordination between other software and users</strong></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><span style="">सही उत्तर&nbsp;</span><u style="color: rgb(33, 37, 41);"><span style="font-weight: bolder;">उपरोक्त सभी</span></u> है<span style="">।</span>&nbsp;</p> <ul> <li>एक ऑपरेटिंग सिस्टम (OS) सिस्टम सॉफ्टवेयर है जो <strong>कंप्यूटर हार्डवेयर और सॉफ्टवेयर संसाधनों का प्रबंधन</strong> करता है और कंप्यूटर प्रोग्राम के लिए सामान्य सेवाएं प्रदान करता है।</li> <li>पर्सनल कंप्यूटर के लिए तीन सबसे आम ऑपरेटिंग सिस्टम हैं<u><strong> </strong></u><strong>माइक्रोसॉफ्ट विंडोज, मैक ओएस एक्स, और लिनक्स।</strong></li> <li>आधुनिक ऑपरेटिंग सिस्टम एक <strong>ग्राफिकल यूजर इंटरफेस (GUI) का उपयोग करते हैं।</strong></li> <li style="">एक <strong>ऑपरेटिंग सिस्टम (OS)</strong> एक कंप्यूटर <strong>उपयोगकर्ता और कंप्यूटर हार्डवेयर के</strong> बीच एक <strong>इंटरफ़ेस है</strong>। एक ऑपरेटिंग सिस्टम एक <strong>सॉफ्टवेयर</strong> है जो फ़ाइल <strong>प्रबंधन, मेमोरी प्रबंधन, प्रक्रिया प्रबंधन, इनपुट और आउटपुट को संभालने और परिधीय उपकरणों</strong> जैसे कि <strong>डिस्क ड्राइव</strong> और <strong>प्रिंटर</strong> को <strong>नियंत्रित</strong> करने जैसे सभी बुनियादी कार्य करता है।</li> <li style="">कुछ लोकप्रिय ऑपरेटिंग सिस्टम में <strong>लिनक्स ऑपरेटिंग सिस्टम, विंडोज ऑपरेटिंग सिस्टम, </strong><span style="font-weight: bolder;">VMS, OS/400, AIX, z/OS</span><strong>,</strong> आदि शामिल हैं।</li> <li style="">एक ऑपरेटिंग सिस्टम के कुछ महत्वपूर्ण कार्य निम्नलिखित हैं: <ul> <li><strong>स्मृति प्रबंधन</strong></li> <li><strong>प्रोसेसर प्रबंधन</strong></li> <li><strong>डिवाइस प्रबंधन</strong></li> <li><strong>फाइल प्रबंधन</strong></li> <li><strong>सुरक्षा</strong></li> <li><strong>सिस्टम के प्रदर्शन पर नियंत्रण</strong></li> <li><strong>नौकरी का हिसाब</strong></li> <li><strong><span style="">सहायता का पता लगाने में त्रुटि</span></strong></li> <li><strong>अन्य सॉफ्टवेयर और उपयोगकर्ताओं के बीच समन्वय</strong></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A computer stores data in the ________ format.</div>
+  <div class="question lang-hi">एक कंप्यूटर ________ प्रारूप में डेटा स्टोर करता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hexadecimal</div><div class="option">Decimal</div><div class="option">Octal</div><div class="option correct">Binary</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हेक्साडेसिमल</div><div class="option">दशमलव</div><div class="option">ऑक्टल</div><div class="option correct">बाइनरी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<u><strong>&nbsp;Binary</strong></u></p> <ul> <li>Computers&nbsp;have switches to&nbsp;represent data&nbsp;and switches have only two states: ON and OFF. Binary has two digits to do the counting: 0 and 1 (0 = OFF, 1 = ON).</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<strong><u>&nbsp;बाइनरी</u></strong></p> <ul> <li>कंप्यूटर में डेटा का प्रतिनिधित्व करने के लिए स्विच हैं और स्विचेस के पास केवल दो स्थितियां हैं: चालू और बंद। गिनती करने के लिए द्विआधारी के दो अंक हैं: 0 और 1 (0 = बंद, 1 = चालू)।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Magnetic Disk is an example of:</div>
+  <div class="question lang-hi">मैग्नेटिक डिस्क किसका उदाहरण है:</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Register</div><div class="option">Primary Storage Device</div><div class="option">Dynamic Storage Device</div><div class="option correct">Non-volatile Storage</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">रजिस्टर&nbsp;</div><div class="option">प्राइमरी स्टोरेज डिवाइस&nbsp;</div><div class="option">डाइनामिक स्टोरेज डिवाइस&nbsp;</div><div class="option correct">नॉन-वोलाटाइल स्टोरेज&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Non-volatile Storage.</strong></u></p> <ul> <li>Magnetic Disk is an example of non-volatile memory that is not directly accessible by the CPU, because it is&nbsp;accessed via the input/output channels.</li> <li>A magnetic disk is a circular plate constructed of metal or plastic coated with magnetized material. Both sides of the disk are used and several disks may be stacked on one spindle with read/write heads available on each surface.</li> <li>Bits are stored on the magnetized surface in spots along concentric circles called tracks. Tracks are commonly divided into sections called sectors.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<u><strong>नॉन-वोलाटाइल स्टोरेज&nbsp;</strong></u></p> <ul> <li>मैग्नेटिक डिस्क नॉन-वोलाटाइल&nbsp; मेमोरी का एक उदाहरण है जो सीपीयू द्वारा सीधे तौर पर नहीं&nbsp;पहुंचती है, क्योंकि यह इनपुट / आउटपुट चैनलों के माध्यम से एक्सेस किया जाता है।</li> <li>मैग्नेटिक डिस्क एक गोलाकार प्लेट है जो धातु या प्लास्टिक से निर्मित होती है जिसे मैग्नेटाइज्ड सामग्री से लेपित किया जाता है। डिस्क के दोनों पक्षों का उपयोग किया जाता है और प्रत्येक सतह पर उपलब्ध&nbsp;रीड/राईट&nbsp; हेड्स के साथ एक डिस्क पर कई डिस्क क्रमबद्ध ढंग से लगे होते&nbsp;हैं।</li> <li>बिट्स को मैग्नेटाइज्ड&nbsp;सर्फेस पर&nbsp;स्पॉट्स के रूप में&nbsp;&nbsp;स्टोर&nbsp;किया जाता है, जिस पर&nbsp;कोनसेंट्रिक&nbsp;<span style="color: rgb(37, 37, 37); font-family: Roboto, arial, sans-serif;">सर्कल&nbsp;होते है,</span>&nbsp;जिसे ट्रैक कहा जाता है। ट्रैक को आमतौर पर सेक्टर कहे जाने वाले वर्गों में विभाजित किया जाता है।</li> </ul> <p>&nbsp;</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following storage devices can store maximum amount of data?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा संग्रहण यंत्र जानकारी की अधिकतम मात्रा संग्रहित कर सकता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Floppy Disk</div><div class="option correct">Hard Disk</div><div class="option">Compact Disk</div><div class="option">Magneto Optic Disk</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">फ्लॉपी डिस्क</div><div class="option correct">हार्ड डिस्क</div><div class="option">कॉम्पैक्ट डिस्क</div><div class="option">मैग्नेटो ऑप्टिक डिस्क</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Hard Disk</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</strong></u></p> <ul> <li>A hard disk drive (HDD), hard disk, hard drive or fixed disk is a data storage device that uses magnetic storage to store and retrieve digital information using one or more rigid rapidly rotating disks (platters) coated with magnetic material.</li> <li>The platters are paired with magnetic heads, usually arranged on a moving actuator arm, which read and write data to the platter surfaces</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><span style="font-weight: 700;">हार्ड डिस्क</span></u> है।</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></u></p> <ul> <li>एक हार्ड डिस्क ड्राइव (HDD), हार्ड डिस्क, हार्ड ड्राइव या फिक्स्ड डिस्क एक संग्रहण यंत्र है जो चुम्बकीय संग्रहण का उपयोग करता है| इसमें चुम्बकीय सामग्री से लेपित एक या अधिक तेज़ी से घूमें वाली प्लेटों का उपयोग करके डिजिटल जानकारी को संग्रहित या प्राप्त किया जाता है|</li> <li>प्लैटर मैग्नेटिक हेड्स के साथ बनते हैं, जो आमतौर पर चालक हाथ पर व्यवस्थित होते हैं जो प्लैटर सतह पर जानकारी को लिखते या पढ़ते हैं|</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Bluetooth is an example of</div>
+  <div class="question lang-hi">ब्लूटूथ निम्न में से किसका उदाहरण है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">personal area network</div><div class="option">local area network</div><div class="option">virtual private network</div><div class="option">none of the mentioned</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">पर्सनल एरिया नेटवर्क</div><div class="option">लोकल एरिया नेटवर्क</div><div class="option">वर्चुअल प्राइवेट नेटवर्क</div><div class="option">ऊपर उल्लेखित में से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>personal area network</strong></u></p> <ul> <li><strong>Bluetooth</strong> is a <strong>radio communication technology</strong> that enables <strong>low-power, short distance&nbsp;<span data-component="link" data-ordinal="1" data-source="inlineLink" data-type="internalLink" style="">wireless networking</span></strong> between <span data-component="link" data-ordinal="2" data-source="inlineLink" data-type="internalLink" style="">phones</span>, computers, and other network devices. The name Bluetooth is borrowed from <strong>King Harald Gormsson </strong>of Denmark who lived more than 1,000 years ago. The king&#39;s&nbsp;nickname meant &quot;Bluetooth,&quot; supposedly because he had a dead tooth that looked blue. The Bluetooth logo is a combination of the two Scandinavian runes for the King&#39;s initials.&nbsp;</li> <li>A <strong><span class="topic-highlight" style="">personal area network (PAN)</span></strong> is a network concerned with the exchange of information in the <strong>vicinity of a person</strong>. Typically, these systems are wireless and involve the <strong>transmission of data</strong> between devices such as smartphones, personal computers, tablet computers, etc. The purpose of such a network is usually to allow either transmission of data or information between such devices or to the <strong>server</strong> as the network that allows further <strong>uplink to the Internet</strong>. Developments in the area of Personal Area Networks (PANs) are largely overseen by the <strong>IEEE 802.15</strong> working group.</li> <li style="">While some companies have built <strong>wireless sensors</strong> based on Bluetooth, they have not been met with wide acceptance due to limitations of the Bluetooth protocol including:</li> </ul> <ol style="margin-left: 40px;"> <li id="B9780750677295500628-para19" style=""><strong>Relatively high power for a short transmission range</strong>.</li> <li id="B9780750677295500628-para20" style=""><strong>Nodes take a long time to synchronize</strong> to the network when returning from sleep mode, which increases average system power.</li> <li id="B9780750677295500628-para21" style="">A <strong>low number of nodes per network</strong> (&lt;=7 nodes per piconet).</li> <li id="B9780750677295500628-para22" style="">The <strong>medium access controller (MAC) layer is overly complex </strong>when compared to that required for wireless sensor applications.</li> </ol> <dl class="article-list" style=""> </dl></div>
+    <div class="lang-hi"><p>सही जवाब है&nbsp;<u><strong>पर्सनल एरिया नेटवर्क</strong></u></p> <ul> <li><strong>ब्लूटूथ</strong> एक <strong>रेडियो संचार तकनीक</strong> है जो <span data-component="link" data-ordinal="2" data-source="inlineLink" data-type="internalLink" style="">फोन</span> , कंप्यूटर और अन्य नेटवर्क उपकरणों के बीच <strong>कम-शक्ति, कम दूरी की <span data-component="link" data-ordinal="1" data-source="inlineLink" data-type="internalLink" style="">वायरलेस नेटवर्किंग को</span></strong> सक्षम बनाता है। ब्लूटूथ का नाम डेनमार्क के <strong>राजा हेराल्ड गोर्ससन</strong> से लिया गया है, जो 1,000 साल से अधिक समय से जीवित थे। राजा के उपनाम का अर्थ था &quot;ब्लूटूथ,&quot; माना जाता है क्योंकि उसके पास एक मृत दांत था जो नीला दिखता था। ब्लूटूथ लोगो किंग्स इनिशियल के लिए दो स्कैंडिनेवियन रन का संयोजन है।</li> <li>एक <strong><span class="topic-highlight" style="">व्यक्तिगत क्षेत्र नेटवर्क (PAN)</span></strong> <strong>किसी व्यक्ति</strong> के <strong>आसपास के क्षेत्र</strong> में सूचना के आदान-प्रदान से संबंधित नेटवर्क है। आमतौर पर, ये सिस्टम वायरलेस होते हैं और इनमें स्मार्टफ़ोन, पर्सनल कंप्यूटर, टैबलेट कंप्यूटर आदि जैसे उपकरणों के बीच <strong>डेटा</strong> का <strong>संचरण</strong> शामिल होता है। इस तरह के नेटवर्क का उद्देश्य आमतौर पर ऐसे डिवाइसों या <strong>सर्वर के</strong> बीच डेटा या सूचना के प्रसारण की अनुमति देना होता है। वह नेटवर्क जो <strong>इंटरनेट को</strong> और अधिक <strong>अपलिंक करने की</strong> अनुमति देता है। पर्सनल एरिया नेटवर्क्स (PAN) के क्षेत्र में विकास <strong>IEEE 802.15</strong> वर्किंग ग्रुप द्वारा बड़े पैमाने पर किया जाता है।</li> <li style="">जबकि कुछ कंपनियों ने ब्लूटूथ के आधार पर <strong>वायरलेस सेंसर का</strong> निर्माण किया है, उन्हें ब्लूटूथ प्रोटोकॉल की सीमाओं के कारण व्यापक स्वीकृति नहीं मिली है।</li> </ul> <ol style="margin-left: 40px;"> <li id="B9780750677295500628-para19" style=""><strong>एक छोटी संचरण सीमा के लिए अपेक्षाकृत उच्च शक्ति</strong> ।</li> <li id="B9780750677295500628-para20" style="">स्लीप मोड से लौटने पर <strong>नोड्स</strong> को नेटवर्क में <strong>सिंक्रोनाइज़</strong> करने में <strong>लंबा समय लगता</strong> है, जिससे औसत सिस्टम पावर बढ़ती है।</li> <li id="B9780750677295500628-para21" style=""><strong>प्रति नेटवर्क नोड्स की कम संख्या</strong> (&lt;= 7 नोड प्रति पिनकिट)।</li> <li id="B9780750677295500628-para22" style="">वायरलेस सेंसर अनुप्रयोगों के लिए आवश्यक होने पर <strong>मध्यम पहुंच नियंत्रक (मैक) परत अत्यधिक जटिल</strong> होती है।</li> </ol> <dl class="article-list" style=""> </dl></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is fastest memory cell?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा सबसे तीव्र मेमोरी सेल है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">core memory</div><div class="option correct">semiconductor memory</div><div class="option">bubble memory</div><div class="option">superconductor memory</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">कोर मेमोरी</div><div class="option correct">अर्धचालक मेमोरी</div><div class="option">बबल मेमोरी</div><div class="option">अतिचालक मेमोरी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>semiconductor memory.</strong></u></p> <p><u><strong>Concept:</strong></u></p> <p><strong>Core Memory:</strong></p> <ul> <li>Core memory was a common form of <strong>random-access memory</strong> (RAM).</li> <li>The memory made use of magnetic rings called cores that had wires passing through them for selecting and detecting the contents of the cores</li> </ul> <p>&nbsp;</p> <p><strong>Semiconductor Memory:</strong></p> <ul> <li>In a semiconductor memory chip, each bit of binary data is stored in a tiny circuit called a memory cell consisting of <strong>one to several transistors</strong></li> <li>The two major categories of semiconductor memories are the RAM and the ROM.</li> <li><strong>These are the fastest memory.</strong></li> </ul> <p style="margin-left:.5in;">&nbsp;</p> <p><strong>Bubble Memory:</strong></p> <ul> <li>Bubble memory is a type of<strong> non-volatile memory </strong>that makes use of a thin layer of magnetic material that holds small magnetized areas known as bubbles or domains, which are able to store one bit of data each.</li> </ul> <p>&nbsp;</p> <p><strong>Superconducting Memory:</strong></p> <ul> <li>This is <strong>just a concept of memory</strong> and has not been developed into practice.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<u><strong>अर्धचालक मेमोरी</strong></u></p> <p><u><strong>संकल्पना:</strong></u></p> <p><strong>कोर मेमोरी:</strong></p> <ul> <li>कोर मेमोरी <strong>रैंडम-एक्सेस मेमोरी</strong> (RAM) का एक सामान्य रूप था।</li> <li>मेमोरी कोर नामक चुम्बकीय रिंग का प्रयोग करते हैं जिसमें कोर के सामग्री को चुनने और पता लगाने के लिए उनके माध्यम से तार गुजरते थे।</li> </ul> <p>&nbsp;</p> <p><strong>अर्धचालक मेमोरी:</strong></p> <ul> <li>एक अर्धचालक मेमोरी चिप में द्विधारी डेटा के प्रत्येक बिट एक छोटे परिपथ में संग्रहित होते हैं, जो एक या कई ट्रांजिस्टर वाला मेमोरी सेल कहलाता है।</li> <li>अर्धचालक मेमोरी के दो मुख्य वर्ग RAM और ROM हैं।</li> <li><strong>ये सबसे तीव्र मेमोरी है।</strong></li> </ul> <p>&nbsp;</p> <p><strong>बबल मेमोरी:</strong></p> <ul> <li>बबल मेमोरी एक प्रकार की <strong>गैर-वोलेटाइल मेमोरी </strong>है जो चुंबकीय पदार्थ की एक पतली परत का उपयोग करती है जो बबल या डोमेन के रूप में ज्ञात छोटे चुंबकीय क्षेत्रों को रखती है, जो प्रत्येक डेटा का एक बिट संग्रहित करने में सक्षम है।</li> </ul> <p>&nbsp;</p> <p><strong>अतिचालन मेमोरी:</strong></p> <ul> <li>यह <strong>केवल मेमोरी की एक संकल्पना</strong> है और वास्तव में विकसित नहीं की गयी है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which one of the following converts printed documents into Digital Images?</div>
+  <div class="question lang-hi"><p>निम्न में से कौन मुद्रित दस्तावेज़ को डिजिटल छवियों में परिवर्तित करता है?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Mouse</div><div class="option">Keyboard</div><div class="option correct">Scanner</div><div class="option">Webcam</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">माउस</div><div class="option">कीबोर्ड</div><div class="option correct">स्कैनर</div><div class="option">वेबकैम</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Scanner.</strong></u></p> <ul> <li>A scanner is a device that converts printed documents into Digital Images.</li> <li>It captures images from photographic prints, posters, magazine pages, and similar sources for computer editing and display.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है&nbsp;<strong><u>स्कैनर</u></strong></p> <ul> <li>स्कैनर एक ऐसा उपकरण है जो मुद्रित दस्तावेज़ों को डिजिटल छवियों में परिवर्तित करता है।</li> <li>यह कंप्यूटर एडिटिंग और प्रदर्शन के लिए फोटोग्राफिक प्रिंट, पोस्टर, मैग्जीन पेज और इसी तरह के स्रोतों से छवियों को कैप्चर करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

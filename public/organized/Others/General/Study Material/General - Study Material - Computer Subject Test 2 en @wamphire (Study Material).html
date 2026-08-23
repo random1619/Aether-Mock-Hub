@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computer Subject Test 2</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    Computer Subject Test 2 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is a compression software?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा एक कम्प्रेशन सॉफ्टवेयर है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">WinZip</div><div class="option">Windows 7</div><div class="option">MS-Word</div><div class="option">Acrobat Writer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">विनज़िप (WinZip)</div><div class="option">विंडोज 7</div><div class="option">MS<span style="">-वर्ड </span></div><div class="option">एक्रोबैट राइटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>Option 1 i.e ​Win Zip</strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>WinZip</strong> is a compressor tool for <strong>Windows, macOS, iOS</strong>, and <strong>Android</strong>.</li> <li><strong>WinZip</strong> allows users to<strong> compress files</strong> and to <strong>open compressed files in .zip format.</strong></li> <li><strong>WinZip</strong> helps to compress and send large files, across the network.</li> <li>Developed by <strong>WinZip Computing.</strong></li> <li>First released in <strong>1991</strong>.</li> <li><strong>Phillip Walter Katz</strong> is known as the co-creator of the Zip file format for data compression.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong>विकल्प 1 अर्थात विनज़िप (WinZip) </strong><span style="">है। </span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>विनज़िप,</strong> <strong><span style="">विंडोज</span>, macOS, iOS</strong> और <strong>एंड्राइड</strong> के लिए एक कंप्रेसर टूल है।</li> <li><span style="font-weight: 700; ">विनज़िप</span> यूज़र को <strong>फ़ाइलों को</strong> <strong>कंप्रेस</strong> करने और <strong>कंप्रेस्ड फ़ाइलों को .zip फॉर्मेट में खोलने</strong> की अनुमति देता है।</li> <li><span style="font-weight: 700; ">विनज़िप</span> पूरे नेटवर्क में बड़ी फ़ाइलों को कंप्रेस करने और भेजने में मदद करता है।</li> <li>यह <strong>विनज़िप कंप्यूटिंग</strong> द्वारा विकसित किया गया था।</li> <li>यह पहली बार <strong>1991</strong> में रिलीज़ हुआ था।​</li> <li><strong>फिलिप वाल्टर काट्ज़</strong> को डेटा कंप्रेस के लिए ज़िप फ़ाइल फॉर्मेट के सह-निर्माता के रूप में जाना जाता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Software can be uninstalled through:</div>
+  <div class="question lang-hi">सॉफ्टवेयर को _______ के जरिए अनइंस्टॉल किया जा सकता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Debugger</div><div class="option">Linker</div><div class="option correct">Control Panel</div><div class="option">Compiler</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">डीबगर</div><div class="option">लिंकर</div><div class="option correct">कंट्रोल पैनल</div><div class="option">कम्पाइलर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is the <u><strong>Control panel.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Control panel:</strong> <ul> <li>It is used to change system settings on a computer.</li> <li>With the help of this, we can change the hardware and software properties of a computer.</li> <li>It is an important part of a computer.</li> <li>It is used to control all systems.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Linker:</strong> <ul> <li>It is used to create connections between all functions of a program&nbsp;to continue program&nbsp;execution.</li> <li>It is a part of the operating system.</li> <li>It is a utility software.</li> </ul> </li> <li><strong>Debugger:</strong> <ul> <li>To do debugging tools are used which are called Debugger.</li> <li>It is a part of the debugging tool.</li> <li>With its help, we can correct errors in computer programs.</li> </ul> </li> <li><strong>Compiler:</strong> <ul> <li>It is used to convert high-level languages into low-level languages on a computer.</li> <li>It translates the whole program at a time on the computer.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong><span style="">कंट्रोल पैनल</span></strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span> </span></p> <ul> <li><strong>कंट्रोल पैनल:</strong> <ul> <li>इसका उपयोग कंप्यूटर पर सिस्टम सेटिंग्स को बदलने के लिए किया जाता है।</li> <li>इसकी मदद से हम कंप्यूटर के हार्डवेयर और सॉफ्टवेयर के गुणों को बदल सकते हैं।</li> <li>यह कंप्यूटर का एक महत्वपूर्ण <span style="">भाग</span><span style=""> </span>है।</li> <li>इसका उपयोग सभी प्रणालियों को नियंत्रित करने के लिए किया जाता है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span> </span></p> <ul> <li><strong>लिंकर:</strong> <ul> <li>इसका उपयोग प्रोग्राम के निष्पादन को जारी रखने के लिए प्रोग्राम के सभी कार्यों के बीच संबंध बनाने के लिए किया जाता है।</li> <li>यह ऑपरेटिंग सिस्टम का एक भाग है।</li> <li>यह एक यूटिलिटी सॉफ्टवेयर है।</li> </ul> </li> <li><strong>डीबगर:</strong> <ul> <li>डीबग करने के लिए डिबगिंग टूल का उपयोग किया जाता है जिन्हें डीबगर कहा जाता है।</li> <li>यह डिबगिंग टूल का एक हिस्सा है।</li> <li>इसकी मदद से हम कंप्यूटर प्रोग्राम में त्रुटियों को ठीक कर सकते हैं।</li> </ul> </li> <li><strong><span style="">कम्पाइलर</span>:</strong> <ul> <li>इसका उपयोग कंप्यूटर पर उच्च-स्तरीय भाषाओं को निम्न-स्तरीय भाषाओं में बदलने के लिए किया जाता है।</li> <li>यह पूरे प्रोग्राम को एक बार में कंप्यूटर पर ट्रांसलेट (अनुवाद) करता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following input devices of a computer system acts like most photocopy machines?</div>
+  <div class="question lang-hi">कंप्यूटर सिस्टम की निम्नलिखित में से कौन सी इनपुट डिवाइस अधिकांश फोटोकॉपी मशीन की तरह काम करती है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Track ball</div><div class="option correct">Scanner</div><div class="option">Light pen</div><div class="option">Digitizer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ट्रैक बॉल</div><div class="option correct">स्कैनर</div><div class="option">लाइट पेन</div><div class="option">डिजिटाइज़र</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Scanner</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Scanner:</strong> <ul> <li>It acts <strong>like most photocopy machines</strong>. It is an<strong> input device</strong>.</li> <li>The scanner is an input device of the computer through <strong>which an image, document, and text are scanned.</strong></li> <li><strong>Types of scanner</strong>: <ul> <li><strong>Card scanner</strong></li> <li><strong>Drum scanner&nbsp;</strong></li> <li><strong>Handheld scanner</strong></li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul style="margin-left: 40px;"> <li><strong>Trackball:</strong> <ul> <li>A trackball is a <strong>computer cursor control device</strong> used in many notebook and laptop computers.&nbsp;</li> <li>The trackball is <strong>usually located in front of the keyboard</strong> toward the user. Essentially, the trackball is an upside-down mouse that rotates in place within a socket.</li> </ul> </li> <li><strong>Light pen:</strong> <ul> <li>A light pen is a<strong> light-sensitive computer input device</strong>, basically a stylus, that is <strong>used to select the text, draw pictures</strong> and interact with user interface elements on a computer screen or monitor.</li> </ul> </li> <li><strong>Digitizer:</strong> <ul> <li>A digitizer is a device <strong>that receives, processes, and records digitally any analog information </strong>such as light, sound, touch, or pressure.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><span style="">सही उत्तर </span><u><strong><span style="">स्कैनर</span></strong></u><span style="">&nbsp;है।&nbsp;</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>स्कैनर:</strong> <ul> <li>यह एक <strong>इनपुट डिवाइस</strong> है जो&nbsp;ज्यादातर <strong>फोटोकॉपी मशीनों की तरह</strong> काम करता है।&nbsp;</li> <li>स्कैनर कंप्यूटर का&nbsp;इनपुट डिवाइस है <strong>जिसके द्वारा इमेज, डॉक्यूमेंट और टेक्स्ट को स्कैन किया जाता है।</strong></li> <li><b>स्कैनर के प्रकार</b>: <ul> <li><b>कार्ड स्कैनर&nbsp;</b></li> <li><b>ड्रम स्कैनर&nbsp;</b></li> <li><b>हैंडहेल्ड स्कैनर</b></li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul style="margin-left: 40px;"> <li><strong>ट्रैकबॉल:</strong> <ul> <li>ट्रैकबॉल एक कंप्यूटर कर्सर को कंट्रोल करने&nbsp;वाली डिवाइस है जिसका उपयोग&nbsp;नोटबुक और लैपटॉप कंप्यूटरों में किया जाता है।</li> <li>ट्रैकबॉल आमतौर पर यूज़र के&nbsp;कीबोर्ड के सामने स्थित होता है। यह वास्तव में, ट्रैकबॉल एक अप साइड डाउन&nbsp;माउस है जो सॉकेट के भीतर ही&nbsp;घूमता है।</li> </ul> <strong>लाइट पेन:</strong> <ul> <li>लाइट पेन एक <strong>लाइट-सेंसिटिव कंप्यूटर इनपुट डिवाइस</strong> है, जो मूल रूप से एक स्टाइलस है, जिसका <strong>उपयोग टेक्स्ट को सेलेक्ट करने, चित्र बनाने</strong> और कंप्यूटर स्क्रीन या मॉनिटर पर यूजर इंटरफेस एलिमेंट्स&nbsp;के साथ इंटरैक्ट करने के लिए किया जाता है।</li> </ul> </li> <li><strong>डिजिटाइजर:</strong> <ul> <li>डिजिटाइजर एक ऐसा उपकरण है जो प्रकाश, ध्वनि, टच&nbsp;या दबाव जैसी <strong>किसी भी एनालॉग जानकारी को डिजिटल रूप से रिसीव, प्रोसेस&nbsp;और रिकॉर्ड करता है</strong>।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is a volatile memory?</div>
+  <div class="question lang-hi">इनमें से कौन एक वोलेटाइल मेमोरी है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">RAM</div><div class="option">EPROM</div><div class="option">Hard Disk</div><div class="option">SSD</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">RAM</div><div class="option">EPROM</div><div class="option">हार्ड डिस्&zwj;क</div><div class="option">SSD</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>RAM</strong></u>.</p> <ul> <li><u><strong>RAM is a volatile memory.</strong></u></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Random Access Memory (RAM)&nbsp;</strong>is a&nbsp;<strong>primary memory</strong>. <ul> <li>It is a<strong>&nbsp;read/write memory.</strong></li> <li>It&nbsp;is&nbsp;<strong>volatile memory.</strong></li> </ul> </li> <li>The&nbsp;<strong>Read-Only Memory (ROM)</strong>&nbsp;is<strong>&nbsp;non-volatile memory&nbsp;</strong>and retains its information even after the power is turned off.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>EPROM </strong>is&nbsp;<strong>erasable programmable read-only memory.</strong> <ul> <li>It is a <strong>non-volatile memory.</strong></li> <li>It is used&nbsp;to hold both the operating system and the program for the access control panel.</li> </ul> </li> <li><strong>Hard disk </strong>is the non-volatile memory of the computer.</li> <li><strong>SSD </strong>is a&nbsp;<strong>solid-state drive</strong> and is a type of storage and alternative for hard disk and is a non-volatile memory.</li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्&zwj;तर <strong><u>RAM</u></strong> है</font></font><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></p> <ul> <li><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">RAM एक </font></font>वोलेटाइल</strong></u><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> मेमोरी है।</font></font></strong></u></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">रैंडम एक्सेस मेमोरी (RAM)&nbsp;</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक&nbsp;</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्राइमरी मेमोरी है</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">रीड/राइट मेमोरी है।</font></font></strong></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह&nbsp;</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">वोलेटाइल मेमोरी है।</font></font></strong></li> </ul> </li> <li><strong>रीड-ओनली मेमोरी (ROM) नॉन-</strong><span style="font-weight: 700; "><font style="vertical-align: inherit;">वोलेटाइल</font></span><strong> मेमोरी</strong> है और बिजली बंद होने के बाद भी इसमें सूचना&nbsp;बरकरार रखती है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul> <li><strong>EPROM इरेज़ेबल प्रोग्रामेबल रीड-ओनली मेमोरी</strong> है। <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक </font></font><span style="font-weight: 700; ">नॉन-</span><span style=" font-weight: 700;"><font style="vertical-align: inherit;">वोलेटाइल</font></span><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> मेमोरी </font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इसका उपयोग एक्सेस कंट्रोल पैनल के लिए ऑपरेटिंग सिस्टम और प्रोग्राम दोनों को होल्ड करने के लिए किया जाता है।</font></font></li> </ul> </li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">हार्ड डिस्क</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> कंप्यूटर की </font></font><span style=" font-weight: 700;">नॉन-</span><span style=" font-weight: 700;"><font style="vertical-align: inherit;">वोलेटाइल</font></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> मेमोरी है।</font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SSD</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> एक&nbsp;</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सॉलिड-स्टेट ड्राइव है</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> और हार्ड डिस्क के लिए एक प्रकार का स्टोरेज और विकल्प है जो&nbsp;एक नॉन-वोलेटाइल मेमोरी है।</font></font></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which key helps users to open a computer window or hard disk drives.</div>
+  <div class="question lang-hi">कौन-सी की यूजर को कंप्यूटर विंडो या हार्ड डिस्क ड्राइव खोलने में मदद करती है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Winkey + D</div><div class="option correct">Winkey + E</div><div class="option">Winkey + M</div><div class="option">Winkey + F</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">Winkey + D</div><div class="option correct">Winkey + E</div><div class="option">Winkey + M</div><div class="option">Winkey + F</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>Correct Answer&nbsp;<strong>Winkey + E</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points:</u></span></strong></span></p> <p><u><strong>Concept</strong></u>:</p> <table border="1" style="width:350px;"> <tbody> <tr> <td style="width: 30%; text-align: center;">Winkey + D</td> <td style="text-align: center;">It is used to minimize all opened windows and to restore the minimized windows. For example, if you have opened different programs such as Google Chrome, and Microsoft Word, then you can press the window key and D together to minimize all opened windows.</td> </tr> <tr> <td style="text-align: center;">Winkey + E</td> <td style="text-align: center;">It helps users to open a computer window or hard disk drives.</td> </tr> <tr> <td style="text-align: center;">Winkey + M</td> <td style="text-align: center;">It allows users to&nbsp;minimize&nbsp;all opened program windows.</td> </tr> <tr> <td style="text-align: center;">Winkey + F</td> <td style="text-align: center;">It will show a window where you can search or find data available on your computer.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर <span style="font-weight: bolder;">Winkey + E </span>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><u><strong>अवधारणा</strong></u> :</p> <table border="1" style="width:350px;"> <tbody> <tr> <td style="width: 30%; text-align: center;"><font color="#58595b">Winkey + D</font></td> <td style="text-align: center;"><font color="#58595b">इसका उपयोग सभी खुली हुई विंडो को छोटा करने और न्यूनतम की गई विंडो को पुनर्स्थापित करने के लिए किया जाता है। उदाहरण के लिए, यदि आपने गूगल क्रोम, माइक्रोसॉफ्ट वर्ड जैसे अलग-अलग प्रोग्राम खोले हैं, तो आप सभी खुली हुई विंडो को छोटा करने के लिए विंडो कुंजी और D को एक साथ दबा सकते हैं।</font></td> </tr> <tr> <td style="text-align: center;"><font color="#58595b">Winkey + E</font></td> <td style="text-align: center;"><font color="#58595b">यह उपयोगकर्ताओं को कंप्यूटर विंडो या हार्ड डिस्क ड्राइव खोलने में मदद करता है।</font></td> </tr> <tr> <td style="text-align: center;"><font color="#58595b">Winkey + M</font></td> <td style="text-align: center;"><font color="#58595b">यह उपयोगकर्ताओं को सभी खुली हुई प्रोग्राम विंडो को छोटा करने की अनुमति देता है।</font></td> </tr> <tr> <td style="text-align: center;"><font color="#58595b">Winkey + F</font></td> <td style="text-align: center;"><font color="#58595b">यह एक विंडो दिखाएगा जहां आप अपने कंप्यूटर में उपलब्ध डेटा खोज या ढूंढ सकते हैं।</font></td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">To send a received mail to another person, you need to ______ the message.</div>
+  <div class="question lang-hi">किसी अन्य व्यक्ति को प्राप्त मेल भेजने के लिए, आपको संदेश ______ करने की आवश्यकता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Reply To</div><div class="option correct">forward</div><div class="option">Reply All</div><div class="option">Copy</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">टू रिप्लाई</div><div class="option correct">अग्रेषित (फॉरवर्ड)</div><div class="option">रिप्लाई आल</div><div class="option">कॉपी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u>forward</u></strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>To send a received mail to another person, you need to <strong>forward the message.&nbsp;</strong></li> <li><strong>Forward an e-mail message</strong>: <ul> <li>Access your e-mail account or client program.</li> <li>Open the e-mail message you want to forward.</li> <li>In the menu bar, usually found at the top of the e-mail message or client program window, click the Forward option.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong><u>फॉरवर्ड</u></strong> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>किसी अन्य व्यक्ति को प्राप्त मेल भेजने के लिए, आपको <strong>संदेश को अग्रेषित</strong> (फॉरवर्ड) करना होगा।</li> <li><strong>एक ई-मेल संदेश अग्रेषित करना</strong>: <ul> <li>अपने ई-मेल खाते या क्लाइंट प्रोग्राम तक पहुँचें।</li> <li>उस ई-मेल संदेश को खोलें जिसे आप अग्रेषित (फॉरवर्ड) करना चाहते हैं।</li> <li>मेनू बार में, आमतौर पर ई-मेल संदेश या क्लाइंट प्रोग्राम विंडो के शीर्ष पर पाया जाता है, फॉरवर्ड विकल्प पर क्लिक कीजिए।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A user directly access a website through _________.</div>
+  <div class="question lang-hi">एक उपयोगकर्ता सीधे _________ के माध्यम से एक वेबसाइट का उपयोग करता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">URL</div><div class="option">Search Engine</div><div class="option">WRL</div><div class="option">Fire wall</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">यूआरएल (URL)&nbsp;</div><div class="option">सर्च इंजन</div><div class="option">डब्ल्यूआरएल (WRL)</div><div class="option">फायरवॉल</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is option <u><strong>URL</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>URL stands for <strong>Uniform Resource Locator.</strong> <ul> <li>URL is used to identify the name of a <strong>web browser</strong>.</li> <li>A user can directly access a website through&nbsp;URL.</li> <li>A <strong>domain name</strong> is the part of the URL which indicates a particular webpage.</li> <li>URL was first published in<span style="white-space:pre"> </span>1994.</li> <li>Uniform Resource Locators were defined&nbsp;by <strong>Tim Berners-Lee</strong>.</li> <li>URL&nbsp;also used for file transfer, email, database access, etc.</li> </ul> </li> <li><strong>Search Engine</strong> is a software that is designed to search for information from the World Wide Web.</li> <li>A <strong>firewall</strong> is a network security device that monitors incoming and outgoing network traffic and permits or blocks data packets based on a set of security rules.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प&nbsp;<u><strong><span style="">यूआरएल (</span><span style="">URL)</span></strong></u>&nbsp;है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="">यूआरएल (</span><span style="">URL)&nbsp;</span>का अर्थ <strong>यूनिफ़ॉर्म रिसोर्स लोकेटर है</strong>। <ul> <li><span style="">यूआरएल (</span><span style="">URL)&nbsp;</span>का उपयोग <strong>वेब ब्राउज़र</strong> के नाम की पहचान करने के लिए किया जाता <strong>है</strong>।</li> <li>एक उपयोगकर्ता<span style="">यूआरएल (</span><span style="">URL)</span>&nbsp;के माध्यम से सीधे वेबसाइट तक पहुंच सकता है।</li> <li>एक <strong>डोमेन नाम</strong> <span style="">यूआरएल (</span><span style="">URL)</span>&nbsp;का हिस्सा है जो एक विशेष वेबपेज को दर्शाता है।</li> <li><span style="">यूआरएल (</span><span style="">URL)</span>&nbsp;पहले 1994&nbsp;में प्रकाशित किया गया था।</li> <li>यूनिफ़ॉर्म रिसोर्स लोकेटरों को <strong>टिम बर्नर्स-ली</strong> द्वारा परिभाषित किया गया था।</li> <li><span style="">यूआरएल (</span><span style="">URL)</span>&nbsp;का उपयोग फ़ाइल स्थानांतरण, ईमेल, डेटाबेस एक्सेस आदि के लिए भी किया जाता है।</li> </ul> </li> <li><strong>सर्च इंजन</strong> एक सॉफ्टवेयर है जिसे वर्ल्ड वाइड वेब से जानकारी के लिए डिज़ाइन किया गया है।</li> <li><strong>फ़ायरवॉल</strong> एक नेटवर्क सुरक्षा उपकरण है जो आने वाले और बाहर जाने वाले नेटवर्क ट्रैफ़िक की निगरानी करता है और सुरक्षा नियमों के एक समूह&nbsp;के आधार पर डेटा पैकेट को अनुमति देता है या ब्लॉक करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is NOT a valid cell address in Microsoft Excel?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सा माइक्रोसॉफ्ट एक्सेल में एक वैलिड सेल एड्रेस नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">AD205</div><div class="option">AA256</div><div class="option correct">Z$A$250</div><div class="option">A$260</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">AD205</div><div class="option">AA256</div><div class="option correct">Z$A$250</div><div class="option">A$260</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>The correct option is (3)</strong></p> <p>Z$A$250</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>An alphanumeric value known as a<strong> cell reference,</strong> sometimes known as a <strong>cell address</strong>, is used to specify a particular cell in a spreadsheet. A number is followed by one or more letters in each <strong>cell reference.</strong> The column is designated by one or more letters, while the row is denoted by a number.</li> <li> <p>As an illustration, the references A1, B2, and so on all refer to the cells that are located at the intersection of column A and row 1.</p> </li> <li> <p>A range in Excel is a group of two or more cells. The address of the upper left cell and the lower right cell, separated by a colon, serve as a range reference.</p> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>A reference that is relative lacks the dollar sign ($) in the row and column coordinates, such as A1 or A1:B10. In Excel, all cell addresses are by default <strong>relative.</strong></li> <li>The row or column coordinates with the dollar sign ($) in them, such as $A$1 or $A$1:$B$10, are <strong>absolute references.</strong></li> <li>One relative and one absolute coordinate, such as $A1 or A$1, are included in a<strong> mixed reference.</strong></li> </ul></div>
+    <div class="lang-hi"><p><strong>सही उत्तर विकल्प (3) है।</strong></p> <p>Z$A$250<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>सेल रेफरेंस</strong>&nbsp;के रूप में जाना जाने वाला अल्फ़ान्यूमेरिक वैल्यू, जिसे कभी-कभी <strong>सेल एड्रेस</strong> के रूप में जाना जाता है, इसका उपयोग स्प्रेडशीट में किसी विशेष सेल को उल्लिखित&nbsp;करने के लिए किया जाता है। प्रत्येक <strong>सेल रेफरेंस</strong> में एक संख्या के बाद एक या अधिक लेटर्स&nbsp;होते हैं। कॉलम को एक या अधिक लेटर्स&nbsp;द्वारा उल्लिखित&nbsp;किया जाता है, जबकि रो&nbsp;को एक संख्या द्वारा दर्शाया जाता है।</li> <li>एक चित्रण&nbsp;के रूप में, A1, B2 और इसी तरह के सभी रेफरेंस उन सेल्स&nbsp;को रेफरेंस करते हैं जो कॉलम A और रो 1 के इंटरसेक्ट करते&nbsp;हैं।</li> <li>एक्सेल में एक रेंज दो या दो से अधिक सेल का एक समूह होता है। ऊपरी बाएँ सेल का एड्रेस और निचला दायाँ सेल, एक कॉलन&nbsp;द्वारा अलग किया गया, एक रेंज&nbsp;रेफरेंस के रूप में काम करता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>रिलेटीव&nbsp;रेफरेंस में रो&nbsp;और कॉलम&nbsp;निर्देशांक&nbsp;में डॉलर चिह्न ($) का अभाव होता है, जैसे A1 या A1:B10। एक्सेल में, सभी सेल एड्रेस डिफॉल्ट <strong>रिलेटिव</strong> होते हैं।</li> <li>रो&nbsp;या कॉलम&nbsp;उनमें डॉलर चिह्न ($) के साथ कोऑर्डिनेट&nbsp;करता है, जैसे $A$1 या $A$1:$B$10, <strong>ऐबसोलूट&nbsp;रेफरेंस</strong>&nbsp;होते हैं।</li> <li>एक रिलेटिव और एक ऐबसोलूट कोऑर्डिनेट, जैसे $A1 या A$1, एक <strong>मिक्स्ड&nbsp;रेफरेंस</strong> में शामिल होते&nbsp;हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The action &lsquo;Ctrl+B&rsquo; makes the text ________ in the MS-Word 2007.</div>
+  <div class="question lang-hi">MS वर्ड 2007 में, एक्शन &#39;Ctrl + B&#39; टेक्स्ट को ________&nbsp;बना देता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Bold</div><div class="option">Zoom</div><div class="option">Clear</div><div class="option">Italic</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">बोल्ड</div><div class="option">जूम</div><div class="option">क्लीयर</div><div class="option">इटैलिक</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Bold</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <table border="1" cellpadding="1" cellspacing="1" style="width:200px;"> <tbody> <tr> <td><strong>Ctrl + B</strong></td> <td><strong>Bold highlighted</strong> selection.</td> </tr> <tr> <td><strong>Ctrl + A</strong></td> <td><strong>Select all</strong> contents of the page.</td> </tr> <tr> <td><strong>Ctrl + V</strong></td> <td><strong>Paste</strong> selected text.</td> </tr> <tr> <td><strong>Ctrl + C</strong></td> <td><strong>Copy</strong> selected text.</td> </tr> <tr> <td><strong>Ctrl + I</strong></td> <td>Apply<strong> italic formatting</strong> to text.</td> </tr> <tr> <td><strong>Ctrl + Z</strong></td> <td>Undo the <strong>previous action</strong>.</td> </tr> <tr> <td><strong>Ctrl + X</strong></td> <td>Cut the selected content to the Clipboard.</td> </tr> <tr> <td><strong>Ctrl + Y</strong></td> <td>Redo the previous action, if possible.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p style=""><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u style=""><span style="font-weight: 700;">बोल्ड</span></u><font style="vertical-align: inherit;"> है।</font></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <table border="1" cellpadding="1" cellspacing="1" style=" width: 200px;"> <tbody> <tr> <td>Ctrl + B</td> <td>बोल्ड हाइलाइट<font style="vertical-align: inherit;">&nbsp;किया गया चयन।</font></td> </tr> <tr> <td>Ctrl + A</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पृष्ठ के सभी&nbsp; का&nbsp;</font><font style="vertical-align: inherit;">चयन करना।</font></font></td> </tr> <tr> <td>Ctrl + V</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">चयनित टेक्स्ट को पेस्ट करना</font></font><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + C</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">चयनित </font></font><span style="">टेक्स्ट को</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;कॉपी</font><font style="vertical-align: inherit;">&nbsp;बना</font></font>ना<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + I</td> <td><font style="vertical-align: inherit;">टेक्स्ट में&nbsp;</font>इटैलिक फॉर्मेटिंग<font style="vertical-align: inherit;">&nbsp;लागू करना।</font></td> </tr> <tr> <td>Ctrl + Z</td> <td><span style="">पूर्व&nbsp;</span>कार्य<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;को अनडू करना</font><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + X</td> <td><font style="vertical-align: inherit;">चयनित सामग्री को क्लिपबोर्ड पर कट करना</font><font style="vertical-align: inherit;">।</font></td> </tr> <tr> <td>Ctrl + Y</td> <td><font style="vertical-align: inherit;">यदि संभव हो तो </font><span style="">पूर्व में किए कार्य को रीडू&nbsp;करना&nbsp;</span></td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following are not applications of the Internet?</div>
+  <div class="question lang-hi">निम्नलिखित में से क्या इंटरनेट की ऍप्लिकेशन्स नहीं हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">World Wide Web (WWW)</div><div class="option">Electronic mail</div><div class="option">​Voice Over Internet Protocol (VoIP)</div><div class="option correct">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">वर्ल्ड वाइड वेब (WWW)</div><div class="option">इलेक्ट्रॉनिक मेल</div><div class="option">वाॅइस ओवर इंटरनेट प्रोटोकॉल <span style="">(VoIP)</span></div><div class="option correct">उपरोक्त में से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>None of the above.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>The <strong>World Wide Web (WWW)</strong> is an application of the Internet that provides access to information over the Internet.</li> <li><strong>Electronic mail</strong> (email) is a method of exchanging digital messages over the Internet.</li> <li><strong>Voice Over Internet Protocol (VoIP)</strong> is a technology that allows for the delivery of voice communications and multimedia sessions over Internet Protocol (IP) networks, such as the Internet.</li> <li>Therefore, all the options listed are applications of the Internet.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The Internet has numerous applications, including file transfer, remote access, forums, social media platforms, streaming services, and more.</li> <li>These applications have revolutionized the way we communicate, work, and access information.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है <u><strong>इनमें से कोई भी नहीं।</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>मुख्य बिंदु</u></span></strong></span></strong></u></p> <ul> <li><strong>वर्ल्ड वाइड वेब (WWW)</strong> इंटरनेट का एक अनुप्रयोग है जो इंटरनेट पर जानकारी तक पहुंच प्रदान करता है।</li> <li><strong>इलेक्ट्रॉनिक मेल</strong> (ईमेल) एक विधि है जो इंटरनेट पर डिजिटल संदेशों का आदान-प्रदान करती है।</li> <li><strong>वॉयस ओवर इंटरनेट प्रोटोकॉल (VoIP)</strong> एक तकनीक है जो इंटरनेट प्रोटोकॉल (IP) नेटवर्कों जैसे इंटरनेट पर वॉयस कम्युनिकेशंस और मल्टीमीडिया सत्रों की डिलीवरी की अनुमति देती है।</li> <li>इसलिए, सूचीबद्ध सभी विकल्प इंटरनेट के अनुप्रयोग हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>अतिरिक्त जानकारी</u></span></strong></span></p> <ul> <li>इंटरनेट के अनेक अनुप्रयोग हैं, जिनमें फाइल ट्रांसफर, रिमोट एक्सेस, फोरम, सोशल मीडिया प्लेटफॉर्म, स्ट्रीमिंग सेवाएं आदि शामिल हैं।</li> <li>इन अनुप्रयोगों ने हमारे संवाद करने, काम करने और जानकारी प्राप्त करने के तरीके में क्रांति ला दी है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which among the following is used to identify a user who returns to a website?</div>
+  <div class="question lang-hi">निम्नलिखित में से किसका उपयोग किसी वेबसाइट पर लौटने वाले उपयोगकर्ता की पहचान करने के लिए किया जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Cookies</div><div class="option">Plug-in</div><div class="option">Scripts</div><div class="option">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">कुकीज़</div><div class="option">प्लग-इन</div><div class="option">स्क्रिप्ट्स</div><div class="option">इनमें से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>​The correct answer is&nbsp;<u><strong>Cookies</strong></u>.</p> <ul> <li><strong>Cookies</strong>&nbsp;are&nbsp;used to identify a user who returns to a website.</li> <li><strong>Google Chrome, Mozilla Firefox, Microsoft Edge, Apple Safari, and Opera</strong> are the most important web browsers.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span><u><strong>Cookies</strong></u></p> <ul style="list-style-type: disc;"> <li>A cookie is a <strong>small file of letters and numbers downloaded</strong> onto your computer when you access certain websites.</li> <li>Like virtual door keys, cookies <strong>unlock a computer&#39;s memory and allow a website to recognize users</strong> when they return to a site by opening doors to different content or services.</li> <li>An HTTP cookie is a <strong>small piece of data sent from a website and stored in a user&#39;s web browser</strong> while the user is browsing that website.</li> </ul> <p><u><strong>Plug-in</strong></u></p> <ul style="list-style-type: disc;"> <li>A plugin is a piece of software that acts as an <strong>add-on to a web browser and gives the browser additional functionality</strong>.</li> <li>Plugins can <strong>allow a web browser to display additional content</strong> it was not originally designed to display.</li> <li>Every web browser has an <strong>official website where you can download and install plugins</strong> (also called &quot;<strong>add-ons</strong>&quot; or &quot;<strong>extensions</strong>&quot;).</li> <li>The web browser publisher <strong>verifies the plugins are not harmful before making them available to download</strong>.</li> </ul> <p><u><strong>Scripts</strong></u></p> <ul style="list-style-type: disc;"> <li>Scripts are <strong>lists of commands executed by certain programs</strong> or scripting engines.</li> <li>They are usually <strong>text documents with instructions written using a scripting language</strong>.</li> <li>They are used to <strong>generate Web pages and to automate computer processes</strong>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul style="list-style-type: square;"> <li>The first Web browser&nbsp;&quot;<strong>Nexus&quot;&nbsp;</strong>was developed by<strong>&nbsp;Tim Berners Lee </strong>in 1990.</li> <li>Fastest&nbsp;Web browser&nbsp;-&nbsp;<strong>Safari.</strong></li> <li><strong>Epic&nbsp;</strong>is the first Web browser developed in Indiaby a Bangalore-based startup company &quot;<strong>Hidden Reflex</strong>&quot;.</li> <li>Father of Internet - <strong>Vint Cerf</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>कुकीज़</strong></u> है।</p> <ul> <li><strong>कुकीज़</strong> का उपयोग किसी वेबसाइट पर लौटने वाले उपयोगकर्ता की पहचान करने के लिए किया जाता है।</li> <li><strong>गूगल क्रोम, मोज़िला फायरफॉक्स, माइक्रोसॉफ्ट एज, एप्पल सफारी और ओपेरा </strong>सबसे महत्वपूर्ण वेब ब्राउज़र हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span><u><span style="font-weight: 700;">कुकीज़</span></u></p> <ul style="list-style-type: disc;"> <li>कुकी <strong>अक्षरों और संख्याओं की एक छोटी फ़ाइल</strong> होती है जिसे आपके कंप्यूटर पर <strong>डाउनलोड</strong> किया जाता है जब आप कुछ वेबसाइटों पर जाते हैं।</li> <li>वर्चुअल दरवाजे की चाबियों की तरह, कुकीज़ <strong>कंप्यूटर की मेमोरी को अनलॉक करती हैं और वेबसाइट को</strong> <strong>उपयोगकर्ताओं को</strong> अलग-अलग सामग्री या सेवाओं के लिए दरवाजे खोलकर साइट पर लौटने पर<strong> पहचानने</strong> की अनुमति देती हैं।</li> <li>एक HTTP कुकी<strong> एक वेबसाइट से भेजे गए डेटा का एक छोटा सा भाग है और इसे उपयोगकर्ता के वेब ब्राउज़र में संग्रहीत किया जाता है</strong>, जबकि उपयोगकर्ता उस वेबसाइट को ब्राउज़ कर रहा होता है।</li> </ul> <p><u><strong>प्लग-इन</strong></u></p> <ul style="list-style-type: disc;"> <li>एक प्लग-इन सॉफ्टवेयर का एक भाग है जो <strong>वेब ब्राउज़र में ऐड-ऑन के रूप में कार्य करता है और ब्राउज़र को अतिरिक्त कार्यक्षमता प्रदान करता है।</strong></li> <li>प्लग-इन एक<strong> वेब ब्राउज़र को अतिरिक्त सामग्री प्रदर्शित करने की अनुमति दे सकता है</strong> जिसे मूल रूप से प्रदर्शित करने के लिए डिज़ाइन नहीं किया गया था।</li> <li>प्रत्येक वेब ब्राउज़र की एक <strong>आधिकारिक वेबसाइट होती है जहाँ आप प्लग-इन को डाउनलोड और इंस्टॉल कर सकते हैं</strong> (जिन्हें <strong>&quot;ऐड-ऑन&quot; </strong>या<strong> &quot;एक्सटेंशन&quot; </strong>भी कहा जाता है)।</li> <li>वेब ब्राउज़र प्रकाशक <strong>यह सत्यापित करता है कि प्लग-इन को डाउनलोड करने के लिए उपलब्ध कराने से पहले ये हानिकारक नहीं हैं।</strong></li> </ul> <p><u><strong>स्क्रिप्ट्स</strong></u></p> <ul style="list-style-type: disc;"> <li>स्क्रिप्ट<strong> कुछ प्रोग्राम या स्क्रिप्टिंग इंजन द्वारा निष्पादित कमांड</strong> की सूचियां होती हैं।</li> <li>वे सामान्यतः <strong>एक स्क्रिप्टिंग भाषा का उपयोग करके लिखे गए निर्देशों के साथ टेक्स्ट डॉक्यूमेंट होते हैं।</strong></li> <li>उनका उपयोग <strong>वेब पेज को बनाने और कंप्यूटर प्रक्रियाओं को स्वचालित करने के लिए किया जाता है।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul style="list-style-type: square;"> <li>पहला वेब ब्राउज़र<strong> &quot;नेक्सस&quot;</strong> 1990 में<strong> टिम बर्नर्स ली</strong> द्वारा विकसित किया गया था।</li> <li>सबसे तेज़ वेब ब्राउज़र -<strong> सफारी</strong></li> <li><strong>एपिक</strong> बैंगलोर स्थित स्टार्टअप कंपनी<strong> &quot;हिडन रिफ्लेक्स&quot; </strong>द्वारा भारत में विकसित पहला वेब ब्राउज़र है।</li> <li>इंटरनेट के जनक - <strong>विंट सेर्फ़</strong></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is not the network protocol?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा नेटवर्क प्रोटोकॉल नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Memory protocol</div><div class="option">File transfer protocol</div><div class="option">Internet protocol</div><div class="option">Transmission control protocol</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">मेमोरी <span style="">प्रोटोकॉल </span></div><div class="option">फाइल ट्रांसफर प्रोटोकॉल</div><div class="option">इंटरनेट <span style="">प्रोटोकॉल </span></div><div class="option">ट्रांसमिशन कंट्रोल प्रोटोकॉल</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong><u>Explanation:-</u></strong></p> <p><strong>Network protocols -&nbsp;</strong></p> <ul> <li>Protocol suites are implemented by hosts and networking devices in software, hardware, or both.</li> <li>The protocols are viewed in terms of layers, with each higher-level service depending on the functionality defined by the protocols shown in the lower levels.&nbsp;</li> <li>Networking protocols define a common format and set of rules for exchanging messages between devices.</li> <li><strong>Some common networking protocols are Hypertext Transfer Protocol (HTTP), Transmission Control Protocol (TCP), and Internet Protocol (IP).</strong></li> <li>Communication between a web server and a web client is an example of an interaction between several protocols:-</li> <li><strong>HTTP</strong> - an application protocol that governs the way a web server and a web client interact.</li> <li><strong>TCP</strong> - Transport protocol that manages individual conversations.</li> <li><strong>IP </strong>-&nbsp;Encapsulates the TCP segments into packets, assigns addresses, and delivers to the destination host. &nbsp;</li> <li><strong>Ethernet </strong>- Allows communication over a data link and the physical transmission of data on the network media.</li> </ul></div>
+    <div class="lang-hi"><p><strong><u>स्पष्टीकरण:-</u></strong></p> <p><strong><span style="">नेटवर्क प्रोटोकॉल्स</span> - </strong></p> <ul> <li>प्रोटोकॉल सूट होस्ट औऱ नेटवर्किंग उपकरणों द्वारा सॉफ्टवेयर, हार्डवेयर या दोनों में कार्यान्वित किए जाते हैं।</li> <li>प्रोटोकॉल को स्तर(लेयर) के संदर्भ में देखा जाता है, प्रत्येक उच्च-स्तरीय सेवा निचले स्तरों में दिखाए गए प्रोटोकॉल द्वारा परिभाषित कार्यक्षमता के आधार पर होती है।</li> <li>नेटवर्किंग प्रोटोकॉल उपकरणों के बीच संदेशों के आदान-प्रदान के लिए एक सामान्य प्रारूप और नियमों के सेट को परिभाषित करते हैं।</li> <li><strong>कुछ सामान्य नेटवर्किंग प्रोटोकॉल हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल (HTTP), ट्रांसमिशन कंट्रोल प्रोटोकॉल (TCP) और इंटरनेट प्रोटोकॉल (IP) हैं।</strong></li> <li>वेब सर्वर और वेब क्लाइंट के बीच संचार कई प्रोटोकॉल के बीच अंतःक्रिया का एक उदाहरण है:-</li> <li><strong>HTTP </strong>- एक एप्लिकेशन प्रोटोकॉल जो एक वेब सर्वर और एक वेब क्लाइंट के बीच <span style="">अंतःक्रिया </span>करने के तरीके को नियंत्रित करता है।</li> <li><span style="font-weight: 700; ">TCP</span><span style=""> </span>- परिवहन प्रोटोकॉल जो व्यक्तिगत संवाद का प्रबंधन करता है।</li> <li><span style="font-weight: 700; ">IP </span>- <span style="">TCP सेगमेंट (</span>खण्ड) को पैकेट में एनकैप्सुलेट करता है, एड्रेस असाइन करता है और डेस्टिनेशन होस्ट को डिलीवर करता है।</li> <li><span style="font-weight: 700; ">Ethernet </span>- डेटा लिंक पर संचार और नेटवर्क मीडिया पर डेटा के भौतिक संचरण की अनुमति देता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which is not a storage device?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सी एक <span style="">स्टोरेज डिवाइस&nbsp;</span>नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">A CD</div><div class="option">A DVD</div><div class="option">A floppy disk</div><div class="option correct">A printer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">CD</div><div class="option">DVD</div><div class="option">फ्लॉपी डिस्क</div><div class="option correct">प्रिंटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>A printer</strong></u></p> <ul> <li>The printer is not a storage device. A <b>printer</b> is an <strong><span>external</span> hardware <span>output device</span></strong> that takes the <strong>electronic data</strong> stored on a computer or other device and generates a <strong><span>hard copy or printed paper</span></strong>.&nbsp;</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>A <strong>computer storage device</strong> is any type of <strong>hardware</strong> that <strong>stores data</strong>. The most common type of storage device, which nearly all computers have, is a <strong><span>hard drive</span>.</strong> The computer&#39;s primary hard drive stores the <strong>operating system, applications, and files and folders</strong> for users of the computer.</li> <li>While the hard drive is the most ubiquitous of all <strong>storage devices</strong>, several other types are common as well. <strong><span>Flash memory</span> devices</strong>, such as <strong>USB</strong> keychain drives and <span>iPod Nanos</span> are popular ways to store data in a small, mobile format. Other types of <strong>flash memory,</strong> such as <span>compact flash</span> and <span>SD</span> cards are popular ways to store images taken by digital cameras.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;है <u><strong>प्रिंटर</strong></u></p> <ul> <li>प्रिंटर स्टोरेज डिवाइस नहीं है। एक <b>प्रिंटर</b> एक <strong><span>बाहरी</span> हार्डवेयर <span>आउटपुट डिवाइस है</span></strong> जो कंप्यूटर या अन्य डिवाइस पर संग्रहीत <strong>इलेक्ट्रॉनिक डेटा</strong> लेता है और एक <strong><span>हार्ड कॉपी या मुद्रित पेपर</span></strong> उत्पन्न करता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>कंप्यूटर स्टोरेज डिवाइस</strong> किसी भी प्रकार का <strong>हार्डवेयर होता है</strong> जो <strong>डेटा को स्टोर करता है</strong> । सबसे आम प्रकार का स्टोरेज डिवाइस, जिसमें लगभग सभी कंप्यूटर हैं, एक <strong><span>हार्ड ड्राइव है</span> ।</strong> कंप्यूटर की प्राथमिक हार्ड ड्राइव कंप्यूटर के उपयोगकर्ताओं के लिए <strong>ऑपरेटिंग सिस्टम, एप्लिकेशन और फ़ाइलों और फ़ोल्डरों</strong> को <strong>संग्रहीत</strong> करती है।</li> <li>जबकि हार्ड ड्राइव सभी <strong>स्टोरेज डिवाइसों</strong> में सबसे सर्वव्यापी <strong>है</strong> , साथ ही कई अन्य प्रकार भी सामान्य हैं। <strong><span>फ्लैश मेमोरी</span> डिवाइस</strong> , जैसे कि <strong>यूएसबी</strong> किचेन ड्राइव और <span>आईपॉड नैनो</span> एक छोटे, मोबाइल प्रारूप में डेटा को स्टोर करने के लोकप्रिय तरीके हैं। अन्य प्रकार की <strong>फ्लैश मेमोरी,</strong> जैसे <span>कॉम्पैक्ट फ्लैश</span> और <span>एसडी</span> कार्ड डिजिटल कैमरों द्वारा ली गई छवियों को संग्रहीत करने के लोकप्रिय तरीके हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is comparatively the fastest memory?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सी तुलनात्मक रूप से सबसे तेज मेमोरी है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">SRAM</div><div class="option">Hard Disk</div><div class="option">DRAM</div><div class="option">ROM</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">SRAM</div><div class="option">हार्ड डिस्क&nbsp;</div><div class="option">DRAM</div><div class="option">ROM</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is SRAM.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The word <strong>RAM</strong> stands for <strong>Random Access Memory</strong>. It is a very fast internal memory of the CPU. It holds data temporarily. After switching off the computer, data are deleted from the RAM. There are two variants of RAM. These are SRAM and DRAM. <ul> <li><strong>SRAM:&nbsp;</strong>The word <strong>SRAM</strong> stands for <strong>Static Random Access Memory</strong>. The SRAM <span style="">is comparatively the fastest memory.&nbsp;</span><strong>SRAM </strong>chips use a matrix of <strong>6-transistors </strong>and <strong>no capacitors</strong>. Transistors don&#39;t need the power to forestall outpouring, therefore SRAM needn&#39;t be invigorated on a daily basis. There is an <strong>additional area</strong> within the matrix, thence SRAM uses a <strong>lot of chips</strong> than <strong>DRAM</strong> for an <strong>equivalent quantity of space</strong> for storing, creating the producing prices higher. <strong>SRAM</strong> is therefore used as <strong>cache memory</strong> and has no time access.</li> <li><strong>DRAM:&nbsp;</strong>The word <strong>DRAM</strong> stands for <strong>Dynamic Random Access Memory</strong>. <strong>DRAM </strong>always refresh itself to maintain the organised data.&nbsp;This is done by putting the memory on a refresh circuit that rewrites the information many hundred times per second. DRAM is employed for many system memory because it is<strong> affordable</strong> and <strong>tiny in size</strong>. <strong>DRAMs</strong> are created from memory cells, that are composed of <strong>1 capacitor&nbsp;</strong>and <strong>one electronic transistor</strong>.</li> </ul> </li> </ul> <p>Thus the correct answer is SRAM.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>ROM:&nbsp;</strong><span style="">The word</span><strong>&nbsp;ROM</strong> stands for <strong>Read Only&nbsp;Memory</strong>. It is permanent&nbsp;memory that the user will solely <strong>read</strong> but <strong>cannot write</strong> of it. This sort of memory is <strong>non-volatile</strong>. The data is kept for good in such recollections throughout manufacture. A memory stores such directions that square measure needed to begin a computing system. This operation is remarked as <strong>bootstrap</strong>. Memory chips don&#39;t seem to be solely utilized in the computing system however conjointly in different electronic things like cleaning machines&nbsp;and microwave ovens. <strong>MROM, PROM, EPROM&nbsp;and EEPROM</strong> are the <strong>types </strong>of <strong>ROM.</strong></li> <li><strong>Hard disk: </strong>The hard disk is the <strong>secondary storage</strong> device of the computing system. It is <strong>non-volatile </strong>in nature. The <strong>capacity</strong> of the space in the hard disk is <strong>huge</strong>.&nbsp;</li> </ul> <p>&nbsp;</p></div>
+    <div class="lang-hi"><p>सही उत्तर<strong> SRAM</strong> है।&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>RAM शब्द से आशय&nbsp;रैंडम एक्सेस मेमोरी है।यह CPU की सबसे तेज मेमोरी है। यह&nbsp;डेटा को अस्थाई रूप से होल्ड करती&nbsp;है।कंप्यूटर को स्विच ऑफ करने के बाद रैम से डाटा डिलीट हो जाता है। RAM के दो वेरिएंट (प्रकार) होते हैं। ये SRAM और DRAM हैं।​ <ul> <li><strong>SRAM:&nbsp;SRAM </strong>शब्द का प्रयोग <strong>स्टेटिक रैंडम एक्सेस मेमोरी</strong> के लिए किया जाता है। <strong>SRAM </strong>तुलनात्मक रूप से सबसे तेज मेमोरी है। SRAM&nbsp;<span style="">चिप</span>&nbsp;<span style="">किसी&nbsp;</span><span style="font-weight: 700; ">कैपेसिटर&nbsp;</span><span style="">का उपयोग न करके&nbsp;</span><strong>6-ट्रांजिस्टर</strong> के मैट्रिक्स का उपयोग करती&nbsp;है। ट्रांजिस्टर को बाहर निकलने से रोकने के लिए शक्ति की आवश्यकता नहीं है, इसलिए SRAM को दैनिक आधार पर सक्रिय करने की आवश्यकता नहीं होती है। मैट्रिक्स में&nbsp;<strong>अतिरिक्त क्षेत्र</strong>&nbsp;पाया जाता है,इसलिए SRAM में <strong>सामान मात्रा में&nbsp;भंडारण</strong>&nbsp;के लिए DRAM की तुलना में बहुत <strong>अधिक जगह</strong> होने से यह <strong>अधिक मात्रा में चिप</strong>&nbsp;का उपयोग करती&nbsp;है, जिससे उत्पादन की कीमतें बढ़ जाती हैं।इसलिए <strong>SRAM </strong>का उपयोग <strong>कैश मेमोरी</strong> के रूप में किया जाता है और इसकी कोई समय सीमा नहीं होती है।</li> <li><strong>DRAM:&nbsp;DRAM </strong>शब्द का प्रयोग&nbsp;<strong>डायनामिक रैंडम एक्सेस मेमोरी </strong>के लिए किया जाता&nbsp;है। ऑर्गनाइज़्ड डेटा को बनाए रखने के लिए DRAM हमेशा खुद को रिफ्रेश करती&nbsp;है। यह मेमोरी को एक रिफ्रेश सर्किट पर रखकर किया जाता है जिसमे वह प्रति सेकंड सुचना को कई सौ बार रीराइट करती&nbsp;है। DRAM का उपयोग कई प्रणालियों की&nbsp;मेमोरी के रूप में किया जाता है क्योंकि यह&nbsp;<strong>आकार में छोटी </strong>और <strong>सस्ती </strong>होती है। <strong>DRAMs </strong>मेमोरी सेल से बनाए जाते हैं, जो <strong>एक&nbsp; कैपेसिटर और एक इलेक्ट्रॉनिक ट्रांजिस्ट</strong>र से बने होते हैं।</li> </ul> </li> </ul> <p>इस प्रकार सही उत्तर <strong>SRAM</strong> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>ROM:&nbsp;ROM</strong><span style="color: rgb(37, 37, 37); "><strong> </strong>शब्द का आशय&nbsp;</span><strong>रीड ओनली मेमोरी</strong><span style="color: rgb(37, 37, 37); "> से&nbsp;है।</span> यह स्थायी मेमोरी है जिसे उपयोगकर्ता केवल <strong>रीड </strong>कर सकता है इसे <strong>राइट नहीं</strong> <strong>किया जा सकता है</strong>। इस प्रकार की मेमोरी<strong> नॉन-वोलेटाइल</strong> होती है। पूरे निर्माण के दौरान डेटा&nbsp;को अच्छी तरह रीकलेक्शन के लिए रखा जाता है। मेमोरी ऐसे डायरेक्शन को स्टोर करती है जिसमे एक कंप्यूटिंग सिस्टम को शुरू करने के लिए कुशल उपयोग&nbsp;की आवश्यकता होती है। इस ऑपरेशन को <strong>बूटस्ट्रैप </strong>कहा जाता है। मेमोरी चिप का उपयोग केवल कंप्यूटिंग सिस्टम में ही नहीं बल्कि अन्य इलेक्ट्रॉनिक सामन जैसे वाशिंग मशीन और माइक्रोवेव ओवन में भी किया जाता है।​ <strong>MROM, PROM, EPROM और EEPROM</strong>&nbsp;<strong>ROM</strong>&nbsp;के <strong>प्रकार </strong>हैं।</li> <li><strong>हार्ड डिस्क:&nbsp;</strong>हार्ड डिस्क कंप्यूटिंग सिस्टम का<strong> सेकेंडरी स्टोरेज</strong> डिवाइस है। यह <strong>नॉन वोलेटाइल</strong> प्रकृति की होती&nbsp;है। हार्ड डिस्क की <strong>कैपेसिटी बहुत अधिक</strong> होती&nbsp;है।</li> </ul> <p>&nbsp;</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which key combination is used to select a row in a worksheet?</div>
+  <div class="question lang-hi">वर्कशीट में रौ (row)&nbsp;का चयन करने के लिए किस की (key) संयोजन का उपयोग किया जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Caps Lock + Spacebar</div><div class="option">Alt + Spacebar</div><div class="option correct">Shift + Spacebar</div><div class="option">Ctrl + Spacebar</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">Caps Lock + Spacebar</div><div class="option">Alt + Spacebar</div><div class="option correct">Shift + Spacebar</div><div class="option">Ctrl + Spacebar</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is&nbsp;<u><span style="font-weight: 700;">Shift + Spacebar.</span></u></p> <ul style=""> <li>Short-cut key to Select&nbsp;entire row in M.S. Excel Worksheet is&nbsp;<u><span style="font-weight: 700;">Shift + Spacebar.</span></u></li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><span style="font-weight: 700;"><span style="vertical-align: middle; "><u>Key Points</u></span></span></span></p> <p>This table lists the most frequently used shortcuts in Excel.</p> <table border="1" style=" width: 350px;"> <thead> <tr> <th>TASK</th> <th> <p>SHORTCUT KEY</p> </th> </tr> </thead> <tbody> <tr> <td> <p>Close a workbook.</p> </td> <td> <p>Ctrl+W</p> </td> </tr> <tr> <td> <p>Open a workbook.</p> </td> <td> <p>Ctrl+O</p> </td> </tr> <tr> <td> <p>Go to the&nbsp;Home&nbsp;tab.</p> </td> <td> <p>Alt+H</p> </td> </tr> <tr> <td> <p>Save a workbook.</p> </td> <td> <p>Ctrl+S</p> </td> </tr> <tr> <td> <p>Copy selection.</p> </td> <td> <p>Ctrl+C</p> </td> </tr> <tr> <td> <p>Paste selection.</p> </td> <td> <p>Ctrl+V</p> </td> </tr> <tr> <td> <p>Undo recent action.</p> </td> <td> <p>Ctrl+Z</p> </td> </tr> <tr> <td> <p>Remove cell contents.</p> </td> <td> <p>Delete</p> </td> </tr> <tr> <td> <p>Choose a fill color.</p> </td> <td> <p>Alt+H, H</p> </td> </tr> <tr> <td> <p>Cut selection.</p> </td> <td> <p>Ctrl+X</p> </td> </tr> <tr> <td> <p>Go to the&nbsp;Insert&nbsp;tab.</p> </td> <td> <p>Alt+N</p> </td> </tr> <tr> <td> <p>Apply bold formatting.</p> </td> <td> <p>Ctrl+B</p> </td> </tr> <tr> <td> <p>Center align cell contents.</p> </td> <td> <p>Alt+H, A, C</p> </td> </tr> <tr> <td> <p>Go to the&nbsp;Page Layout&nbsp;tab.</p> </td> <td> <p>Alt+P</p> </td> </tr> <tr> <td> <p>Go to&nbsp;the&nbsp;Data&nbsp;tab.</p> </td> <td> <p>Alt+A</p> </td> </tr> <tr> <td> <p>Go to the&nbsp;View&nbsp;tab.</p> </td> <td> <p>Alt+W</p> </td> </tr> <tr> <td> <p>Open the context menu.</p> </td> <td> <p>Shift+F10&nbsp;or</p> <p>Windows Menu key</p> </td> </tr> <tr> <td> <p>Add borders.</p> </td> <td> <p>Alt+H, B</p> </td> </tr> <tr> <td> <p>Delete column.</p> </td> <td> <p>Alt+H, D, C</p> </td> </tr> <tr> <td> <p>Go to the&nbsp;Formula&nbsp;tab.</p> </td> <td> <p>Alt+M</p> </td> </tr> <tr> <td> <p>Hide the selected rows.</p> </td> <td> <p>Ctrl+9</p> </td> </tr> <tr> <td> <p>Hide the selected columns.</p> </td> <td> <p>Ctrl+0</p> </td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p style=""><span class="VIiyi" lang="hi">सही उत्तर&nbsp;</span><u><span style="font-weight: 700;">Shift + Spacebar</span></u>&nbsp;है<span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="4" data-phrase-index="0">।</span></span></p> <ul style=""> <li><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="4" data-phrase-index="2">एमएस एक्सेल वर्कशीट में पूरी पंक्ति का चयन करने के लिए शॉर्ट-कट कुंजी</span>&nbsp;</span><u><span style="font-weight: 700;">Shift + Spacebar</span></u><span class="VIiyi" lang="hi">&nbsp;है।</span></li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><span style="font-weight: 700;"><span style="vertical-align: middle; "><u>Key Points</u></span></span></span></p> <ul style=""> <li><span class="VIiyi" lang="hi">यह सारणी एक्सेल में सबसे अधिक उपयोग किए जाने वाले शॉर्टकट को सूचीबद्ध करती है।</span></li> </ul> <table border="1" style=" width: 350px;"> <thead> <tr> <th>कार्य</th> <th>शॉर्टकट कुंजी</th> </tr> </thead> <tbody> <tr> <td> <p>एक वर्कबुक को बंद करना</p> </td> <td> <p>Ctrl+W</p> </td> </tr> <tr> <td>एक वर्कबुक को खोलना</td> <td> <p>Ctrl+O</p> </td> </tr> <tr> <td>होम टैब पर जाना</td> <td> <p>Alt+H</p> </td> </tr> <tr> <td>एक वर्कबुक को सेव करना</td> <td> <p>Ctrl+S</p> </td> </tr> <tr> <td>चयन को कॉपी करना</td> <td> <p>Ctrl+C</p> </td> </tr> <tr> <td>चयन को पेस्ट करना</td> <td> <p>Ctrl+V</p> </td> </tr> <tr> <td>नवीनतम कार्य को अनडू करना</td> <td> <p>Ctrl+Z</p> </td> </tr> <tr> <td>सेल सामग्री को हटाना</td> <td> <p>Delete</p> </td> </tr> <tr> <td>एक फिल कलर का चयन करना</td> <td> <p>Alt+H, H</p> </td> </tr> <tr> <td>चयन को कट करना</td> <td> <p>Ctrl+X</p> </td> </tr> <tr> <td>इन्सर्ट टैब पर जाना</td> <td> <p>Alt+N</p> </td> </tr> <tr> <td>बोल्ड फॉर्मेटिंग लागू करना</td> <td> <p>Ctrl+B</p> </td> </tr> <tr> <td>सेल की सामग्री को केंद्र में संरेखित करना</td> <td> <p>Alt+H, A, C</p> </td> </tr> <tr> <td>पेज लेआउट टैब पर जाना</td> <td> <p>Alt+P</p> </td> </tr> <tr> <td>डेटा टैब पर जाना</td> <td> <p>Alt+A</p> </td> </tr> <tr> <td>व्यू टैब पर जाना</td> <td> <p>Alt+W</p> </td> </tr> <tr> <td>कॉन्टेक्स्ट मेनू क्जोलना</td> <td> <p>Shift+F10या विंडोज मेनू की</p> </td> </tr> <tr> <td>बॉर्डर लागू करना</td> <td> <p>Alt+H, B</p> </td> </tr> <tr> <td>कॉलम डिलीट करना</td> <td> <p>Alt+H, D, C</p> </td> </tr> <tr> <td>फ़ॉर्मूला टैब पर जाना</td> <td>Alt+M</td> </tr> <tr> <td>चयनित पंक्तियों को छुपाना</td> <td> <p>Ctrl+9</p> </td> </tr> <tr> <td>चयनित स्तंभों को छुपाना</td> <td> <p>Ctrl+0</p> </td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q16</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following requires continuous refreshing to retain data?</div>
+  <div class="question lang-hi">डेटा को बनाए रखने के लिए निम्न में से किसको लगातार रिफ्रेश करने की आवश्यकता होती है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">SRAM</div><div class="option">EEPROM</div><div class="option">EPROM</div><div class="option correct">DRAM</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">SRAM</div><div class="option">EEPROM</div><div class="option">EPROM</div><div class="option correct">DRAM</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is DRAM.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The word <strong>RAM</strong> stands for <strong>Random Access Memory</strong>. It is a very <strong>fast internal memory</strong> of the <strong>CPU</strong>. It holds data <strong>temporarily</strong>. After switching off the computer, data are deleted from the RAM. There are <strong>two variants of RAM</strong>. These are <strong>SRAM</strong> and <strong>DRAM</strong>. <ul> <li><strong>SRAM: </strong>The word <strong>SRAM</strong> stands for <strong>Static Random Access Memory</strong>. The SRAM is <strong>comparatively the fastest memory</strong>. <strong>SRAM</strong> chips use a matrix of <strong>6-transistors and no capacitors</strong>. Transistors don&#39;t need the power to forestall outpouring, therefore SRAM needn&#39;t be invigorated on a daily basis. There is an additional area within the matrix, thence SRAM uses a lot of chips than DRAM for an equivalent quantity of space for storing, creating the producing <strong>prices higher</strong>. SRAM is therefore used as <strong>cache memory</strong> and has no time access.</li> <li><strong>DRAM: </strong>The word <strong>DRAM </strong>stands for <strong>Dynamic Random Access Memory</strong>. <strong>DRAM </strong>always refresh itself to maintain the <strong>organised data</strong>. This is done by putting the <strong>memory on a refresh circuit </strong>that r<strong>ewrites the information many hundred times per second</strong>. DRAM is employed for many system memory because it is <strong>affordable and tiny in size</strong>. DRAMs are created from memory cells, that are composed of <strong>1 capacitor </strong>and <strong>one electronic transistor</strong>.</li> </ul> </li> </ul> <p><strong>Thus the correct answer is</strong> <em>DRAM</em>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>ROM: </strong>The word <strong>ROM </strong>stands for <strong>Read Only Memory</strong>. It is permanent memory that the user will solely read but cannot write of it. This sort of memory is <strong>non-volatile</strong>. The data is kept for good in such recollections throughout manufacture. A memory stores such directions that square measure needed to begin a computing system. This operation is remarked as bootstrap.</li> <li>Memory chips don&#39;t seem to be solely utilized in the computing system however conjointly in different electronic things like cleaning machines and microwave ovens. <strong>MROM, PROM, EPROM</strong> and<strong> EEPROM</strong> are the types of <strong>ROM</strong>.</li> </ul> <p>&nbsp;</p></div>
+    <div class="lang-hi"><p>सही उत्तर DRAM&nbsp;है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>RAM</strong> शब्द<strong>&nbsp;</strong>का पूर्ण रूप<strong>&nbsp;रैंडम एक्सेस मेमोरी</strong>&nbsp;होता है। यह CPU की बहुत <strong>तेज&nbsp;इन्टर्नल मेमोरी</strong><strong> </strong>है। यह <strong>अस्थायी</strong> रूप से डेटा रखती है। कंप्यूटर को स्विच ऑफ करने के बाद RAM से डेटा डिलीट हो जाता है। <strong>RAM के दो वेरिएंट</strong>&nbsp;होते हैं। ये <strong>SRAM</strong> और <strong>DRAM</strong> हैं। <ul> <li><strong>SRAM: SRAM </strong>शब्द <span style="">का पूर्ण रूप&nbsp;</span><strong>स्टैटिक रैंडम एक्सेस मेमोरी</strong>&nbsp;होता है। SRAM तुलनात्मक रूप से सबसे<strong> तेज मेमोरी </strong>है। SRAM चिप<strong>&nbsp;6-ट्रांजिस्टर और कैपेसिटर </strong>के मैट्रिक्स का प्रयोग करते हैं। ट्रांजिस्टर को आउटपोरिंग&nbsp;को रोकने के लिए&nbsp;पावर&nbsp;की आवश्यकता नहीं है, इसलिए SRAM को दैनिक आधार पर सक्रिय करने की आवश्यकता नहीं है। मैट्रिक्स के भीतर एक अतिरिक्त क्षेत्र है, इसलिए SRAM, DRAM की तुलना में बहुत अधिक चिप&nbsp;का प्रयोग स्टोरेज के लिए समान मात्रा में स्पेस&nbsp;के लिए करता है, जिससे उत्पादन की <strong>कीमतें अधिक</strong> होती हैं। इसलिए <span style="">SRAM&nbsp;</span>कैश मेमोरी के रूप में प्रयोग किया जाता है और इसकी कोई टाइम एक्सेस&nbsp;नहीं होती है।</li> <li><strong>DRAM: DRAM </strong>शब्द <span style="">का पूर्ण रूप&nbsp;</span><strong>डायनेमिक रैंडम एक्सेस मेमोरी</strong>&nbsp;होता है। <strong>संगठित डेटा </strong>को बनाए रखने के लिए <strong>DRAM</strong> हमेशा खुद को रिफ्रेश&nbsp;करती है। यह <strong>मेमोरी को रिफ्रेश सर्किट</strong> पर रखकर किया जाता है जो<strong> सूचना को प्रति सेकंड कई सौ बार फिर से लिखता है।</strong> DRAM कई सिस्टम मेमोरी में उपयोग की जाती&nbsp;है क्योंकि यह <strong>सस्ती और आकार में छोटी</strong> है। DRAM मेमोरी सेल्स से बनाई&nbsp;जाती&nbsp;हैं, जो <strong>1 कैपेसिटर</strong> और <strong>एक इलेक्ट्रॉनिक ट्राँजिस्टर</strong> से बनी&nbsp;होती&nbsp;हैं।</li> </ul> </li> </ul> <p><strong>इस प्रकार सही उत्तर </strong><em>DRAM</em><strong> है।</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>ROM: ROM</strong> शब्द <span style="">का पूर्ण रूप&nbsp;</span><strong>रीड ओनली मेमोरी </strong>होता&nbsp;है। यह स्थायी मेमोरी है जिसे यूजर&nbsp;केवल रिड करेगा&nbsp;लेकिन राइट&nbsp;नहीं कर सकता। इस प्रकार की मेमोरी <strong>नॉन-वॉलेटाइल&nbsp;</strong>होती है। निर्माण के बाद ऐसी स्टोरेज में&nbsp;डेटा को हमेशा के लिए रखा जाता है। यह मेमोरी ऐसे&nbsp;निर्देशों को स्टोर&nbsp;करती है जो एक कंप्यूटिंग सिस्टम को शुरू करने के लिए आवश्यक होते&nbsp;हैं। इस ऑपरेशन को बूटस्ट्रैप के रूप में जाना जाता है।</li> <li>मेमोरी चिप&nbsp;का प्रयोग केवल कंप्यूटिंग सिस्टम में ही नहीं बल्कि अन्य इलेक्ट्रॉनिक चीजों जैसे सफाई मशीनों और माइक्रोवेव ओवन में भी किया जाता है।<strong> MROM, PROM, EPROM </strong>और<strong> EEPROM, ROM</strong> के प्रकार हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q17</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">&quot;_______&quot;&nbsp;does not help in guarding your computer against malicious software.</div>
+  <div class="question lang-hi">&quot;_______&quot; आपके कंप्यूटर को हानिकारक सॉफ्टवेयर के विरुद्ध सुरक्षा में सहायता नहीं करता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Anti-virus software</div><div class="option">Windows Firewall</div><div class="option">Windows Defender</div><div class="option correct">Browser</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">एंटी-वायरस सॉफ्टवेयर</div><div class="option">विन्डोज फायरवॉल</div><div class="option">विन्डोज डिफेन्डर</div><div class="option correct">ब्राउजर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Browser</strong></u>.</p> <ul> <li><u><strong>Browser&nbsp;does not help in guarding your computer against malicious software</strong></u>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Anti-virus software</strong> <ul> <li>Antivirus software is a program or set of programs that are designed to prevent, search for, detect, and remove software viruses, and other malicious software like worms, trojans, adware, and more.</li> </ul> </li> <li><strong>Windows Firewall</strong> <ul> <li>A firewall can be defined as a special type of network security device or a software program that monitors and filters incoming and outgoing network traffic based on a defined set of security rules.</li> <li>They&nbsp;are primarily used to prevent malware and network-based attacks.</li> </ul> </li> <li><strong>Windows Defender&nbsp;</strong> <ul> <li>It&nbsp;is a software application that safeguards a system from malware.</li> <li>It was an anti-spyware program built to fight unauthorized access and protect Windows computers from unwanted software.</li> <li>It was introduced with the Windows Vista installation pack.</li> <li>It is now available for free download as part of Microsoft Security Essentials.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <u><strong><span style="">ब्राउजर</span></strong></u> है।</p> <p><u><strong>ब्राउज़र आपके कंप्यूटर को <span style="">हानिकारक</span> सॉफ़्टवेयर से बचाने में मदद नहीं करता है।</strong> </u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></u></p> <ul> <li><strong>एंटीवायरस सॉफ्टवेयर</strong> <ul> <li>एंटीवायरस सॉफ़्टवेयर एक प्रोग्राम या प्रोग्राम का सेट है जो <span style="">वर्म्स, ट्रोजन, एडवेयर जैसे अन्य </span>हानिकारक<span style=""> </span>वायरस को रोकने, खोजने, पता लगाने और निकालने के लिए डिज़ाइन किया गया है।</li> </ul> </li> <li><strong>विंडोज फ़ायरवॉल</strong> <ul> <li>फ़ायरवॉल को एक विशेष प्रकार के नेटवर्क सुरक्षा उपकरण या एक सॉफ़्टवेयर प्रोग्राम के रूप में परिभाषित किया जा सकता है जो सुरक्षा नियमों के एक परिभाषित सेट के आधार पर आने और जाने वाले नेटवर्क ट्रैफ़िक की निगरानी और फ़िल्टर करता है।</li> <li>मुख्य रूप से इनका उपयोग मैलवेयर और नेटवर्क-आधारित हमलों को रोकने के लिए किया जाता है।</li> </ul> </li> <li><strong>विंडोज़ डिफेंडर</strong> <ul> <li>यह एक सॉफ्टवेयर एप्लिकेशन है जो मैलवेयर से सिस्टम की सुरक्षा करता है।</li> <li>यह एक एंटी-स्पाइवेयर प्रोग्राम था जिसे अनधिकृत पहुंच से लड़ने और विंडोज कंप्यूटर को अवांछित सॉफ़्टवेयर से बचाने के लिए बनाया गया था।</li> <li>इसे विंडोज विस्टा इंस्टॉलेशन पैक के साथ पेश किया गया था।</li> <li>यह अब माइक्रोसॉफ्ट सुरक्षा अनिवार्यता के भाग के रूप में मुफ्त डाउनलोड के लिए उपलब्ध है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q18</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following best describes the MS-Word software?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन <span style="">MS</span>-वर्ड सॉफ्टवेयर का सबसे अच्छा वर्णन करता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">It is a firmware.</div><div class="option correct">It is a word processor.</div><div class="option">It is a GUI-based operating system.</div><div class="option">It is a system software.</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">यह एक फर्मवेयर है।</div><div class="option correct">यह एक वर्ड प्रोसेसर है।</div><div class="option">यह GUI- आधारित ऑपरेटिंग सिस्टम है।</div><div class="option">यह एक सिस्टम सॉफ्टवेयर है।</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p class="intro">The correct answer is<u><strong> It is a word processor</strong></u></p> <ul> <li class="intro">Sometimes called&nbsp;<span style="font-weight: 700;">Winword</span>,&nbsp;<span style="font-weight: 700;">MS Word</span>, or&nbsp;<span style="font-weight: 700;">Word</span>,&nbsp;<span style="font-weight: 700;">Microsoft Word</span>&nbsp;is a&nbsp;word processor&nbsp;published by&nbsp;<span style="font-weight: 700;">Microsoft</span>. It is one of the&nbsp;<span style="font-weight: 700;">office productivity applications</span>&nbsp;included in the&nbsp;<span style="font-weight: 700;">Microsoft Office&nbsp;suite</span>. Originally developed by&nbsp;<span style="font-weight: 700;">Charles Simonyi</span>&nbsp;and&nbsp;<span style="font-weight: 700;">Richard Brodie</span>, it was first released in&nbsp;<span style="font-weight: 700;">1983</span>.</li> <li><span style="font-weight: 700;">Microsoft Word</span>&nbsp;is available for&nbsp;<span style="font-weight: 700;">Microsoft Windows,&nbsp;Apple macOS,&nbsp;Android, and&nbsp;Apple iOS</span>. It can also run on the&nbsp;<span style="font-weight: 700;">Linux&nbsp;operating system using&nbsp;WINE</span>.</li> <li><span style="font-weight: 700;">Microsoft Word</span>&nbsp;allows you to&nbsp;<span style="font-weight: 700;">create professional-quality documents, reports, letters, and r&eacute;sum&eacute;s</span>. Unlike a&nbsp;<span style="font-weight: 700;">plain text&nbsp;editor</span>, Microsoft Word has features including&nbsp;<span style="font-weight: 700;">spell check</span>,&nbsp;<span style="font-weight: 700;">grammar check, text and&nbsp;font&nbsp;formatting,&nbsp;HTML&nbsp;support, image support, advanced&nbsp;page layout,</span>&nbsp;and more.</li> <li> <p>Below is an overview of a&nbsp;<span style="font-weight: 700;">Microsoft Word 2010</span>&nbsp;document.</p> </li> </ul> <p><img src="https://storage.googleapis.com/tb-img/production/20/10/Word_screen.png" style="height: 256px; width: 300px;" /></p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td style="text-align: center;"><strong>&nbsp;Application&nbsp;Software&nbsp;Type</strong></td> <td style="text-align: center;"><strong>&nbsp;Examples</strong></td> </tr> <tr> <td>&nbsp;Word processing&nbsp;software</td> <td>&nbsp;MS Word, WordPad, and Notepad</td> </tr> <tr> <td>&nbsp;Database&nbsp;software</td> <td>&nbsp;Oracle, MS Access, etc</td> </tr> <tr> <td>&nbsp;Presentation&nbsp;Software</td> <td>&nbsp;Microsoft PowerPoint, Keynotes</td> </tr> <tr> <td>&nbsp;Multimedia&nbsp;software</td> <td>&nbsp;Real Player, Media Player&nbsp;</td> </tr> <tr> <td>&nbsp;Application Suites</td> <td>&nbsp;OpenOffice, Microsoft Office</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p class="intro">सही उत्तर यह&nbsp;है कि&nbsp;<u><strong>यह एक वर्ड प्रोसेसर है।</strong></u></p> <ul> <li class="intro">कभी-कभी&nbsp;<span style="font-weight: 700;">Winword</span>,&nbsp;<span style="font-weight: 700;">MS Word</span>&nbsp;या&nbsp;<span style="font-weight: 700;">Word</span>&nbsp;कहा जाता है,&nbsp;<span style="font-weight: 700;">Microsoft Word</span>&nbsp;<span style="font-weight: 700;">Microsoft</span>&nbsp;द्वारा प्रकाशित एक&nbsp;शब्द प्रोसेसर है। यह&nbsp;<span style="font-weight: 700;">Microsoft Office&nbsp;सुइट</span>&nbsp;में शामिल&nbsp;<span style="font-weight: 700;">कार्यालय उत्पादकता अनुप्रयोगों</span>&nbsp;में से एक है। मूल रूप से&nbsp;<span style="font-weight: 700;">चार्ल्स सिमोनी</span>&nbsp;और&nbsp;<span style="font-weight: 700;">रिचर्ड ब्रॉडी</span>&nbsp;द्वारा विकसित, यह पहली बार&nbsp;<span style="font-weight: 700;">1983</span>&nbsp;में जारी किया गया&nbsp;<span style="font-weight: 700;">था।</span></li> <li><span style="font-weight: 700;">Microsoft Word</span>&nbsp;<span style="font-weight: 700;">Microsoft Windows&nbsp;,&nbsp;Apple macOS&nbsp;,&nbsp;Android&nbsp;और&nbsp;Apple iOS के लिए उपलब्ध है।</span>&nbsp;यह&nbsp;<span style="font-weight: 700;">WINE&nbsp;का उपयोग करके&nbsp;लिनक्स&nbsp;ऑपरेटिंग सिस्टम</span>&nbsp;पर भी चल सकता है।</li> <li><span style="font-weight: 700;">Microsoft Word</span>&nbsp;आपको&nbsp;<span style="font-weight: 700;">पेशेवर-गुणवत्ता के डॉक्यूमेंट, रिपोर्ट, पत्र और रिज्यूम बनाने की</span>&nbsp;अनुमति देता है। एक&nbsp;<span style="font-weight: 700;">सादे पाठ&nbsp;संपादक के</span>&nbsp;विपरीत, माइक्रोसॉफ्ट वर्ड में&nbsp;<span style="font-weight: 700;">वर्तनी जांच</span>,&nbsp;<span style="font-weight: 700;">व्याकरण जांच, पाठ और&nbsp;फ़ॉन्ट&nbsp;स्वरूपण,&nbsp;एचटीएमएल&nbsp;समर्थन, छवि समर्थन, उन्नत&nbsp;पृष्ठ लेआउट,</span>&nbsp;और बहुत कुछ शामिल हैं।</li> <li> <p>नीचे&nbsp;<span style="font-weight: 700;">Microsoft Word 2010</span>&nbsp;<span style="font-weight: 700;">डॉक्यूमेंट</span> का अवलोकन है।</p> </li> </ul> <p><img src="https://storage.googleapis.com/tb-img/production/20/10/Word_screen.png" style="height: 256px; width: 300px;" />​</p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td style="text-align: center;"><strong>एप्लिकेशन सॉफ्टवेयर प्रकार</strong></td> <td style="text-align: center;"><strong>उदाहरण</strong></td> </tr> <tr> <td>वर्ड प्रोसेसिंग सॉफ़्टवेयर</td> <td>एमएस वर्ड, वर्डपैड, और नोटपैड</td> </tr> <tr> <td>डेटाबेस सॉफ्टवेयर</td> <td>ओरेकल, एमएस एक्सेस, आदि</td> </tr> <tr> <td>प्रस्तुतिकरण सॉफ़्टवेयर</td> <td>&nbsp;माइक्रोसॉफ्ट&nbsp; पावर पॉइंट ,कीनोट्स&nbsp;</td> </tr> <tr> <td>मल्टीमीडिया सॉफ्टवेयर</td> <td>रियल प्लेयर, मीडिया प्लेयर</td> </tr> <tr> <td>अनुप्रयोग सूट</td> <td>ओपनऑफिस, माइक्रोसॉफ्ट ऑफिस</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q19</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is a computer that hosts a website on the Internet?</div>
+  <div class="question lang-hi"><span style="">निम्नलिखित में से कौन-सा एक कंप्यूटर है, जो इंटरनेट पर एक वेबसाइट को होस्ट करता है?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Web page</div><div class="option correct">Web server</div><div class="option"><span style="">Search engine</span></div><div class="option">Web browser</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">वेब पेज</span></div><div class="option correct"><span style="">वेब सर्वर</span></div><div class="option"><span style="">सर्च इंजन</span></div><div class="option"><span style="">वेब ब्राउज़र</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is a&nbsp;<u><strong>Web server</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>A web&nbsp;server&nbsp;is a computer where the web content is stored</strong></u>. <ul> <li>Usually, the web server is used to host the websites.</li> <li>The <strong>website&nbsp;is a collection of web pages while the web server is software that responds to the request for web resources.</strong></li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>A&nbsp;web page&nbsp;(or&nbsp;webpage) </strong>is a hypertext document on the World Wide Web.&nbsp; <ul> <li>Web pages&nbsp;are delivered by a web server to the user and displayed in a web browser.</li> </ul> </li> <li><strong>A&nbsp;search engine&nbsp;is a&nbsp;software system&nbsp;designed to carry out&nbsp;web searches.</strong>&nbsp; Example - Google, Bing.</li> <li><strong>A&nbsp;web browser</strong> (also referred to as an Internet browser&nbsp;is&nbsp;application software for accessing the World Wide Web or a local website.</li> </ul></div>
+    <div class="lang-hi"><p style=""><font style="vertical-align: inherit;">सही उत्तर एक&nbsp;</font><u><span style="font-weight: 700;">वेब सर्वर</span></u>&nbsp;है।</p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=""> <li><u><span style="font-weight: 700;">एक वेब सर्वर एक कंप्यूटर है जहां वेब कंटेंट संग्रहित किया जाता है</span></u><font style="vertical-align: inherit;">।</font> <ul> <li><font style="vertical-align: inherit;">आमतौर पर, वेब सर्वर का उपयोग वेबसाइटों को होस्ट करने के लिए किया जाता है।</font></li> <li><font style="vertical-align: inherit;">वेबसाइट वेब पेजों का&nbsp;</font><span style="font-weight: 700;">एक संग्रह है, जबकि वेब सर्वर सॉफ्टवेयर है, जो वेब संसाधनों के अनुरोध का जवाब देता है।</span></li> </ul> </li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><u style="font-size: 21px; font-weight: 700;">Additional Information</u>&nbsp;</span></p> <ul style=""> <li><span style="font-weight: 700;">एक वेब पेज</span><font style="vertical-align: inherit;">&nbsp;वर्ल्ड वाइड वेब पर एक हाइपरटेक्स्ट दस्तावेज़ है।&nbsp;</font> <ul> <li><font style="vertical-align: inherit;">वेब पेज एक वेब सर्वर द्वारा उपयोगकर्ता को वितरित किए जाते हैं और एक वेब ब्राउज़र में प्रदर्शित होते हैं।</font></li> </ul> </li> <li><span style="font-weight: 700;">एक सर्च&nbsp;इंजन एक सॉफ्टवेयर प्रणाली है,&nbsp; जिसे वेब सर्च&nbsp;को करने के लिए डिज़ाइन किया गया है।&nbsp;</span><font style="vertical-align: inherit;">उदाहरण - गूगल, बिंग</font></li> <li><span style="font-weight: 700;">एक वेब ब्राउज़र</span><font style="vertical-align: inherit;">&nbsp;(जिसे इंटरनेट ब्राउज़र भी कहा जाता है, वर्ल्ड वाइड वेब या स्थानीय वेबसाइट तक पहुँचने के लिए अनुप्रयोग&nbsp;सॉफ़्टवेयर है।</font></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q20</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">In MS Word, which of the following keyboard shortcuts should be used to align a paragraph in the centre?</div>
+  <div class="question lang-hi"><span style="">MS&nbsp;</span>वर्ड में केंद्र में एक पैराग्राफ को संरेखित (<span style="">align</span>) करने के लिए निम्नलिखित में से किस कीबोर्ड शॉर्टकट का उपयोग किया जाना चाहिए?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Ctrl + J</div><div class="option">Ctrl + C</div><div class="option">Alt + C</div><div class="option correct">Ctrl + E</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">Ctrl + J</div><div class="option">Ctrl + C</div><div class="option">Alt + C</div><div class="option correct">Ctrl + E</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Ctrl + E.</strong></u></p> <ul> <li>A <strong>Control key</strong> is a modifier key that, when pressed in conjunction with another key, performs a certain action.</li> <li><strong>Ctrl + E</strong> is the short key to align selected text or line to the center&nbsp;In Microsoft Word and other word processors.</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/09/6010ee2273a5b0f48b4131e8_16316448046921.png" style="height: 182px; width: 420px;" />​</p> <ul> <li><strong>Ctrl + R</strong> -is the short key to align selected text or line to the right.</li> <li><strong>Ctrl + M</strong> is the short key to&nbsp;Indent the paragraph.</li> <li><strong>Ctrl+A </strong>is the short key to&nbsp;select all text or other objects present.</li> <li><strong>Ctrl+B</strong> is the short key to bold highlighted text.</li> <li><strong>Ctrl+C</strong> is the short key to copy any selected text or another object.</li> <li><strong>Ctrl+F</strong> is the short key to open the find window.</li> <li><strong>Ctrl+G</strong> is the short key to open Find in a browser and word processors.</li> <li><strong>Ctrl+N</strong> is the short key to create a new page or document.</li> <li><strong>Ctrl+O</strong> is the short key to open a file in most programs.</li> <li><strong>Ctrl+P</strong> is the short key to open a print window to print the page you&#39;re viewing.</li> <li><strong>Ctrl+J</strong> is the short key to view downloads in browsers and set justify alignment in Microsoft Word.</li> <li><strong>Alt+C</strong> is a keyboard shortcut most often used to view the favorite&nbsp;in Internet Explorer.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>Ctrl + E</strong></u> है।</p> <ul> <li>एक <b>कंट्रोल की</b>&nbsp;एक आपरिवर्तक (modifier) की है, जिसे जब किसी अन्य की के साथ संयोजन में दबाया जाता है, तो एक निश्चित क्रिया करती है।</li> <li>माइक्रोसॉफ्ट वर्ड और अन्य वर्ड प्रोसेसर&nbsp;में&nbsp;<strong>Ctrl + E</strong> चयनित टेक्स्ट या लाइन को <span style="">केंद्र&nbsp;</span>में संरेखित करने के लिए शॉर्ट की&nbsp;है।</li> </ul> <p><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage5026.png" style="height: 182px; width: 420px;" />​</p> <ul> <li><strong>Ctrl + R-</strong> चयनित <span style="">टेक्स्ट या लाइन</span>&nbsp;को दाईं ओर संरेखित करने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + M</strong> <span style="">पैराग्राफ</span>&nbsp;को इंडेंट करने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + A</strong> मौजूद सभी <span style="">टेक्स्ट&nbsp;</span>या अन्य वस्तुओं का चयन करने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + B</strong> बोल्ड हाइलाइट किए गए <span style="">टेक्स्ट&nbsp;</span>की शॉर्ट की है।</li> <li><strong>Ctrl + C</strong> किसी भी चयनित टेक्स्ट या किसी अन्य वस्तु को कॉपी करने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + F</strong> फाइंड विंडो खोलने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + G</strong> ब्राउज़र और वर्ड प्रोसेसर&nbsp;में फाइंड को खोलने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + N</strong> एक नया पृष्ठ या दस्तावेज़ बनाने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + O</strong> अधिकांश प्रोग्राम में फ़ाइल खोलने के लिए&nbsp;शॉर्ट की है।</li> <li><strong>Ctrl + P</strong> आपके द्वारा देखे जा रहे पृष्ठ को प्रिंट करने के लिए प्रिंट विंडो खोलने के लिए शॉर्ट की है।</li> <li><strong>Ctrl + J</strong> ब्राउज़र में डाउनलोड देखने और माइक्रोसॉफ्ट वर्ड में संरेखण को निर्धारित करने के लिए शॉर्ट की है।</li> <li><strong>Alt + C</strong> एक कीबोर्ड शॉर्टकट है जो अक्सर इंटरनेट एक्सप्लोरर में <span style="">favorite&nbsp;</span>को देखने के लिए उपयोग किया जाता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HISTORY FULL TEST</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 HISTORY FULL TEST</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 50,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> <b>Consider the following statements regarding the Indus Valley Civilization (IVC): <br/> </b>सिंधु घाटी सभ्यता <b>(IVC) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The Harappans were the first to produce cotton in the world. / </b>हड़प्पावासी दुनिया में कपास का उत्पादन करने वाले पहले व्यक्ति थे। <b><br/> (b) Iron was extensively used for making agricultural tools in Harappa. / </b>हड़प्पा में कृषि उपकरण बनाने के लिए लोहे का बड़े पैमाने पर उपयोग किया जाता था। <b><br/> (c) Evidence of a dockyard has been found in Lothal. / </b>लोथल में गोदीवाड़ा <b>(dockyard) </b>के साक्ष्य मिले हैं।<b><br/> Which of the above statements is/are correct?<br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Harappans produced cotton (called 'Sindon' by Greeks), but they were not aware of Iron; Iron was introduced in the Later Vedic period. Lothal was a prominent port city.<br/> हड़प्पावासियों ने कपास का उत्पादन किया (यूनानियों द्वारा 'सिंडन' कहा गया), लेकिन वे लोहे से परिचित नहीं थे; लोहे की शुरुआत उत्तर वैदिक काल में हुई थी। लोथल एक प्रमुख बंदरगाह शहर था।</p>"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> <b>Which of the following statements about the Battle of Hydaspes is correct? <br/> </b>हाइडेस्पस के युद्ध के संबंध में निम्नलिखित में से कौन<b>-</b>सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It was fought between Alexander and Chandragupta Maurya. / यह सिकंदर और चंद्रगुप्त मौर्य के बीच लड़ा गया था।</p>",
+      "option2": "<p> It took place on the banks of the Ravi River. / यह रावी नदी के तट पर हुआ था।</p>",
+      "option3": "<p> King Porus was defeated but his kingdom was restored by Alexander. / राजा पोरस की हार हुई लेकिन सिकंदर ने उनका राज्य वापस कर दिया।</p>",
+      "option4": "<p> It led to the immediate end of the Nanda Dynasty. / इसके कारण नंद वंश का तत्काल अंत हो गया।</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Battle of Hydaspes (326 BC) was fought between Alexander and Porus on the banks of the Jhelum (Hydaspes). Impressed by Porus's bravery, Alexander returned his kingdom.<br/> हाइडेस्पस का युद्ध (326 ईसा पूर्व) झेलम (हाइडेस्पस) के तट पर सिकंदर और पोरस के बीच लड़ा गया था। पोरस की बहादुरी से प्रभावित होकर सिकंदर ने उसका राज्य वापस कर दिया।</p>"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> <b>Consider the following statements regarding Ashoka’s Dhamma: <br/> </b>अशोक के धम्म के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was a new religion founded to replace Buddhism. / </b>यह बौद्ध धर्म को प्रतिस्थापित करने के लिए स्थापित किया गया एक नया धर्म था। <b><br/> (b) It emphasized tolerance, non-violence, and respect for elders. / </b>इसमें सहिष्णुता<b>, </b>अहिंसा और बड़ों के प्रति सम्मान पर जोर दिया गया था। <b><br/> (c) Ashoka appointed 'Dhamma Mahamattas' to spread its principles. / </b>अशोक ने इसके सिद्धांतों को फैलाने के लिए <b>'</b>धम्म महामत्त<b>' </b>नियुक्त किए।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a only / केवल a</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> b only / केवल b</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Ashoka’s Dhamma was not a new religion but a code of conduct and social ethics. He appointed officials called Dhamma Mahamattas to propagate these values.<br/> अशोक का धम्म कोई नया धर्म नहीं था बल्कि एक आचार संहिता और सामाजिक नैतिकता थी। उन्होंने इन मूल्यों के प्रचार के लिए धम्म महामत्त नामक अधिकारियों की नियुक्ति की।</p>"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> <b>The 'Allahabad Pillar Inscription' (Prayag Prashasti) provides information about the reign of: <br/> '</b>इलाहाबाद स्तंभ शिलालेख<b>' (</b>प्रयाग प्रशस्ति<b>) </b>किसके शासनकाल के बारे में जानकारी प्रदान करता है<b>?</b></p>",
+      "option1": "<p> Chandragupta I / चंद्रगुप्त प्रथम</p>",
+      "option2": "<p> Samudragupta / समुद्रगुप्त</p>",
+      "option3": "<p> Skandagupta / स्कंदगुप्त</p>",
+      "option4": "<p> Harshavardhana / हर्षवर्धन</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Composed by Harisena, the Prayag Prashasti describes the conquests and personality of Samudragupta, often called the 'Napoleon of India'.<br/> हरिषेण द्वारा रचित प्रयाग प्रशस्ति समुद्रगुप्त की विजयों और व्यक्तित्व का वर्णन करती है, जिन्हें अक्सर 'भारत का नेपोलियन' कहा जाता है।</p>"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> <b>Consider the following pairs of Delhi Sultanate officials and their departments: <br/> </b>दिल्ली सल्तनत के अधिकारियों और उनके विभागों के निम्नलिखित युग्मों पर विचार करें<b>: <br/> (a) Diwan-i-Arz : Military Department / </b>सैन्य विभाग <b><br/> (b) Diwan-i-Kohi : Agriculture Department / </b>कृषि विभाग <b><br/> (c) Diwan-i-Khairat : Department of Slave / </b>दास विभाग<b><br/> Which of the pairs given above is/are correctly matched?<br/> </b>ऊपर दिए गए युग्मों में से कौन<b>-</b>सा<b>/</b>से सही सुमेलित है<b>/</b>हैं<b>?</b></p>",
+      "option1": "<p> a only / केवल a</p>",
+      "option2": "<p> a and b / a और b</p>",
+      "option3": "<p> b and c / b और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Diwan-i-Arz was created by Balban, Diwan-i-Kohi by MBT. Diwan-i-Khairat was the department of charity (not slaves) created by Firoz Shah Tughlaq.<br/> दीवान-ए-अर्ज़ बलबन द्वारा, दीवान-ए-कोही MBT द्वारा बनाया गया था। दीवान-ए-खैरात फिरोज शाह तुगलक द्वारा बनाया गया दान विभाग (दासों का नहीं) था।</p>"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> <b>Which of the following statements about the 'Iqtadari System' is incorrect? <br/> '</b>इक्तादारी व्यवस्था<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन गलत है<b>?</b></p>",
+      "option1": "<p> It was introduced in India by Iltutmish. / इसे इल्तुतमिश द्वारा भारत में पेश किया गया था।</p>",
+      "option2": "<p> It was a hereditary land ownership system. / यह एक वंशानुगत भूमि स्वामित्व प्रणाली थी।</p>",
+      "option3": "<p> The Iqtadars were responsible for maintaining law and order. / इक्तादार कानून व्यवस्था बनाए रखने के लिए जिम्मेदार थे।</p>",
+      "option4": "<p> They used their revenue to maintain a military contingent. / वे अपने राजस्व का उपयोग सैन्य टुकड़ी बनाए रखने के लिए करते थे।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Initially, Iqtadari was not hereditary; it was a grant of revenue from a territory in lieu of salary. It became hereditary later during Firoz Shah Tughlaq's reign.<br/> प्रारंभ में, इक्तादारी वंशानुगत नहीं थी; यह वेतन के बदले किसी क्षेत्र से राजस्व का अनुदान था। फिरोज शाह तुगलक के शासनकाल के दौरान यह वंशानुगत हो गई।</p>"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> <b>Consider the following statements regarding the Battle of Talikota (1565): <br/> </b>तालीकोटा के युद्ध <b>(1565) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It led to the downfall of the Vijayanagara Empire. / </b>इसके कारण विजयनगर साम्राज्य का पतन हुआ। <b><br/> (b) It was fought between Vijayanagara and the combined forces of Deccan Sultanates. / </b>यह विजयनगर और दक्कन सल्तनतों की संयुक्त सेनाओं के बीच लड़ा गया था। <b><br/> (c) Krishnadevaraya led the Vijayanagara army in this battle. / </b>कृष्णदेवराय ने इस युद्ध में विजयनगर सेना का नेतृत्व किया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a only / केवल a</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The battle was fought in 1565. Rama Raya led the army, not Krishnadevaraya (who died in 1529). The Deccan alliance (except Berar) defeated Vijayanagara.<br/> यह युद्ध 1565 में लड़ा गया था। राम राय ने सेना का नेतृत्व किया था, न कि कृष्णदेवराय ने (जिनकी मृत्यु 1529 में हुई थी)। दक्कन गठबंधन (बरार को छोड़कर) ने विजयनगर को हराया था।</p>"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> <b>Which Mughal Emperor prohibited the use of Tobacco? <br/> </b>किस मुगल सम्राट ने तंबाकू के सेवन पर प्रतिबंध लगा दिया था<b>?</b></p>",
+      "option1": "<p> Akbar / अकबर</p>",
+      "option2": "<p> Jahangir / जहाँगीर</p>",
+      "option3": "<p> Shah Jahan / शाहजहाँ</p>",
+      "option4": "<p> Aurangzeb / औरंगजेब</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Tobacco was introduced by the Portuguese during Akbar's reign, but his son Jahangir prohibited its use in 1617 due to its harmful effects.<br/> अकबर के शासनकाल के दौरान पुर्तगालियों द्वारा तंबाकू लाया गया था, लेकिन उसके बेटे जहाँगीर ने 1617 में इसके हानिकारक प्रभावों के कारण इसके उपयोग पर प्रतिबंध लगा दिया था।</p>"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> <b>Consider the following statements about the Subsidiary Alliance system: <br/> </b>सहायक संधि <b>(Subsidiary Alliance) </b>प्रणाली के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was framed by Lord Dalhousie. / </b>इसे लॉर्ड डलहौजी द्वारा तैयार किया गया था। <b><br/> (b) The ruler had to maintain a British force within their territory. / </b>शासक को अपने क्षेत्र के भीतर एक ब्रिटिश सेना रखनी पड़ती थी। <b><br/> (c) Hyderabad was the first state to accept this alliance. / </b>हैदराबाद इस संधि को स्वीकार करने वाला पहला राज्य था।<b><br/> Which of the statements given above is/are correct? <br/> </b>ऊपर दिए गए कथनों में से कौन<b>-</b>सा<b>/</b>से सही है<b>/</b>हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> c only / केवल c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Subsidiary Alliance was framed by Lord Wellesley (not Dalhousie). Hyderabad (1798) was indeed the first to sign it.<br/> सहायक संधि लॉर्ड वेलेज़ली (डलहौजी नहीं) द्वारा तैयार की गई थी। हैदराबाद (1798) वास्तव में इस पर हस्ताक्षर करने वाला पहला राज्य था।</p>"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p> <b>With reference to the Permanent Settlement of 1793, consider the following statements: <br/> 1793 </b>के स्थायी बंदोबस्त के संदर्भ में<b>, </b>निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was introduced by Lord Cornwallis in Bengal and Bihar. / </b>इसे लॉर्ड कॉर्नवालिस द्वारा बंगाल और बिहार में पेश किया गया था। <b><br/> (b) The Zamindars were made the owners of the land. / </b>जमींदारों को भूमि का मालिक बना दिया गया। <b><br/> (c) The share of the government was fixed at 1/3rd of the total produce. / </b>सरकार का हिस्सा कुल उपज का <b>1/3 </b>तय किया गया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a only / केवल a</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The government's share was fixed at 10/11th of the rent collected by Zamindars, not 1/3rd of the produce. It gave ownership rights to Zamindars as long as they paid the fixed revenue.<br/> सरकार का हिस्सा जमींदारों द्वारा वसूले गए किराए का 10/11 तय किया गया था, न कि उपज का 1/3। इसने जमींदारों को तब तक स्वामित्व अधिकार दिए जब तक वे निश्चित राजस्व का भुगतान करते रहे।</p>"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> <b>Which of the following statements is correct regarding the Morley-Minto Reforms of 1909? <br/> 1909 </b>के मॉर्ले<b>-</b>मिंटो सुधारों के संबंध में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It introduced a bicameral legislature at the center. / इसने केंद्र में द्विसदनीय विधायिका की शुरुआत की।</p>",
+      "option2": "<p> It provided for separate electorates for Muslims. / इसने मुसलमानों के लिए अलग निर्वाचन क्षेत्र का प्रावधान किया।</p>",
+      "option3": "<p> It granted the right to vote to all women. / इसने सभी महिलाओं को वोट देने का अधिकार दिया।</p>",
+      "option4": "<p> It was based on the recommendations of the Simon Commission. / यह साइमन कमीशन की सिफारिशों पर आधारित था।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The 1909 Act introduced communal representation by providing separate electorates for Muslims, earning Lord Minto the title 'Father of Communal Electorate'.<br/> 1909 के अधिनियम ने मुसलमानों के लिए अलग निर्वाचन क्षेत्र प्रदान करके सांप्रदायिक प्रतिनिधित्व की शुरुआत की, जिससे लॉर्ड मिंटो को 'सांप्रदायिक निर्वाचन क्षेत्र के जनक' की उपाधि मिली।</p>"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p> <b>Consider the following events of the Indian National Movement: <br/> </b>भारतीय राष्ट्रीय आंदोलन की निम्नलिखित घटनाओं पर विचार करें<b>: <br/> (a) Rowlatt Satyagraha / </b>रॉलेट सत्याग्रह <b><br/> (b) Jallianwala Bagh Massacre / </b>जलियांवाला बाग हत्याकांड <b><br/> (c) Khilafat Movement / </b>खिलाफत आंदोलन <b><br/> (d) Non-Cooperation Movement / </b>असहयोग आंदोलन<b><br/> What is the correct chronological order of these events? <br/> </b>इन घटनाओं का सही कालानुक्रमिक क्रम क्या है<b>?</b></p>",
+      "option1": "<p> a - b - c - d</p>",
+      "option2": "<p> b - a - c - d</p>",
+      "option3": "<p> a - c - b - d</p>",
+      "option4": "<p> c - a - b - d</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Rowlatt Satyagraha (April 6, 1919), Jallianwala Bagh (April 13, 1919), Khilafat Movement (Late 1919), Non-Cooperation Movement (1920).<br/> रॉलेट सत्याग्रह (6 अप्रैल, 1919), जलियांवाला बाग (13 अप्रैल, 1919), खिलाफत आंदोलन (1919 के अंत में), असहयोग आंदोलन (1920)।</p>"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> <b>Which of the following statements about the Gandhi-Irwin Pact (1931) is incorrect? <br/> </b>गांधी<b>-</b>इरविन समझौते <b>(1931) </b>के बारे में निम्नलिखित में से कौन सा कथन गलत है<b>?</b></p>",
+      "option1": "<p> Congress agreed to suspend the Civil Disobedience Movement. / कांग्रेस सविनय अवज्ञा आंदोलन को स्थगित करने पर सहमत हुई।</p>",
+      "option2": "<p> The British agreed to release all political prisoners including those involved in violence. / ब्रिटिश हिंसा में शामिल लोगों सहित सभी राजनीतिक बंदियों को रिहा करने पर सहमत हुए।</p>",
+      "option3": "<p> Gandhiji agreed to participate in the Second Round Table Conference. / गांधीजी द्वितीय गोलमेज सम्मेलन में भाग लेने के लिए सहमत हुए।</p>",
+      "option4": "<p> It allowed the manufacture of salt for personal consumption in coastal villages. / इसने तटीय गांवों में व्यक्तिगत उपभोग के लिए नमक बनाने की अनुमति दी।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The British agreed to release only those political prisoners who were NOT convicted of violence. This was a major point of contention regarding Bhagat Singh's execution.<br/> अंग्रेज केवल उन्हीं राजनीतिक बंदियों को रिहा करने पर सहमत हुए जो हिंसा के दोषी नहीं थे। भगत सिंह की फांसी के संबंध में यह विवाद का एक प्रमुख बिंदु था।</p>"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> <b>Consider the following statements regarding the revolt of 1857: <br/> 1857 </b>के विद्रोह के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Begum Hazrat Mahal led the revolt in Lucknow. / </b>बेगम हजरत महल ने लखनऊ में विद्रोह का नेतृत्व किया। <b><br/> (b) Lord Canning was the Governor-General during the revolt. / </b>विद्रोह के दौरान लॉर्ड कैनिंग गवर्नर<b>-</b>जनरल थे। <b><br/> (c) The revolt was supported by the educated middle class of India. / </b>इस विद्रोह को भारत के शिक्षित मध्यम वर्ग का समर्थन प्राप्त था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The educated middle class and many Indian rulers remained neutral or supported the British. They viewed the revolt as backward-looking.<br/> शिक्षित मध्यम वर्ग और कई भारतीय शासक तटस्थ रहे या अंग्रेजों का समर्थन किया। उन्होंने विद्रोह को पिछड़ी सोच वाला माना।</p>"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p> <b>Who was the President of the Haripura Session (1938) of the Indian National Congress? <br/> </b>भारतीय राष्ट्रीय कांग्रेस के हरिपुरा अधिवेशन <b>(1938) </b>के अध्यक्ष कौन थे<b>?</b></p>",
+      "option1": "<p> Jawaharlal Nehru / जवाहरलाल नेहरू</p>",
+      "option2": "<p> Subhas Chandra Bose / सुभाष चंद्र बोस</p>",
+      "option3": "<p> Pattabhi Sitaramayya / पट्टाभि सीतारमैया</p>",
+      "option4": "<p> J.B. Kripalani / जे.बी. कृपलानी</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Subhas Chandra Bose was elected President at the Haripura session in 1938. He also won at Tripuri (1939) but resigned due to differences with Gandhi.<br/> सुभाष चंद्र बोस 1938 में हरिपुरा अधिवेशन में अध्यक्ष चुने गए थे। उन्होंने त्रिपुरी (1939) में भी जीत हासिल की लेकिन गांधी के साथ मतभेदों के कारण इस्तीफा दे दिया।</p>"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p> <b>Consider the following statements regarding the Vedic Society: <br/> </b>वैदिक समाज के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) In the Early Vedic period, kingship was not hereditary. / </b>ऋग्वैदिक काल में राजपद वंशानुगत नहीं था। <b><br/> (b) 'Saba' and 'Samiti' were the popular assemblies that exercised control over the king. / '</b>सभा<b>' </b>और <b>'</b>समिति<b>' </b>लोकप्रिय परिषदें थीं जो राजा पर नियंत्रण रखती थीं। <b><br/> (c) Women were not allowed to attend the 'Saba' or 'Vidatha'. / </b>महिलाओं को <b>'</b>सभा<b>' </b>या <b>'</b>विदथ<b>' </b>में भाग लेने की अनुमति नहीं थी।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> In the Early Vedic period, women participated in 'Saba' and 'Vidatha'. Their status declined in the Later Vedic period when they were restricted from attending these assemblies.<br/> ऋग्वैदिक काल में महिलाएँ 'सभा' और 'विदथ' में भाग लेती थीं। उत्तर वैदिक काल में उनकी स्थिति में गिरावट आई जब उन्हें इन सभाओं में भाग लेने से रोक दिया गया।</p>"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> <b>Which of the following statements about the 'Din-i-Ilahi' is incorrect? '</b>दीन<b>-</b>ए<b>-</b>इलाही<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन गलत है<b>?</b></p>",
+      "option1": "<p> It was introduced by Akbar in 1582. / इसे 1582 में अकबर द्वारा शुरू किया गया था।</p>",
+      "option2": "<p> It was a synthesis of multiple religions like Islam, Hinduism, and Jainism. / यह इस्लाम, हिंदू धर्म और जैन धर्म जैसे कई धर्मों का संश्लेषण था।</p>",
+      "option3": "<p> It had its own priesthood and a holy book. / इसका अपना पुरोहित वर्ग और एक पवित्र पुस्तक थी।</p>",
+      "option4": "<p> Birbal was the only Hindu to accept it. / बीरबल इसे स्वीकार करने वाले एकमात्र हिंदू थे।</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Din-i-Ilahi did not have a priesthood or a holy book. It was more of an ethical code of conduct for the nobility rather than a formal religion.<br/> दीन-ए-इलाही में कोई पुरोहित वर्ग या पवित्र पुस्तक नहीं थी। यह एक औपचारिक धर्म के बजाय रईसों के लिए एक नैतिक आचार संहिता अधिक थी।</p>"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> <b>Consider the following pairs of travelers and the rulers during whose reign they visited India: <br/> </b>यात्रियों और उन शासकों के निम्नलिखित युग्मों पर विचार करें जिनके शासनकाल में उन्होंने भारत का दौरा किया<b>: <br/> (a) Megasthenes : Chandragupta Maurya / </b>मेगास्थनीज <b>: </b>चंद्रगुप्त मौर्य <b><br/> (b) Fa-Hien : Chandragupta II / </b>फाह्यान <b>: </b>चंद्रगुप्त द्वितीय <b><br/> (c) Hiuen Tsang : Harshavardhana / </b>ह्वेनसांग <b>: </b>हर्षवर्धन<b><br/> Which of the pairs given above are correctly matched?<br/> </b>ऊपर दिए गए युग्मों में से कौन<b>-</b>से सही सुमेलित हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> All pairs are correctly matched. Megasthenes was a Greek ambassador, while Fa-Hien and Hiuen Tsang were Chinese Buddhist pilgrims.<br/> सभी युग्म सही सुमेलित हैं। मेगास्थनीज एक यूनानी राजदूत थे, जबकि फाह्यान और ह्वेनसांग चीनी बौद्ध तीर्थयात्री थे।</p>"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> <b>With reference to the 'Iltutmish', consider the following statements: <br/> '</b>इल्तुतमिश<b>' </b>के संदर्भ में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) He introduced the silver coin 'Tanka' and copper coin 'Jital'. / </b>उसने चांदी का सिक्का <b>'</b>टका<b>' </b>और तांबे का सिक्का <b>'</b>जीतल<b>' </b>पेश किया। <b><br/> (b) He completed the construction of the Qutub Minar. / </b>उसने कुतुब मीनार का निर्माण पूरा करवाया। <b><br/> (c) He organized a group of 40 loyal slaves known as 'Turkan-i-Chahalgani'. / </b>उसने <b>40 </b>वफादार गुलामों का एक समूह संगठित किया जिसे <b>'</b>तुर्कान<b>-</b>ए<b>-</b>चिहलगानी<b>' </b>कहा जाता था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a only / केवल a</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> a and c / a और c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Iltutmish is considered the real founder of the Delhi Sultanate. He consolidated the empire through administrative and monetary reforms.<br/> इल्तुतमिश को दिल्ली सल्तनत का वास्तविक संस्थापक माना जाता है। उसने प्रशासनिक और मौद्रिक सुधारों के माध्यम से साम्राज्य को मजबूत किया।</p>"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> <b>Which of the following statements about the 'Government of India Act 1935' is correct? <br/> '</b>भारत सरकार अधिनियम <b>1935' </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It introduced Diarchy at the provincial level. / इसने प्रांतीय स्तर पर द्वैध शासन की शुरुआत की।</p>",
+      "option2": "<p> It abolished Diarchy at the center. / इसने केंद्र में द्वैध शासन को समाप्त कर दिया।</p>",
+      "option3": "<p> It provided for the establishment of a Federal Court. / इसमें एक संघीय न्यायालय (Federal Court) की स्थापना का प्रावधान था।</p>",
+      "option4": "<p> It separated Burma from India in 1947. / इसने 1947 में बर्मा को भारत से अलग कर दिया।</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The 1935 Act abolished provincial diarchy and introduced provincial autonomy. It introduced diarchy at the Center and established the Federal Court (1937) and RBI. Burma was separated in 1937.<br/> 1935 के अधिनियम ने प्रांतीय द्वैध शासन को समाप्त कर दिया और प्रांतीय स्वायत्तता की शुरुआत की। इसने केंद्र में द्वैध शासन की शुरुआत की और संघीय न्यायालय (1937) और RBI की स्थापना की। बर्मा 1937 में अलग हुआ था।</p>"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> <b>Consider the following statements regarding the 'Cabinet Mission' (1946): <br/> '</b>कैबिनेट मिशन<b>' (1946) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It recommended a weak center with powers limited to Foreign Affairs, Defense, and Communications. / </b>इसने विदेश मामलों<b>, </b>रक्षा और संचार तक सीमित शक्तियों वाले एक कमजोर केंद्र की सिफारिश की। <b><br/> (b) It rejected the demand for a full-fledged Pakistan. / </b>इसने पूर्ण विकसित पाकिस्तान की मांग को खारिज कर दिया। <b><br/> (c) It suggested the formation of a Constituent Assembly. / </b>इसने संविधान सभा के गठन का सुझाव दिया।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> c only / केवल c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Cabinet Mission (Pethick-Lawrence, Stafford Cripps, A.V. Alexander) aimed to keep India united while giving autonomy to provinces grouped into three sections.<br/> कैबिनेट मिशन (पेथिक-लॉरेंस, स्टैफोर्ड क्रिप्स, ए.वी. अलेक्जेंडर) का उद्देश्य भारत को एकजुट रखना था, जबकि तीन वर्गों में समूहों में विभाजित प्रांतों को स्वायत्तता देना था।</p>"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> <b>In the context of Modern History, what was the 'Comagata Maru'? <br/> </b>आधुनिक इतिहास के संदर्भ में <b>'</b>कोमागाटा मारू<b>' </b>क्या था<b>?</b></p>",
+      "option1": "<p> A revolutionary group in Bengal / बंगाल में एक क्रांतिकारी समूह</p>",
+      "option2": "<p> A Japanese steamship carrying Indian immigrants to Canada / भारतीय प्रवासियों को कनाडा ले जाने वाला एक जापानी स्टीमशिप</p>",
+      "option3": "<p> A secret society formed in London / लंदन में गठित एक गुप्त समाज</p>",
+      "option4": "<p> A newspaper started by Lala Hardayal / लाला हरदयाल द्वारा शुरू किया गया एक समाचार पत्र</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Komagata Maru was a Japanese ship chartered by Gurdit Singh in 1914 to transport 376 Indians to Canada. They were forced to return, leading to a clash at Budge Budge (Kolkata).<br/> कोमागाटा मारू एक जापानी जहाज था जिसे 1914 में गुरदित सिंह द्वारा 376 भारतीयों को कनाडा ले जाने के लिए किराए पर लिया गया था। उन्हें वापस लौटने के लिए मजबूर किया गया, जिससे बज बज (कोलकाता) में झड़प हुई।</p>"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> <b>Consider the following statements about the 'Bhakti Movement': <br/> '</b>भक्ति आंदोलन<b>' </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Alvars were the devotees of Lord Shiva. / </b>अलवार भगवान शिव के भक्त थे। <b><br/> (b) Nayanars were the devotees of Lord Vishnu. / </b>नयनार भगवान विष्णु के भक्त थे। <b><br/> (c) It emphasized personal devotion to God over ritualism. / </b>इसने कर्मकांड के बजाय भगवान के प्रति व्यक्तिगत भक्ति पर जोर दिया।<b><br/> Which of the above statements is/are correct?<br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> c only / केवल c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> b and c / b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Alvars were Vishnu devotees and Nayanars were Shiva devotees. They originated in South India (Tamil Nadu) around the 7th-9th century.<br/> अलवार विष्णु भक्त थे और नयनार शिव भक्त थे। उनकी उत्पत्ति 7वीं-9वीं शताब्दी के आसपास दक्षिण भारत (तमिलनाडु) में हुई थी।</p>"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p> <b>Which of the following was the immediate cause for the launch of the Swadeshi Movement? <br/> </b>स्वदेशी आंदोलन शुरू होने का तात्कालिक कारण निम्नलिखित में से कौन सा था<b>?</b></p>",
+      "option1": "<p> The partition of Bengal by Lord Curzon. / लॉर्ड कर्जन द्वारा बंगाल का विभाजन।</p>",
+      "option2": "<p> The arrest of Lokmanya Tilak. / लोकमान्य तिलक की गिरफ्तारी।</p>",
+      "option3": "<p> The Rowlatt Act. / रॉलेट एक्ट।</p>",
+      "option4": "<p> The execution of Chapekar brothers. / चापेकर भाइयों की फांसी।</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Swadeshi Movement was a direct reaction to the partition of Bengal (1905), which Curzon claimed was for administrative convenience but was actually to curb Indian nationalism.<br/> स्वदेशी आंदोलन बंगाल के विभाजन (1905) की प्रत्यक्ष प्रतिक्रिया थी, जिसे कर्जन ने प्रशासनिक सुविधा के लिए बताया था लेकिन वास्तव में यह भारतीय राष्ट्रवाद को रोकने के लिए था।</p>"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> <b>Consider the following statements about the 'Ryotwari System': <br/> '</b>रैयतवाड़ी व्यवस्था<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>? <br/> (a) It was introduced by Thomas Munro and Alexander Reed. / </b>इसे थॉमस मुनरो और अलेक्जेंडर रीड द्वारा शुरू किया गया था। <b><br/> (b) It was primarily implemented in the Madras and Bombay Presidencies. / </b>यह मुख्य रूप से मद्रास और बॉम्बे प्रेसीडेंसी में लागू किया गया था। <b><br/> (c) The ownership of land was given to the village community as a whole. / </b>भूमि का स्वामित्व संपूर्ण ग्राम समुदाय को दिया गया था।<b><br/> Which of the above statements is/are correct?<br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a only / केवल a</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> In Ryotwari, the ownership was given directly to the individual cultivators (Ryots). The Mahalwari system gave ownership to the village community.<br/> रैयतवाड़ी में, स्वामित्व सीधे व्यक्तिगत खेती करने वालों (रैयतों) को दिया गया था। महलवाड़ी व्यवस्था में ग्राम समुदाय को स्वामित्व दिया गया था।</p>"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> <b>The 'Sadaqat Ashram' in Patna was established by which national leader? <br/> </b>पटना में <b>'</b>सदाकत आश्रम<b>' </b>की स्थापना किस राष्ट्रीय नेता ने की थी<b>?</b></p>",
+      "option1": "<p> Dr. Rajendra Prasad / डॉ. राजेंद्र प्रसाद</p>",
+      "option2": "<p> Mazharul Haque / मजहरुल हक</p>",
+      "option3": "<p> Maulana Abul Kalam Azad / मौलाना अबुल कलाम आज़ाद</p>",
+      "option4": "<p> Mahatma Gandhi / महात्मा गांधी</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Mazharul Haque established the Sadaqat Ashram in 1921 during the Non-Cooperation Movement. It later became the residence of Dr. Rajendra Prasad after his retirement.<br/> मजहरुल हक ने 1921 में असहयोग आंदोलन के दौरान सदाकत आश्रम की स्थापना की थी। यह बाद में अपनी सेवानिवृत्ति के बाद डॉ. राजेंद्र प्रसाद का निवास स्थान बना।</p>"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> <b>Consider the following statements regarding the 'Third Buddhist Council': <br/> '</b>तृतीय बौद्ध संगीति<b>' (Third Buddhist Council) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was held at Pataliputra during the reign of Ashoka. / </b>यह अशोक के शासनकाल में पाटलिपुत्र में आयोजित की गई थी। <b><br/> (b) It was presided over by Moggaliputta Tissa. / </b>इसकी अध्यक्षता मोगलिपुत्त तिस्स ने की थी। <b><br/> (c) The 'Abhidhamma Pitaka' was compiled during this council. / </b>इस संगीति के दौरान <b>'</b>अभिधम्म पिटक<b>' </b>का संकलन किया गया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> a and c / a और c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The 3rd Council (approx. 250 BC) focused on purging the Sangha of corruption and led to the compilation of the 3rd basket of Buddhist scriptures, the Abhidhamma Pitaka.<br/> तीसरी संगीति (लगभग 250 ईसा पूर्व) संघ को भ्रष्टाचार से मुक्त करने पर केंद्रित थी और इसके परिणामस्वरूप बौद्ध धर्मग्रंथों की तीसरी टोकरी, अभिधम्म पिटक का संकलन हुआ।</p>"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p> <b>The 'Silver Tanka' was replaced by 'Token Currency' (Copper/Brass coins) by which Sultan? <br/> </b>किस सुल्तान द्वारा <b>'</b>चांदी के टका<b>' </b>के स्थान पर <b>'</b>सांकेतिक मुद्रा<b>' (</b>तांबे<b>/</b>पीतल के सिक्के<b>) </b>को पेश किया गया था<b>?</b></p>",
+      "option1": "<p> Alauddin Khalji / अलाउद्दीन खलजी</p>",
+      "option2": "<p> Muhammad bin Tughlaq / मुहम्मद बिन तुगलक</p>",
+      "option3": "<p> Ghiyasuddin Tughlaq / गयासुद्दीन तुगलक</p>",
+      "option4": "<p> Balban / बलबन</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Muhammad bin Tughlaq introduced token currency in 1329-30. However, the experiment failed as he could not prevent illegal private minting of coins.<br/> मुहम्मद बिन तुगलक ने 1329-30 में सांकेतिक मुद्रा पेश की। हालाँकि, यह प्रयोग विफल रहा क्योंकि वह सिक्कों की अवैध निजी ढलाई को नहीं रोक सका।</p>"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> <b>Consider the following statements about the 'Hindustan Socialist Republican Association' (HSRA): <br/> '</b>हिंदुस्तान सोशलिस्ट रिपब्लिकन एसोसिएशन<b>' (HSRA) </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was founded in 1928 at Feroz Shah Kotla, Delhi. / </b>इसकी स्थापना <b>1928 </b>में फिरोज शाह कोटला<b>, </b>दिल्ली में हुई थी। <b><br/> (b) Chandrashekhar Azad and Bhagat Singh were its prominent leaders. / </b>चंद्रशेखर आज़ाद और भगत सिंह इसके प्रमुख नेता थे। <b><br/> (c) Its objective was to establish a federal republic based on socialist principles. / </b>इसका उद्देश्य समाजवादी सिद्धांतों पर आधारित एक संघीय गणराज्य की स्थापना करना था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> HRA (founded in 1924) was renamed HSRA in 1928 under the leadership of Azad and Bhagat Singh, incorporating 'Socialist' into its name and ideology.<br/> HRA (1924 में स्थापित) का नाम 1928 में आज़ाद और भगत सिंह के नेतृत्व में बदलकर HSRA कर दिया गया, जिसके नाम और विचारधारा में 'समाजवादी' शब्द जोड़ा गया।</p>"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> <b>Which of the following was the main reason for the 'Akali Movement' in the 1920s? <br/> 1920 </b>के दशक में <b>'</b>अकाली आंदोलन<b>' </b>का मुख्य कारण निम्नलिखित में से क्या था<b>?</b></p>",
+      "option1": "<p> To demand a separate state for Sikhs. / सिखों के लिए एक अलग राज्य की मांग करना।</p>",
+      "option2": "<p> To liberate Gurudwaras from the control of corrupt Mahants. / गुरुद्वारों को भ्रष्ट महंतों के नियंत्रण से मुक्त करना।</p>",
+      "option3": "<p> To support the British during World War I. / प्रथम विश्व युद्ध के दौरान अंग्रेजों का समर्थन करना।</p>",
+      "option4": "<p> To oppose the Simon Commission. / साइमन कमीशन का विरोध करना।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Akali Movement (1920-25) was a non-violent struggle to reform the management of Gurdwaras. It led to the passing of the Sikh Gurdwaras Act, 1925.<br/> अकाली आंदोलन (1920-25) गुरुद्वारों के प्रबंधन में सुधार के लिए एक अहिंसक संघर्ष था। इसके कारण सिख गुरुद्वारा अधिनियम, 1925 पारित किया गया।</p>"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> <b>Consider the following statements regarding the 'Mansabdari System': <br/> '</b>मनसबदारी प्रणाली<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was introduced by Akbar to organize the nobility and the army. / </b>इसे अकबर ने रईसों और सेना को संगठित करने के लिए शुरू किया था। <b><br/> (b) 'Zat' indicated the number of cavalrymen a Mansabdar had to maintain. / '</b>ज़ात<b>' </b>उन घुड़सवारों की संख्या को दर्शाता था जिन्हें एक मनसबदार को बनाए रखना होता था। <b><br/> (c) 'Sawar' determined the personal status and salary of the Mansabdar. / '</b>सवार<b>' </b>मनसबदार की व्यक्तिगत स्थिति और वेतन निर्धारित करता था।<b><br/> Which of the above statements is/are incorrect? <br/> </b>उपरोक्त में से कौन<b>-</b>सा<b>/</b>से कथन गलत है<b>/</b>हैं<b>?</b></p>",
+      "option1": "<p> a only / केवल a</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> None of the above / उपरोक्त में से कोई नहीं</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The definitions are interchanged. 'Zat' fixed the personal status and salary, while 'Sawar' indicated the number of cavalrymen (rank) to be maintained.<br/> परिभाषाएँ आपस में बदल दी गई हैं। 'ज़ात' ने व्यक्तिगत स्थिति और वेतन तय किया, जबकि 'सवार' ने बनाए रखे जाने वाले घुड़सवारों (रैंक) की संख्या का संकेत दिया।</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> <b>Which of the following statements about the 'Chola Administration' is correct? <br/> '</b>चोल प्रशासन<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It was highly centralized with no local autonomy. / यह बिना किसी स्थानीय स्वायत्तता के अत्यधिक केंद्रीकृत था।</p>",
+      "option2": "<p> The 'Ur' was a common assembly of the tax-paying residents. / 'उर' कर भुगतान करने वाले निवासियों की एक सामान्य सभा थी।</p>",
+      "option3": "<p> The 'Sabha' or 'Mahasabha' consisted of all adult males of the village. / 'सभा' या 'महासभा' में गांव के सभी वयस्क पुरुष शामिल थे।</p>",
+      "option4": "<p> Land revenue was collected in cash only. / भू-राजस्व केवल नकद में ही वसूला जाता था।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Chola administration is famous for its village autonomy. 'Ur' was a general assembly, while 'Sabha' was an assembly of learned Brahmins (Agraharas). Revenue was collected in cash or kind.<br/> चोल प्रशासन अपनी ग्राम स्वायत्तता के लिए प्रसिद्ध है। 'उर' एक सामान्य सभा थी, जबकि 'सभा' विद्वान ब्राह्मणों (अग्रहारों) की सभा थी। राजस्व नकद या वस्तु के रूप में एकत्र किया जाता था।</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> <b>Consider the following pairs of Maratha taxes: <br/> </b>मराठा करों के निम्नलिखित युग्मों पर विचार करें<b>: <br/> (a) Chauth : 1/4th of the land revenue paid to avoid Maratha raids. / </b>चौथ <b>: </b>मराठा छापों से बचने के लिए भुगतान किया गया भू<b>-</b>राजस्व का <b>1/4 </b>हिस्सा। <b><br/> (b) Sardeshmukhi : An additional 10% tax claimed as the hereditary overlord. / </b>सरदेशमुखी <b>: </b>वंशानुगत अधिपति के रूप में दावा किया गया अतिरिक्त <b>10% </b>कर।<b><br/> Which of the pairs given above is/are correctly matched? / </b>ऊपर दिए गए युग्मों में से कौन<b>-</b>सा<b>/</b>से सही सुमेलित है<b>/</b>हैं<b>?</b></p>",
+      "option1": "<p> a only / केवल a</p>",
+      "option2": "<p> b only / केवल b</p>",
+      "option3": "<p> Both a and b / a और b दोनों</p>",
+      "option4": "<p> Neither a nor b / न तो a और न ही b</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Both were key revenue sources for Shivaji. Chauth was protection money from non-Maratha lands, while Sardeshmukhi was a levy on the basis of being the head of the Deshmukhs.<br/> शिवाजी के लिए दोनों ही राजस्व के प्रमुख स्रोत थे। चौथ गैर-मराठा भूमि से सुरक्षा राशि थी, जबकि सरदेशमुखी देशमुखों का प्रमुख होने के आधार पर एक लेवी थी।</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> <b>The 'Young Bengal Movement' was started by: <br/> '</b>यंग बंगाल मूवमेंट<b>' </b>किसके द्वारा शुरू किया गया था<b>?</b></p>",
+      "option1": "<p> Henry Vivian Derozio / हेनरी विवियन डेरोजियो</p>",
+      "option2": "<p> David Hare / डेविड हेयर</p>",
+      "option3": "<p> Ishwar Chandra Vidyasagar / ईश्वर चंद्र विद्यासागर</p>",
+      "option4": "<p> Raja Ram Mohan Roy / राजा राम मोहन राय</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Derozio, a teacher at Hindu College, inspired his students to think freely and question authority. His followers were known as Derozians.<br/> हिंदू कॉलेज के शिक्षक डेरोजियो ने अपने छात्रों को स्वतंत्र रूप से सोचने और अधिकार पर सवाल उठाने के लिए प्रेरित किया। उनके अनुयायियों को 'डेरोज़ियन' के रूप में जाना जाता था।</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> <b>Consider the following statements regarding the 'Santhal Rebellion' (1855-56): <br/> '</b>संथाल विद्रोह<b>' (1855-56) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was led by Sidhu and Kanhu. / </b>इसका नेतृत्व सिद्धू और कान्हू ने किया था। <b><br/> (b) It occurred in the Rajmahal hills region (Damin-i-Koh). / </b>यह राजमहल पहाड़ियों के क्षेत्र <b>(</b>दामिन<b>-</b>ए<b>-</b>कोह<b>) </b>में हुआ था। <b>(c) It was primarily directed against the British policies and the 'Dikus' (outsiders). / </b>यह मुख्य रूप से ब्रिटिश नीतियों और <b>'</b>दिकु<b>' (</b>बाहरी लोगों<b>) </b>के खिलाफ था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Santhal rebellion was a major tribal uprising against the oppression of Zamindars, moneylenders (Dikus), and the British.<br/> संथाल विद्रोह जमींदारों, साहूकारों (दिकु) और अंग्रेजों के उत्पीड़न के खिलाफ एक प्रमुख आदिवासी विद्रोह था।</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> <b>Which of the following statements about the 'Inland Emigration Act of 1859' is correct? <br/> '1859 </b>के इनलैंड एमिग्रेशन एक्ट<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It allowed plantation workers to return home whenever they wanted. / इसने वृक्षारोपण श्रमिकों को जब चाहें घर लौटने की अनुमति दी।</p>",
+      "option2": "<p> It prohibited plantation workers from leaving the tea gardens without permission. / इसने वृक्षारोपण श्रमिकों को बिना अनुमति के चाय बागानों को छोड़ने से रोक दिया।</p>",
+      "option3": "<p> It was passed to improve the living conditions of labourers. / इसे मजदूरों के रहने की स्थिति में सुधार के लिए पारित किया गया था।</p>",
+      "option4": "<p> It gave workers the right to form unions. / इसने श्रमिकों को यूनियन बनाने का अधिकार दिया।</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> This act essentially turned tea plantation workers into bonded laborers, as permission to leave was rarely granted. This was a major grievance during the Non-Cooperation Movement.<br/> इस अधिनियम ने अनिवार्य रूप से चाय बागान श्रमिकों को बंधुआ मजदूरों में बदल दिया, क्योंकि छोड़ने की अनुमति बहुत कम दी जाती थी। असहयोग आंदोलन के दौरान यह एक बड़ी शिकायत थी।</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> <b>Consider the following statements about the 'Cabinet Mission' (1946): <br/> '</b>कैबिनेट मिशन<b>' (1946) </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It proposed a three-tier structure of the administration. / </b>इसने प्रशासन की त्रि<b>-</b>स्तरीय संरचना का प्रस्ताव दिया। <b><br/> (b) It rejected the demand for a separate Pakistan. / </b>इसने अलग पाकिस्तान की मांग को खारिज कर दिया। <b><br/> (c) It was headed by Lord Pethick-Lawrence. / </b>इसकी अध्यक्षता लॉर्ड पेथिक<b>-</b>लॉरेंस ने की थी।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> c only / केवल c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Cabinet Mission arrived in March 1946. It aimed at formulating a plan for the transfer of power and creating a Constituent Assembly while maintaining the unity of India.<br/> कैबिनेट मिशन मार्च 1946 में आया था। इसका उद्देश्य सत्ता के हस्तांतरण के लिए एक योजना तैयार करना और भारत की एकता को बनाए रखते हुए एक संविधान सभा बनाना था।</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> <b>In the context of Ancient India, 'Agrahara' refers to: <br/> </b>प्राचीन भारत के संदर्भ में<b>, '</b>अग्रहार<b>' </b>का तात्पर्य है<b>:</b></p>",
+      "option1": "<p> A military rank / एक सैन्य पद</p>",
+      "option2": "<p> Land granted to Brahmanas / ब्राह्मणों को दी गई भूमि</p>",
+      "option3": "<p> A type of tax on trade / व्यापार पर एक प्रकार का कर</p>",
+      "option4": "<p> A religious text / एक धार्मिक ग्रंथ</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Agrahara was land (often tax-free) granted to Brahmanas for their maintenance, usually by kings or wealthy patrons.<br/> अग्रहार ब्राह्मणों को उनके रखरखाव के लिए (अक्सर कर-मुक्त) दी जाने वाली भूमि थी, जो आमतौर पर राजाओं या धनी संरक्षकों द्वारा दी जाती थी।</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> <b>Consider the following pairs of Mughal officers and their duties: <br/> </b>मुगल अधिकारियों और उनके कर्तव्यों के निम्नलिखित युग्मों पर विचार करें<b>: <br/> (a) Mir Bakshi : Head of the Military Department / </b>सैन्य विभाग का प्रमुख <b><br/> (b) Mir Saman : In charge of the Imperial Household / </b>शाही घराने का प्रभारी <b><br/> (c) Muhtasib : Enforcer of public morals / </b>सार्वजनिक नैतिकता का प्रवर्तक<b><br/> Which of the above are correctly matched?<br/> </b>उपरोक्त में से कौन<b>-</b>से सही सुमेलित हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> All positions were vital for Mughal administration. Mir Bakshi supervised the Mansabdari system and military recruitment.<br/> मुगल प्रशासन के लिए सभी पद महत्वपूर्ण थे। मीर बख्शी ने मनसबदारी प्रणाली और सैन्य भर्ती की देखरेख की।</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> <b>Which of the following events happened first? <br/> </b>निम्नलिखित में से कौन सी घटना सबसे पहले हुई<b>?</b></p>",
+      "option1": "<p> Arrival of Simon Commission / साइमन कमीशन का आगमन</p>",
+      "option2": "<p> Nehru Report / नेहरू रिपोर्ट</p>",
+      "option3": "<p> Bardoli Satyagraha / बारदोली सत्याग्रह</p>",
+      "option4": "<p> Kakori Train Action / काकोरी ट्रेन एक्शन</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Kakori Train Action (Aug 1925), Simon Commission arrival (Feb 1928), Nehru Report (Aug 1928), Bardoli Satyagraha (1928 - led by Sardar Patel).<br/> काकोरी ट्रेन एक्शन (अगस्त 1925), साइमन कमीशन का आगमन (फरवरी 1928), नेहरू रिपोर्ट (अगस्त 1928), बारदोली सत्याग्रह (1928 - सरदार पटेल के नेतृत्व में)।</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> <b>Consider the following statements about 'Jainism': <br/> '</b>जैन धर्म<b>' </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Vardhamana Mahavira was the 24th Tirthankara. / </b>वर्धमान महावीर <b>24</b>वें तीर्थंकर थे। <b><br/> (b) Jainism recognized the existence of God but placed him lower than Jina. / </b>जैन धर्म ने ईश्वर के अस्तित्व को स्वीकार किया लेकिन उसे जिन से नीचे रखा। <b><br/> (c) It strictly prohibited agricultural practices to avoid harming insects. / </b>इसने कीड़ों को नुकसान पहुँचाने से बचने के लिए कृषि कार्यों को कड़ाई से प्रतिबंधित किया।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Jainism’s extreme focus on Ahimsa led to the prohibition of farming for its monks and followers, as ploughing might kill living organisms in the soil.<br/> अहिंसा पर जैन धर्म के अत्यधिक ध्यान के कारण इसके भिक्षुओं और अनुयायियों के लिए खेती करना प्रतिबंधित हो गया, क्योंकि हल चलाने से मिट्टी में रहने वाले जीव मर सकते थे।</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> <b>Who among the following was the founder of the 'Servants of India Society'? <br/> </b>निम्नलिखित में से कौन <b>'</b>सर्वेंट्स ऑफ इंडिया सोसाइटी<b>' </b>के संस्थापक थे<b>?</b></p>",
+      "option1": "<p> M.G. Ranade / एम.जी. रानाडे</p>",
+      "option2": "<p> G.K. Gokhale / जी.के. गोखले</p>",
+      "option3": "<p> Bal Gangadhar Tilak / बाल गंगाधर तिलक</p>",
+      "option4": "<p> Jyotiba Phule / ज्योतिबा फुले</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Gopal Krishna Gokhale founded it in 1905 to train Indians for social service and to promote national interests through peaceful means.<br/> गोपाल कृष्ण गोखले ने 1905 में भारतीयों को समाज सेवा के लिए प्रशिक्षित करने और शांतिपूर्ण माध्यमों से राष्ट्रीय हितों को बढ़ावा देने के लिए इसकी स्थापना की थी।</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> <b>Consider the following statements regarding the 'Quit India Movement' (1942): <br/> '</b>भारत छोड़ो आंदोलन<b>' (1942) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Gandhiji gave the slogan 'Do or Die'. / </b>गांधीजी ने <b>'</b>करो या मरो<b>' </b>का नारा दिया। <b><br/> (b) The movement was supported by the Muslim League and Hindu Mahasabha. / </b>आंदोलन को मुस्लिम लीग और हिंदू महासभा का समर्थन प्राप्त था। <b><br/> (c) Parallel governments were formed in places like Balia and Tamluk. / </b>बलिया और तामलुक जैसी जगहों पर समानांतर सरकारें बनाई गईं।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> a and c / a और c</p>",
+      "option3": "<p> b and c / b और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Muslim League, Hindu Mahasabha, and Communist Party did not support the Quit India Movement.<br/> मुस्लिम लीग, हिंदू महासभा और कम्युनिस्ट पार्टी ने भारत छोड़ो आंदोलन का समर्थन नहीं किया।</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> <b>The 'Wavell Plan' was presented in the year: <br/> '</b>वेवेल योजना<b>' </b>किस वर्ष प्रस्तुत की गई थी<b>?</b></p>",
+      "option1": "<p> 1942</p>",
+      "option2": "<p> 1944</p>",
+      "option3": "<p> 1945</p>",
+      "option4": "<p> 1946</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Lord Wavell proposed this plan at the Shimla Conference in 1945 to resolve the political deadlock between the Congress and the Muslim League.<br/> लॉर्ड वेवेल ने कांग्रेस और मुस्लिम लीग के बीच राजनीतिक गतिरोध को दूर करने के लिए 1945 में शिमला सम्मेलन में यह योजना प्रस्तावित की थी।</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> <b>Which of the following statements about the 'Ghadar Party' is incorrect? <br/> '</b>गदर पार्टी<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन गलत है<b>?</b></p>",
+      "option1": "<p> It was founded in San Francisco in 1913. / इसकी स्थापना 1913 में सैन फ्रांसिस्को में हुई थी।</p>",
+      "option2": "<p> Lala Hardayal was one of its primary founders. / लाला हरदयाल इसके प्राथमिक संस्थापकों में से एक थे।</p>",
+      "option3": "<p> It was strictly a pacifist movement. / यह सख्ती से एक शांतिवादी आंदोलन था।</p>",
+      "option4": "<p> Its objective was to overthrow British rule in India through an armed revolt. / इसका उद्देश्य सशस्त्र विद्रोह के माध्यम से भारत में ब्रिटिश शासन को उखाड़ फेंकना था।</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Ghadar Party was a revolutionary militant organization, not a pacifist one. It aimed to incite a rebellion among Indian soldiers in the British army.<br/> गदर पार्टी एक क्रांतिकारी उग्रवादी संगठन था, न कि शांतिवादी। इसका उद्देश्य ब्रिटिश सेना में भारतीय सैनिकों के बीच विद्रोह भड़काना था।</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> <b>Consider the following statements regarding the 'Ilbert Bill' controversy: <br/> '</b>इल्बर्ट बिल<b>' </b>विवाद के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was introduced during the viceroyalty of Lord Ripon. / </b>यह लॉर्ड रिपन के वायसराय काल के दौरान पेश किया गया था। <b><br/> (b) It aimed to allow Indian magistrates to try Europeans in criminal cases. / </b>इसका उद्देश्य भारतीय मजिस्ट्रेटों को आपराधिक मामलों में यूरोपीय लोगों पर मुकदमा चलाने की अनुमति देना था। <b><br/> (c) The bill was supported by the European community in India. / </b>इस बिल का भारत में यूरोपीय समुदाय ने समर्थन किया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a only / केवल a</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The European community fiercely opposed the bill, viewing it as a challenge to their racial superiority. This led to the withdrawal of the original bill.<br/> यूरोपीय समुदाय ने इस बिल का कड़ा विरोध किया, क्योंकि वे इसे अपनी नस्लीय श्रेष्ठता के लिए एक चुनौती मानते थे। इसके कारण मूल बिल वापस ले लिया गया था।</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> <b>Which of the following pairs of 'Mahajanapadas' and their capitals is incorrectly matched? <br/> '</b>महाजनपदों<b>' </b>और उनकी राजधानियों का निम्नलिखित में से कौन सा युग्म गलत सुमेलित है<b>?</b></p>",
+      "option1": "<p> Magadha : Rajgir / मगध : राजगीर</p>",
+      "option2": "<p> Vatsa : Kausambi / वत्स : कौशाम्बी</p>",
+      "option3": "<p> Kosala : Shravasti / कोसल : श्रावस्ती</p>",
+      "option4": "<p> Matsya : Mathura / मत्स्य : मथुरा</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The capital of Matsya Mahajanapada was Viratanagara. Mathura was the capital of the Surasena Mahajanapada.<br/> मत्स्य महाजनपद की राजधानी विराटनगर थी। मथुरा शूरसेन महाजनपद की राजधानी थी।</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> <b>Consider the following statements about the 'Prarthana Samaj': <br/> '</b>प्रार्थना समाज<b>' </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was founded by Atmaram Pandurang in Bombay. / </b>इसकी स्थापना आत्माराम पांडुरंग ने बॉम्बे में की थी। <b><br/> (b) It was heavily influenced by the Brahmo Samaj. / </b>यह ब्रह्म समाज से बहुत प्रभावित था। <b><br/> (c) It rejected the Vedas and Upanishads completely. / </b>इसने वेदों और उपनिषदों को पूरी तरह से खारिज कर दिया।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a only / केवल a</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Prarthana Samaj (1867) sought to reform Hindu religious practice based on monotheism and drew inspiration from ancient texts like the Bhagavad Gita and Upanishads.<br/> प्रार्थना समाज (1867) ने एकेश्वरवाद के आधार पर हिंदू धार्मिक प्रथाओं में सुधार करने की कोशिश की और भगवद गीता और उपनिषदों जैसे प्राचीन ग्रंथों से प्रेरणा ली।</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> <b>With reference to 'Sher Shah Suri', consider the following statements: <br/> '</b>शेर शाह सूरी<b>' </b>के संदर्भ में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) He introduced the silver 'Rupia' which remained a standard coin for centuries. / </b>उसने चांदी का <b>'</b>रुपया<b>' </b>पेश किया जो सदियों तक मानक सिक्का बना रहा। <b><br/> (b) He built the 'Grand Trunk Road' from Sonargaon to Attock. / </b>उसने सोनारगांव से अटक तक <b>'</b>ग्रैंड ट्रंक रोड<b>' </b>बनवाई। <b><br/> (c) He defeated Humayun in the Battles of Chausa and Kannauj. / </b>उसने चौसा और कन्नौज के युद्धों में हुमायूँ को हराया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> c only / केवल c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Sher Shah was a brilliant administrator. His currency and road infrastructure provided the foundation for later Mughal and British administrative systems.<br/> शेर शाह एक शानदार प्रशासक था। उसकी मुद्रा और सड़क के बुनियादी ढांचे ने बाद के मुगल और ब्रिटिश प्रशासनिक प्रणालियों के लिए आधार प्रदान किया।</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> <b>The 'Woods Despatch' of 1854 is related to which of the following? <br/> 1854 </b>का <b>'</b>वुड्स डिस्पैच<b>' </b>निम्नलिखित में से किससे संबंधित है<b>?</b></p>",
+      "option1": "<p> Military Reforms / सैन्य सुधार</p>",
+      "option2": "<p> Educational Reforms / शैक्षिक सुधार</p>",
+      "option3": "<p> Judicial Reforms / न्यायिक सुधार</p>",
+      "option4": "<p> Land Revenue Reforms / भू-राजस्व सुधार</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Known as the 'Magna Carta of English Education in India', it recommended a structured system of education from primary school to university level.<br/> इसे 'भारत में अंग्रेजी शिक्षा का मैग्ना कार्टा' कहा जाता है, इसने प्राथमिक विद्यालय से विश्वविद्यालय स्तर तक शिक्षा की एक संरचित प्रणाली की सिफारिश की थी।</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> <b>Consider the following statements regarding 'Buddhism': <br/> '</b>बौद्ध धर्म<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The 'Sutta Pitaka' contains the philosophical interpretations of the Buddha's teachings. / '</b>सुत्त पिटक<b>' </b>में बुद्ध की शिक्षाओं की दार्शनिक व्याख्याएँ हैं। <b><br/> (b) The 'Vinaya Pitaka' contains the rules for monks and nuns. / '</b>विनय पिटक<b>' </b>में भिक्षुओं और नन के लिए नियम हैं। <b><br/> (c) The first Buddhist Council was held at Rajgriha immediately after Buddha's death. / </b>बुद्ध की मृत्यु के तुरंत बाद राजगृह में प्रथम बौद्ध संगीति आयोजित की गई थी।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> 'Abhidhamma Pitaka' contains philosophical interpretations. 'Sutta Pitaka' contains the actual sermons and teachings of the Buddha.<br/> 'अभिधम्म पिटक' में दार्शनिक व्याख्याएँ हैं। 'सुत्त पिटक' में बुद्ध के वास्तविक उपदेश और शिक्षाएं शामिल हैं।</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> <b>Which of the following events occurred during the reign of Lord Lytton? <br/> </b>लॉर्ड लिटन के शासनकाल में निम्नलिखित में से कौन सी घटना घटी<b>?</b></p>",
+      "option1": "<p> Vernacular Press Act / वर्नाकुलर प्रेस एक्ट</p>",
+      "option2": "<p> Arms Act / आर्म्स एक्ट</p>",
+      "option3": "<p> The Second Anglo-Afghan War / द्वितीय आंग्ल-अफ़गान युद्ध</p>",
+      "option4": "<p> All of the above / उपरोक्त सभी</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Lytton's viceroyalty (1876-1880) was marked by reactionary policies that angered Indians, including the restrictive Press Act and Arms Act.<br/> लिटन का वायसराय काल (1876-1880) प्रतिक्रियावादी नीतियों द्वारा चिह्नित था जिसने भारतीयों को क्रोधित कर दिया, जिसमें प्रतिबंधात्मक प्रेस अधिनियम और शस्त्र अधिनियम शामिल थे।</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> <b>Consider the following pairs of 'Social Reforms' and their 'Proponents': <br/> '</b>सामाजिक सुधारों<b>' </b>और उनके <b>'</b>प्रवर्तकों<b>' </b>के निम्नलिखित युग्मों पर विचार करें<b>: <br/> (a) Satyshodhak Samaj : Jyotiba Phule / </b>सत्यशोधक समाज <b>: </b>ज्योतिबा फुले <b><br/> (b) Self-Respect Movement : E.V. Ramaswamy Naicker / </b>आत्म<b>-</b>सम्मान आंदोलन <b>: </b>ई<b>.</b>वी<b>. </b>रामास्वामी नायकर <b><br/> (c) Deva Samaj : Shiv Narayan Agnihotri / </b>देव समाज <b>: </b>शिव नारायण अग्निहोत्री<b><br/> Which of the above are correctly matched? <br/> </b>उपरोक्त में से कौन<b>-</b>से सही सुमेलित हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> All these movements targeted social inequality and sought to reform traditional hierarchies within Indian society.<br/> इन सभी आंदोलनों ने सामाजिक असमानता को लक्षित किया और भारतीय समाज के भीतर पारंपरिक पदानुक्रमों में सुधार करने की मांग की।</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> <b>Which battle established the British supremacy in India? <br/> </b>किस युद्ध ने भारत में ब्रिटिश सर्वोच्चता स्थापित की<b>?</b></p>",
+      "option1": "<p> Battle of Plassey (1757) / प्लासी का युद्ध (1757)</p>",
+      "option2": "<p> Battle of Buxar (1764) / बक्सर का युद्ध (1764)</p>",
+      "option3": "<p> Battle of Wandiwash (1760) / वांडीवाश का युद्ध (1760)</p>",
+      "option4": "<p> Third Battle of Panipat (1761) / पानीपत का तीसरा युद्ध (1761)</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> While Plassey gave them a foothold, the Battle of Buxar (where they defeated the combined forces of Mir Qasim, Shuja-ud-Daulah, and Shah Alam II) made them the de facto masters of Bengal, Bihar, and Odisha.<br/> जबकि प्लासी ने उन्हें पैर जमाने की जगह दी, बक्सर के युद्ध (जहाँ उन्होंने मीर कासिम, शुजा-उद-दौला और शाह आलम द्वितीय की संयुक्त सेनाओं को हराया) ने उन्हें बंगाल, बिहार और ओडिशा का वास्तविक स्वामी बना दिया।</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> <b>Consider the following statements regarding 'Akbar's Administration': <br/> '</b>अकबर के प्रशासन<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The 'Dahsala System' was a system of land revenue assessment based on 10 years' average. / '</b>दहसाला प्रणाली<b>' 10 </b>वर्षों के औसत पर आधारित भू<b>-</b>राजस्व मूल्यांकन की एक प्रणाली थी। <b><br/> (b) Raja Todar Mal was the finance minister responsible for these reforms. / </b>राजा टोडरमल इन सुधारों के लिए जिम्मेदार वित्त मंत्री थे। <b><br/> (c) The state took 1/2 of the average produce as revenue. / </b>राज्य ने औसत उपज का <b>1/2 </b>हिस्सा राजस्व के रूप में लिया।<b><br/> Which of the above statements is/are correct? /<br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> b only / केवल b</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Under the Dahsala/Zabti system, the state's share was usually 1/3rd of the average produce, not 1/2.<br/> दहसाला/ज़ब्ती प्रणाली के तहत, राज्य का हिस्सा आमतौर पर औसत उपज का 1/3 था, न कि 1/2।</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> <b>Who among the following was the founder of the 'Vikramshila University'? <br/> </b>निम्नलिखित में से कौन <b>'</b>विक्रमशिला विश्वविद्यालय<b>' </b>के संस्थापक थे<b>?</b></p>",
+      "option1": "<p> Dharmapala / धर्मपाल</p>",
+      "option2": "<p> Devapala / देवपाल</p>",
+      "option3": "<p> Gopala / गोपाल</p>",
+      "option4": "<p> Mahipala / महिपाल</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Dharmapala, the Pala king, founded Vikramshila in response to a supposed decline in the quality of scholarship at Nalanda.<br/> पाल राजा धर्मपाल ने नालंदा में छात्रवृत्ति की गुणवत्ता में कथित गिरावट के जवाब में विक्रमशिला की स्थापना की थी।</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> <b>Consider the following statements about the 'Lucknow Pact' (1916): <br/> '</b>लखनऊ समझौते<b>' (1916) </b>के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was a joint agreement between the Indian National Congress and the Muslim League. / </b>यह भारतीय राष्ट्रीय कांग्रेस और मुस्लिम लीग के बीच एक संयुक्त समझौता था। <b><br/> (b) The Congress accepted the demand for separate electorates for Muslims. / </b>कांग्रेस ने मुसलमानों के लिए अलग निर्वाचन क्षेत्र की मांग स्वीकार कर ली। <b><br/> (c) Bal Gangadhar Tilak and Annie Besant played key roles in this reconciliation. / </b>बाल गंगाधर तिलक और एनी बेसेंट ने इस सुलह में प्रमुख भूमिका निभाई।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Lucknow Pact brought Moderates and Extremists together within the Congress and also bridged the gap between the Congress and the Muslim League temporarily.<br/> लखनऊ समझौते ने कांग्रेस के भीतर नरमपंथियों और चरमपंथियों को एक साथ लाया और कांग्रेस और मुस्लिम लीग के बीच की खाई को अस्थायी रूप से पाट दिया।</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> <b>The 'Drain of Wealth' theory was first propounded by: <br/> '</b>धन की निकासी<b>' (Drain of Wealth) </b>सिद्धांत पहली बार किसके द्वारा प्रतिपादित किया गया था<b>?</b></p>",
+      "option1": "<p> Dadabhai Naoroji / दादाभाई नौरोजी</p>",
+      "option2": "<p> R.C. Dutt / आर.सी. दत्त</p>",
+      "option3": "<p> M.G. Ranade / एम.जी. रानाडे</p>",
+      "option4": "<p> G.K. Gokhale / जी.के. गोखले</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> In his book \"Poverty and Un-British Rule in India\", Naoroji explained how British policies were siphoning off India's wealth to England.<br/> अपनी पुस्तक \"पवर्टी एंड अन-ब्रिटिश रूल इन इंडिया\" में, नौरोजी ने समझाया कि कैसे ब्रिटिश नीतियां भारत की संपत्ति को इंग्लैंड की ओर ले जा रही थीं।</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> <b>Consider the following statements regarding 'Jain Councils': <br/> '</b>जैन संगीतियों<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The First Jain Council was held at Pataliputra. / </b>प्रथम जैन संगीति पाटलिपुत्र में आयोजित की गई थी। <b><br/> (b) The Second Jain Council was held at Vallabhi. / </b>द्वितीय जैन संगीति वल्लभी में आयोजित की गई थी। <b><br/> (c) The compilation of 12 'Angas' took place in the first council. / </b>प्रथम संगीति में <b>12 '</b>अंगों<b>' </b>का संकलन हुआ था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> a and c / a और c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The first council was presided over by Sthulabhadra (300 BC). The final compilation of Jain scriptures occurred at the second council (512 AD) in Vallabhi, Gujarat.<br/> प्रथम संगीति की अध्यक्षता स्थूलभद्र (300 ईसा पूर्व) ने की थी। जैन धर्मग्रंथों का अंतिम संकलन वल्लभी, गुजरात में दूसरी संगीति (512 ईस्वी) में हुआ था।</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>Which Indian leader was popularly known as 'Deshbandhu'? <br/> </b>किस भारतीय नेता को <b>'</b>देशबंधु<b>' </b>के नाम से जाना जाता था<b>?</b></p>",
+      "option1": "<p> C.R. Das / सी.आर. दास</p>",
+      "option2": "<p> C.F. Andrews / सी.एफ. एंड्रयूज</p>",
+      "option3": "<p> Lala Lajpat Rai / लाला लाजपत राय</p>",
+      "option4": "<p> Bipin Chandra Pal / बिपिन चंद्र पाल</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Chittaranjan Das (C.R. Das) was a leading figure in the Non-Cooperation movement and the founder of the Swaraj Party. C.F. Andrews was known as 'Deenbandhu'.<br/> चित्तरंजन दास (सी.आर. दास) असहयोग आंदोलन के एक प्रमुख नेता और स्वराज पार्टी के संस्थापक थे। सी.एफ. एंड्रयूज को 'दीनबंधु' के नाम से जाना जाता था।</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>Consider the following statements regarding the 'Ashtapradhan' of Shivaji: <br/> </b>शिवाजी के <b>'</b>अष्टप्रधान<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The 'Peshwa' was responsible for the general administration. / '</b>पेशवा<b>' </b>सामान्य प्रशासन के लिए जिम्मेदार था। <b><br/> (b) 'Amatya' looked after the accounts and finance. / '</b>अमात्य<b>' </b>खातों और वित्त की देखरेख करता था। <b><br/> (c) All members of the Ashtapradhan were required to lead military campaigns. / </b>अष्टप्रधान के सभी सदस्यों के लिए सैन्य अभियानों का नेतृत्व करना अनिवार्य था।<b><br/> Which of the above statements is/are correct?<br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> All members except the 'Panditrao' (High Priest) and 'Nyayadhish' (Chief Justice) were expected to serve in the military and lead campaigns.<br/> 'पंडितराव' (मुख्य पुजारी) और 'न्यायाधीश' (मुख्य न्यायाधीश) को छोड़कर सभी सदस्यों से सेना में सेवा करने और अभियानों का नेतृत्व करने की अपेक्षा की जाती थी।</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>Which of the following statements about the 'Pallava Architecture' is correct? <br/> '</b>पल्लव वास्तुकला<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> The Shore Temple at Mahabalipuram was built by Narasimhavarman II. / महाबलीपुरम का तट मंदिर (Shore Temple) नरसिंहवर्मन द्वितीय द्वारा बनाया गया था।</p>",
+      "option2": "<p> The 'Ratha' temples are examples of structural temples. / 'रथ' मंदिर संरचनात्मक मंदिरों के उदाहरण हैं।</p>",
+      "option3": "<p> They introduced the 'Vesara' style of architecture in South India. / उन्होंने दक्षिण भारत में वास्तुकला की 'वेसर' शैली की शुरुआत की।</p>",
+      "option4": "<p> Their temples were primarily built of bricks and wood. / उनके मंदिर मुख्य रूप से ईंटों और लकड़ी से बने थे।</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Shore Temple is a structural temple built by Narasimhavarman II (Rajasimha). The 'Rathas' are monolithic (cut from a single rock), not structural. Pallavas pioneered the 'Dravidian' style.<br/> तट मंदिर एक संरचनात्मक मंदिर है जिसे नरसिंहवर्मन द्वितीय (राजसिंह) द्वारा बनाया गया था। 'रथ' एकाश्म (एक ही चट्टान से कटे हुए) हैं, न कि संरचनात्मक। पल्लवों ने 'द्रविड़' शैली की शुरुआत की थी।</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>Consider the following events regarding the 'Maratha-British' relations: <br/> '</b>मराठा<b>-</b>ब्रिटिश<b>' </b>संबंधों के संबंध में निम्नलिखित घटनाओं पर विचार करें<b>: <br/> (a) Treaty of Salbai / </b>सालबाई की संधि <b><br/> (b) Treaty of Bassein / </b>बसईन की संधि <b><br/> (c) Treaty of Purandar / </b>पुरंदर की संधि<b><br/> What is the correct chronological order of these treaties? <br/> </b>इन संधियों का सही कालानुक्रमिक क्रम क्या है<b>?</b></p>",
+      "option1": "<p> c - a - b</p>",
+      "option2": "<p> a - c - b</p>",
+      "option3": "<p> c - b - a</p>",
+      "option4": "<p> b - a - c</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Treaty of Purandar (1776 - during 1st Anglo-Maratha War), Treaty of Salbai (1782 - ended 1st war), Treaty of Bassein (1802 - led to 2nd Anglo-Maratha War).<br/> पुरंदर की संधि (1776 - प्रथम आंग्ल-मराठा युद्ध के दौरान), सालबाई की संधि (1782 - प्रथम युद्ध समाप्त), बसईन की संधि (1802 - इसके कारण द्वितीय आंग्ल-मराठा युद्ध हुआ)।</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>With reference to the 'Sangam Age', consider the following statements: <br/> '</b>संगम युग<b>' </b>के संदर्भ में<b>, </b>निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The Sangam literature was composed in the Sanskrit language. / </b>संगम साहित्य की रचना संस्कृत भाषा में की गई थी। <b><br/> (b) The 'Cheras', 'Cholas', and 'Pandyas' were the three major dynasties of this period. / '</b>चेर<b>', '</b>चोल<b>' </b>और <b>'</b>पांड्य<b>' </b>इस काल के तीन प्रमुख राजवंश थे। <b><br/> (c) The first Sangam was held at Madurai under the chairmanship of Agastya. / </b>पहला संगम अगस्त्य की अध्यक्षता में मदुरै में आयोजित किया गया था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Sangam literature was composed in Tamil (not Sanskrit). It provides a rich account of the social and political life of South India during that era.<br/> संगम साहित्य की रचना तमिल (संस्कृत नहीं) में की गई थी। यह उस युग के दौरान दक्षिण भारत के सामाजिक और राजनीतिक जीवन का समृद्ध विवरण प्रदान करता है।</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Which of the following statements about 'Raja Ram Mohan Roy' is incorrect? <br/> '</b>राजा राम मोहन राय<b>' </b>के बारे में निम्नलिखित में से कौन सा कथन गलत है<b>?</b></p>",
+      "option1": "<p> He founded the 'Atmiya Sabha' in 1814. / उन्होंने 1814 में 'आत्मीय सभा' की स्थापना की।</p>",
+      "option2": "<p> He published the Persian journal 'Mirat-ul-Akbar'. / उन्होंने फारसी पत्रिका 'मिरात-उल-अखबार' का प्रकाशन किया।</p>",
+      "option3": "<p> He supported the introduction of English education in India. / उन्होंने भारत में अंग्रेजी शिक्षा की शुरुआत का समर्थन किया।</p>",
+      "option4": "<p> He was against the abolition of the Sati system. / वे सती प्रथा के उन्मूलन के खिलाफ थे।</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Raja Ram Mohan Roy was the primary campaigner against Sati, which led to its legal abolition by Lord William Bentinck in 1829.<br/> राजा राम मोहन राय सती प्रथा के खिलाफ प्राथमिक अभियानकर्ता थे, जिसके परिणामस्वरूप 1829 में लॉर्ड विलियम बेंटिक द्वारा इसका कानूनी उन्मूलन किया गया।</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Consider the following pairs of 'Ancient Ports' and their locations: <br/> '</b>प्राचीन बंदरगाहों<b>' </b>और उनके स्थानों के निम्नलिखित युग्मों पर विचार करें<b>: <br/> (a) Muziris : Kerala Coast / </b>मुज़िरिस <b>: </b>केरल तट <b><br/> (b) Tamralipti : Bengal Coast / </b>ताम्रलिप्ति <b>: </b>बंगाल तट <b><br/> (c) Arikamedu : Coromandel Coast / </b>अरिकामेडु <b>: </b>कोरोमंडल तट<b><br/> Which of the above pairs are correctly matched? <br/> </b>उपरोक्त में से कौन<b>-</b>से युग्म सही सुमेलित हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> These were vital trade centers. Arikamedu was famous for its trade with the Roman Empire, and Tamralipti was the main port for trade with Southeast Asia.<br/> ये महत्वपूर्ण व्यापारिक केंद्र थे। अरिकामेडु रोमन साम्राज्य के साथ अपने व्यापार के लिए प्रसिद्ध था, और ताम्रलिप्ति दक्षिण-पूर्व एशिया के साथ व्यापार का मुख्य बंदरगाह था।</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>The 'August Offer' (1940) was proposed by which Viceroy? <br/> '</b>अगस्त प्रस्ताव<b>' (1940) </b>किस वायसराय द्वारा प्रस्तावित किया गया था<b>?</b></p>",
+      "option1": "<p> Lord Linlithgow / लॉर्ड लिनलिथगो</p>",
+      "option2": "<p> Lord Wavell / लॉर्ड वेवेल</p>",
+      "option3": "<p> Lord Willingdon / लॉर्ड विलिंगडन</p>",
+      "option4": "<p> Lord Irwin / लॉर्ड इरविन</p>",
+      "answer": "1",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> To seek Indian cooperation in World War II, Linlithgow promised 'Dominion Status' and the expansion of the Viceroy's Executive Council.<br/> द्वितीय विश्व युद्ध में भारतीय सहयोग प्राप्त करने के लिए, लिनलिथगो ने 'डोमिनियन स्टेटस' और वायसराय की कार्यकारी परिषद के विस्तार का वादा किया था।</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Consider the following statements regarding the 'Indian National Army' (INA): <br/> '</b>भारतीय राष्ट्रीय सेना<b>' (INA) </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) It was first conceived by Mohan Singh. / </b>इसकी कल्पना सबसे पहले मोहन सिंह ने की थी। <b><br/> (b) Subhas Chandra Bose took over its leadership in Singapore. / </b>सुभाष चंद्र बोस ने सिंगापुर में इसका नेतृत्व संभाला। <b><br/> (c) The 'Rani Jhansi Regiment' was a women's unit within the INA. / '</b>रानी झाँसी रेजिमेंट<b>' INA </b>के भीतर एक महिला इकाई थी।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> None of the above / उपरोक्त में से कोई नहीं</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> INA was formed with the help of Japanese forces. Its trials at the Red Fort in 1945 sparked massive nationalistic fervour across India.<br/> INA का गठन जापानी सेना की मदद से किया गया था। 1945 में लाल किले में इसके मुकदमों ने पूरे भारत में भारी राष्ट्रवादी जोश पैदा कर दिया था।</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Which of the following statements about the 'Surat Split' (1907) is correct? <br/> '</b>सूरत विभाजन<b>' (1907) </b>के बारे में निम्नलिखित में से कौन सा कथन सही है<b>?</b></p>",
+      "option1": "<p> It occurred due to differences between Moderates and Extremists over the Swadeshi Movement. / यह स्वदेशी आंदोलन को लेकर नरमपंथियों और चरमपंथियों के बीच मतभेदों के कारण हुआ था।</p>",
+      "option2": "<p> Ras Bihari Ghosh presided over the Surat session. / रास बिहारी घोष ने सूरत अधिवेशन की अध्यक्षता की थी।</p>",
+      "option3": "<p> The Extremists wanted the movement to be confined to Bengal only. / चरमपंथी चाहते थे कि आंदोलन केवल बंगाल तक ही सीमित रहे।</p>",
+      "option4": "<p> Both 1 and 2 / 1 और 2 दोनों</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Extremists (Lal-Bal-Pal) wanted to expand Swadeshi pan-India, while Moderates wanted to limit it to Bengal. This ideological clash led to the split.<br/> चरमपंथी (लाल-बाल-पाल) स्वदेशी को अखिल भारतीय स्तर पर विस्तारित करना चाहते थे, जबकि नरमपंथी इसे बंगाल तक सीमित रखना चाहते थे। इसी वैचारिक टकराव के कारण विभाजन हुआ।</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Consider the following statements about the 'Delhi Sultanate' architecture: <br/> '</b>दिल्ली सल्तनत<b>' </b>वास्तुकला के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) The 'Alai Darwaza' was built by Alauddin Khalji using red sandstone. / '</b>अलाई दरवाजा<b>' </b>अलाउद्दीन खलजी द्वारा लाल बलुआ पत्थर का उपयोग करके बनाया गया था। <b><br/> (b) The 'True Arch' was introduced in India by the Turks. / </b>भारत में <b>'</b>शुद्ध मेहराब<b>' (True Arch) </b>की शुरुआत तुर्कों द्वारा की गई थी। <b><br/> (c) Tughlaq architecture is characterized by sloping walls (Batter). / </b>तुगलक वास्तुकला की विशेषता ढलवां दीवारें <b>(</b>बैटर<b>) </b>हैं।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Sultanate architecture blended Indian and Islamic styles (Indo-Islamic). The use of arch, dome, and mortar were significant contributions.<br/> सल्तनत वास्तुकला ने भारतीय और इस्लामी शैलियों (इंडो-इस्लामिक) का मिश्रण किया। मेहराब, गुंबद और गारे (mortar) का उपयोग महत्वपूर्ण योगदान था।</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Who was the first Indian woman to become the President of the Indian National Congress? <br/> </b>भारतीय राष्ट्रीय कांग्रेस की अध्यक्ष बनने वाली पहली भारतीय महिला कौन थीं<b>?</b></p>",
+      "option1": "<p> Annie Besant / एनी बेसेंट</p>",
+      "option2": "<p> Sarojini Naidu / सरोजिनी नायडू</p>",
+      "option3": "<p> Nellie Sengupta / नेली सेनगुप्ता</p>",
+      "option4": "<p> Vijaya Lakshmi Pandit / विजया लक्ष्मी पंडित</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Sarojini Naidu presided over the Kanpur session in 1925. Annie Besant was the first woman (1917), but she was not Indian.<br/> सरोजिनी नायडू ने 1925 में कानपुर अधिवेशन की अध्यक्षता की थी। एनी बेसेंट पहली महिला (1917) थीं, लेकिन वे भारतीय नहीं थीं।</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Consider the following statements regarding the 'Gupta Empire':<br/> '</b>गुप्त साम्राज्य<b>' </b>के संबंध में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Fa-Hien visited India during the reign of Chandragupta II. / </b>फाह्यान ने चंद्रगुप्त द्वितीय के शासनकाल में भारत का दौरा किया। <b><br/> (b) Gold coins issued by Guptas were known as 'Dinars'. / </b>गुप्तों द्वारा जारी सोने के सिक्कों को <b>'</b>दीनार<b>' </b>कहा जाता था। <b><br/> (c) The practice of 'Sati' is mentioned for the first time in the Eran inscription. / '</b>सती<b>' </b>प्रथा का उल्लेख पहली बार एरण शिलालेख में मिलता है।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a and c / a और c</p>",
+      "option4": "<p> a, b and c / a, b और c</p>",
+      "answer": "4",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The Gupta period is often called the 'Golden Age' of India. The Eran inscription (510 AD) provides the first epigraphical evidence of Sati.<br/> गुप्त काल को अक्सर भारत का 'स्वर्ण युग' कहा जाता है। एरण शिलालेख (510 ईस्वी) सती प्रथा का पहला अभिलेखीय साक्ष्य प्रदान करता है।</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Which of the following was NOT a member of the 'Swaraj Party'? <br/> </b>निम्नलिखित में से कौन <b>'</b>स्वराज पार्टी<b>' </b>का सदस्य नहीं था<b>?</b></p>",
+      "option1": "<p> Motilal Nehru / मोतीलाल नेहरू</p>",
+      "option2": "<p> C.R. Das / सी.आर. दास</p>",
+      "option3": "<p> Sardar Vallabhbhai Patel / सरदार वल्लभभाई पटेल</p>",
+      "option4": "<p> Vithalbhai Patel / विट्ठलभाई पटेल</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> Sardar Patel was a 'No-changer' who believed in constructive work and opposed entering the legislative councils. Swarajists (Pro-changers) wanted to enter councils to \"wreck the government from within.\"<br/> सरदार पटेल एक 'परिवर्तन-विरोधी' (No-changer) थे जो रचनात्मक कार्य में विश्वास करते थे और विधायी परिषदों में प्रवेश का विरोध करते थे। स्वराजवादी (परिवर्तनवादी) \"भीतर से सरकार को नष्ट करने\" के लिए परिषदों में प्रवेश करना चाहते थे।</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Consider the following statements about 'Mahatma Gandhi's' early movements: <br/> '</b>महात्मा गांधी<b>' </b>के प्रारंभिक आंदोलनों के बारे में निम्नलिखित कथनों पर विचार करें<b>: <br/> (a) Champaran Satyagraha (1917) was his first civil disobedience in India. / </b>चंपारण सत्याग्रह <b>(1917) </b>भारत में उनका पहला सविनय अवज्ञा आंदोलन था। <b><br/> (b) Ahmedabad Mill Strike (1918) was his first hunger strike. / </b>अहमदाबाद मिल हड़ताल <b>(1918) </b>उनकी पहली भूख हड़ताल थी। <b><br/> (c) Kheda Satyagraha (1918) was his first non-cooperation movement. / </b>खेड़ा सत्याग्रह <b>(1918) </b>उनका पहला असहयोग आंदोलन था।<b><br/> Which of the above statements is/are correct? <br/> </b>उपरोक्त में से कौन<b>-</b>से कथन सही हैं<b>?</b></p>",
+      "option1": "<p> a and b / a और b</p>",
+      "option2": "<p> b and c / b और c</p>",
+      "option3": "<p> a, b and c / a, b और c</p>",
+      "option4": "<p> c only / केवल c</p>",
+      "answer": "3",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> These three local movements established Gandhi as a leader before he took up national issues like the Rowlatt Act and Khilafat.<br/> इन तीन स्थानीय आंदोलनों ने गांधी को राष्ट्रीय मुद्दों जैसे रॉलेट एक्ट और खिलाफत को उठाने से पहले एक नेता के रूप में स्थापित किया।</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>The 'Ghadar Party' had its headquarters at: <br/> '</b>गदर पार्टी<b>' </b>का मुख्यालय कहाँ था<b>?</b></p>",
+      "option1": "<p> Berlin / बर्लिन</p>",
+      "option2": "<p> San Francisco / सैन फ्रांसिस्को</p>",
+      "option3": "<p> Tokyo / टोक्यो</p>",
+      "option4": "<p> London / लंदन</p>",
+      "answer": "2",
+      "negative_marking": "0.25",
+      "positive_marking": "1.00",
+      "solution": "<p> The headquarters was named 'Yugantar Ashram' and was located in San Francisco, USA.<br/> मुख्यालय का नाम 'युगांतर आश्रम' था और यह सैन फ्रांसिस्को, अमेरिका में स्थित था।</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HISTORY FULL TEST</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>English Subject Test 2</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    English Subject Test 2 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Select the most appropriate meaning of the given idiom.</strong></p> <p>Hold your horses</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Take control</div><div class="option">Run slowly</div><div class="option correct">Be patient</div><div class="option">Feel nervous</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>&quot;<span style="">Be patient</span>&quot;</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>&nbsp;Let&#39;s see the meaning of the idiom &quot;<strong>Hold your horses&quot;.</strong> <ul> <li><strong>​Hold your horses means&nbsp;</strong>wait a moment <ul> <li><strong>Example:-&nbsp;</strong>&ldquo;Let&#39;s go!&rdquo; B: &ldquo;Hold your horses! I still need to take a shower.&rdquo;</li> </ul> </li> <li><b>Take Control&nbsp;</b>means&nbsp;To take charge, to assume control. <ul> <li><b>Example:-&nbsp;</b>Rajiv has to take control now as His partner is absent today.</li> </ul> </li> <li><strong>Run Slowly&nbsp;</strong>means&nbsp;maintaining consistency in work <ul> <li><strong>Example:-&nbsp;</strong>He is running slowly towards his main target.</li> </ul> </li> <li><strong>Be Patient means&nbsp;</strong>able to accept or tolerate delays, problems, or suffering without becoming annoyed or anxious. <ul> <li><span style="font-weight: 700; ">Example:-&nbsp;</span>be patient, your time will come&quot;</li> </ul> </li> <li><strong>Feel nervous means&nbsp;</strong>having or showing feelings of worry, fear, or anxiety <ul> <li><strong>Example:-&nbsp;</strong>Geeta started feeling nervous when she heard the news of his result.</li> </ul> </li> </ul> </li> <li>Hence, according to the meaning of the sentence the correct answer is&nbsp;<strong>option no 3.</strong></li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><span style="font-weight: 700;"><u>Direction</u>: Choose the correct meaning of the following phrase/idiom:</span></p> <p>A snake in the grass</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">a deceitful or treacherous person</div><div class="option">presence of many snakes in an area</div><div class="option">an honest person</div><div class="option">a well known person</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><span style="font-weight: 700;">&#39;</span>a deceitful or treacherous person<span style="font-weight: 700;">.&#39;</span></strong></p> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li>The meaning of the idiom<span style="font-weight: 700;">&nbsp;&#39;a snake in the grass&#39;</span>&nbsp;is <em>a person who fakes friendship with the intent to deceive.</em> <ul> <li>मुहावरे <span style="font-weight: 700;">&nbsp;&#39;a snake in the grass</span><span style="font-weight: 700;">&#39;&nbsp;</span>का अर्थ है, वह व्यक्ति है जो धोखा देने के इरादे से दोस्ती करता है। <ul> <li><span style="font-weight: 700;">Example</span>:&nbsp;<em>He&#39;s just <strong>a snake in the grass</strong> and a guy you can&#39;t trust.</em></li> </ul> </li> </ul> </li> <li>Therefore, the correct answer is&nbsp;<span style="font-weight: 700;">&#39;a deceitful or treacherous person.&#39;</span></li> </ul> <p><br /> <span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li>Let us discuss the meanings of other options:<br /> &nbsp;</li> </ul> <table border="1" cellpadding="1" cellspacing="1" style="background-color: rgb(255, 255, 255); width: 350px;"> <tbody> <tr> <td style="text-align: center;"><strong>Idiom/Phrase</strong></td> <td style="text-align: center;"><strong>Meaning</strong></td> <td style="text-align: center;"><strong>अर्थ</strong></td> </tr> <tr> <td style="text-align: center;">A blessing in disguise</td> <td style="text-align: center;">a good thing that seemed bad at first.</td> <td style="text-align: center;">एक अच्छी बात जो पहले बुरी लगी।</td> </tr> <tr> <td style="text-align: center;">Call it a day</td> <td style="text-align: center;">stop working on something.</td> <td style="text-align: center;">किसी चीज पर काम करना बंद करना।</td> </tr> <tr> <td style="text-align: center;">Beat around the bush</td> <td style="text-align: center;">avoid saying what you mean, usually because it is uncomfortable.</td> <td style="text-align: center;">आप जो कहना चाहते हैं उसे कहने से बचना, आमतौर पर क्योंकि यह असहज होता है।</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Select the correct passive voice of the given sentence.</strong></p> <p>She is making a beautiful beaded curtain.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">A beautiful beaded curtain was being made by her.</div><div class="option correct">A beautiful beaded curtain is being made by her.</div><div class="option">A beautiful beaded curtain is made by her.</div><div class="option">A beautiful beaded curtain was made by her.</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> &#39;A beautiful beaded curtain is being made by her.&#39;</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li>The given sentence is in the&nbsp;<span style="font-weight: 700;">Active Voice.</span>&nbsp;As per the given question we have to change the sentence into&nbsp;<span style="font-weight: 700;">Passive Form.&nbsp;</span></li> <li>The given sentence is an example of&nbsp;<span style="font-weight: 700;">&#39;present&nbsp;continuous&#39;.</span>&nbsp;</li> <li>The structure of these kinds of sentences is: <ul> <li><span style="font-weight: 700;">Subject + is/am/are + V<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;">1&nbsp;</span>+ ing + Object. (Active Voice)</span></li> <li><span style="font-weight: 700;">Subject(Objective Case) + is/am/are + being+ V<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;">3&nbsp;</span>+ by + Object (subjective case). (Passive Voice)&nbsp;</span></li> </ul> </li> <li><em>Example:</em> <ul> <li><em>He is riding a bike. (Active Voice)</em></li> <li><em>A bike is being ridden by him. (Passive Voice)</em></li> </ul> </li> <li>The subject of the given sentence is&nbsp;<span style="font-weight: 700;">&#39;She&#39;&nbsp;</span>and the object of the given sentence is<span style="font-weight: 700;">&nbsp;&#39;A beautiful beaded curtain</span><span style="font-weight: 700;">&#39;.&nbsp;</span></li> <li><span style="font-weight: 700;">The subject</span>&nbsp;will be put in place of&nbsp;<span style="font-weight: 700;">the object</span>&nbsp;and&nbsp;<span style="font-weight: 700;">the object</span>&nbsp;will be put in place of&nbsp;<span style="font-weight: 700;">the subject.&nbsp;</span></li> <li>Here,&nbsp;<span style="font-weight: 700;">&#39;is making&#39;&nbsp;</span>will be changed into&nbsp;<span style="font-weight: 700;">&#39;is being made&#39;.</span>&nbsp;</li> <li>The preposition&nbsp;<span style="font-weight: 700;">&#39;by&#39;&nbsp;</span>will be used in the end.<br /> &nbsp;</li> </ul> <p style=""><span style="font-weight: 700;"><u>Correct Sentence:</u></span>&nbsp;<em>A beautiful beaded curtain is being made by her.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Select the option that expresses the given sentence in passive voice.</strong></p> <p>They catch whale sharks commercially in some places around the world.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct"><span style="">Whale sharks are caught commercially in some places around the world.</span></div><div class="option"><span style="">Whale sharks are being caught commercially in some places around the world.</span></div><div class="option"><span style="">Whale sharks were caught commercially in some places around the world.</span></div><div class="option"><span style="">Whale sharks have been caught commercially in some places around the world.</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;<strong>Whale sharks are caught commercially in some places around the world</strong>&#39;.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li>The given sentence is in&nbsp;<span style="font-weight: 700;">Active Voice.</span>&nbsp;As per the question we have to change it into&nbsp;<span style="font-weight: 700;">Passive Voice.&nbsp;</span></li> <li>The structure of the given sentence is as follows: <ul> <li><span style="font-weight: 700;">Subject + V<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;">1&nbsp;</span>+ Object. (Active Voice)</span></li> <li><span style="font-weight: 700;">Subject (Objective Case) + is/am/are + V<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;">3&nbsp;</span>+ Object (Subjective Case). (Passive Voice)&nbsp;</span></li> </ul> </li> </ul> <ul style=""> <li><em>Example:</em> <ul> <li><em>Aastha teaches English.&nbsp;(Active Voice)&nbsp;</em></li> <li><em>English is taught by Aastha.&nbsp;(Passive Voice)</em></li> </ul> </li> <li><span style="font-weight: 700;">The subject</span>&nbsp;of the given sentence is&nbsp;<span style="font-weight: 700;">&#39;They&#39;.</span>&nbsp;</li> <li><span style="font-weight: 700;">The object</span>&nbsp;of the given sentence is<span style="font-weight: 700;">&nbsp;&#39;Whale&#39;.&nbsp;</span></li> <li><span style="font-weight: 700;">The subject</span>&nbsp;will be put in place of<span style="font-weight: 700;">&nbsp;the object&nbsp;</span>and&nbsp;<span style="font-weight: 700;">the object&nbsp;</span>will be put in place of<span style="font-weight: 700;">&nbsp;the subject.</span></li> <li><span style="font-weight: 700;">&#39;catch&#39;&nbsp;</span>will be changed into<span style="font-weight: 700;">&nbsp;&#39;are caught&#39;.</span><br /> &nbsp;</li> </ul> <p style=""><span style="font-weight: 700;"><u>Correct Sentence:</u></span><em>&nbsp;Whale sharks are caught commercially in some places around the world.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</strong></p> <p>A. Firstly, it provides air for respiration, serves the sense of smell and conditions the air by filtering, warming and moistening it.</p> <p>B. The nose is the prominent structure between the eyes that serves as the entrance to the respiratory tract.</p> <p>C. For inhalation it has two cavities, separated from one another by a wall of cartilage called the septum.</p> <p>D. Apart from filtering the air, it also cleans itself of foreign debris extracted from inhalations.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct"><span style="">BADC</span></div><div class="option"><span style="">ACDB</span></div><div class="option"><span style="">DBCA</span></div><div class="option"><span style="">BACD</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;<strong>BADC</strong>&#39;.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The given question is an example of a&nbsp;<span style="font-weight: 700;">Para Jumble.</span></li> <li>We know that the first statement of a para jumbled question is usually&nbsp;<span style="font-weight: 700;">an independent general statement, a noun, a universal fact, starting of an incident, or it begins with &#39;most&#39; or &#39;once&#39;.</span> <ul> <li><strong>Sentence B</strong> will be the starting line as it contains the main idea of the para jumble i.e. nose is the prominent structure of the respiratory tract.</li> <li>However, <strong>Sentence A</strong> states that it provides air for respiration, serves the sense of smell, and conditions the air by filtering, warming, and moistening it.</li> <li>So, <strong>A</strong> will follow <strong>B</strong>.</li> <li>Further, <strong>Sentence D</strong> states that apart from filtering the air, it also cleans itself of foreign debris extracted from Inhalations and sentence C says that for inhalation it has two cavities.</li> <li>So, <strong>C</strong> will follow <strong>D</strong>.&nbsp;</li> <li>Thus, the correct sequence is: <ul> <li><strong>B</strong>:&nbsp;The nose is the prominent structure between the eyes that serves as the entrance to the respiratory tract.</li> <li><strong>A</strong>:&nbsp;Firstly, it provides air for respiration, serves the sense of smell and conditions the air by filtering, warming and moistening it.</li> <li><strong>D</strong>:&nbsp;Apart from filtering the air, it also cleans itself of foreign debris extracted from inhalations.</li> <li><strong>C</strong>:&nbsp;For inhalation it has two cavities, separated from one another by a wall of cartilage called the septum.<br /> &nbsp;</li> </ul> </li> </ul> </li> </ul> <p><strong><u>Correct Sequence:</u></strong>&nbsp;<em>The nose is the prominent structure between the eyes that serves as the entrance to the respiratory tract.&nbsp;Firstly, it provides air for respiration, serves the sense of smell and conditions the air by filtering, warming and moistening it. Apart from filtering the air, it also cleans itself of foreign debris extracted from inhalations.&nbsp;For inhalation it has two cavities, separated from one another by a wall of cartilage called the septum.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</strong></p> <p>A. Thus, shared laughter is one of the most effective tools in maintaining healthy relationships.</p> <p>B. Emotional sharing builds strong and lasting bonds.</p> <p>C. It also helps in healing resentments and hurt.</p> <p>D. But sharing laughter brings joy and freshness to relationships.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">BDCA</div><div class="option">DCAB</div><div class="option">BCAD</div><div class="option">DCBA</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;<strong>BDCA</strong>&#39;.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li>The given question is an example of a&nbsp;&nbsp;<span style="font-weight: 700;">Para Jumble.</span></li> <li>We know that the first statement of a para jumbled question is usually&nbsp;<span style="font-weight: 700;">an independent general statement, a noun, a universal fact, starting of an incident, or it starts with &#39;most&#39; or &#39;once&#39;.&nbsp;</span></li> <li><strong>Sentence B</strong> will be the starting line as it contains the main idea of the parajumble i.e. Emotional sharing.</li> <li>However, <strong>Sentence D</strong> states that sharing laughter brings joy and freshness to relationships. So, <strong>D</strong> will follow <strong>B</strong>.</li> <li>Further, <strong>Sentence C</strong> states that it also helps in healing resentments and hurt and <strong>sentence</strong> <strong>A</strong> states that shared laughter is one of the most effective tools in maintaining healthy relationships. So, <strong>A</strong> will follow <strong>C</strong>.</li> <li>Thus, the correct sequence is: <ul> <li><strong>B</strong>:&nbsp;Emotional sharing builds strong and lasting bonds.</li> <li><strong>D</strong>:&nbsp;But sharing laughter brings joy and freshness to relationships.</li> <li><strong>C</strong>:&nbsp;It also helps in healing resentments and hurt.</li> <li><strong>A</strong>:&nbsp;Thus, shared laughter is one of the most effective tools in maintaining healthy relationships.<br /> &nbsp;</li> </ul> </li> </ul> <p><strong><u>Correct Sequence:</u></strong>&nbsp;<em>Emotional sharing builds strong and lasting bonds. But sharing laughter brings joy and freshness to relationships. It also helps in healing resentments and hurt.&nbsp;Thus, shared laughter is one of the most effective tools in maintaining healthy relationships.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Select the option that expresses the given sentence in indirect speech.</strong></p> <p>I said to you, &quot;He cannot be trusted completely.&quot;</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct"><span style="">I told you that he could not be trusted completely.</span></div><div class="option"><span style="">You told me that he could not be trusted completely.</span></div><div class="option"><span style="">I said you that he cannot be trusted completely.</span></div><div class="option"><span style="">You told me that he cannot be trusted completely.</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;I told you that he could not be trusted completely.&#39;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li>The given sentence is in&nbsp;<span style="font-weight: 700;">Direct Speech.</span>&nbsp;As per the given question, we have to change it into&nbsp;<span style="font-weight: 700;">Indirect Speech.</span></li> <li>The process of transformation is as follows: <ul> <li>Here, in the given question<span style="font-weight: 700;">&nbsp;&#39;said to&#39;&nbsp;</span>will be changed into<span style="font-weight: 700;">&nbsp;&#39;told&#39;&nbsp;</span>because the&nbsp;<span style="font-weight: 700;">reporting</span>&nbsp;speech has an&nbsp;<span style="font-weight: 700;">object</span>.&nbsp;</li> <li>The conjunction<span style="font-weight: 700;">&nbsp;&#39;that&#39;&nbsp;</span>will be added and&nbsp;<span style="font-weight: 700;">comma</span>&nbsp;and inverted&nbsp;<span style="font-weight: 700;">commas</span>&nbsp;will be removed.&nbsp;</li> <li><span style="font-weight: 700;">&#39;cannot be trusted&#39;</span>&nbsp;will be changed into&nbsp;<span style="font-weight: 700;">&#39;could not be trusted&#39;.&nbsp;</span><br /> &nbsp;</li> </ul> </li> </ul> <p style=""><span style="font-weight: 700;"><u>Correct Sentence:</u></span>&nbsp;<em>I told you that he could not be trusted completely</em>.</p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Select the most appropriate indirect form of the given sentence.</strong></p> <p>Jayesh said to Diwakar, &quot;You can top the class if you want to.&quot;</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">Jayesh told Diwakar that he would top the class if he wants to.</span></div><div class="option correct"><span style="">Jayesh told Diwakar that he could top the class if he wanted to.</span></div><div class="option"><span style="">Jayesh told Diwakar that you could top the class if you wanted to.</span></div><div class="option"><span style="">Jayesh told Diwakar that you can top the class if you want to.</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><span style="">Jayesh told Diwakar that he could top the class if he wanted to.</span></strong></p> <p><strong><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></strong></p> <ul> <li>As the reporting verb is in the&nbsp;<strong>past</strong> tense<strong>, &#39;</strong><span style="font-weight: 700;">can&#39;&nbsp;</span>will be changed to&nbsp;<strong>&#39;</strong><span style="font-weight: 700;">could&#39;,&nbsp;</span>and&nbsp;<strong>&#39;</strong><span style="font-weight: 700;">want&#39;&nbsp;</span>will be changed to <strong>&#39;</strong><span style="font-weight: 700;">wanted&#39;</span>.</li> <li><span style="font-weight: 700;">&#39;Said to&#39;&nbsp;</span>changes to&nbsp;<strong>&#39;</strong><span style="font-weight: 700;">told&#39;&nbsp;</span>in indirect speech<span style="font-weight: 700;">.&nbsp;</span></li> <li>While converting a direct speech into indirect speech, the second person pronoun &#39;<strong>you&#39;</strong> changes according to the object of Reporting Verb.</li> <li>Here, the object of reporting verb is&nbsp;<strong>Diwakar,&nbsp;</strong>hence,&nbsp;<strong>&#39;</strong><strong>you&#39;&nbsp;</strong>has been replaced by&nbsp;<strong>&#39;</strong><strong>he&#39;&nbsp;</strong>in reported speech.</li> <li>Thus, the most appropriate indirect form of the given sentence is expressed in&nbsp;<strong>option 2</strong>.</li> <li>The correct indirect form of the given sentence is&nbsp;<strong><span style="">Jayesh told Diwakar that he could top the class if he wanted to.</span></strong></li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Use appropriate modals to fill in the blanks.</strong></p> <p>I run fast so that I ______ catch the train.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">should</div><div class="option correct">may</div><div class="option">shall</div><div class="option">will</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> &#39;may&#39;.</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Here, in the given fill-in-the-blank the most appropriate answer is <strong>Option 2.</strong></li> <li>We use&nbsp;<span style="font-weight: 700;">so that</span>&nbsp;to talk about&nbsp;<span style="font-weight: 700;">purpose</span>.&nbsp;</li> <li>If&nbsp;<span style="font-weight: 700;">the principal clause</span>&nbsp;is in&nbsp;<span style="font-weight: 700;">the present tense</span>&nbsp;and&nbsp;<span style="font-weight: 700;">the subordinate clause</span>&nbsp;starts with&nbsp;<span style="font-weight: 700;">&#39;that/ so that/ in order,&#39;</span>&nbsp;then it shows&nbsp;<span style="font-weight: 700;">purpose</span>.&nbsp;</li> <li>In these kinds of cases, we use<span style="font-weight: 700;">&nbsp;&#39;may&#39;&nbsp;</span>in the <strong>subordinate clause.</strong> <ul> <li><em>Example: We eat so that we <strong>may</strong> live.</em></li> </ul> </li> <li>Therefore, as per the points mentioned above, we find that the correct answer is <strong>Option 2.</strong><br /> ​</li> </ul> <p><strong><u>Correct Sentence:</u></strong>&nbsp;<em>I run fast so that I <b>may</b>&nbsp;catch the train.</em></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Let&#39;s look at some other usage of the modal auxiliary verb&nbsp;<span style="font-weight: 700;">&#39;May&#39;:</span></li> </ul> <table border="1" cellpadding="1" cellspacing="1" style="width: 350px;"> <tbody> <tr> <td style="text-align: center; background-color: rgb(0, 204, 255);"><span style="font-weight: 700;">Modal</span></td> <td style="text-align: center; background-color: rgb(0, 204, 255);"><span style="font-weight: 700;">Meaning</span></td> <td style="text-align: center; background-color: rgb(0, 204, 255);"><span style="font-weight: 700;">Example</span></td> </tr> <tr> <td style="text-align: center;"><span style="font-weight: 700;">may modal verb (POSSIBILITY)</span></td> <td style="text-align: center;">used to express the possibility</td> <td style="text-align: center;"><em>There&nbsp;<span style="font-weight: 700;">may</span>&nbsp;be other problems that we don&#39;t know about.</em></td> </tr> <tr> <td style="text-align: center;"><span style="font-weight: 700;">may modal verb (WISH)</span></td> <td style="text-align: center;">used to introduce a wish or a hope</td> <td style="text-align: center;"><em><span style="font-weight: 700;">May</span>&nbsp;you have a long and fruitful marriage.</em></td> </tr> </tbody> </table></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><span style="font-weight: 700;"><u>Direction</u>: Fill in the blank with the correct form of the tense.&nbsp;</span></p> <p>&nbsp;Ankit ________&nbsp;studying astrology for 5years when he completes the age of 30.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">will have been</div><div class="option">Shall have</div><div class="option">will</div><div class="option">will be</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is-<span style="font-weight: 700;">&nbsp;&#39;will have been&#39;.</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">Future perfect continuous</span>&nbsp;tense is used to<span style="font-weight: 700;">&nbsp;indicate an action that is in progress over a period of time and will still be in continuation in the future.</span></li> <li>The general structure of&nbsp;<span style="font-weight: 700;">future perfect continuous</span>&nbsp;tense is-<span style="font-weight: 700;">&nbsp;will/shall + have been + V1 + ing.</span></li> <li>In the above sentence, the&nbsp;<span style="font-weight: 700;">subject &#39;Ankit&#39;</span>&nbsp;is already studying&nbsp;and will continue to study.&nbsp;</li> <li>Thus,<em><span style="font-weight: 700;">&nbsp;option 1</span></em>&nbsp;is the most appropriate answer.</li> <li>The complete sentence is- &#39;<em>&nbsp;Ankit <strong>will have been</strong> studying astrology for 5years when he completes the age of 30.&#39;.&nbsp;</em></li> </ul> <p><em><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</em></p> <ul> <li>Let us explore other options- <ul> <li>​<b>Will</b>: it is used in the&nbsp;<span style="font-weight: 700;">simple future tense</span>&nbsp;to indicate an action that will take place in the future<em>.</em> <ul> <li><em>​</em><span style="font-weight: 700;">Example</span><em>: I&nbsp;<span style="font-weight: 700;">will&nbsp;</span>go to the market.</em></li> </ul> </li> <li><span style="font-weight: 700;">​Will be</span>: it is used in&nbsp;<span style="font-weight: 700;">future continuous tense</span>&nbsp;to say that an action is going on at some time in future. <ul> <li><em>​</em><span style="font-weight: 700;">Example</span><em>: I&nbsp;<span style="font-weight: 700;">will be</span>&nbsp;earning when I am 23.</em></li> </ul> </li> <li><span style="font-weight: 700;">​Shall&nbsp;have</span>: it is used in the&nbsp;<strong>future</strong><span style="font-weight: 700;"><strong>&nbsp;</strong>perfect&nbsp;tense</span>, to indicate the completion of some work by a certain time in the future. <ul> <li><strong>Example:</strong>&nbsp;I<em><b>&nbsp;shall&nbsp;have </b>done this work by tomorrow.</em></li> </ul> </li> </ul> </li> </ul> <p><em>​</em><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/hinglish-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Hinglish</u></span></strong></span></p> <ul> <li><strong>Future perfect continuous</strong> का उपयोग एक ऐसी कार्रवाई को इंगित करने के लिए किया जाता है जो समय की अवधि में प्रगति पर है और <strong>future </strong>में भी जारी रहेगा।</li> <li>&nbsp;<strong>Future perfect continuous</strong> की सामान्य structure है- <strong>will/shall + V1 + ing.</strong></li> <li><strong>will</strong>: यह <strong>future </strong>में होने वाली कार्रवाई को इंगित करने के लिए <strong>simple future</strong> में उपयोग किया जाता है। <ul> <li><span style="font-weight: 700;">Example</span><em>: I&nbsp;<span style="font-weight: 700;">will&nbsp;</span>go to the market.</em></li> </ul> </li> <li><strong>will be</strong>: <strong>future continuous&nbsp; </strong>का उपयोग यह कहने के लिए किया जाता है कि <strong>future </strong>में किसी समय कार्रवाई चल रही है। <ul> <li><em>​</em><span style="font-weight: 700;">Example</span><em>: I&nbsp;<span style="font-weight: 700;">will be</span>&nbsp;earning when I am 23.</em></li> </ul> </li> <li><strong>Shall have</strong>: इसका उपयोग <strong>future perfect</strong> पर किया जाता है, ताकि <strong>future </strong>में किसी निश्चित समय तक कुछ काम पूरा होने का संकेत दिया जा सके। <ul> <li><span style="font-weight: 700;">Example:</span>&nbsp;I<em><span style="font-weight: 700;">&nbsp;shall&nbsp;have&nbsp;</span>done this work by tomorrow.</em></li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><u><span style="font-weight: 700;">Direction</span></u><span style="font-weight: 700;">:&nbsp;</span><span style="font-weight: 700;">Choose the form of&nbsp;tenses&nbsp;for the given&nbsp;sentence:</span></p> <p>The condition of my friend was bad because she ______&nbsp;treated properly.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">will not be</div><div class="option">is not</div><div class="option">being not</div><div class="option correct">was not being</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong>&nbsp;<span style="font-weight: 700;">&#39;</span>was not being​</strong><span style="font-weight: 700;"><strong>&#39;</strong>.</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The given sentence is in the passive voice, as the subject <strong>&#39;she&#39;&nbsp;</strong>receives an action <strong>&#39;to be treated&#39;</strong> (it cannot perform the action &#39;to treat). <ul> <li>Hence the correct verb form will be in passive form.</li> <li>Also, the action that happened in the past is <strong>&#39;the condition of my friend was bad&#39;</strong>.</li> <li>So, the verb form (passive) will be in the past tense.</li> <li>From the options,<strong> &#39;was not being&#39;</strong> is in passive form and expresses the past tense and hence <strong>this option&nbsp;is correct</strong>.</li> </ul> </li> <li>The option <strong>&#39;will not be&#39; </strong>expresses the future tense, therefore, it is incorrect.</li> <li>The option&nbsp;<strong>&#39;is not&#39;</strong> expresses the present tense, therefore it is also incorrect.</li> <li>The option <strong>&#39;being not&#39;</strong> is an auxiliary/helping verb but is not complete without the helping verb <strong>&#39;was&#39;</strong>.</li> <li><strong>&#39;Was not&#39;</strong> expresses the past tense whereas <strong>&#39;being&#39; </strong>expresses the continuous form of that tense and without <strong>&#39;was&#39;</strong>, the verb form is incomplete. <ul> <li>Hence these options are incorrect.</li> </ul> </li> <li>Hence, the correct form of tenses,&nbsp;<span style="font-weight: 700;">&#39;was not being​</span><span style="font-weight: 700;">&#39;&nbsp;</span>should be used<span style="font-weight: 700;">&nbsp;</span>to make the sentence grammatically correct.</li> <li>Hence, the correct answer is&nbsp;<span style="font-weight: 700;">&#39;was not being​</span><span style="font-weight: 700;">&#39;</span>.<br /> &nbsp;</li> </ul> <p><em>​</em><span style="font-weight: 700;"><u>Correct sentence</u>:<em>&nbsp;</em></span><em>The condition of my friend was bad because she <strong>was not being</strong>&nbsp;treated properly.</em><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>An&nbsp;<span style="font-weight: 700;">action verb</span>&nbsp;expresses an activity that a person or thing can do. <ul> <li><span style="font-weight: 700;">Example:</span>&nbsp;<em>Rohan&nbsp;<span style="font-weight: 700;">eats&nbsp;</span>cake.</em>&nbsp;(<span style="font-weight: 700;">Eating</span>&nbsp;is something Rohan&nbsp;can do.)<br /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<em>&nbsp; The bear&nbsp;<span style="font-weight: 700;">chased&nbsp;</span>the salmon in the shallow rapids.</em>&nbsp;(<span style="font-weight: 700;">Chasing</span>&nbsp;is something the bear can do.)</li> </ul> </li> <li>A&nbsp;<span style="font-weight: 700;">stative verb</span>&nbsp;expresses a state rather than an action. A stative verb typically relates to a state of being, a thought, or an emotion. <ul> <li><span style="font-weight: 700;">Example:</span>&nbsp;<em>She&nbsp;<span style="font-weight: 700;">believes</span>&nbsp;in fairies.</em><br /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<em>&nbsp;He&nbsp;<span style="font-weight: 700;">feels</span>&nbsp;elated.</em></li> </ul> </li> <li><em>​</em>A&nbsp;<span style="font-weight: 700;">transitive verb</span>&nbsp;is one that acts on something (i.e., it has a direct object). <ul> <li><span style="font-weight: 700;">Example:&nbsp;</span><em>The postman&nbsp;<span style="font-weight: 700;">will give</span>&nbsp;Sarah the letter.</em>&nbsp;(Here, the direct object is the&nbsp;<span style="font-weight: 700;">letter</span>.)</li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Fill in the blank with the correct option.</strong></p> <p>The government ______ provide health care for everybody.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">must</div><div class="option">could</div><div class="option">can</div><div class="option">need</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><span style="font-variant-numeric: normal; font-variant-east-asian: normal; white-space: pre-wrap;">The most suitable modal verb is</span><span style="font-variant-numeric: normal; font-variant-east-asian: normal; vertical-align: baseline; white-space: pre-wrap;"><span style="font-weight: 700;"> </span></span><span style="font-weight: 700;">must<span style="font-variant-numeric: normal; font-variant-east-asian: normal; vertical-align: baseline; white-space: pre-wrap;">.</span></span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">​</span><span style="color: rgb(32, 33, 36);">An&nbsp;</span><span style="font-weight: 700;">auxiliary verb</span><span style="color: rgb(32, 33, 36);">&nbsp;is a&nbsp;</span><span style="font-weight: 700;">verb</span><span style="color: rgb(32, 33, 36);">&nbsp;that adds functional or grammatical meaning to the clause in which it occurs, so as to express<span style="font-weight: 700;">&nbsp;tense, aspect, modality, voice, emphasis, etc.</span></span></li> <li>A&nbsp;<span style="font-weight: 700;">modal or a modal auxiliary</span>&nbsp;is a word such as &#39;<span style="font-weight: 700;">can</span>&#39; or &#39;<span style="font-weight: 700;">would</span>&#39; which is used with the&nbsp;<span style="font-weight: 700;">main verb (the 1st form of the verb)</span>&nbsp;to express ideas such as&nbsp;<span style="font-weight: 700;">possibility, intention, or necessity.</span></li> <li>&#39;<strong>Must</strong>&#39; expresses strong <strong>obligation </strong>and <strong>necessity.</strong></li> <li>Example: <ul> <li><em>I&nbsp;<span style="font-weight: 700;">have&nbsp;</span>taken my breakfast.&nbsp;<span style="font-weight: 700;">(have- auxiliary verb)</span></em></li> <li><em>One&nbsp;<span style="font-weight: 700;">should&nbsp;</span><span style="font-weight: 700;">obey&nbsp;</span>one&#39;s elders.<span style="font-weight: 700;">&nbsp;(should- modal)</span></em></li> </ul> </li> <li>Since an <strong>obligation</strong> is given in the question, the <strong>modal&nbsp;</strong><span style="font-weight: 700;">verb&nbsp;</span>&#39;<span style="font-weight: 700;">must</span>&#39; will be used in the <strong>blank </strong>part of the sentence.<br /> &nbsp;</li> </ul> <p><u style="font-weight: 700;">Correct Sentence</u><span style="font-weight: 700;">:</span><em>&nbsp;The government <strong>must&nbsp;</strong>provide health care for everybody.</em></p> <p><em>​<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></em></p> <ul> <li>If&nbsp;<span style="font-weight: 700;">should&nbsp;</span>is used after&nbsp;<span style="font-weight: 700;">lest,</span>&nbsp;it indicates a&nbsp;<span style="font-weight: 700;">negative&nbsp;</span>purpose.</li> <li>Example: <ul> <li><em>Hurry up&nbsp;<span style="font-weight: 700;">lest&nbsp;</span>you&nbsp;<span style="font-weight: 700;">should&nbsp;</span>miss the bus.</em></li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>In the following question, the sentence is given with a blank to be filled in with an appropriate word. Select the correct alternative out of the four and indicate it by selecting the appropriate option.</strong></p> <p>It is natural in every man to wish ______ distinction.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">of&nbsp;</div><div class="option">with</div><div class="option correct">for</div><div class="option">from</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;<strong>for</strong>&#39;.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The above sentence is an example of a <strong>preposition.</strong></li> <li><strong>A preposition</strong> is a word used to link nouns, pronouns, or phrases to other words within a sentence.</li> <li><strong>For </strong>means &lsquo;with the object or purpose of&rsquo;. It indicates a suiting of purpose for something/someone. <ul> <li>Example -&nbsp;<em>Take my gratitude <strong>for </strong>your kind hospitality.</em></li> </ul> </li> <li>In the given sentence, the preposition &#39;<strong>for</strong>&#39; is used to show that purpose of every man is to get distinction.</li> <li>Thus, the appropriate preposition to be filled in the blank will be &#39;<strong>for</strong>&#39;.</li> </ul> <p><br /> Hence, the correct answer is <strong>option (3).</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Uses of the preposition &#39;<strong>with</strong>&#39; <ul> <li>With means &lsquo;accompanied by&rsquo; something or someone.</li> <li>Example -<em> I will always be <strong>with </strong>you.</em></li> </ul> </li> <li>Uses of the preposition &#39;<strong>from</strong>&#39; <ul> <li>From is used to talk about origins, sources, and starting points.</li> <li>We also use from&hellip; to/till/until to describe starting and ending times.</li> <li>Example - <em>I borrowed a book <strong>from </strong>the library.</em></li> </ul> </li> <li>Uses of the preposition &#39;<strong>of</strong>&#39; <ul> <li>Of expresses the relationship of a part of something to its whole. It is the most used preposition in English.</li> <li>Example -&nbsp;<em>The plays <strong>of </strong>Shakespeare will always be classics.</em></li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><span style="font-weight: 700;">Choose the correct&nbsp;article from the given options and&nbsp;mark the appropriate option.</span></p> <p>English has become ______ universal language.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">a</div><div class="option">an</div><div class="option">the</div><div class="option">None of these</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is &#39;<u><span style="font-weight: 700;">a&#39;.</span></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The indefinite article<strong> &#39;a&#39;</strong> indicates that&nbsp;a noun refers to a general idea rather than a particular thing,&nbsp;also we use the article &#39;a&#39;&nbsp;before&nbsp;a singular noun beginning with a&nbsp;consonant&nbsp;sound. <ul> <li>Ex:&nbsp;Should I bring&nbsp;<strong>a</strong>&nbsp;gift to the party?</li> </ul> </li> <li>Here, Universal is&nbsp;a singular noun beginning with a&nbsp;consonant&nbsp;sound. So, the correct article to be used here is A.</li> <li>Hence,<strong> option 1</strong> is the correct answer.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <div><u><span style="font-weight: 700;">Exceptions: Choosing A or An</span></u></div> <ul> <li>There are a few exceptions to the general rule of using &#39;<span style="font-weight: 700;">a</span>&#39; before words that start with&nbsp;<span style="font-weight: 700;">consonants</span>&nbsp;and &#39;<span style="font-weight: 700;">an</span>&#39; before words that begin with&nbsp;<span style="font-weight: 700;">vowels</span>.</li> <li>The first letter of the word&nbsp;<span style="font-weight: 700;">honour</span>, for example, is<span style="font-weight: 700;">&nbsp;a consonant,</span>&nbsp;but it&rsquo;s&nbsp;<span style="font-weight: 700;">unpronounced</span>. In spite of its spelling, the word&nbsp;<span style="font-weight: 700;">honour&nbsp;</span>begins with&nbsp;<span style="font-weight: 700;">a vowel sound.</span>&nbsp;Therefore, we use &#39;<span style="font-weight: 700;">an</span>&#39;. <ul> <li>My mother is&nbsp;<span style="font-weight: 700;">an</span>&nbsp;<span style="font-weight: 700;">honest&nbsp;</span>woman.</li> <li>She is<span style="font-weight: 700;"><mark>a</mark>United S</span>tates senator.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p style=""><span style="font-weight: 700;">Direction: Pick out the clause in the following sentence:</span></p> <p style="">I will be back home in one hour unless there is heavy traffic.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">will be back home</div><div class="option correct">unless there is heavy traffic</div><div class="option">in one hour</div><div class="option">back home in one hour&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is<strong><span style="font-weight: 700;">&nbsp;&#39;</span>unless there is heavy traffic<span style="font-weight: 700;">.&#39;</span></strong></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span>&nbsp;</span>&nbsp;</span></span>&nbsp;</span></span></span></span></span></span></span></span></span></span></p> <ul style=""> <li>The&nbsp;<span style="font-weight: 700;">clause</span>&nbsp;is somewhere in the middle of sentences and phrases.</li> <li>The clause has a definite subject, meaning, predicate, and verb.&nbsp; <ul> <li><span style="font-weight: 700;">Example:</span><em>&nbsp;She is intelligent.</em></li> </ul> </li> <li><span style="font-weight: 700;">Independent Clause:&nbsp;</span>It is also called a principal clause. It has both a subject and a verb, it can also act as a sentence. These cannot be simply used as nouns, adverbs or adjectives as they act as a sentence.</li> <li><span style="font-weight: 700;">Dependent Clause:&nbsp;</span>It is also known as a subordinate clause, it requires an independent clause to provide the complete meaning of the sentence. This dependent clause consists of a verb, subject and a predicate but they cannot act as a sentence instead they need the support of an independent clause.</li> <li><span style="font-weight: 700;">Example:&nbsp;</span><em>He cried because he fell down the stairs.</em></li> <li>​​<span style="font-weight: 700;">Conditional Clause:</span><span style="color: rgb(0, 0, 0); font-weight: 700; text-align: justify; white-space: pre-wrap;"> </span>The clause helps to describe something that is probable or possible. It begins with &quot;if or unless&quot;. <ul> <li><strong>Structure:</strong>&nbsp;<span style="font-weight: 700; ">Unless + Subject + Verb + Object</span></li> </ul> </li> <li><span style="font-weight: 700;">Relative Clause:</span>&nbsp;The relative clause is connected to the main clause by some of the words such as&nbsp;<span style="font-weight: 700;">which, that, who, whose, whom, when, or where</span>. <ul> <li><strong>Structure:</strong> <span style=" font-weight: 700;">which, that, who, whose, whom, when, or where</span><span style="">.</span><span style="font-weight: 700; "> + Subject + Verb + Object</span></li> </ul> </li> <li>Let us check the given options: <ul> <li><strong>Will be back home</strong><span style="font-weight: 700;"><strong>:</strong>&nbsp;</span>Structure has&nbsp;<span style="font-weight: 700;">Verb + Object</span></li> <li><strong><span style="">Unless there is heavy traffic</span></strong><span style="font-weight: 700;"><strong>:</strong>&nbsp;</span>Structure has&nbsp;<span style="font-weight: 700;">Unless + Subject + Verb + Object</span></li> <li><strong>In one hour</strong><span style="font-weight: 700;"><strong>:</strong>&nbsp;</span>Structure has&nbsp;<span style="font-weight: 700;">Preposition + Object</span></li> <li><strong>Back home in one hour</strong><span style="font-weight: 700;"><strong>:</strong>&nbsp;</span>Structure has&nbsp;<span style="font-weight: 700;">Preposition + Object</span></li> </ul> </li> <li>So, the option 2&nbsp;is a conditional&nbsp;clause.</li> <li>Therefore, the correct answer is&nbsp;<span style="font-weight: 700;">Option 2</span>.</li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q16</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p style=""><span style="font-weight: 700;">Direction: Pick out the phrase in the following sentence:</span></p> <p style="">A woman in great difficulty came to me for help.&nbsp;</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">difficulty</div><div class="option correct">in great difficulty</div><div class="option">came&nbsp;</div><div class="option"><span style="">A woman in great difficulty came to me</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is<span style="font-weight: 700;">&nbsp;<strong>&#39;</strong></span><strong>in great difficulty<span style="font-weight: 700;">.&#39;</span></strong></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span>&nbsp;</span></span>&nbsp;</span></span></span></span></span></span></span></span></span></span></p> <ul style=""> <li>A <strong>phrase</strong> is a group of words that forms a grammatical component.</li> <li>It is a part of a sentence and cannot stand on its own.</li> <li>Phrases provide more information about whatever the sentence is speaking about. <ul> <li><strong>Noun phrase:</strong>&nbsp;A noun phrase is a group of words that have a noun or pronoun.&nbsp;</li> <li><strong>Adjective phrase:&nbsp;</strong>An adjective phrase or an adjectival phrase is a group of words that consists of an adjective.</li> <li><strong>Adverb phrase:&nbsp;</strong>An adverb phrase or an adverbial phrase is a group of words that includes an adverb and other modifiers.</li> <li><strong>Verb phrase:</strong>&nbsp;A verb phrase can be used just like a verb. It consists of a main verb and an auxiliary verb.</li> <li><strong>Prepositional phrase:</strong>&nbsp;A prepositional phrase consists of a preposition and an object.</li> </ul> </li> <li>The option 2<strong> &quot;in great difficulty&quot;</strong>&nbsp;is an Adjective Phrase as it is a group of words that does the work of an adjective i.e. qualifying a noun or a pronoun.&nbsp;&nbsp;</li> <li>Here, the adjective phrase<strong> &#39;in great difficulty&#39; </strong>tells us about the woman&#39;s state.</li> <li>So, it qualifies the noun<strong> &quot;woman.&quot;</strong></li> <li>Now, options 1 and 3 has single words, so they cannot be considered&nbsp;a phrase.</li> <li>Option 4 is a clause.</li> <li>Therefore, the correct answer is&nbsp;<span style="font-weight: 700;">Option 2</span>.</li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q17</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Direction: Select the most appropriate option to fill in the blank.</strong></p> <p>I would love to have the biryani on a ______.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct"><span style="">plate</span></div><div class="option"><span style="">plat</span></div><div class="option"><span style="">plight</span></div><div class="option"><span style="">plait</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">Here the correct answer is &quot;<span style="font-weight: 700;">plate</span>.&quot;</p> <p style=""><span class="ng-binding"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></span></span></span></span></span></span></span></p> <ul style=""> <li>The words&nbsp;<span style="font-weight: 700;"><em>plate&nbsp;</em>and&nbsp;</span><em><span style="font-weight: 700;">plait</span>&nbsp;</em>are&nbsp;<span data-component="link" data-ordinal="1" data-source="inlineLink" data-type="internalLink">homophones</span>: they are pronounced the same but have different meanings.</li> <li>The noun&nbsp;<span style="font-weight: 700;">&#39;plate<em>&#39;</em>&nbsp;</span>means a flat, usually round, dish for eating or serving food from. <ul> <li><span style="font-weight: 700;">Example</span>: <em>This is a plastic <u><strong>plate</strong></u>.&nbsp;</em></li> </ul> </li> <li>The noun &#39;<span style="font-weight: 700;">plait&#39;&nbsp;</span>refers to a length of hair or other material that is divided into three parts that are then crossed over each other in a special pattern. <ul> <li><span style="font-weight: 700;">Example</span>:<em>&nbsp;She usually wears her hair in a <u><strong>plait</strong></u>.</em></li> </ul> </li> <li>Let us see the meanings of the other two options: <ul> <li><strong>Plat:&nbsp;</strong>a plot of land.&nbsp;(भूमि का निश्चित हिस्सा)</li> <li><strong>Plight:&nbsp;</strong>a bad or difficult state or situation. (दुर्दशा; प्रतिकूल या कठिन दशा या स्थिति)</li> </ul> </li> <li><span class="ng-binding">Here, we are talking about serving biryani.</span></li> <li><span class="ng-binding">Therefore, the correct answer is <strong>Option 1</strong>.<br /> &nbsp;</span></li> </ul> <p style=""><span class="ng-binding"><span style="font-weight: 700;">Correct sentence:</span><em>&nbsp;</em></span><em>I would love to have the biryani on a <u><strong>plate</strong></u>.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q18</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>Direction: Select the most appropriate homonym to fill in the blank.</strong></p> <p>The pilgrims headed to the _______ shrine.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">holey</span></div><div class="option"><span style="">holly</span></div><div class="option"><span style="">wholly</span></div><div class="option correct"><span style="">holy</span></div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">Here the correct answer is &quot;<b>holy</b>.&quot;</p> <p style=""><span class="ng-binding"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span><br /> &nbsp;</span></span></span></span></span></span></span></span></span></p> <ul style=""> <li>The words <strong>holey, holy, and wholly</strong> sound the same but have different meanings and spellings.</li> <li>Let us see the meanings of the options: <ul> <li><b>Holey:&nbsp;</b>Having holes or full of holes. (छेद होना या छिद्रों से भरा होना)</li> <li><strong>Holly:&nbsp;</strong>a plant that has shiny dark green leaves with sharp points and red berries in the winter. It is often used as a Christmas decoration. (चमकीले गहरे हरे नुकीले पत्तों वाला पौधा जिस पर सर्दियों में लाल बेर से फल लगते हैं; (प्रायः क्रिसमस कालीन सजावट में प्रयुक्त); शूलपर्णी)</li> <li><strong>Wholly:&nbsp;</strong>Completely; entirely. (पूरी तरह, पूर्णतया; सर्वथा)</li> <li><strong>Holy:&nbsp;</strong>connected with God or with religion and therefore very special or important. (पवित्र, धर्म या ईश्&zwj;वर से संबंधित होने के कारण अति विशेष या महत्वपूर्ण)</li> </ul> </li> <li><span class="ng-binding">Here, we are talking about the sacred shrine.</span></li> <li><span class="ng-binding">Therefore, the correct answer is&nbsp;<span style="font-weight: 700;">Option 4</span>.<br /> &nbsp;</span></li> </ul> <p style=""><span class="ng-binding"><span style="font-weight: 700;">Correct sentence:</span><em>&nbsp;</em></span><em>The pilgrims headed to the <u><strong>holy</strong></u> shrine.</em></p></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q19</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p><strong>A sentence with an underlined word is given below. Select the most appropriate antonym for the underlined word.</strong></p> <p>The lion was <u>ferocious</u> after not being fed for 3 days by the zookeeper.&nbsp;</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Gentle</div><div class="option">Annoyed</div><div class="option">Starving</div><div class="option">Satisfied</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> option 1 i.e. gentle.</strong></p> <p><span id="docs-internal-guid-5eea763b-7fff-079d-52ba-d0e04c14271b"><span style="font-size: 11pt; font-family: Arial; color: rgb(0, 0, 0); background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; vertical-align: baseline; white-space: pre-wrap;"><span style="border:none;display:inline-block;overflow:hidden;width:23px;height:22px;"><img height="22" src="https://lh6.googleusercontent.com/rbj8uBLIHiQpromOX--_ZOx7CgKJB5Prx_0QrZ4-t21OlDH__tJz6uBMN5XJ4GWoHHvY-JKwbX3u23JxvyrElbrLcURwIy-k06jfDmyM-3Hh8yu-zqdHyvQ6kIRHKtZ3BQHE9kbf" style="margin-left:0px;margin-top:0px;" width="23" /></span></span></span><u><strong>Explanation:&nbsp;</strong></u></p> <p>The sentence talks about a lion being very angry and violent after not getting any food from the zookeeper for 3 days.</p> <ul> <li><strong>Ferocious: </strong>Extremely angry and violent;&nbsp;savage. (क्रूर)</li> <li><strong>Gentle:</strong> To be mild, kind and tender towards someone. (सज्जन)</li> </ul> <p>Thus, it is clear that<strong> &#39;ferocious&#39; and &#39;gentle&#39; are antonyms.</strong></p> <p>Let&#39;s look at the meaning of the other words:</p> <ul> <li><strong>Annoyed:</strong> Very angry and irritated. (बहुत गुस्सा और चिढ़)</li> <li><strong>Starving:</strong> Extremely hungry and underfed. (निराहार)</li> <li><strong>Satisfied:</strong> Pleased or content with something. (संतुष्ट)</li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q20</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p style=""><span style="font-weight: 700;">Direction: In the following question, choose the one which best expresses the antonym of the underlined word.</span></p> <p style="">Their price depended almost entirely on their <u>scarcity</u>.</p></div>
+  <div class="question lang-hi"></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">ugliness</div><div class="option correct">plenty</div><div class="option">roughness</div><div class="option">dryness</div>
+  </div>
+
+  <div class="lang-hi">
+    
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is&nbsp;<span style="font-weight: 700;">&#39;plenty.&#39;</span></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=""> <li>Let us see the meaning of<span style="font-weight: 700;">&nbsp;Scarcity:</span> <ul> <li><span style="font-weight: 700;">Scarcity</span>:&nbsp;the state of being scarce or in short supply; shortage. (दुर्लभ या कम आपूर्ति में होने की स्थिति; कमी।)</li> </ul> </li> <li>Let us see the meanings of the given options: <ul> <li><span style="font-weight: 700;">Ugliness</span>:&nbsp;the quality of being unpleasant or repulsive in appearance. (दिखने में अप्रिय या प्रतिकारक होने का गुण।)</li> <li><span style=" font-weight: 700;">Plenty:&nbsp;</span><span style="">a situation in which food and other necessities are available in sufficiently large quantities.&nbsp;(ऐसी स्थिति जिसमें भोजन और अन्य आवश्यकताएं पर्याप्त मात्रा में उपलब्ध हों।)</span></li> <li><span style="font-weight: 700;">Roughness:</span>&nbsp;the quality or state of having an uneven or irregular surface. (असमान या अनियमित सतह होने की अवस्था या भाव।)</li> <li><span style="font-weight: 700;">Dryness</span>: absence or lack of moisture or liquid.&nbsp;(नमी या तरल की अनुपस्थिति या कमी।)</li> </ul> </li> <li>From the&nbsp;<span style="font-weight: 700;">meanings</span>&nbsp;of the given words, we can say that the word&nbsp;<span style="font-weight: 700;">&#39;plenty</span><span style="font-weight: 700;">&#39;&nbsp;</span>is the opposite of the meaning of the underlined word&nbsp;<span style="font-weight: 700;">&#39;scarcity.&#39;</span><br /> &nbsp;</li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul style=""> <li>Let us see the synonyms&nbsp;of the given options: <ul> <li><strong>Ugliness:&nbsp;Unattractiveness</strong></li> <li><strong>Scarcity: Shortage</strong></li> <li><strong>Dryness: Parchedness</strong></li> </ul> </li> </ul></div>
+    <div class="lang-hi"></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

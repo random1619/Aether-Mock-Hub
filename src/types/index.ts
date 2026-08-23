@@ -23,6 +23,8 @@ export interface Question {
   series_name?: string;
 }
 
+export type ExamPattern = 'cgl_tier1' | 'cgl_tier2' | 'sectional' | 'standard';
+
 /** Metadata describing a whole exam. */
 export interface ExamMeta {
   /** Canonical path key (relative, matches mocks-data + attempt keys). */
@@ -36,6 +38,10 @@ export interface ExamMeta {
   durationMinutes: number;
   /** Derived ordered sections (grouped by question.section, in first-seen order). */
   sections: ExamSection[];
+  /** Detected or explicit exam pattern (e.g. CGL Tier 2, CGL Tier 1, Sectional). */
+  pattern?: ExamPattern;
+  /** Whether sectional timing and section locks should be enabled by default. */
+  hasSectionalTimer?: boolean;
 }
 
 export interface ExamSection {
@@ -44,6 +50,12 @@ export interface ExamSection {
   start: number;
   /** Last question index (inclusive). */
   end: number;
+  /** Duration in minutes for this specific section (when sectional timing applies). */
+  durationMinutes?: number;
+  /** Section Group ID for multi-module sections (e.g. CGL Tier 2 Session 1 groups). */
+  groupId?: string;
+  /** Display label for the section group (e.g. 'Section I (Math & Reasoning)'). */
+  groupName?: string;
 }
 
 /** An entry in the browsable mock catalog (from mocks-data.js). */
@@ -53,6 +65,13 @@ export interface MockEntry {
   provider: string;
   category: string;
   subject: string;
+  topic?: string;
+  subtopic?: string;
+  organizedPath?: string;
+  totalQuestions?: number;
+  format?: string;
+  // Organized hierarchy (new precise classification)
+  hierarchy?: string; // e.g. "English/Vocabulary/Synonyms - A"
 }
 
 /* Persistence (aether-db v2) */
@@ -133,7 +152,7 @@ export interface SavedQuestionRecord {
 export interface AetherDB {
   version: number;
   settings: {
-    theme: 'dark' | 'light' | 'netflix';
+    theme: 'dark' | 'light' | 'netflix' | 'onepiece';
     sectionalTimer?: string;
     portalTheme?: string;
     /** Study planner: questions to answer per day to keep the streak alive. */

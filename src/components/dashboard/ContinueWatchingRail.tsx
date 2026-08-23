@@ -35,7 +35,8 @@ export function ContinueWatchingRail({ items }: { items: ContinueWatchItem[] }) 
     <Rail
       title={
         isNetflix ? (
-          <span className="border-l-4 border-[#E50914] pl-2.5 inline-block text-white">
+          <span className="flex items-center gap-2.5 text-white">
+            <span className="w-1.5 h-6 bg-[#E50914] rounded-full inline-block shadow-[0_0_12px_#E50914]" />
             Continue Watching
           </span>
         ) : (
@@ -54,7 +55,7 @@ export function ContinueWatchingRail({ items }: { items: ContinueWatchItem[] }) 
             className="snap-start shrink-0 w-64 sm:w-72 relative group cursor-pointer"
           >
             <Link to={examPath(mock.path)} className="block">
-              <div className="relative rounded-[4px] overflow-hidden">
+              <div className="relative rounded-2xl overflow-hidden ring-1 ring-[var(--glass-border)] shadow-md">
                 <CoverArt
                   seed={mock.path}
                   title={mock.name}
@@ -62,9 +63,9 @@ export function ContinueWatchingRail({ items }: { items: ContinueWatchItem[] }) 
                 />
 
                 {/* Progress bar overlay */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#404040]">
+                <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60 overflow-hidden">
                   <motion.div
-                    className="h-full bg-[#E50914]"
+                    className="h-full bg-[#E50914] shadow-[0_0_8px_#E50914]"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5 }}
@@ -72,23 +73,23 @@ export function ContinueWatchingRail({ items }: { items: ContinueWatchItem[] }) 
                 </div>
 
                 {/* Play button overlay on hover */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
-                    <Play size={28} fill="black" className="text-black ml-1" />
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white text-black shadow-xl flex items-center justify-center group-hover:scale-110 active:scale-90 transition-transform">
+                    <Play size={20} fill="currentColor" className="ml-0.5" />
                   </div>
                 </div>
 
                 {/* Progress percentage badge */}
-                <div className="absolute top-2 right-2 bg-[#E50914] text-white text-xs font-bold px-2 py-0.5 rounded">
+                <div className="absolute top-2.5 right-2.5 bg-[#E50914] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">
                   {progress}%
                 </div>
               </div>
 
-              <div className="mt-2">
-                <h3 className="text-sm font-semibold text-white line-clamp-1">
+              <div className="mt-2.5 px-1">
+                <h3 className="text-sm font-bold text-white group-hover:text-primary transition-colors line-clamp-1">
                   {mock.name}
                 </h3>
-                <p className="text-xs text-[#A3A3A3] mt-0.5">
+                <p className="text-xs text-muted mt-0.5 font-medium">
                   {answered} of {total} questions answered
                 </p>
               </div>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CT 1: GA (Ancient History)</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    CT 1: GA (Ancient History) 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">From which of the Harappan period site has the evidence of an inscription been found?</div>
+  <div class="question lang-hi">निम्न में से किस हडप्पाकालीन स्थल में सूचना पट्ट अभिलेख का साक्ष्य मिलता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Rakhigarhi</div><div class="option">Lothal</div><div class="option">Mohenjodaro</div><div class="option correct">Dholavira</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">राखीगढ़ी</div><div class="option">लोथल</div><div class="option">मोहनजोदड़ो</div><div class="option correct">धोलावीरा</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><span style="">The correct answer is&nbsp;<u><strong>Dholavira</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><span style="">From&nbsp;<u><strong>Dholavira</strong></u>, evidence of an inscription has been found.</span> <ul> <li>An inscription comprising ten large-sized signs of the Harappan script was excavated from here.</li> </ul> </li> <li><span style="font-weight: 700;">Dholavira</span> <ul> <li>​It&nbsp;is an archaeological site at Khadirbet in Bhachau Taluka of Kutch District, in the state of Gujarat.</li> <li>It&nbsp;was discovered in 1967-68 by J. P. Joshi.</li> <li><span style="font-weight: 700;">A series of reservoirs are found to the east and south of the Citadel.</span></li> <li>Excavations have revealed water reservoirs made of sandstone and mud- bricks.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">Lothal:</span> <ul> <li>It is located in the Bhal region of Gujarat state.</li> <li>It was discovered in 1954. The Archeological Survey of India (ASI) excavated it from 13 February 1955 to 19 May 1960.</li> <li>It&nbsp;is a lower town and dockyard.</li> <li>In ancient times, it was a vital and flourishing trading hub with its beads and gems trade.</li> </ul> </li> <li><span style="font-weight: 700;">Mohenjodaro</span> <ul> <li>​It&nbsp;was discovered in 1922 by R. D. Bannerjee.</li> <li>A bronze statuette dubbed the &quot;Dancing Girl&quot; was found in Mohenjo-Daro in 1926 and is now in the National Museum, New Delhi.</li> </ul> </li> <li><strong><span style="">Rakhigarhi</span></strong> <ul> <li><span style="">It </span>is present in the Hisar district of Haryana.</li> <li><span style="">This site was excavated by Shri Amarendra Nath of the Archeological Survey of India.</span></li> <li>The site of Rakhigarh is one of the five known biggest townships of the Harappan civilization on the Indian subcontinent.</li> <li>Five interconnected mounds spread over a huge area from the Rakhigarhi&#39;s unique site. Two mounds, out of five, were thickly populated. <span style="">​</span></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>धोलावीरा</strong></u> है।&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>धोलावीरा</strong></u> से एक शिलालेख के साक्ष्य मिले हैं। <ul> <li>हड़प्पा लिपि के दस बड़े आकार के चिह्नों वाला एक शिलालेख यहाँ से खुदाई में प्राप्त हुआ था।</li> </ul> </li> <li><strong>धोलावीरा</strong></li> <li>यह गुजरात राज्य के कच्छ जिले के भचाऊ तालुका में खदिरबेट में एक पुरातात्विक स्थल है।</li> <li>इसकी खोज 1967-68 में जे पी जोशी ने की थी।</li> <li><strong>गढ़ के पूर्व और दक्षिण में जलाशयों की एक शृंखला पाई जाती है।</strong></li> <li>उत्खनन से बलुआ पत्थर और मिट्टी की ईंटों से बने जलाशयों का पता चला है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>लोथल:</strong> <ul> <li>यह गुजरात राज्य के भाल क्षेत्र में स्थित है।</li> <li>इसकी खोज 1954 में हुई थी। भारतीय पुरातत्व सर्वेक्षण (ASI) ने 13 फरवरी 1955 से 19 मई 1960 तक इसकी खुदाई की थी।</li> <li>यह एक निचला शहर और बंदरगाह&nbsp;है।</li> <li>प्राचीन काल में, यह अपने मोतियों और रत्नों के व्यापार के साथ एक महत्वपूर्ण और समृद्ध व्यापारिक केंद्र था।</li> </ul> </li> <li><strong>मोहनजोदड़ो</strong> <ul> <li>इसकी खोज 1922 में आर डी बनर्जी ने की थी।</li> <li>1926 में मोहनजो-दारो में &quot;डांसिंग गर्ल&quot; नामक एक कांस्य प्रतिमा मिली थी और अब यह राष्ट्रीय संग्रहालय, नई दिल्ली में है।</li> </ul> </li> <li><strong>राखीगढ़ी</strong> <ul> <li>यह हरियाणा के हिसार जिले में मौजूद है।</li> <li>इस स्थल की खुदाई भारतीय पुरातत्व सर्वेक्षण के श्री अमरेंद्र नाथ ने की थी।</li> <li>राखीगढ़ की क्षेत्र&nbsp;भारतीय उपमहाद्वीप पर हड़प्पा सभ्यता की पांच ज्ञात सबसे बड़ी बस्तियों में से एक है।</li> <li>राखीगढ़ी से एक विशाल क्षेत्र में फैले पाँच आपस में जुड़े हुए टीले एक अनूठा स्थल है। पाँच में से दो टीले घनी आबादी वाले थे।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Pali Texts are associated with which religious literature?</div>
+  <div class="question lang-hi">पाली लिपि किस धार्मिक ग्रंथो से संबधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hinduism</div><div class="option">Islam</div><div class="option">Jews</div><div class="option correct">Buddhism</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हिंदू</div><div class="option">इस्लाम</div><div class="option">यहूदी</div><div class="option correct">बुद्ध</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u><span style="">Buddhism.</span></u></strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The<strong> Buddha </strong>delivered his sermons in <strong>Pali.</strong></li> <li>The <strong>Buddha</strong> imparted his lessons verbally through <strong>discussion and argument.</strong></li> <li>The talks were not created when he was alive.</li> <li>These were put together by his followers at an elders&#39; meeting in <strong>Vesali</strong> (<strong>Vaishali</strong>), not <strong>Sarnath</strong>, after his passing.</li> <li>All of <strong>Buddhism&#39;s canonical</strong> <strong>writings</strong> are written in <strong>Pali</strong>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><strong>&nbsp;Pali Literature</strong></p> <ul> <li>The term <strong>&quot;Pali&quot;</strong> refers to the collection of <strong>Buddhist holy scriptures and meaning &quot;a line.&quot;</strong></li> <li><strong>Pali literature</strong> is primarily<strong> religious and intellectual in nature.</strong></li> <li>The <strong>Pali Canon</strong> is a vast collection of <strong>Buddhist scriptures</strong> and texts that includes the earliest and most important works of <strong>Pali literature.</strong></li> <li>The <strong>Tipitaka</strong> is considered to as the foundation and core of <strong>Buddha&#39;s teachings</strong>.</li> <li>It is found that <strong>Tipitaka</strong> contains practically all of <strong>Buddha&#39;s</strong> original teachings.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>बौद्ध धर्म</strong></u> है।<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>बुद्ध</strong> ने <strong>पाली</strong> में अपना उपदेश दिया।</li> <li><strong>बुद्ध</strong> ने अपने उपदेशों को मौखिक रूप से <strong>चर्चा और तर्क</strong> के माध्यम से प्रदान किया।</li> <li>जब वे जीवित थे तब वार्ता की रचना नहीं हुई थी।</li> <li>उनके अनुयायियों द्वारा उनके गुजर जाने के बाद, <strong>सारनाथ</strong> नहीं, <strong>वैशाली (वैशाली)</strong> में एक बुजुर्ग सभा में इन्हें एक साथ रखा गया था।</li> <li><strong>बौद्ध धर्म के सभी प्रामाणिक लेख पाली</strong> में लिखे गए हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><strong>&nbsp;</strong><strong>पाली साहित्य</strong></p> <ul> <li>शब्द <strong>&quot;पाली&quot;</strong> <strong>बौद्ध पवित्र शास्त्रों के संग्रह को संदर्भित करता है और जिसका अर्थ है &quot;एक पंक्ति।&quot;</strong></li> <li><strong>पाली साहित्य</strong> मुख्य रूप से <strong>धार्मिक और बौद्धिक प्रकृति </strong>का है।</li> <li><strong>पाली कैनन</strong> <strong>बौद्ध शास्त्रों</strong> और ग्रंथों का एक विशाल संग्रह है जिसमें <strong>पाली साहित्य</strong> के शुरुआती और सबसे महत्वपूर्ण कार्य शामिल हैं।</li> <li><span style="font-weight: 700; ">त्रिपिटक</span> को <strong>बुद्ध की शिक्षाओं</strong> का आधार और मूल माना जाता है।</li> <li>यह पाया गया है कि <strong>त्रिपिटक</strong> में व्यावहारिक रूप से <strong>बुद्ध</strong> की सभी मूल शिक्षाएँ समाहित हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">&#39;Mridhara-Vacha&#39; mentioned in Rig-Veda refers to&nbsp;&nbsp;</div>
+  <div class="question lang-hi">ऋग्वेद में वर्णित &#39;मृधर-वाच&#39; का तात्पर्य है:</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">One who performs sacrifices</span></div><div class="option correct"><span style="">One who does not perform sacrifices</span></div><div class="option"><span style="">One who worships nature</span></div><div class="option"><span style="">One who worships stone</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">वह जो बलि देता है।</span></div><div class="option correct"><span style="">वह जो बलि नहीं देता है।</span></div><div class="option"><span style="">वह जो प्रकृति की पूजा करता है।</span></div><div class="option"><span style="">वह जो पत्थर की पूजा करता है।</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is One who does not perform sacrifices.</p> <p>The Rigveda is an ancient Indian sacred collection of Hindu hymns, prayers, and liturgical verses. It is considered one of the oldest religious texts in the world and is estimated to have been composed between 1700 and 1100 BCE.</p> <ul> <li>Brahmin is a Hindu caste traditionally associated with priests, scholars, and teachers. Brahmins have played a significant role in the preservation and cultural traditions in Hindu society, including the study and recitation of the Vedas, of which the Rigveda is one.</li> <li>The Ashvamedha, a ritual in which a horse was allowed to roam freely for a year, then finally sacrificed, is mentioned in Vedic texts such as the Yajurveda.</li> <li>The main way of worshiping the gods was to recite praises and offer yagya&nbsp;sacrifices.&nbsp;There was more emphasis on praise lessons.</li> <li>Indra and Agni were invoked to receive the sacrifices offered by the whole people.</li> <li>Vegetables, barley, etc. were given in the sacrifice.&nbsp;&nbsp;</li> <li>The people of the Rigvedic period used to worship their deities with the desire to get progeny, animals, food grains, health, etc. from them.</li> <li> <p>On the other hand, In Vedic times we also find&nbsp;mention of &#39;Mridhara-Vacha&#39;,&nbsp;which means &#39;the one who does not sacrifice&#39;.</p> </li> </ul> <p>​Hence the correct answer will be option (2).</p></div>
+    <div class="lang-hi"><p>सही उत्तर है अर्थात&nbsp;वह जो बलि नहीं देता है।</p> <ul> <li>ऋग्वेद हिंदू भजनों, प्रार्थनाओं और प्रचलित छंदों का एक प्राचीन भारतीय पवित्र संग्रह है। इसे दुनिया के सबसे पुराने धार्मिक ग्रंथों में से एक माना जाता है और अनुमान है कि इसकी रचना 1700 और 1100 ईसा पूर्व के बीच हुई थी।</li> <li>ब्राह्मण पारंपरिक रूप से पुजारियों, विद्वानों और शिक्षकों से जुड़ी एक हिंदू जाति है। ब्राह्मणों ने वेदों के अध्ययन और पाठ सहित हिंदू समाज में संरक्षण और सांस्कृतिक परंपराओं में महत्वपूर्ण भूमिका निभाई है, जिनमें से ऋग्वेद एक है।</li> <li>अश्वमेध, एक अनुष्ठान जिसमें एक घोड़े को एक वर्ष के लिए स्वतंत्र रूप से घूमने की अनुमति दी गई थी, फिर अंत में आहुति&nbsp;किया जाता है,&nbsp;यह प्रथा यजुर्वेद जैसे वैदिक ग्रंथों में वर्णित है।</li> <li>देवताओं की पूजा करने का मुख्य तरीका स्तुति करना और यज्ञ आहुति&nbsp;चढ़ाना था।&nbsp;इसमें स्तुति पाठ पर अधिक जोर था।</li> <li>संपूर्ण लोगों द्वारा चढ़ाए गए आहुति&nbsp;को प्राप्त करने के लिए इंद्र और अग्नि का आह्वान किया गया था।</li> <li>आहुति&nbsp;में सब्जी, जौ आदि चीजें दी जाती थीं।</li> <li>ऋग्वैदिक काल के लोग उनसे संतान, पशु, अन्न, स्वास्थ्य आदि की प्राप्ति की इच्छा से अपने देवताओं की पूजा करते थे।</li> <li> <p>दूसरी ओर, वैदिक काल में हमें &#39;मृधरा-वाच&#39; का भी उल्लेख मिलता है, जिसका अर्थ है &#39;वह जो आहुति&nbsp;नहीं करता&#39; है।</p> </li> </ul> <p>​अतः सही उत्तर विकल्प (2) होगा।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the correct sequence of Mahajanapadas from west to east?</div>
+  <div class="question lang-hi">पश्चिम से पूर्व की ओर महाजनपदों का सही क्रम क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Avanti, Vatsa, Chedi, Anga, Magadha</div><div class="option">Chedi, Vatsa, Avanti, Magadha, Anga</div><div class="option correct"><span style="">Avanti</span>, <span style="">Chedi</span>, <span style="">Vatsa</span>, <span style="">Magadha</span>, <span style="">Anga</span></div><div class="option"><span style="">Vatsa</span>, <span style="">Avanti</span>, <span style="">Anga</span>, <span style="">Chedi</span>, <span style="">Magadha</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">अवंति, वत्स, चेदि, अंग, मगध</div><div class="option">चेदि, वत्स, अवंति, मगध, अंग</div><div class="option correct">अवंति, चेदि, वत्स, मगध, अंग</div><div class="option">वत्स, अवंति, अंग, चेदि, मगध</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u><span style="">Avanti</span><span style="">,&nbsp;</span><span style="">Chedi</span><span style="">,&nbsp;</span><span style="">Vatsa</span><span style="">,&nbsp;</span><span style="">Magadha</span><span style="">,&nbsp;</span></u><span style=""><u>Anga</u>.</span></strong></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></p> <ul> <li><strong>Avanti </strong>was one of the most powerful Mahajanapadas in the 6th century B.C. <ul> <li>The core area of this kingdom would roughly correspond to the<strong> Ujjain district of Madhya Pradesh</strong>, extending up to the river Narmada.</li> </ul> </li> <li><strong>The Chedi</strong> territory roughly corresponds to the eastern parts of the modern <strong>Bundelkhand</strong>. <ul> <li>It might have stretched up to the <strong>Malwa plateau.</strong> Sisupala the famous enemy of Krishna, was a Chedi ruler.&nbsp;</li> </ul> </li> <li><strong>Vatsa </strong>with its capital at Kausambi was one of the most powerful principalities of the sixth century B.C. <ul> <li>Kausambi has been identified with modem Kosam or the river Yamuna near<strong> </strong><strong><span style="">Prayagraj</span>.&nbsp;</strong></li> </ul> </li> <li><strong>Magadha</strong> consisted of the areas around Patna and Gaya in south Bihar. <ul> <li>It was protected by the rivers Son and Ganga on its north and west.</li> <li>Towards the south, it reached up to the <strong>Chotanagpur plateau.</strong></li> <li>In the east the river Champa separated it from Anga.</li> <li>Its capital was called <strong>Girivraja or Rajagriha.</strong></li> </ul> </li> <li><strong>Anga</strong> comprised the districts of Bhagalpur and Monghyr in Bihar. <ul> <li>It may have extended northwards to the <strong>river Kosi and included some parts of the district of Purnea.</strong></li> <li>It was located to the east of Magadha and west of the Rajamahal hills.&nbsp;</li> </ul> </li> </ul> <p><strong>Hence, option 3 is the correct answer</strong>.</p> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/23/02/Screenshot%20%283%29.png" style="width: 400px; height: 367px;" /></p></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<span style=""><u><strong>अवंती, चेदि, वत्स, मगध, अंग</strong></u> है।</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></p> <ul> <li><strong>अवंती</strong> छठी शताब्दी ईसा पूर्व में सबसे शक्तिशाली महाजनपदों में से एक था। <ul> <li>इस साम्राज्य का मुख्य क्षेत्र मोटे तौर पर <strong>मध्य प्रदेश के उज्जैन जिले </strong>के अनुरूप <span style="">है</span>, जो नर्मदा नदी तक फैला हुआ है।</li> </ul> </li> <li><strong>चेदि</strong> क्षेत्र मोटे तौर पर आधुनिक <b>बुंदेलखंड</b>&nbsp;के पूर्वी भागों से मेल खाता है। <ul> <li>यह <strong>मालवा के पठार</strong> तक फैला हो सकता है। कृष्ण का प्रसिद्ध शत्रु शिशुपाल एक चेदि शासक था।</li> </ul> </li> <li><strong>वत्स</strong> कौशांबी में अपनी राजधानी के साथ छठी शताब्दी ईसा पूर्व की सबसे शक्तिशाली रियासतों में से एक थी। <ul> <li>कौशांबी की पहचान आधुनिक कोसम या <strong><span style="">प्रयागराज&nbsp;</span></strong>के पास यमुना नदी से की गई है।</li> </ul> </li> <li><strong>मगध </strong>में, दक्षिण बिहार <span style="">के</span> पटना और गया के आसपास के क्षेत्र शामिल थे। <ul> <li>इसके उत्तर और पश्चिम में सोन और गंगा नदियों द्वारा इसे संरक्षित किया गया था।</li> <li>दक्षिण की ओर यह <strong>छोटानागपुर पठार </strong>तक <span style="">फैल</span>&nbsp;गया।</li> <li>पूर्व में चंपा नदी ने इसे अंग&nbsp;से अलग कर दिया।</li> <li>इसकी राजधानी <strong>गिरिव्रज या राजगृह</strong> कहलाती थी।</li> </ul> </li> <li><strong>अंग</strong> में बिहार के भागलपुर और मुंगेर जिले शामिल थे। <ul> <li>यह<strong> कोसी नदी</strong> तक उत्तर की ओर बढ़ा हो सकता है और <strong>इसमें पूर्णिया जिले के कुछ हिस्से शामिल</strong> हैं।</li> <li>यह मगध के पूर्व और राजमहल पहाड़ियों के पश्चिम में स्थित था।</li> </ul> </li> </ul> <p><strong>अतः विकल्प 3 सही उत्तर है।</strong></p> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/23/02/Screenshot%20%283%29.png" style="width: 400px; height: 367px;" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following kings of Chalukya dynasty of Vatapi assumed the title of &lsquo;Prithvi Vallabha Satyashraya&rsquo;?</div>
+  <div class="question lang-hi">वातापी के चालुक्य वंश के किस शासक ने &#39;पृथ्वी वल्लभ सत्याश्रय&#39; की उपाधि ग्रहण की थी?&nbsp;</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Raja Jaysimha</div><div class="option">Kirti Verma</div><div class="option">Vikramaditya</div><div class="option correct">Pulakeshin Second</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">राजा जयसिंह&nbsp;</div><div class="option">कीर्तिवर्मा</div><div class="option">विक्रमादित्य&nbsp;</div><div class="option correct">पुलकेशिन द्वितीय&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong>&nbsp;<span style=""><u>Pulakeshin Second</u>.</span></strong></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></p> <ul> <li><strong>The Chalukyas became the sovereign power with Pulakesin-I. </strong></li> <li>He laid the foundations of his kingdom by making the hill near <strong>Badami in the Bijapur district of Karnataka</strong> into a strong fortress in 543-44 CE and performed a horse sacrifice.</li> <li>With the expeditions of<strong> Pulakesin-II the Chalukyas</strong> became the paramount power in Deccan as the Western Gangas and Alupas in the south and the Latas, Malavas, and Gujarat in the north offered their submission to him.</li> <li>The army of Pulakesin-II checked the forces of Harshavardhana on the banks of the Narmada.&nbsp;</li> <li><span style="font-weight: 700;">Ravikirti&rsquo;s Aihole inscription speaks in detail about the victory of Pulakesin II over Harsha. After the victory, Pulakesin II assumed the title of Parameshvara (Supreme Lord).&nbsp;</span></li> <li>Pulakesin-II also defeated the Vishnukundins of the Andhra delta.</li> <li><strong>He also took the title of&nbsp;<span style="">&lsquo;Prithvi Vallabha Satyashraya&rsquo;.</span></strong></li> <li>But, he was not satisfied demanding just offers of submission as the Krishna-Godavari delta with almost one million acres of rich arable land was too valuable a possession.</li> <li>In the reign of Pulakesin II (609-42 CE) that the Chalukya territory expanded to a large extent.</li> <li>The Ganga rulers of South Karnataka and the Alupas of the West coast (South Kanara District) were made their subordinates.</li> <li><strong>Narasimhavarman then attacked the Chalukyas, captured Badami, and probably killed Pulakesin-II.&nbsp;</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>पुलकेशिन द्वितीय</strong></u> <span style="">है</span>।</p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></span></p> <ul> <li><strong>पुलकेशिन-I के साथ, चालुक्यों ने सार्वभौम सत्ता ग्रहण की थी।</strong></li> <li>उन्होंने <strong>कर्नाटक के बीजापुर जिले में बादामी</strong> के पास पहाड़ी को 543-44 ईसवी&nbsp;में एक मजबूत किले में बनाकर अपने राज्य की नींव रखी और एक घोड़े की बलि दी थी।</li> <li><strong><span style="">पुलकेशिन द्वितीय</span>&nbsp;</strong>के अभियानों के साथ <strong>चालुक्य</strong> दक्कन में सर्वोच्च शक्ति बन गए क्योंकि दक्षिण में पश्चिमी गंगा और अलूपा और उत्तर में लता, मालव और गुजरात ने उन्हें अपनी अधीनता की पेशकश की थी।</li> <li>पुलकेशिन-द्वितीय की सेना ने नर्मदा के तट पर हर्षवर्धन की सेना की जाँच की थी।</li> <li><strong>रविकीर्ति का ऐहोल शिलालेख हर्ष पर पुलकेशिन द्वितीय की जीत के बारे में विस्तार से बताता है। जीत के बाद,</strong> <strong><span style="">पुलकेशिन द्वितीय</span> ने परमेश्वर (सर्वोच्च भगवान) की उपाधि धारण की थी।</strong></li> <li>पुलकेशिन-द्वितीय ने आंध्र डेल्टा(द्रोणी) के विष्णुकुंडिनों को भी पराजित किया था।</li> <li><strong>उन्होंने &#39;पृथ्वी वल्लभ सत्याश्रय&#39; की उपाधि भी धारण की थी।</strong></li> <li><span style="">कृष्णा-गोदावरी डेल्टा(द्रोणी), जिसमें लगभग एक लाख एकड़ उपजाऊ कृषि योग्य भूमि है, उनके लिए इतना मूल्यवान अधिकार था कि वह केवल समर्पण के प्रस्तावों को स्वीकार करके ही संतुष्ट हो सकते थे।</span></li> <li><span style="">पुलकेशिन द्वितीय</span> (609-42 <span style="">ईसवी</span>) के शासनकाल में चालुक्य क्षेत्र का काफी हद तक विस्तार हुआ<span style="">&nbsp;था।</span></li> <li>दक्षिण कर्नाटक के गंगा शासकों और पश्चिमी तट (दक्षिण कनारा जिला) के अलूपों को उनके अधीन कर दिया गया<span style="">&nbsp;था।</span></li> <li><strong>नरसिंहवर्मन ने तब चालुक्यों पर हमला किया, बादामी पर कब्जा कर लिया और संभवतः पुलकेशिन-द्वितीय को मार डाला था।</strong>​</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Gold coins issued by the Gupta kings were known as</div>
+  <div class="question lang-hi">गुप्त राजाओं द्वारा जारी किए गए सोने के सिक्कों को जाना जाता था?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Sonaras</div><div class="option correct">Dinaras</div><div class="option">Panas</div><div class="option">Sona-panas</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सोनार</div><div class="option correct">दिनार</div><div class="option"><span style="">पण</span></div><div class="option">सोना-<span style="">पण</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>Gold coins issued by the Gupta kings were known as <u><strong>Dinaras.</strong></u><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>The Gupta gold coins, known as Dinaras, are among the <strong>finest examples of numismatics and aesthetic excellence.</strong></li> <li>The governing king and legends were shown on the front of the coins, while a goddess was depicted on the reverse.</li> <li>The emperor is shown with a<strong> bow </strong>in his left hand on the most popular Gupta currency.</li> <li> <p>On certain<strong> Samudragupta&nbsp;</strong>and<strong> Kumaragupta coins,</strong> the king is represented seated on a sofa, playing the Veena.</p> </li> </ul> <p>Hence, we can conclude that the <strong>gold coins of the Gupta empire were called</strong>&nbsp;<u style=""><span style="font-weight: 700;">Dinaras.</span></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><u><strong>&nbsp;Sonaras</strong></u> <ul> <li><u><strong>​</strong></u>Sonaras was a&nbsp;Hindu&nbsp;caste belonging to ancient India.</li> <li>Their occupation was<strong> Goldsmith.</strong></li> <li>That&#39;s why they are called Sonaras.</li> </ul> </li> <li><u><strong>Panas</strong></u> <ul> <li>​In the 6th century BCE, the&nbsp;coin was recognized in ancient India named <strong>Pana.</strong></li> <li>Except for pana, the other coins are named <strong>Purana and Karshapana.</strong></li> <li>These coins were made of <strong>silver </strong>and were not<strong> in any regular shapes</strong></li> <li>In the Mauryan Kingdom silver coins are also called <strong>Panas or Ardha-Pana.</strong></li> </ul> </li> <li><strong><u>Sona-panas</u></strong> <ul> <li>​It was also a type of coin found In ancient India.</li> <li>Some scholars believe that it had also a connection with <strong>gold pana</strong> which is called Dinars in the Gupta age.</li> <li>All of those coins&#39; weights are <strong>different from each another.</strong> <ul> <li><strong>1 Satamana = 100 Rattis / 11 grams of pure silver</strong></li> <li><strong>1 Karshapana = 32 Rattis/ 3.3 grams of pure silver</strong></li> <li><strong>&frac12; Karshapana = 16 Rattis</strong></li> <li><strong>&frac14; Karshapana (masha) = 8 Rattis</strong></li> <li><strong>1/8 Karshapana = 4 Ratti</strong></li> </ul> </li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>गुप्त राजाओं द्वारा जारी सोने के सिक्कों को <u><strong>दिनार</strong></u> कहा जाता था।<u><strong><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></strong></u></p> <ul> <li>गुप्त सोने के सिक्के, जिन्हें दीनार के नाम से जाना जाता है, <strong>मुद्राशास्त्र और सौंदर्य उत्कृष्टता के बेहतरीन उदाहरणों</strong> में से एक हैं।</li> <li>शासक राजा और किंवदंतियों को सिक्कों के सामने दिखाया गया था, जबकि एक देवी को पीछे की ओर चित्रित किया गया था।</li> <li>सबसे लोकप्रिय गुप्त मुद्रा पर सम्राट को बाएं हाथ में धनुष के साथ दिखाया गया है।</li> <li> <p>कुछ <strong>समुद्रगुप्त</strong> और <strong>कुमारगुप्त के सिक्कों</strong> पर, राजा को सोफे पर बैठे वीणा बजाते हुए दर्शाया गया है।</p> </li> </ul> <p>इसलिए, हम यह निष्कर्ष निकाल सकते हैं कि <strong>गुप्त साम्राज्य के सोने के सिक्कों को <u>दिनार</u> कहा जाता था।</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul> <li><u><strong>सोनार</strong></u> <ul> <li><u><strong>​</strong></u>सोनार&nbsp;प्राचीन भारत से संबंधित एक हिंदू जाति थी।</li> <li>इनका पेशा <strong>सुनार</strong> था।</li> <li>इसलिए इन्हें सोनार कहा जाता है।</li> </ul> </li> <li><u><strong><span style="">पण</span><span style="">&nbsp;</span></strong></u><strong>​</strong> <ul> <li>छठी शताब्दी ईसा पूर्व में, सिक्के को प्राचीन भारत में <strong><span style="">पण</span></strong> नाम से मान्यता दी गई थी।</li> <li>पण को छोड़कर अन्य सिक्कों के नाम <strong>पुराण और कर्षपण</strong> हैं।</li> <li>ये सिक्के चाँदी के बने थे और <strong>किसी नियमित आकार में</strong> नहीं थे</li> <li>मौर्य साम्राज्य में चांदी के सिक्कों को&nbsp;<strong><span style="">पण&nbsp;</span>या अर्ध-पण</strong> भी कहा जाता है।</li> </ul> </li> <li><strong><u>सोना-</u></strong><u style=""><span style="font-weight: 700;">पण</span></u> <ul> <li>​यह भी प्राचीन भारत में पाया जाने वाला एक प्रकार का सिक्का था।</li> <li>कुछ विद्वानों का मत है कि इसका सम्बन्ध <strong>सोने के <span style="">पण</span>&nbsp;</strong>से भी था जिसे गुप्तकाल में दीनार कहा जाता था।</li> <li>उन सभी सिक्कों का वजन <strong>एक दूसरे से अलग</strong> है। <ul> <li><strong>1 सातमना = 100 रत्ती / 11 ग्राम शुद्ध चांदी</strong></li> <li><strong>1 कर्षपण = 32 रत्ती/ 3.3 ग्राम शुद्ध चांदी</strong></li> <li><strong>&frac12; कर्षपण = 16 रत्ती</strong></li> <li><strong>&frac14; कर्षपण (माशा) = 8 रत्ती</strong></li> <li><strong>1/8 कर्षपण = 4 रत्ती</strong></li> </ul> </li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">With w</span><span style="">hich one of the following is the classic &#39;Jivaka Chintamani&#39; associated?</span></div>
+  <div class="question lang-hi">निम्नलिखित में से किससे महाकाव्य &#39;जीवक चिंतामणि&#39; संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Jainism</div><div class="option">Hinduism</div><div class="option">Buddhism</div><div class="option">Sikhism</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">जैन धर्म</div><div class="option">हिन्दू धर्म</div><div class="option">बौद्ध धर्म</div><div class="option">सिख धर्म</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><span style=""><u><strong>Jivaka Chintamani </strong></u>was&nbsp;a classic associated with<u><strong> Jainism.</strong></u></span><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li>The Tamil epic <strong>Jivakacintamani</strong>&nbsp;is probably a compilation of much older, fantasy-filled fictional Tamil folk stories.</li> <li><span style="">The Jivaka Cintamani&nbsp;is also called the<strong>&nbsp;Mana Nool</strong>.</span></li> <li>The work contains 3145&nbsp;quatrains and is divided into 13 cantos called <strong>Illambakams.</strong></li> <li>Jivaka Cintamani&nbsp;&ndash; as it has survived into the modern era &ndash; is an epic of <strong>3,145 stanzas</strong>, each stanza of four highly lyrical lines.</li> <li>The epic&#39;s final verses consist of <strong>2,700&nbsp;hymns.</strong></li> <li>Members of the Tamil Jain community ceremonially recited portions of the epic in the 19th century.</li> <li>This work was a Sangam era literature that covered many grammarian, scholars.</li> <li>According to the 14th-century<strong>&nbsp;Naccinarkkiniyar&nbsp;</strong>commentary, the <strong>2,700 verses</strong> were composed by <strong>Thiruthakkadevar.</strong></li> <li>According to a Jain tradition, 2 of the quatrains were composed by the teacher and counselor of <strong>Thiruthakkadevar.</strong></li> <li> <p>Apart from Jainism, there was no link between this classic to Hinduism, Buddhism, and Sikhism, nor any other tradition.</p> </li> </ul> <p>Hence, we can conclude that <strong>Jivaka Chintamani</strong> was a classic and associated with <strong>Jainism.</strong></p></div>
+    <div class="lang-hi"><p><u><strong>जीवक चिंतामणि</strong></u> महाकाव्य <u><strong>जैन धर्म</strong></u> से जुड़ा&nbsp;एक महाकाव्य है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>तमिल महाकाव्य <strong>जीवकचिंतामणि</strong> शायद बहुत पुरानी, ​​कल्पना से भरी काल्पनिक तमिल लोक कथाओं का संकलन है।</li> <li>जीवक&nbsp;चिंतामणि को <strong>मन नूल</strong> भी कहा जाता है।</li> <li>इस लेखन-कार्य में 3145&nbsp;चौपाई&nbsp;हैं और इसे 13 सर्गों में विभाजित किया गया है जिन्हें <strong>इल्लम्बकम</strong> कहा जाता है।</li> <li>जीवक चिन्तामणि - जैसा कि यह आधुनिक युग में जीवित है - <strong>3,145 छंदों </strong>का एक महाकाव्य है, प्रत्येक छंद चार&nbsp;गेय पंक्तियों का है।</li> <li>महाकाव्य के अंतिम छंदों में<strong> 2,700 सूक्त </strong>शामिल हैं।</li> <li>तमिल जैन समुदाय के सदस्यों ने 19वीं शताब्दी में समारोहपूर्वक महाकाव्य के कुछ हिस्सों का पाठ किया।</li> <li>यह लेखन-कार्य&nbsp;एक संगम युग साहित्य था जिसमें कई व्याकरणविद, विद्वान शामिल थे।</li> <li>14वीं सदी के <strong>नाकिनार्ककिनियर</strong> विवरण के अनुसार,<strong> 2,700 छंदों </strong>की रचना <strong>थिरुथक्कदेवर</strong> ने की थी।</li> <li>एक जैन परंपरा के अनुसार, 2 चौपाइयों की रचना <strong>थिरुथक्कदेवर</strong> के शिक्षक और परामर्शदाता द्वारा की गई थी।</li> <li>जैन धर्म के अलावा, इस महाकाव्य&nbsp;के बीच हिंदू धर्म, बौद्ध धर्म और सिख धर्म के बीच कोई संबंध नहीं था, न ही कोई अन्य परंपरा थी।</li> </ul> <p>इसलिए, हम यह निष्कर्ष निकाल सकते हैं कि <strong>जीवक चिंतामणि</strong> एक महाकाव्य है और<strong> जैन धर्म </strong>से जुड़ा&nbsp;है।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Who was the Sri Lankan Prince, whose aid was used by the Pallavas to win over the Chalukyas?</div>
+  <div class="question lang-hi">श्रीलंका के वह राजकुमार कौन थे, जिनकी सहायता से पल्लवों ने चालुक्यों को अपने अधीन किया था?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Rudravarma</div><div class="option correct">Manavarman</div><div class="option">Mahendravarman I</div><div class="option">Simhavishnu</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">रुद्रवर्मा</div><div class="option correct">मानववर्मन</div><div class="option">महेन्द्रवर्मन प्रथम</div><div class="option"><span style="">सिं</span><span style="">हविष्णु </span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><span style=""><u><strong>Manavarman </strong></u></span>was the&nbsp;Sri Lan<span style="">kan Prince&nbsp;whose</span><span style=""> aid was used by the Pallavas to win over the Chalukyas.<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><strong>Manavarman</strong>&nbsp;in Indian sources was the sole ruler of&nbsp;Anuradhapura&nbsp;from<strong> 684 AD to 718 AD.</strong></li> <li>He<strong> befriended&nbsp;Narasimhavarman I</strong>, the ruler of the Pallavas, and<strong> served under him.</strong></li> <li>Manavanna <strong>assisted</strong> Narasimhavarman I in his war against the&nbsp;Deccan Chalukyas.</li> <li>His helping hand secured&nbsp;a decisive victory at the&nbsp;Battle of Vatapi, occupying the Chalukya capital and damaging the empire&#39;s prestige.</li> <li>In gratitude for this assistance and his remarkable prowess as a commander, Narasimhavarman gave Prince Manavamma a formidable armed force to recapture the&nbsp;Sri Lankan&nbsp;throne which had been re-usurped<strong>&nbsp;Dathopatissa II.&nbsp;</strong></li> <li> <p><strong>According to Pallava sources, Sri Lanka was under Narasimhavarman&#39;s suzerainty for a time.</strong></p> </li> </ul> <p><strong>Hence, we can conclude that&nbsp;<span style="">Manavarman was the&nbsp;Sri Lankan Prince, whose aid was used by the Pallavas to win over the Chalukyas.</span></strong></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li><u><strong><span style="">Mahendravarman I</span></strong></u> <ul> <li><u><strong><span style="">​</span></strong></u><strong><span style="">Mahendravarman</span> I</strong>&nbsp;was a&nbsp;Pallava&nbsp;emperor who ruled the Southern portion of the present-day&nbsp;Andhra&nbsp;region.</li> <li><span style="color: rgb(32, 33, 34); ">&nbsp;</span>He was a scholar, painter, architect, and musician.&nbsp;He is also called <strong>vichitrachitta, because</strong></li> <li><strong>Mahendrravarma was initially a patron of Jainism, but he converted to the&nbsp;Saiva&nbsp;faith under the influence of the Saiva saint&nbsp;Appar.</strong></li> </ul> </li> <li><u><strong><span style="">Simhavishnu</span></strong></u> <ul> <li><u><strong><span style="">​</span></strong></u><strong><span style="">Simhavishnu</span></strong>&nbsp;was one of the&nbsp;Pallava&nbsp;kings of&nbsp;India.</li> <li>He was the first Pallava monarch whose domain extended beyond&nbsp;Kanchipuram&nbsp;(Kanchi) in the South.</li> <li>Simhavishnu is known to have been the patron of the&nbsp;Sanskrit&nbsp;poet&nbsp;<strong>Bharavi,</strong> who wrote of the duel between&nbsp;Siva&nbsp;and&nbsp;Arjuna&nbsp;known as <strong>Kirata Arjuneeya.</strong></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><u><strong>मानववर्मन</strong></u> श्रीलंका के राजकुमार थे जिनकी सहायता से पल्लवों ने चालुक्यों को अपने अधीन किया था।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>भारतीय स्रोतों में <strong><span style="">मानववर्मन </span>684 ई. से 718 ई. </strong>तक अनुराधापुरा का एकमात्र शासक थे।</li> <li>उन्होंने पल्लवों के शासक <strong>नरसिंहवर्मन प्रथम से मित्रता की </strong>और<strong> उनके अधीन सेवाएँ दी।</strong></li> <li>मानवन्ना ने दक्कन के चालुक्यों के खिलाफ युद्ध में नरसिंहवर्मन प्रथम की <strong>सहायता </strong>की थी।</li> <li>उनकी सहायता से वातापी के युद्ध में एक निर्णायक जीत हासिल हुई, चालुक्य राजधानी पर अधिकार कर लिया गया और साम्राज्य की प्रतिष्ठा को नुकसान पहुंचाया गया।</li> <li>इस सहायता और एक सेनापति के रूप में उनके उल्लेखनीय कौशल के लिए आभार व्यक्त करते हुए, नरसिंहवर्मन ने राजकुमार मानवन्ना (मनवम्मा) को श्रीलंकाई सिंहासन पर अधिकार करने के लिए एक दुर्जेय सशस्त्र बल दिया, जिसे <strong>दथोपतिसा द्वितीय </strong>ने फिर से हासिल कर लिया था।</li> <li><strong>पल्लव सूत्रों के अनुसार, श्रीलंका एक समय के लिए नरसिंहवर्मन के आधिपत्य में था।</strong></li> </ul> <p><strong>अतः, हम यह निष्कर्ष निकाल सकते हैं कि मानववर्मन श्रीलंका के राजकुमार थे, जिनकी सहायता से पल्लवों ने चालुक्यों पर जीत हासिल की थी।</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><u><strong>महेंद्रवर्मन <span style="">प्रथम</span></strong></u> <ul> <li><strong>महेंद्रवर्मन प्रथम</strong> एक पल्लव सम्राट थे जिसने वर्तमान आंध्र क्षेत्र के दक्षिणी भाग पर शासन किया था।</li> <li>वह एक विद्वान, चित्रकार, वास्तुकार और संगीतकार थे। उन्हें <strong>विचित्रचित्त </strong>भी कहा जाता है,<strong> क्योंकि</strong></li> <li><strong>महेंद्रवर्मन शुरू में जैन धर्म के संरक्षक थे, लेकिन उन्होंने शैव संत अप्पार के प्रभाव में शैव मत को अपना लिया था।</strong></li> </ul> </li> <li><u><strong><span style="">सिं</span><span style="">हविष्णु </span></strong></u> <ul> <li><strong>सिंहविष्णु </strong>भारत के पल्लव राजाओं में से एक थे।</li> <li>वह पहले पल्लव शासक थे, जिसका अधिकार क्षेत्र दक्षिण में कांचीपुरम (कांची) से आगे तक फैला हुआ था।</li> <li>सिंहविष्णु को संस्कृत कवि <strong>भारवि </strong>का संरक्षक माना जाता है, जिन्होंने शिव और अर्जुन के बीच द्वंद्व के बारे में लिखा था जिसे <strong>किरातार्जुनीयम</strong> कहा जाता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Who was the first ruler of the Pala dynasty?</div>
+  <div class="question lang-hi">पाल वंश का पहला शासक कौन थे?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Devapala</div><div class="option">Rampala</div><div class="option correct">Gopala</div><div class="option">Mahipala</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">देवपाल</div><div class="option">रामपाल</div><div class="option correct">गोपाल</div><div class="option">महीपाल</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Gopala</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Gopala</strong>&nbsp;was the first ruler of the&nbsp;<strong>Pala Dynasty</strong>. <ul> <li>The <strong>Pala dynasty</strong> ruled the regions of <strong>Bengal and Bihar</strong> for about 400 years, from the 8th century until the end of the 11th century.</li> <li>Palas followed the Mahayana&nbsp;and&nbsp;Tantric&nbsp;schools of&nbsp;Buddhism.</li> <li><strong>Gopala </strong>was succeeded by&nbsp;<strong>Dharmapala</strong>.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Mahendra Pala:&nbsp;</strong> <ul> <li><strong>​</strong>Mahendrapal was the fourth king of the Pala dynasty of the Bengal region of the Indian subcontinent.</li> <li>He was the son of <strong>Devpala</strong>.</li> </ul> </li> <li><strong>Dharmapala:</strong>&nbsp; <ul> <li>He was the second ruler of the Pala Empire of Bengal and Bihar regions in the Indian subcontinent.</li> <li>He was the son and successor of <strong>Gopal</strong>.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>गोपाल</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>गोपाल, पाल वंश</strong>&nbsp;के प्रथम शासक थे। <ul> <li><strong>पाल राजवंश</strong> ने 8वीं शताब्दी से 11वीं शताब्दी के अंत तक लगभग 400 वर्षों तक <strong>बंगाल और बिहार</strong> के क्षेत्रों पर शासन किया।</li> <li>पलास ने बौद्ध धर्म के महायान और तांत्रिक विद्यालयों का अनुसरण किया।</li> <li><strong>गोपाल&nbsp;</strong>का&nbsp;<span style="">उत्तराधिकार&nbsp;</span><strong>धर्मपाल </strong>द्वारा प्राप्त किया गया।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>महेंद्र पाल:</strong> <ul> <li>महेंद्रपाल भारतीय उपमहाद्वीप के बंगाल क्षेत्र के पाल वंश के चौथे राजा थे।</li> <li>वह <strong>देवपाल </strong>के पुत्र थे।</li> </ul> </li> <li><strong>धर्मपाल:</strong> <ul> <li>वह भारतीय उपमहाद्वीप में बंगाल और बिहार क्षेत्रों के पाल साम्राज्य के दूसरे शासक थे।</li> <li>वह <strong>गोपाल </strong>के<strong>&nbsp;</strong>पुत्र और उत्तराधिकारी थे।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Who composed Buddhacharita?</div>
+  <div class="question lang-hi"><span style="">बुद्धचरित की रचना किसने की थी?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Jaydev</div><div class="option">Banabhatta</div><div class="option">Kalidas</div><div class="option correct">Ashvaghosha</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">जयदेव</div><div class="option">बाणभट्ट</div><div class="option"><span style="">कालिदास</span></div><div class="option correct">अश्वघोष</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Ashvaghosha</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>Ashvaghosha&nbsp;was a&nbsp;Sarvastivada Buddhist&nbsp;philosopher and poet</strong></u>. <ul> <li>He was born in&nbsp;Saketa&nbsp;in northern India.</li> <li>Though Pali language literature was popular in Buddhism, Ashvaghosha wrote in&nbsp;Classical Sanskrit.</li> <li>Buddhacharita&nbsp;written by&nbsp;Ashvaghosha&nbsp;is an epic on the life of the Buddha.</li> <li>He also wrote&nbsp;Saundarananda, with the theme of the conversion of Nanda, Buddha&#39;s half-brother, so that he might reach salvation.</li> <li>He is also thought to be the author of the&nbsp;Sutralankara.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Jaidev&nbsp;</strong>was the court poet of Bengal and the famous&nbsp;Sanskrit poet of the 12th century. <ul> <li>He composed the&nbsp;book Geet Govind, an important text of the&nbsp;Bhakti Movement.</li> <li>It was composed in the&nbsp;12th century.</li> </ul> </li> <li><strong>Banabhatta&nbsp;</strong>is the author of Kadambari. <ul> <li>He was the&nbsp;court poet of Harsha&nbsp;who wrote&nbsp;his biography called Harshacharita.</li> </ul> </li> <li><strong>Kalidas&nbsp;</strong>is a pioneer of Sanskrit literature - Shakuntala and Meghdutum are his famous plays. <ul> <li>Mahakavi Kalidas was known as the&nbsp;Shakespeare of India.</li> <li>Malavikagnimitra&nbsp;is also written by&nbsp;Kalidas.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p style=" user-select: initial !important;"><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><span style="font-weight: 700; user-select: initial !important;"><u style="user-select: initial !important;"><font style="vertical-align: inherit;">अश्वघोष</font></u></span><font style="vertical-align: inherit;">&nbsp;है।</font><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=" user-select: initial !important;"> <li style="user-select: initial !important;"><span style="font-weight: 700; user-select: initial !important;">अश्वघोष&nbsp;</span><font style="vertical-align: inherit;">एक&nbsp;</font><span style="font-weight: 700; user-select: initial !important;">सर्वास्तिवाद बौद्ध&nbsp;</span><font style="vertical-align: inherit;">दार्शनिक और कवि थे।</font></li> <li style="user-select: initial !important;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">उनका जन्म&nbsp;</font><font style="vertical-align: inherit;">उत्तरी भारत के&nbsp;</font></font><span style="font-weight: 700; user-select: initial !important;">साकेत&nbsp;में हुआ था।</span></li> <li style="user-select: initial !important;"><font style="vertical-align: inherit;">हालाँकि पाली भाषा का साहित्य बौद्ध धर्म में लोकप्रिय था, अश्वघोष&nbsp;ने&nbsp;</font><span style="font-weight: 700; user-select: initial !important;">शास्त्रीय संस्कृत में लिखा था।</span></li> <li style="user-select: initial !important;"><span style="font-weight: 700; user-select: initial !important;">अश्वघोष&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">द्वारा&nbsp;</font><span style="font-weight: 700; user-select: initial !important;"><font style="vertical-align: inherit;">लिखित बुद्धचरित&nbsp;</font></span><font style="vertical-align: inherit;">बुद्ध के जीवन पर आधारित एक महाकाव्य है।</font></font></li> <li style="user-select: initial !important;"><span style="font-weight: 700; user-select: initial !important;">उन्होंने बुद्ध के सौतेले भाई नंद के रूपांतरण के विषय के साथ सौंदर्यानंद</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;भी लिखा</font><font style="vertical-align: inherit;">, ताकि वे मोक्ष तक पहुंच सकें।</font></font></li> <li style="user-select: initial !important;"><span style="font-weight: 700; user-select: initial !important;">उन्हें सूत्रलंकार</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;का लेखक भी माना जाता है</font><font style="vertical-align: inherit;">।</font></font></li> </ul> <p style=" user-select: initial !important;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul style=" user-select: initial !important;"> <li style="user-select: initial !important;"><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">जयदेव</span><font style="vertical-align: inherit;">&nbsp;बंगाल के दरबारी कवि और&nbsp;</font><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">12वीं शताब्दी के प्रसिद्ध संस्कृत कवि थे</span><font style="vertical-align: inherit;">।</font> <ul> <li style="user-select: initial !important;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">उन्होंने&nbsp;</font><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;"><font style="vertical-align: inherit;">भक्ति आंदोलन</font></span><font style="vertical-align: inherit;">&nbsp;के एक महत्वपूर्ण ग्रंथ&nbsp;</font></font><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">गीत गोविंद</span><font style="vertical-align: inherit;">&nbsp;की रचना की।</font></li> <li style="user-select: initial !important;"><font style="vertical-align: inherit;">इसकी रचना&nbsp;</font><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">12वीं शताब्दी</span><font style="vertical-align: inherit;">&nbsp;में हुई थी</font><span style="">।</span></li> </ul> </li> <li style="user-select: initial !important;">कादंबरी के लेखक <strong>बाणभट्ट</strong> हैं। <ul> <li style="user-select: initial !important;"><font style="vertical-align: inherit;">वह&nbsp;</font><span style="font-weight: 700; user-select: initial !important;">हर्ष के दरबारी कवि थे</span><font style="vertical-align: inherit;">&nbsp;जिन्होंने&nbsp;</font><span style="font-weight: 700; user-select: initial !important;">हर्षचरित नामक उनकी जीवनी</span><font style="vertical-align: inherit;">&nbsp;लिखी थी।</font></li> </ul> </li> <li style="user-select: initial !important;"><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">कालिदास&nbsp;</span><font style="vertical-align: inherit;">संस्कृत साहित्य के अग्रणी हैं -&nbsp;</font><span style="font-weight: 700;">&nbsp;</span><strong>शकुंतला और मेघदूतुम</strong> उनके प्रसिद्ध नाटक हैं। <ul> <li><font style="vertical-align: inherit;">महाकवि कालिदास को&nbsp;</font><span style="font-weight: 700;">भारत का शेक्सपियर कहा जाता था।</span></li> <li style="user-select: initial !important;"><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;">मालविकाग्निमित्र&nbsp;भी&nbsp;</span><font style="vertical-align: inherit;"><span style="font-weight: bolder; line-height: 20px; user-select: initial !important;"><em style="user-select: initial !important;"><font style="vertical-align: inherit;">कालिदास</font></em></span><font style="vertical-align: inherit;">&nbsp;द्वारा रचित है।</font></font></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

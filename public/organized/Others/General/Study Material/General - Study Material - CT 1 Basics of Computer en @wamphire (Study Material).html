@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CT 1: Basics of Computer</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    CT 1: Basics of Computer 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">On which of the following concept the fifth-generation computers are based?</div>
+  <div class="question lang-hi">पाँचवीं पीढ़ी के कंप्यूटर निम्नलिखित में से किस अवधारणा पर आधारित हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Artificial intelligence</div><div class="option correct"><span style="">Both 1 and 4</span></div><div class="option">Semiconductor based Integrated circuits</div><div class="option">Ultra Large Scale Integration</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">आर्टिफिशियल इंटेलिजेंस</div><div class="option correct">1 और 4 दोनों</div><div class="option">अर्धचालक आधारित इंटीग्रेटेड सर्किट</div><div class="option">अल्ट्रा लार्ज स्केल इंटीग्रेशन</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>Correct answer&nbsp;<strong><u>Both 1 and 4</u></strong></p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points:</u></span></strong></span></u></strong></p> <ul> <li>The <strong>fifth-generation</strong> computers are based on <strong>Ultra Large Scale Integration (ULSI)</strong> and their working is primarily focused on <strong>Artificial Intelligence</strong>.</li> <li>The operating system used in the fifth generation is based on <strong>Knowledge Information Processing System</strong>.</li> <li>The <strong>fourth-generation</strong> (present) computers in beginning used <strong>Large scale integration (LSI)</strong> and currently using <strong>Very Large Scale Integration(VLSI)</strong>.&nbsp;</li> <li><strong>Super Large Scale Integration (SLSI)</strong> is emerging technology.</li> <li>The <b>second generation</b>&nbsp;of computers used <strong>Transistors</strong> which were&nbsp;based on <strong>semiconductors</strong>.</li> <li>The <strong>third-generation </strong>computers were based on <strong>integrated circuits</strong> made up of <strong>silicon</strong>.</li> <li>the <strong>first-generation computers</strong> were based on <strong>vacuum tubes</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong><u>1 और 4 दोनों</u> </strong><span style="color: rgb(33, 37, 41);">है।</span></p> <ul> <li><strong>पाँचवीं</strong>&nbsp;<strong>पीढ़ी</strong> के कंप्यूटर <strong>अल्ट्रा लार्ज स्केल इंटीग्रेशन (ULSI)</strong> पर आधारित हैं और इनका काम मुख्य रूप से <strong>आर्टिफिशियल इंटेलिजेंस</strong> पर केंद्रित है।</li> <li>पाँचवीं&nbsp;पीढ़ी में प्रयुक्त ऑपरेटिंग सिस्टम <strong>नॉलेज इंफॉर्मेशन प्रोसेसिंग सिस्टम</strong> पर आधारित है।</li> <li>शुरुआत में <strong>चौथी पीढ़ी</strong> (वर्तमान) के कंप्यूटरों ने <strong>बहुमात्रा एकीकरण (LSI) </strong>और वर्तमान में <strong>अति बृहद स्तरीय एकीकरण (VLSI)</strong> का उपयोग किया। <strong>सुपर लार्ज स्केल इंटीग्रेशन (SLSI)</strong> उभरती तकनीक है।</li> <li><strong>दूसरी पीढ़ी</strong> के कंप्यूटरों ने <strong>ट्रांजिस्टर </strong>का उपयोग किया जो <strong>अर्धचालकों </strong>पर आधारित थे।</li> <li><strong>तीसरी पीढ़ी</strong> के कंप्यूटर <strong>सिलिकॉन </strong>से बने <strong>इंटीग्रेटेड सर्किट</strong>&nbsp;पर आधारित थे।</li> <li><strong>पहली पीढ़ी </strong>के <strong>कंप्यूटर वैक्यूम ट्यूब</strong> पर आधारित थे।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">Which of the following statements defines a mainframe computer?</span></div>
+  <div class="question lang-hi">निम्न में से कौन-सा विवरण, मेनफ्रेम कम्प्यूटर को परिभाषित करता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct"><span style="">It is a system mainly employed in large organizations for mission critical applications requiring high volumes of data processing&nbsp;</span></div><div class="option"><span style="">It is the fastest computer that is available at a given point in time. They are most expensive and are used for high level mathematical calculations</span></div><div class="option"><span style="">It is a system which controls an environment by receiving data, processing them, and returning the results sufficiently quickly within a specified time constraint</span></div><div class="option"><span style="">All of the above</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct"><span style="">यह सिस्टम मुख्य रूप से बड़े संगठनों में क्रिटिकल एप्लीकेशंस के प्रयोजन के लिए लगाया जाता है जिसमें भारी मात्रा में डाटा प्रॉसेसिंग की आवश्यकता होती है</span></div><div class="option"><span style="">यह सर्वाधिक तेज कम्प्यूटर है जो निश्चित समय पर उपलब्ध होता है। ये बहुत महंगे होते हैं तथा भारी स्तर पर की जाने वाली गणितीय गणनाओं के लिए प्रयुक्त होते हैं</span></div><div class="option"><span style="">यह एक ऐसा सिस्टम होता है जो डाटा प्राप्त करने, उसे प्रॉसेस करने तथा निर्दिष्ट समयावधि के भीतर पर्याप्त तेजी के साथ परिणाम प्रदान करके माहौल को नियंत्रित करता है</span></div><div class="option"><span style="">उपरोक्त सभी</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> &quot;It is a system mainly employed in large organizations for mission-critical applications requiring high volumes of data processing&quot;</strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Mainframe systems are referred to as&nbsp;<strong>high-performance</strong> computers.&nbsp;</li> <li>Mainframe computers are having <strong>huge amounts of memory</strong>.&nbsp;</li> <li>The processors of mainframe computers are designed in such a way that they can process billions of&nbsp;calculations without generating errors and in very less time.</li> <li>The mainframe computers are not meant for commercial databases or transaction servers because those require&nbsp;high resiliency and&nbsp;security.</li> <li>It is mainly<strong> used</strong> in <strong>large organizations</strong> for <strong>mission-critical applications </strong>requiring <strong>high volumes</strong> of <strong>data processing.</strong></li> </ul> <p><strong>Thus the correct answer is<em> </em></strong><em>&quot;It is a system mainly employed in large organizations for mission-critical applications requiring high volumes of data processing&quot;</em>.</p></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;है<strong>, &quot;यह सिस्टम मुख्य रूप से बड़े संगठनों में क्रिटिकल एप्लीकेशंस के प्रयोजन के लिए लगाया जाता है जिसमें भारी मात्रा में डाटा प्रोसेसिंग की आवश्यकता होती है&quot;</strong>।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>मेनफ्रेम सिस्टम को <strong>उच्च-प्रदर्शन </strong>कंप्यूटर के रूप में संदर्भित किया जाता है।</li> <li>मेनफ्रेम कंप्यूटर में <strong>भारी</strong>&nbsp;<strong>मात्रा में मेमोरी </strong>होती है।</li> <li>मेनफ्रेम कंप्यूटर के प्रोसेसर इस प्रकार से डिज़ाइन किए गए हैं कि वे अरबों गणनाओं को त्रुटियों के बिना और बहुत कम समय में संसाधित कर सकते हैं।</li> <li>मेनफ्रेम कंप्यूटर व्यावसायिक डेटाबेस या लेनदेन सर्वर के लिए नहीं हैं क्योंकि उन्हें उच्च लचीलापन और सुरक्षा की आवश्यकता होती है।</li> <li>यह मुख्य रूप से <strong>बड़े संगठनों </strong>में <strong>मिशन-क्रिटिकल&nbsp;एप्लीकेशंस</strong><em style="color: rgb(33, 37, 41);">&nbsp;</em>के लिए <strong>उपयोग</strong> किया जाता है, जिसमें <strong>उच्च मात्रा </strong>में <strong>डेटा प्रोसेसिंग </strong>की आवश्यकता होती है।</li> </ul> <p><strong>इस प्रकार सही उत्तर</strong><em>&nbsp;है, &quot;यह सिस्टम मुख्य रूप से बड़े संगठनों में क्रिटिकल एप्लीकेशंस के प्रयोजन के लिए लगाया जाता है जिसमें भारी मात्रा में डाटा प्रोसेसिंग की आवश्यकता होती है&quot;</em>।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">A Computer system, which contains two or more CPU is called a _______.</span></div>
+  <div class="question lang-hi">एक कंप्यूटर सिस्टम, जिसमें दो या दो से अधिक CPU होते हैं, उसे _______ कहा जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">Input data</span></div><div class="option"><span style="">Control Unit</span></div><div class="option correct"><span style="">Multiprocessor Unit</span></div><div class="option"><span style="">Global memory</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">इनपुट डेटा</div><div class="option">कंट्रोल<span style=""> </span>यूनिट</div><div class="option correct">मल्टीप्रोसेसर यूनिट</div><div class="option">ग्लोबल मेमोरी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>The correct option is (3)</strong></p> <p><span style="">Multiprocessor Unit</span></p> <p><u><strong>Concept:-</strong></u></p> <p>The employment of two or more central processing units (CPUs) within a single computer system is known as multiprocessing.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>An electronic device with two CPUs. In contrast to dual core systems, which have two processors integrated into a single CPU chip, dual processor systems (DP systems) contain two distinct CPU chips.</li> <li>An integrated circuit with two or more processing cores attached for improved performance and lower power consumption is called a multicore processor. Additionally, these processors allow for the more effective parallel processing and multithreading of numerous tasks.</li> <li>The ALU and Control Unit are the two components of the CPU. The Arithmetic Logic Unit (ALU) conducts both logical and arithmetic operations, including addition and subtraction (such as comparing two values). The Control Unit interprets and executes commands.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span><strong>Control Unit:-</strong>&nbsp;A computer&#39;s CPU contains hardware called a control unit, or CU, which controls operations. It specifies how the computer&#39;s memory, logic board, and input and output devices should react to the program&#39;s instructions.</p> <p><strong>Input data:-</strong>&nbsp;Input refers to any data that is given to a computer or software application. The act of entering information into a computer is sometimes referred to as data entry because the information delivered is also regarded as data.</p> <p><strong>Global memory:-</strong>&nbsp;The primary memory area, known as global memory, is where data from the host and GPU are shared.</p></div>
+    <div class="lang-hi"><p><strong>सही विकल्प (3) है।</strong></p> <p>मल्टीप्रोसेसर यूनिट</p> <p><u><strong>अवधारणा:-</strong></u></p> <p>एक ही कंप्यूटर सिस्टम के भीतर दो या दो से अधिक सेंट्रल प्रोसेसिंग यूनिट (CPUs) के नियोजन को मल्टीप्रोसेसिंग के रूप में जाना जाता है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <ul> <li>दो <span style="">CPU&nbsp;</span>वाला एक इलेक्ट्रॉनिक उपकरण। दोहरे कोर सिस्टम के विपरीत, जिसमें दो प्रोसेसर एक CPU&nbsp;चिप में एकीकृत होते हैं, दोहरे प्रोसेसर सिस्टम (DP सिस्टम) में दो अलग-अलग DP चिप्स होते हैं।</li> <li>बेहतर प्रदर्शन और कम बिजली की खपत के लिए दो या दो से अधिक प्रोसेसिंग कोर के साथ एक एकीकृत सर्किट को मल्टीकोर प्रोसेसर कहा जाता है। इसके अतिरिक्त, ये प्रोसेसर अधिक प्रभावी समांतर प्रसंस्करण और कई कार्यों के मल्टीथ्रेडिंग की अनुमति देते हैं।</li> <li>ALU और कंट्रोल यूनिट CPU के दो घटक हैं। अरिथमेटिक लॉजिक यूनिट (ALU) जोड़ और घटाव (जैसे दो मानों की तुलना करना) सहित तार्किक और अंकगणितीय संचालन दोनों का संचालन करता है। कंट्रोल यूनिट कमांड की व्याख्या और निष्पादन करती है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span><strong>कंट्रोल यूनिट:-</strong> कंप्यूटर के CPU में हार्डवेयर होता है जिसे कंट्रोल यूनिट या CU कहा जाता है, जो संचालन को नियंत्रित करता है। यह निर्दिष्ट करता है कि कंप्यूटर की मेमोरी, लॉजिक बोर्ड और इनपुट और आउटपुट डिवाइस को प्रोग्राम के निर्देशों पर कैसे प्रतिक्रिया देनी चाहिए।</p> <p><strong>इनपुट डेटा:-</strong> इनपुट किसी भी डेटा को संदर्भित करता है जो कंप्यूटर या सॉफ़्टवेयर एप्लिकेशन को दिया जाता है। कंप्यूटर में सूचना दर्ज करने का कार्य कभी-कभी डेटा प्रविष्टि के रूप में जाना जाता है क्योंकि दी गई जानकारी को डेटा भी माना जाता है।</p> <p><strong>ग्लोबल मेमोरी:-</strong> प्राइमरी मेमोरी एरिया, जिसे ग्लोबल मेमोरी कहा जाता है, वह है जहां होस्ट और GPU से डेटा साझा किया जाता है।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is an input device and an output devices at the same time?</div>
+  <div class="question lang-hi"><p>इनमें से कौन-सा एक ही समय में एक इनपुट डिवाइस और एक आउटपुट डिवाइस है?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">LCD projector panels</div><div class="option">Printer</div><div class="option">Audio card</div><div class="option correct">Modem</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="color: rgb(33, 37, 41);">LCD</span> प्रोजेक्टर पैनल</div><div class="option">प्रिंटर</div><div class="option">ऑडियो कार्ड</div><div class="option correct">मॉडम&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is&nbsp;<u><span style="font-weight: 700;">Modem</span></u></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><br /> <strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=""> <li><span style="font-weight: 700;">Modem:</span> <ul> <li>A modem is considered an&nbsp;<span style="font-weight: 700;">input/output device</span>&nbsp;because a modem&nbsp;<span style="font-weight: 700;">sends and receives data at the same time.</span></li> <li>The word &quot;modem&quot;&nbsp;<span style="font-weight: 700;">stands for &quot;modulator-demodulator&quot;</span></li> <li>For example, whenever you are surfing, you send a web page request that its info out, or output. When you receive or access web pages, which would entail an input device. During receiving, error handling, and correction - again data is transmitted to the concerned server. Hence, it is called an I/O device.</li> </ul> </li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul style=""> <li><span style="font-weight: 700;">Printer:</span> <ul> <li>A printer is a&nbsp;<span style="font-weight: 700;">hardware output device</span>&nbsp;that is used to&nbsp;<span style="font-weight: 700;">generate hard copies</span>&nbsp;and<span style="font-weight: 700;">&nbsp;print any document</span>.</li> <li>A document can be of any type such as a text file, image, or a combination of both. It accepts input commands by users on a computer or on other devices to print documents.</li> </ul> </li> <li><span style="font-weight: 700;">Keyboard:</span> <ul> <li>A keyboard is one of the&nbsp;<span style="font-weight: 700;">primary input devices that allows users to input text</span>&nbsp;into a computer or any other electronic machinery.</li> <li>It is a peripheral device that is the most basic way for the user to communicate with a computer. It<span style="font-weight: 700;">&nbsp;consists of multiple buttons</span>, which create numbers, symbols, letters, and special keys like the Windows and Alt keys, including performing other functions.</li> </ul> </li> <li><span style="font-weight: 700;">Joystick:</span> <ul> <li>A joystick is an<span style="font-weight: 700;">&nbsp;input device that can be used for controlling the movement</span>&nbsp;of the cursor or a pointer in a computer device.</li> <li>The&nbsp;<span style="font-weight: 700;">pointer/cursor movement is controlled&nbsp;</span>by maneuvering a lever on the joystick.&nbsp;</li> <li>The input device is&nbsp;<span style="font-weight: 700;">mostly used for gaming applications&nbsp;</span>and, sometimes, in graphics applications.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p style=""><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u><strong><span style="">मॉडम&nbsp;</span></strong></u><font style="vertical-align: inherit;">है।</font></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></p> <ul style=""> <li><span style="font-weight: 700;">मॉडम&nbsp;</span><span style="font-weight: 700;">:</span> <ul> <li>मॉडम&nbsp;<font style="vertical-align: inherit;">को एक&nbsp;</font><span style="font-weight: 700;">इनपुट/आउटपुट डिवाइस</span><font style="vertical-align: inherit;">&nbsp;माना जाता है क्योंकि एक मॉडम एक&nbsp;</font><span style="font-weight: 700;">ही समय में डेटा भेजता और प्राप्त करता है।</span></li> <li><font style="vertical-align: inherit;">&quot;मॉडेम&quot; शब्द &quot;</font><span style="font-weight: 700;">मॉड्यूलेटर-डिमोडुलेटर&quot; के लिए है</span><span style="color: rgb(33, 37, 41);">।</span></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">उदाहरण के लिए,&nbsp;</font></font>जब भी आप सर्फिंग कर रहे होते हैं, तो आप एक वेब पेज अनुरोध भेजते हैं ताकि इसकी जानकारी या आउटपुट प्राप्त किया जा सके।</li> <li>जब आप वेब पेज प्राप्त करते हैं या उन तक पहुंचते हैं, तो इसके लिए एक इनपुट डिवाइस की आवश्यकता होगी।<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;</font><font style="vertical-align: inherit;">प्राप्त करने के दौरान, त्रुटि प्रबंधन, और सुधार - फिर से डेटा संबंधित सर्वर को प्रेषित किया जाता है।&nbsp;</font><font style="vertical-align: inherit;">इसलिए, इसे I/O डिवाइस कहा जाता है।</font></font></li> </ul> </li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></span></p> <ul style=""> <li><span style="font-weight: 700;">प्रिंटर:</span> <ul> <li><font style="vertical-align: inherit;">प्रिंटर एक&nbsp;</font><span style="font-weight: 700;">हार्डवेयर आउटपुट डिवाइस</span><font style="vertical-align: inherit;">&nbsp;है जिसका उपयोग&nbsp;</font><span style="font-weight: 700;">हार्ड कॉपी बनाने</span><font style="vertical-align: inherit;">&nbsp;और&nbsp;</font><span style="font-weight: 700;">किसी भी दस्तावेज़ को प्रिंट</span><font style="vertical-align: inherit;">&nbsp;करने के लिए किया जाता है ।</font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक दस्तावेज़ किसी भी प्रकार का हो सकता है जैसे टेक्स्ट फ़ाइल, इमेज, या दोनों का संयोजन।&nbsp;</font><font style="vertical-align: inherit;">यह दस्तावेज़ों को प्रिंट करने के लिए कंप्यूटर या अन्य उपकरणों पर उपयोगकर्ताओं द्वारा इनपुट कमांड स्वीकार करता है।</font></font></li> </ul> </li> <li><span style="font-weight: 700;">कीबोर्ड:</span> <ul> <li><font style="vertical-align: inherit;">एक कीबोर्ड&nbsp;</font><span style="font-weight: 700;">प्राथमिक इनपुट डिवाइस में से एक है जो उपयोगकर्ताओं को</span><font style="vertical-align: inherit;">&nbsp;कंप्यूटर या किसी अन्य इलेक्ट्रॉनिक मशीनरी में टेक्स्ट इनपुट करने की अनुमति देता है।</font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक उपकरण है जो उपयोगकर्ता के लिए कंप्यूटर के साथ संचार करने का सबसे बुनियादी तरीका है।&nbsp;</font><font style="vertical-align: inherit;">इसमें&nbsp;</font></font><span style="font-weight: 700;">कई बटन होते हैं</span><font style="vertical-align: inherit;">, जो संख्याएँ, प्रतीक, अक्षर और विशेष कुंजियाँ जैसे विंडोज&nbsp;और Alt कुंजियाँ बनाते हैं, जिसमें अन्य कार्य करना भी शामिल है।</font></li> </ul> </li> <li><span style="font-weight: 700;">जॉयस्टिक:</span> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जॉयस्टिक एक इनपुट डिवाइस है जिसका उपयोग&nbsp;</font><font style="vertical-align: inherit;">कंप्यूटर डिवाइस में कर्सर या पॉइंटर की&nbsp;</font></font><span style="font-weight: 700;">गति को नियंत्रित करने के लिए किया जा सकता है ।</span></li> <li><font style="vertical-align: inherit;">जॉयस्टिक पर लीवर को घुमाकर&nbsp;</font><span style="font-weight: 700;">पॉइंटर/कर्सर की गति को नियंत्रित</span><font style="vertical-align: inherit;">&nbsp;किया जाता है।</font></li> <li><font style="vertical-align: inherit;">इनपुट डिवाइस का&nbsp;</font><span style="font-weight: 700;">उपयोग ज्यादातर गेमिंग अनुप्रयोगों के लिए</span><font style="vertical-align: inherit;">&nbsp;और कभी-कभी ग्राफिक्स अनुप्रयोगों में किया जाता है।</font></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the function of the Motherboard on the computer?</div>
+  <div class="question lang-hi"><span style="">कंप्यूटर में मदरबोर्ड का क्या कार्य है?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Scanner and other things are part of the motherboard.&nbsp;&nbsp;</div><div class="option correct">A circuit board that connects all the external and internal hardware.</div><div class="option">It is a type of file server.&nbsp;</div><div class="option">Used for Typing on Screen.</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">स्कैनर और अन्य चीजें मदरबोर्ड का हिस्सा हैं&nbsp;स्कैनर और अन्य चीजें मदरबोर्ड का हिस्सा होती हैं।</div><div class="option correct">सर्किट बोर्ड जो सभी बाहरी और आंतरिक हार्डवेयर को जोड़ता है।</div><div class="option">यह एक प्रकार का फाइल सर्वर है।&nbsp;</div><div class="option">स्क्रीन पर टंकण (टाइपिंग) के लिए उपयोग किया जाता है।</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style=""><u><strong>A circuit board that connects all the external and internal hardware</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><span style=""><u><strong>A circuit board that connects all the external and internal hardware&nbsp;</strong></u>is the function of the Motherboard on the computer<span style="">&nbsp;</span>​</span> <ul> <li>It is also called a <strong>system board</strong>.</li> <li>It&nbsp;is the main <strong>printed circuit board (PCB)</strong> in general-purpose computers.</li> <li>It holds and allows <strong>communication </strong>between many crucial electronic components of a system, such as the <strong>central processing unit (CPU)</strong> and memory, and provides connectors for other peripherals.</li> <li>It also&nbsp;has <strong>expansion slots</strong> to add more peripheral devices to the computer.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The<strong> first motherboard </strong>is considered to be one used in the<strong> IBM Personal Computer, </strong>released in <strong>1981.</strong></li> <li>At the time, <strong>IBM</strong> called it a &quot;<strong>planar</strong>&quot; instead of a <strong>motherboard</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर है,&nbsp;<u><strong>सर्किट बोर्ड है जो सभी बाहरी और आंतरिक हार्डवेयर को जोड़ता है।</strong></u></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><u><strong>एक सर्किट बोर्ड जो सभी बाहरी और आंतरिक हार्डवेयर को जोड़ता है,</strong></u> कंप्यूटर में मदरबोर्ड का कार्य&nbsp;है; <ul> <li>इसे <strong>सिस्टम बोर्ड</strong> भी कहा जाता है।</li> <li>यह सामान्य-उद्देश्य वाले कंप्यूटरों में मुख्य <strong>प्रिंटेड सर्किट बोर्ड (पी.सी.बी.)</strong>&nbsp;होता है।</li> <li>यह एक सिस्टम के कई महत्वपूर्ण इलेक्ट्रॉनिक घटकों, जैसे <strong>सेंट्रल प्रोसेसिंग यूनिट (सी.पी.यू.)</strong> और मेमोरी के बीच <strong>कम्युनिकेशन </strong>को बनाए रखता है और अनुमति देता है तथा अन्य पेरीफेरल के लिए कनेक्टर प्रदान करता है।</li> <li>कंप्यूटर में और पेरिफेरल डिवाइस जोड़ने के लिए इसमें <strong>एक्सपेंशन स्लॉट</strong> भी हैं।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>1981 में जारी <strong>आई.बी.एम. पर्सनल कंप्यूटर</strong> में इस्तेमाल होने वाला <strong>पहला मदरबोर्ड</strong> माना जाता है।</li> <li>उस समय, <strong>आई.बी.एम.</strong> ने इसे <strong>मदरबोर्ड </strong>के बजाय &quot;<strong>प्लानर</strong>&quot; कहा था।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">________&nbsp;is one of the best-known manufacturers of computer CPUs.&nbsp;</div>
+  <div class="question lang-hi">________ कंप्यूटर CPUs के सबसे प्रसिद्ध निर्माताओं में से एक है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Google</div><div class="option">Apple</div><div class="option correct">Intel</div><div class="option">Microsoft&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">गूगल&nbsp;</div><div class="option">एप्पल&nbsp;</div><div class="option correct">इंटेल&nbsp;</div><div class="option">माइक्रोसॉफ्ट&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style=""><u><strong>Intel</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><u><strong>Intel</strong></u>&nbsp;is one of the <u><strong>best-known manufacturers of computer CPUs</strong></u>.&nbsp; <ul> <li><strong>​Intel core </strong>is a streamlined computer CPU marketed by Intel Corporation.</li> <li><strong>Brand&nbsp;Names</strong>: Core, Core 2, Core i3, Core i5, Core i7, Core i9</li> <li><strong>Launched</strong>: January 2006</li> <li><strong>Founders</strong>: Gordon Moore Robert Noyce</li> <li><strong>Headquarters</strong>: Santa Clara, California, USA</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style=""><strong>Google LLC</strong> is an American multinational technology company that focuses on search engine technology, online advertising, cloud computing, computer software, quantum computing, e-commerce, artificial intelligence, and consumer electronics.</span></li> <li><span style=""><strong>Apple</strong> is an American computer and consumer electronics company best known for manufacturing the iPhone, iPad, and Macintosh computers.</span></li> <li><span style=""><strong>Microsoft Corporation</strong> is an American multinational technology corporation that produces computer software, consumer electronics, personal computers, and related services.</span></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <b><u>इंटेल</u></b>&nbsp;<span style="">है।&nbsp;</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><strong>इंटेल&nbsp;कंप्यूटर के CPU के सबसे प्रसिद्ध निर्माताओं </strong>में से एक है।&nbsp; <ul> <li>इंटेल कोर, इंटेल कॉर्पोरेशन द्वारा विपणन किया गया सुव्यवस्थित कंप्यूटर CPU है।</li> <li><b>इस ब्रांड के नाम&nbsp;</b>:<span style="">Core, Core 2, Core i3, Core i5, Core i7, Core i9</span></li> <li><b>लांच&nbsp;</b>: जनवरी 2006</li> <li><b>संस्थापक&nbsp;</b>: गॉर्डन मूर, रॉबर्ट नोयस</li> <li><b>मुख्यालय&nbsp;</b>: सांता क्लारा, कैलिफ़ोर्निया, यूएसए</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><b>गूगल एलएलसी&nbsp;</b>एक अमेरिकी बहुराष्ट्रीय प्रौद्योगिकी कंपनी है जो सर्च इंजन टेक्नोलॉजी, ऑनलाइन विज्ञापन, क्लाउड कंप्यूटिंग, कंप्यूटर सॉफ़्टवेयर, क्वांटम कंप्यूटिंग, ई-कॉमर्स, कृत्रिम बुद्धिमत्ता और उपभोक्ता इलेक्ट्रॉनिक्स पर ध्यान केंद्रित करती है।​</li> <li><b>एप्पल&nbsp;</b>एक अमेरिकी कंप्यूटर और उपभोक्ता इलेक्ट्रॉनिक्स कंपनी है जो आईफोन, आईपैड और मैकइनटॉश कंप्यूटर बनाने के लिए जानी जाती है।</li> <li><b>माइक्रोसॉफ्ट कारपोरेशन&nbsp;</b>एक अमेरिकी बहुराष्ट्रीय प्रौद्योगिकी निगम है जो कंप्यूटर सॉफ़्टवेयर, उपभोक्ता इलेक्ट्रॉनिक्स, व्यक्तिगत कंप्यूटर और संबंधित सेवाओं का उत्पादन करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Which of the following statement(s) is/are true about programming languages?</p> <p>(i) Assembly language is machine independent.</p> <p>(ii) Python is a low-level programming language.</p></div>
+  <div class="question lang-hi"><p>प्रोग्रामिंग लैंग्वेज के बारे में निम्नलिखित में से कौन सा/से कथन सत्य है/हैं?</p> <p>(i) असेंबली लैंग्वेज, मशीन पर निर्भर नहीं होती है।</p> <p>(ii) पाइथन, लो-लेवल प्रोग्रामिंग लैंग्वेज होती है।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Neither (i) nor (ii)</div><div class="option">Only&nbsp;<span style="">(ii)</span></div><div class="option">Both (i) and (ii)</div><div class="option">Only&nbsp;<span style="">(i)</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct"><span style="">न तो (i) और न ही (ii)</span></div><div class="option"><span style="">केवल (ii)</span></div><div class="option"><span style="">(i) और (ii) दोनों</span></div><div class="option"><span style="">केवल (i)</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Neither (i) nor (ii)</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Assembly Language</strong> <ul> <li>An assembly language is a type of l<strong>ow-level programming language </strong>that is intended to c<strong>ommunicate directly with a computer&#39;s hardware</strong>.</li> <li>Because assembly <strong>depends on the machine code instructions</strong>, each assembly language is <strong>specific to a particular computer architecture</strong>.</li> <li>Sometimes there is <strong>more than one assembler for the same architecture</strong>, and <strong>sometimes an assembler is specific to an operating system</strong> or to particular operating systems.</li> </ul> </li> <li><strong>Python</strong> <ul> <li>Python is a <strong>computer programming language</strong> often used to <strong>build websites and software, automate tasks, and conduct data analysis</strong>.</li> <li>It is an <strong>interpreted, interactive, object-oriented programmin</strong>g language.</li> <li>It <strong>supports multiple programming paradigms </strong>beyond object-oriented programming, such as <strong>procedural and functional programming</strong>.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>न तो (i) और न ही (ii) </strong></u>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>असेंबली लैंग्वेज</strong> <ul> <li>असेंबली लैंग्वेज एक प्रकार की <strong>लो-लेवल प्रोग्रामिंग लैंग्वेज</strong> है, जिसका उद्देश्य <strong>कंप्यूटर के हार्डवेयर से सीधे कम्यूनिकेट करना है।</strong></li> <li>क्योंकि असेंबली <strong>मशीन कोड निर्देशों पर निर्भर करती है</strong>, प्रत्येक असेंबली लैंग्वेज<strong> एक विशेष कंप्यूटर आर्किटेक्चर के लिए विशिष्ट</strong> होती है।</li> <li>कभी-कभी<strong> एक ही आर्किटेक्चर के लिए एक से अधिक असेंबलर</strong> होते हैं&nbsp;और <strong>कभी-कभी एक असेंबलर एक ऑपरेटिंग सिस्टम या विशेष ऑपरेटिंग सिस्टम के लिए विशिष्ट होता है।</strong></li> </ul> </li> <li><strong>पाइथन</strong> <ul> <li>पाइथन एक <strong>कंप्यूटर प्रोग्रामिंग लैंग्वेज</strong> है जिसका उपयोग प्रायः <strong>वेबसाइट और सॉफ्टवेयर बनाने, कार्यों को ऑटोमेट करने और डेटा एनालिसिस करने </strong>के लिए किया जाता है।</li> <li>यह एक <strong>इंटरप्रेटेड, इंटरैक्टिव, ऑब्जेक्ट-ओरिएंटेड प्रोग्रामिंग</strong> लैंग्वेज है।</li> <li>यह ऑब्जेक्ट-ओरिएंटेड प्रोग्रामिंग से परे <strong>कई प्रोग्रामिंग प्रतिमानों का समर्थन करता है</strong>, जैसे <strong>प्रोसीज़रल और फंक्शनल प्रोग्रामिंग।</strong></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The term &#39;tower model&#39; is associated with which of the following categories of computers?</div>
+  <div class="question lang-hi">शब्द &#39;टावर मॉडल (tower model)&#39;, कंप्यूटर की निम्नलिखित में से किस श्रेणी से संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Desktop Computers</div><div class="option"><span style="">PDAs</span></div><div class="option">Laptop</div><div class="option">Palmtop</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct"><span style="">डेस्कटॉप कंप्यूटर</span></div><div class="option"><span style="">PDAs</span></div><div class="option"><span style="">लैपटॉप</span></div><div class="option"><span style="">पामटॉप</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>The correct option is (1)</strong></p> <p>Desktop Computers</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Instead of the conventional &quot;pizza box&quot; computer case, which has a width that is greater than its height and seems to be lying flat, a tower is a form factor of a<strong> desktop computer</strong> case with a height that is significantly greater than its width and gives the illusion of an upstanding tower block.</li> <li>Tower computers are upright and have side panels that allow access to the interior. Tower and desktop computers have various uses for desk space and have different types of computer cases. Towers are built to stand upright, whereas desktop computers are meant to lay flat on a desk.</li> <li><img alt="What is the difference between a tower computer and a desktop computer? - Quora" src="https://qph.cf2.quoracdn.net/main-qimg-c6a9aef7f7f2899ae0b8213e3ec38715-lq" style="height: 300px; width: 300px;" /></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>PDAs </strong>usually referred to as <strong>portable computers</strong>, are a type of mobile device that serve as personal information managers.</li> <li><img alt="Portable Computer: Most Up-to-Date Encyclopedia, News &amp; Reviews" src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Chassis-plans-mp1x20a_fnt_obl-1280.jpg" style="height: 245px; width: 300px;" /></li> <li>A <strong>laptop&#39;s main purpose</strong> is to serve as a mobile computer that can be utilized whenever and whenever.</li> <li><img alt="What is a Notebook Computer? | Definition from TechTarget" src="https://cdn.ttgtmedia.com/rms/onlineimages/acer_chromebook-f_mobile.jpg" style="color: rgb(33, 37, 41); height: 231px; width: 300px;" /></li> <li><strong>Palmtops</strong> can be used everywhere in a learning environment, including outdoors, as on-field excursions (this is crucial for science study).</li> <li><img alt="" src="https://cdn.testbook.com/images/production/quesImages/qImage65c9f7d7cc39516719b6761d.png" /></li> </ul></div>
+    <div class="lang-hi"><p><span style="font-weight: 700; ">सही विकल्प (1) है।</span></p> <p><span style="">डेस्कटॉप कंप्यूटर</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>कन्वेंशनल &quot;पिज्जा बॉक्स&quot; कंप्यूटर केस के बजाय, जिसकी चौड़ाई इसकी ऊंचाई से अधिक है और सपाट प्रतीत होता है, एक टॉवर <strong>डेस्कटॉप कंप्यूटर</strong> केस का एक रूप कारक है जिसकी ऊंचाई इसकी चौड़ाई से काफी अधिक है और एक ऊंचे टॉवर ब्लॉक का इलुशन देता है।</li> <li>टॉवर कंप्यूटर सीधे होते हैं और साइड पैनल होते हैं जो इंटीरियर तक एक्सेस की अनुमति देते हैं। टॉवर और डेस्कटॉप कंप्यूटरों में डेस्क स्पेस के लिए विभिन्न उपयोग होते हैं और विभिन्न प्रकार के कंप्यूटर केस होते हैं। टावर सीधे खड़े होने के लिए बनाए जाते हैं, जबकि डेस्कटॉप कंप्यूटर डेस्क पर सपाट रखने के लिए होते हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700; ">PDA</span> को आमतौर पर <strong>पोर्टेबल कंप्यूटर</strong> के रूप में रेफर किया जाता है, यह एक प्रकार का मोबाइल डिवाइस है जो पर्सनल इनफार्मेशन मैनेजर के रूप में काम करता है।</li> <li>एक<strong> लैपटॉप का मुख्य उद्देश्य</strong> एक मोबाइल कंप्यूटर के रूप में काम करना है जिसका उपयोग कभी भी किया जा सकता है।</li> <li><strong>पामटॉप्स</strong> का उपयोग सीखने के माहौल में हर जगह किया जा सकता है, जिसमें बाहर भी शामिल है, ऑन-फील्ड भ्रमण के रूप में (यह विज्ञान अध्ययन के लिए महत्वपूर्ण है)।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The first generation computers can be characterized as _______.</div>
+  <div class="question lang-hi">पहली पीढ़ी के कंप्यूटरों को _______ के रूप में चिह्नित किया जा सकता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Mainframe</div><div class="option">Super computer</div><div class="option">Analog computer</div><div class="option correct">Digital computer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">मेनफ्रेम</span></div><div class="option"><span style="">सुपर कंप्यूटर</span></div><div class="option"><span style="">एनालॉग कंप्यूटर</span></div><div class="option correct"><span style="">डिजिटल कंप्यूटर</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Digital computer</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>In <strong>computing technology generation</strong>, the <strong>first era</strong> was from <strong>1946 to 1959</strong>.</li> <li>The<strong> first generation </strong>of computers used <strong>vacuum tubes</strong> for the basic components of <strong>memory</strong> and the circuitry of the CPU (Central Processing Unit).</li> <li>These tubes, like light bulbs, produced a<strong> lot of heat</strong> and <strong>frequently melted </strong>equipment. They were therefore very <strong>expensive</strong> and only <strong>large organisations </strong>could afford them.</li> <li>The<strong> first-generation computers</strong> can be characterised as <strong>Digital computer</strong>.</li> <li>This generation used primarily <strong>batch processing operating systems</strong>.</li> <li><strong>Punched cards, punched tapes</strong> and <strong>magnetic tapes</strong> were used as <strong>input </strong>and <strong>output devices</strong>.</li> <li>Computers of this generation used <strong>machine language</strong> as their <strong>programming language</strong>.</li> <li><strong>ENIAC, EDVAC, UNIVAC, IBM-701&nbsp;</strong>and <strong>IBM-650</strong> are the computers used in this first generation of computing.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Second-generation computer: </strong>In the second-generation computer, the technology used is a<strong> transistor</strong>. The material used behind the transistor is made of a <strong>semiconductor</strong>.</li> <li><strong>Third-generation computer:</strong> In the third-generation computer, the technology used is an <strong>IC or Integrated Circuit</strong>. In this generation,<strong> high-level language</strong> is used.</li> <li><strong>Fourth-generation computer:</strong> In the fourth-generation computer, the technology used is <strong>VLSI </strong>and <strong>microprocessor</strong>.</li> <li><strong>Fifth-generation computer: </strong>In the fifth-generation computer, the technology used is <strong>ULSI technology</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>डिजिटल कम्प्यूटर</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>कंप्यूटिंग टेक्नोलॉजी जनरेशन</strong> में, <strong>पहला युग 1946 से 1959 </strong>तक था।</li> <li>कंप्यूटर की <strong>पहली पीढ़ी</strong> ने <strong>मेमोरी</strong> के बुनियादी घटकों और CPU (सेंट्रल प्रोसेसिंग यूनिट) की सर्किटरी के लिए <strong>वैक्यूम ट्यूब</strong> का उपयोग किया।</li> <li>इन ट्यूबों ने, प्रकाश बल्बों की तरह, <strong>बहुत अधिक हीट</strong> उत्पन्न की और <strong>प्रायः डिवाइस पिघल </strong>गए। इसलिए वे बहुत<strong> महंगे</strong> थे और केवल <strong>बड़े संगठन</strong> ही उन्हें वहन कर सकते थे।</li> <li><strong>पहली पीढ़ी के कंप्यूटरों</strong> को<strong> </strong><strong>डिजिटल कम्प्यूटर</strong> के रूप में वर्णित किया जा सकता है।</li> <li>यह पीढ़ी मुख्य रूप से <strong>बैच प्रोसेसिंग ऑपरेटिंग सिस्टम </strong>का उपयोग करती थी।</li> <li><strong>पंच कार्ड, पंच टेप </strong>और <strong>मैग्नेटिक टेप</strong> का उपयोग <strong>इनपुट </strong>और<strong> आउटपुट डिवाइस</strong> के रूप में किया जाता था।</li> <li>इस पीढ़ी के कंप्यूटर <strong>मशीन लैंग्वेज</strong> को अपनी <strong>प्रोग्रामिंग लैंग्वेज</strong> के रूप में उपयोग करते थे।</li> <li><strong>ENIAC, EDVAC, UNIVAC, IBM-701 </strong>और<strong> IBM-650</strong> इस पहली पीढ़ी के कंप्यूटिंग में उपयोग किए जाने वाले कंप्यूटर हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>दूसरी पीढ़ी के कंप्यूटर:</strong> दूसरी पीढ़ी के कंप्यूटर में उपयोग की जाने वाली टेक्नोलॉजी एक <strong>ट्रांजिस्टर</strong> है। ट्रांजिस्टर के पीछे प्रयुक्त सामग्री अर्धचालक से बनी होती है।</li> <li><strong>तीसरी पीढ़ी के कंप्यूटर:</strong> तीसरी पीढ़ी के कंप्यूटर में उपयोग की जाने वाली टेक्नोलॉजी एक<strong> IC या इंटीग्रेटेड सर्किट </strong>है। इस पीढ़ी में <strong>हाई-लेवल लैंग्वे</strong>ज का प्रयोग किया जाता है।</li> <li><strong>चौथी पीढ़ी के कंप्यूटर:</strong> चौथी पीढ़ी के कंप्यूटर में उपयोग की जाने वाली टेक्नोलॉजी <strong>VLSI </strong>और <strong>माइक्रोप्रोसेसर</strong> है।</li> <li><strong>पांचवीं पीढ़ी के कंप्यूटर:</strong> पांचवीं पीढ़ी के कंप्यूटर में उपयोग की जाने वाली टेक्नोलॉजी <strong>ULSI टेक्नोलॉजी</strong> है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is the smallest unit of storage?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौनसी स्टोरेज की सबसे छोटी इकाई है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">TB</div><div class="option">PB</div><div class="option">GB</div><div class="option correct"><span style="">KB</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">TB</div><div class="option">PB</div><div class="option">GB</div><div class="option correct"><span style="">KB</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>KB</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>KB stands for kilobyte which is the smallest unit of storage among the given options.&nbsp;</strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width: 300px;"> <tbody> <tr> <td style="text-align: center;"><strong>Unit</strong></td> <td style="text-align: center;"><strong>Description</strong></td> </tr> <tr> <td style="text-align: center;"><strong>Kilobyte (KB)</strong></td> <td style="text-align: center;"><strong>1 KB = 1024 Bytes</strong></td> </tr> <tr> <td style="text-align: center;">Megabyte (MB)</td> <td style="text-align: center;">1 MB = 1024 KB</td> </tr> <tr> <td style="text-align: center;">GigaByte (GB)</td> <td style="text-align: center;">1 GB = 1024 MB</td> </tr> <tr> <td style="text-align: center;">TeraByte (TB)</td> <td style="text-align: center;">1 TB = 1024 GB</td> </tr> <tr> <td style="text-align: center;">PetaByte (PB)</td> <td style="text-align: center;">1 PB = 1024 TB</td> </tr> </tbody> </table> <p><br /> <img height="55px" src="https://cdn.testbook.com/images/production/quesImages/quesImage13.png" width="180px" /></p> <ul> <li><strong>A memory unit is the amount of data that can be stored in the storage unit.</strong></li> <li><strong>This storage capacity is expressed in terms of Bytes (a&nbsp;group of 8 bits is called a byte).</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>KB&nbsp;</strong></u>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>KB का अर्थ किलोबाइट है जो दिए गए विकल्पों में से स्टोरेज की सबसे छोटी इकाई है।</strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width: 300px;"> <tbody> <tr> <td style="text-align: center;"><strong>इकाई</strong></td> <td style="text-align: center;"><strong>विवरण</strong></td> </tr> <tr> <td style="text-align: center;"><strong>किलोबाइट (KB)</strong></td> <td style="text-align: center;"><strong>1 KB = 1024 </strong><span style="font-weight: 700;">बाइट्स&nbsp;</span></td> </tr> <tr> <td style="text-align: center;">मेगाबाइट (MB)</td> <td style="text-align: center;">1 MB = 1024 KB</td> </tr> <tr> <td style="text-align: center;">गीगाबाइट (GB)</td> <td style="text-align: center;">1 GB = 1024 MB</td> </tr> <tr> <td style="text-align: center;">टेराबाइट (TB)</td> <td style="text-align: center;">1 TB = 1024 GB</td> </tr> <tr> <td style="text-align: center;">पेटाबाइट (PB)</td> <td style="text-align: center;">1 PB = 1024 TB</td> </tr> </tbody> </table> <p><br /> <img height="55px" src="https://cdn.testbook.com/images/production/quesImages/quesImage13.png" width="180px" /></p> <ul> <li><strong>मेमोरी यूनिट&nbsp;डेटा की मात्रा है जिसे स्टोरेज यूनिट में एकत्रित किया जा सकता है।</strong></li> <li><strong>इस </strong><span style="font-weight: bolder;">स्टोरेज&nbsp;</span><strong>क्षमता को बाइट्स (8 बिट&nbsp;के समूह को बाइट कहा जाता है) के रूप में व्यक्त किया जाता है।</strong></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27502810</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">20</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">40.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27502810</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 20</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 20</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/40.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p data-start=\"62\" data-end=\"227\">भारत में पंचवर्षीय योजनाओं के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"142\" data-end=\"145\" /><strong data-start=\"145\" data-end=\"227\">With reference to Five Year Plans in India, consider the following statements:</strong></p>\n<ol data-start=\"229\" data-end=\"943\">\n<li data-start=\"229\" data-end=\"392\">\n<p data-start=\"232\" data-end=\"392\">1944 का बॉम्बे प्लान भारत में नियोजित अर्थव्यवस्था के विचार से संबंधित था।<br data-start=\"306\" data-end=\"309\" />The Bombay Plan of 1944 was related to the idea of a planned economy in India.</p>\n</li>\n<li data-start=\"394\" data-end=\"593\">\n<p data-start=\"397\" data-end=\"593\">विश्व की पहली पंचवर्षीय योजना 1928 में सोवियत संघ में जोसेफ स्टालिन द्वारा लागू की गई थी।<br data-start=\"486\" data-end=\"489\" />The first Five Year Plan in the world was implemented in 1928 in the Soviet Union by Joseph Stalin.</p>\n</li>\n<li data-start=\"595\" data-end=\"830\">\n<p data-start=\"598\" data-end=\"830\">भारत में पंचवर्षीय योजनाएँ योजना आयोग द्वारा बनाई जाती थीं, जिसे 2015 में नीति आयोग द्वारा प्रतिस्थापित किया गया।<br data-start=\"711\" data-end=\"714\" />In India, Five Year Plans were formulated by the Planning Commission, which was replaced by NITI Aayog in 2015.</p>\n</li>\n<li data-start=\"832\" data-end=\"943\">\n<p data-start=\"835\" data-end=\"943\">नीति आयोग वर्तमान में पंचवर्षीय योजनाएँ तैयार करता है।<br data-start=\"889\" data-end=\"892\" />NITI Aayog currently prepares Five Year Plans.</p>\n</li>\n</ol>\n<h3 data-start=\"950\" data-end=\"971\">विकल्प / Options:</h3>\n<p data-start=\"973\" data-end=\"1013\">(a) केवल 1, 2 और 3<br data-start=\"991\" data-end=\"994\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"1015\" data-end=\"1049\">(b) केवल 1 और 4<br data-start=\"1030\" data-end=\"1033\" />&emsp;&emsp;1 and 4 only</p>\n<p data-start=\"1051\" data-end=\"1085\">(c) केवल 2 और 3<br data-start=\"1066\" data-end=\"1069\" />&emsp;&emsp;2 and 3 only</p>\n<p></p>\n<p data-start=\"1087\" data-end=\"1123\">(d) 1, 2, 3 और 4<br data-start=\"1103\" data-end=\"1106\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1749\" data-end=\"2031\"><strong data-start=\"1749\" data-end=\"1761\">:</strong> NITI Aayog does not prepare Five Year Plans. Instead, it prepares a 3-Year Action Agenda, 7-Year Strategy and 15-Year Vision Document.<br data-start=\"1896\" data-end=\"1899\" /><strong data-start=\"1899\" data-end=\"1909\">:</strong> नीति आयोग पंचवर्षीय योजना नहीं बनाता। यह 3-वर्षीय कार्यसूची, 7-वर्षीय रणनीति और 15-वर्षीय विज़न दस्तावेज तैयार करता है।</p>\n<hr data-start=\"2033\" data-end=\"2036\" />\n<h2 data-start=\"2038\" data-end=\"2064\">&nbsp;SSC Exam Trap Points</h2>\n<p></p>\n<ul data-start=\"2066\" data-end=\"2254\">\n<li data-start=\"2066\" data-end=\"2110\">\n<p data-start=\"2068\" data-end=\"2110\">First Five Year Plan of India &rarr; <strong data-start=\"2100\" data-end=\"2108\">1951</strong></p>\n</li>\n<li data-start=\"2111\" data-end=\"2157\">\n<p data-start=\"2113\" data-end=\"2157\">Planning Commission established &rarr; <strong data-start=\"2147\" data-end=\"2155\">1950</strong></p>\n</li>\n<li data-start=\"2158\" data-end=\"2205\">\n<p data-start=\"2160\" data-end=\"2205\">Replaced by NITI Aayog &rarr; <strong data-start=\"2185\" data-end=\"2203\">1 January 2015</strong></p>\n</li>\n<li data-start=\"2206\" data-end=\"2254\">\n<p data-start=\"2208\" data-end=\"2254\">Last Five Year Plan &rarr; <strong data-start=\"2230\" data-end=\"2252\">12th FYP (2012&ndash;17)</strong></p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"159\" data-end=\"348\">भारत की प्रथम पंचवर्षीय योजना (1951-56) के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"253\" data-end=\"256\" /><strong data-start=\"256\" data-end=\"348\">With reference to the First Five-Year Plan (1951&ndash;56), consider the following statements:</strong></p>\n<ol data-start=\"350\" data-end=\"948\">\n<li data-start=\"350\" data-end=\"534\">\n<p data-start=\"353\" data-end=\"534\">इसे भारत के प्रथम प्रधानमंत्री जवाहरलाल नेहरू द्वारा संसद में प्रस्तुत किया गया था।<br data-start=\"436\" data-end=\"439\" />It was presented to the Parliament by the first Prime Minister of India, Jawaharlal Nehru.</p>\n</li>\n<li data-start=\"536\" data-end=\"680\">\n<p data-start=\"539\" data-end=\"680\">यह हैरॉड-डोमर मॉडल पर आधारित थी और बचत बढ़ाने पर बल देती थी।<br data-start=\"599\" data-end=\"602\" />It was based on the Harrod-Domar Model and emphasised increasing savings.</p>\n</li>\n<li data-start=\"682\" data-end=\"802\">\n<p data-start=\"685\" data-end=\"802\">इसका मुख्य ध्यान भारी उद्योगों के तीव्र विकास पर था।<br data-start=\"737\" data-end=\"740\" />Its main focus was rapid development of heavy industries.</p>\n</li>\n<li data-start=\"804\" data-end=\"948\">\n<p data-start=\"807\" data-end=\"948\">इसका लक्ष्य विकास दर 2.1% था जबकि वास्तविक विकास दर 3.6% रही।<br data-start=\"868\" data-end=\"871\" />The target growth rate was 2.1% while the achieved growth rate was 3.6%.</p>\n</li>\n</ol>\n<h3 data-start=\"955\" data-end=\"976\">विकल्प / Options:</h3>\n<p data-start=\"978\" data-end=\"1018\">(a) केवल 1, 2 और 4<br data-start=\"996\" data-end=\"999\" />&emsp;&emsp;1, 2 and 4 only</p>\n<p data-start=\"1020\" data-end=\"1054\">(b) केवल 1 और 3<br data-start=\"1035\" data-end=\"1038\" />&emsp;&emsp;1 and 3 only</p>\n<p data-start=\"1056\" data-end=\"1090\">(c) केवल 2 और 3<br data-start=\"1071\" data-end=\"1074\" />&emsp;&emsp;2 and 3 only</p>\n<p data-start=\"1092\" data-end=\"1128\">(d) 1, 2, 3 और 4<br data-start=\"1108\" data-end=\"1111\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1170\" data-end=\"1212\"><strong data-start=\"1170\" data-end=\"1210\">(a) केवल 1, 2 और 4 / 1, 2 and 4 only</strong></p>\n<p></p>\n<p data-start=\"1214\" data-end=\"1407\">&nbsp;Statement 3 गलत है क्योंकि प्रथम योजना का मुख्य फोकस कृषि क्षेत्र था, न कि भारी उद्योग।<br data-start=\"1304\" data-end=\"1307\" />Statement 3 is incorrect because the First Plan mainly focused on agriculture, not heavy industries.</p>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"1431\" data-end=\"1636\">भारत की प्रथम पंचवर्षीय योजना (1951-56) के संबंध में निम्नलिखित में से कौन-सा/से कथन सही है/हैं?<br data-start=\"1535\" data-end=\"1538\" /><strong data-start=\"1538\" data-end=\"1636\">Which of the following statements is/are correct regarding the First Five-Year Plan (1951&ndash;56)?</strong></p>\n<ol data-start=\"1638\" data-end=\"2293\">\n<li data-start=\"1638\" data-end=\"1894\">\n<p data-start=\"1641\" data-end=\"1894\">इसमें कृषि एवं सिंचाई क्षेत्र पर विशेष बल दिया गया था तथा भाखड़ा नांगल बांध जैसी परियोजनाओं के लिए बड़े आवंटन किए गए।<br data-start=\"1758\" data-end=\"1761\" />It gave special emphasis to agriculture and irrigation, and large allocations were made for projects like the Bhakra Nangal Dam.</p>\n</li>\n<li data-start=\"1896\" data-end=\"2097\">\n<p data-start=\"1899\" data-end=\"2097\">अर्थशास्त्री के.एन. राज ने प्रारंभिक दो दशकों तक &ldquo;धीरे-धीरे आगे बढ़ने&rdquo; (hasten slowly) का सुझाव दिया था।<br data-start=\"2003\" data-end=\"2006\" />Economist K.N. Raj argued that India should &ldquo;hasten slowly&rdquo; for the first two decades.</p>\n</li>\n<li data-start=\"2099\" data-end=\"2293\">\n<p data-start=\"2102\" data-end=\"2293\">योजना की अवधि के अंत तक पाँच भारतीय प्रौद्योगिकी संस्थान (IITs) स्थापित किए जा चुके थे।<br data-start=\"2189\" data-end=\"2192\" />By the end of the Plan period, five Indian Institutes of Technology (IITs) had been established.</p>\n</li>\n</ol>\n<h3 data-start=\"2300\" data-end=\"2321\">विकल्प / Options:</h3>\n<p data-start=\"2323\" data-end=\"2357\">(a) केवल 1 और 2<br data-start=\"2338\" data-end=\"2341\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"2359\" data-end=\"2393\">(b) केवल 2 और 3<br data-start=\"2374\" data-end=\"2377\" />&emsp;&emsp;2 and 3 only</p>\n<p data-start=\"2395\" data-end=\"2425\">(c) 1, 2 और 3<br data-start=\"2408\" data-end=\"2411\" />&emsp;&emsp;1, 2 and 3</p>\n<p data-start=\"2427\" data-end=\"2450\">(d) केवल 1<br data-start=\"2437\" data-end=\"2440\" />&emsp;&emsp;1 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"118\" data-end=\"308\">भारत की द्वितीय पंचवर्षीय योजना (1956&ndash;61) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"212\" data-end=\"215\" /><strong data-start=\"215\" data-end=\"308\">With reference to the Second Five-Year Plan (1956&ndash;61), consider the following statements:</strong></p>\n<ol data-start=\"310\" data-end=\"912\">\n<li data-start=\"310\" data-end=\"481\">\n<p data-start=\"313\" data-end=\"481\">इस योजना में तीव्र औद्योगिकीकरण तथा सार्वजनिक क्षेत्र के विकास पर बल दिया गया।<br data-start=\"391\" data-end=\"394\" />This plan focused on rapid industrialisation and development of the public sector.</p>\n</li>\n<li data-start=\"483\" data-end=\"613\">\n<p data-start=\"486\" data-end=\"613\">यह योजना पी.सी. महालनोबिस के नेतृत्व में तैयार की गई थी।<br data-start=\"542\" data-end=\"545\" />This plan was drafted under the leadership of P.C. Mahalanobis.</p>\n</li>\n<li data-start=\"615\" data-end=\"757\">\n<p data-start=\"618\" data-end=\"757\">घरेलू उद्योगों की सुरक्षा के लिए आयात पर शुल्क (tariffs) लगाए गए थे।<br data-start=\"686\" data-end=\"689\" />Tariffs were imposed on imports to protect domestic industries.</p>\n</li>\n<li data-start=\"759\" data-end=\"912\">\n<p data-start=\"762\" data-end=\"912\">इस योजना का लक्ष्य विकास दर 4.5% था, जबकि वास्तविक विकास दर 4.27% रही।<br data-start=\"832\" data-end=\"835\" />The target growth rate was 4.5%, while the actual growth rate was 4.27%.</p>\n</li>\n</ol>\n<h3 data-start=\"919\" data-end=\"940\">विकल्प / Options:</h3>\n<p data-start=\"942\" data-end=\"976\">(a) केवल 1 और 2<br data-start=\"957\" data-end=\"960\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"978\" data-end=\"1018\">(b) केवल 1, 2 और 3<br data-start=\"996\" data-end=\"999\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"1020\" data-end=\"1056\">(c) 1, 2, 3 और 4<br data-start=\"1036\" data-end=\"1039\" />&emsp;&emsp;1, 2, 3 and 4</p>\n<p data-start=\"1058\" data-end=\"1092\">(d) केवल 3 और 4<br data-start=\"1073\" data-end=\"1076\" />&emsp;&emsp;3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p data-start=\"1134\" data-end=\"1172\"><strong data-start=\"1134\" data-end=\"1170\">(c) 1, 2, 3 और 4 / 1, 2, 3 and 4</strong></p>\n<p></p>\n<p data-start=\"1174\" data-end=\"1282\">✔️ द्वितीय योजना = औद्योगिकीकरण + सार्वजनिक क्षेत्र + महालनोबिस मॉडल<br data-start=\"1242\" data-end=\"1245\" />✔️ Target = 4.5% | Achieved = 4.27%</p>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"116\" data-end=\"303\">भारत की तृतीय पंचवर्षीय योजना (1961&ndash;66) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"208\" data-end=\"211\" /><strong data-start=\"211\" data-end=\"303\">With reference to the Third Five-Year Plan (1961&ndash;66), consider the following statements:</strong></p>\n<ol data-start=\"305\" data-end=\"1262\">\n<li data-start=\"305\" data-end=\"474\">\n<p data-start=\"308\" data-end=\"474\">इस योजना का मुख्य उद्देश्य कृषि तथा गेहूँ उत्पादन में वृद्धि करना था।<br data-start=\"377\" data-end=\"380\" />The main objective of this plan was to improve agriculture and increase wheat production.</p>\n</li>\n<li data-start=\"476\" data-end=\"669\">\n<p data-start=\"479\" data-end=\"669\">राज्यों को अतिरिक्त विकास संबंधी जिम्मेदारियाँ दी गईं, जैसे माध्यमिक एवं उच्च शिक्षा।<br data-start=\"564\" data-end=\"567\" />States were given additional development responsibilities such as secondary and higher education.</p>\n</li>\n<li data-start=\"671\" data-end=\"822\">\n<p data-start=\"674\" data-end=\"822\">जमीनी स्तर पर लोकतंत्र लाने के लिए पंचायती चुनाव शुरू किए गए।<br data-start=\"735\" data-end=\"738\" />Panchayat elections were introduced to bring democracy to the grassroots level.</p>\n</li>\n<li data-start=\"824\" data-end=\"984\">\n<p data-start=\"827\" data-end=\"984\">योजना की लक्षित विकास दर 5.6% थी, जबकि वास्तविक विकास दर 2.4% रही।<br data-start=\"893\" data-end=\"896\" />The target growth rate was 5.6%, but the actual growth rate achieved was only 2.4%.</p>\n</li>\n<li data-start=\"986\" data-end=\"1262\">\n<p data-start=\"989\" data-end=\"1262\">इस योजना की विफलता के बाद 1966&ndash;69 के बीच &ldquo;योजना अवकाश&rdquo; (Plan Holidays) घोषित किए गए, जिनका मुख्य कारण चीन-भारत युद्ध और भारत-पाक युद्ध थे।<br data-start=\"1127\" data-end=\"1130\" />After the failure of this plan, &ldquo;Plan Holidays&rdquo; (1966&ndash;69) were declared mainly due to the Sino-Indian War and the Indo-Pak War.</p>\n</li>\n</ol>\n<hr data-start=\"1264\" data-end=\"1267\" />\n<h3 data-start=\"1269\" data-end=\"1290\">विकल्प / Options:</h3>\n<p data-start=\"1292\" data-end=\"1332\">(a) केवल 1, 2 और 4<br data-start=\"1310\" data-end=\"1313\" />&emsp;&emsp;1, 2 and 4 only</p>\n<p data-start=\"1334\" data-end=\"1374\">(b) केवल 1, 4 और 5<br data-start=\"1352\" data-end=\"1355\" />&emsp;&emsp;1, 4 and 5 only</p>\n<p data-start=\"1376\" data-end=\"1418\">(c) 1, 2, 3, 4 और 5<br data-start=\"1395\" data-end=\"1398\" />&emsp;&emsp;1, 2, 3, 4 and 5</p>\n<p data-start=\"1420\" data-end=\"1460\">(d) केवल 2, 3 और 5<br data-start=\"1438\" data-end=\"1441\" />&emsp;&emsp;2, 3 and 5 only</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p data-start=\"1502\" data-end=\"1546\"><strong data-start=\"1502\" data-end=\"1544\">(c) 1, 2, 3, 4 और 5 / 1, 2, 3, 4 and 5</strong></p>\n<p></p>\n<p data-start=\"1548\" data-end=\"1625\">✔️ Target = 5.6%<br data-start=\"1564\" data-end=\"1567\" />✔️ Achieved = 2.4%<br data-start=\"1585\" data-end=\"1588\" />✔️ Result &rarr; Plan Holidays (1966&ndash;69)</p>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"112\" data-end=\"301\">भारत की चतुर्थ पंचवर्षीय योजना (1969&ndash;74) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"205\" data-end=\"208\" /><strong data-start=\"208\" data-end=\"301\">With reference to the Fourth Five-Year Plan (1969&ndash;74), consider the following statements:</strong></p>\n<ol data-start=\"303\" data-end=\"1287\">\n<li data-start=\"303\" data-end=\"536\">\n<p data-start=\"306\" data-end=\"536\">यह योजना इंदिरा गांधी के प्रधानमंत्रित्व काल में शुरू की गई थी और इसका उद्देश्य पूर्व की विफलताओं को सुधारना था।<br data-start=\"418\" data-end=\"421\" />This plan was introduced under the Prime Ministership of Indira Gandhi and aimed to correct previous failures.</p>\n</li>\n<li data-start=\"538\" data-end=\"760\">\n<p data-start=\"541\" data-end=\"760\">यह गाडगिल सूत्र (Gadgil Formula) पर आधारित थी तथा &ldquo;स्थिरता के साथ विकास&rdquo; और आत्मनिर्भरता पर बल दिया गया।<br data-start=\"645\" data-end=\"648\" />It was based on the Gadgil Formula and emphasised growth with stability and progress towards self-reliance.</p>\n</li>\n<li data-start=\"762\" data-end=\"965\">\n<p data-start=\"765\" data-end=\"965\">इस अवधि में 14 प्रमुख बैंकों का राष्ट्रीयकरण किया गया तथा हरित क्रांति से कृषि को बढ़ावा मिला।<br data-start=\"859\" data-end=\"862\" />During this period, 14 major banks were nationalised and the Green Revolution boosted agriculture.</p>\n</li>\n<li data-start=\"967\" data-end=\"1134\">\n<p data-start=\"970\" data-end=\"1134\">सूखा-प्रवण क्षेत्र कार्यक्रम (Drought Prone Area Programme) इसी योजना के दौरान शुरू किया गया।<br data-start=\"1063\" data-end=\"1066\" />The Drought Prone Area Programme was launched during this plan.</p>\n</li>\n<li data-start=\"1136\" data-end=\"1287\">\n<p data-start=\"1139\" data-end=\"1287\">इस योजना की लक्षित विकास दर 5.6% थी, जबकि वास्तविक विकास दर 3.3% रही।<br data-start=\"1208\" data-end=\"1211\" />The target growth rate was 5.6%, while the actual growth rate was 3.3%.</p>\n</li>\n</ol>\n<hr data-start=\"1289\" data-end=\"1292\" />\n<h3 data-start=\"1294\" data-end=\"1315\">विकल्प / Options:</h3>\n<p data-start=\"1317\" data-end=\"1357\">(a) केवल 1, 2 और 5<br data-start=\"1335\" data-end=\"1338\" />&emsp;&emsp;1, 2 and 5 only</p>\n<p data-start=\"1359\" data-end=\"1399\">(b) केवल 1, 3 और 4<br data-start=\"1377\" data-end=\"1380\" />&emsp;&emsp;1, 3 and 4 only</p>\n<p data-start=\"1401\" data-end=\"1447\">(c) केवल 2, 3, 4 और 5<br data-start=\"1422\" data-end=\"1425\" />&emsp;&emsp;2, 3, 4 and 5 only</p>\n<p data-start=\"1449\" data-end=\"1491\">(d) 1, 2, 3, 4 और 5<br data-start=\"1468\" data-end=\"1471\" />&emsp;&emsp;1, 2, 3, 4 and 5</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1533\" data-end=\"1577\"><strong data-start=\"1533\" data-end=\"1575\">(d) 1, 2, 3, 4 और 5 / 1, 2, 3, 4 and 5</strong></p>\n<p></p>\n<p data-start=\"1579\" data-end=\"1669\">✔️ Target = 5.6%<br data-start=\"1595\" data-end=\"1598\" />✔️ Achieved = 3.3%<br data-start=\"1616\" data-end=\"1619\" />✔️ Focus = Growth with Stability + Self-Reliance</p>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"109\" data-end=\"295\">भारत की पंचम पंचवर्षीय योजना (1974&ndash;78) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"200\" data-end=\"203\" /><strong data-start=\"203\" data-end=\"295\">With reference to the Fifth Five-Year Plan (1974&ndash;78), consider the following statements:</strong></p>\n<ol data-start=\"297\" data-end=\"1278\">\n<li data-start=\"297\" data-end=\"466\">\n<p data-start=\"300\" data-end=\"466\">इस योजना में रोजगार वृद्धि और गरीबी उन्मूलन (गरीबी हटाओ) पर विशेष बल दिया गया।<br data-start=\"378\" data-end=\"381\" />This plan stressed increasing employment and poverty alleviation (Garibi Hatao).</p>\n</li>\n<li data-start=\"468\" data-end=\"730\">\n<p data-start=\"471\" data-end=\"730\">1975 में विद्युत आपूर्ति अधिनियम में संशोधन किया गया, जिससे केंद्र सरकार को विद्युत उत्पादन और संचरण में प्रवेश की अनुमति मिली।<br data-start=\"598\" data-end=\"601\" />In 1975, the Electricity Supply Act was amended, enabling the Central Government to enter power generation and transmission.</p>\n</li>\n<li data-start=\"732\" data-end=\"991\">\n<p data-start=\"735\" data-end=\"991\">न्यूनतम आवश्यकताएँ कार्यक्रम (Minimum Needs Programme) इस योजना के प्रथम वर्ष में प्रारंभ किया गया था और इसे डी.पी. धर द्वारा तैयार किया गया था।<br data-start=\"879\" data-end=\"882\" />The Minimum Needs Programme was introduced in the first year of this plan and was prepared by D.P. Dhar.</p>\n</li>\n<li data-start=\"993\" data-end=\"1278\">\n<p data-start=\"996\" data-end=\"1278\">इस योजना का लक्ष्य विकास दर 4.4% था, जबकि वास्तविक विकास दर 4.8% रही; बाद में 1978 में मोरारजी देसाई सरकार ने इस योजना को समाप्त कर दिया।<br data-start=\"1133\" data-end=\"1136\" />The target growth rate was 4.4%, while the actual growth rate was 4.8%; later in 1978, the Morarji Desai government terminated this plan.</p>\n</li>\n</ol>\n<h3 data-start=\"1285\" data-end=\"1306\">विकल्प / Options:</h3>\n<p data-start=\"1308\" data-end=\"1342\">(a) केवल 1 और 2<br data-start=\"1323\" data-end=\"1326\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"1344\" data-end=\"1384\">(b) केवल 1, 2 और 3<br data-start=\"1362\" data-end=\"1365\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"1386\" data-end=\"1422\">(c) 1, 2, 3 और 4<br data-start=\"1402\" data-end=\"1405\" />&emsp;&emsp;1, 2, 3 and 4</p>\n<p></p>\n<p data-start=\"1424\" data-end=\"1458\">(d) केवल 3 और 4<br data-start=\"1439\" data-end=\"1442\" />&emsp;&emsp;3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"215\" data-end=\"378\">रोलिंग प्लान (1978&ndash;80) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"291\" data-end=\"294\" /><strong data-start=\"294\" data-end=\"378\">With reference to the Rolling Plan (1978&ndash;80), consider the following statements:</strong></p>\n<ol data-start=\"380\" data-end=\"1133\">\n<li data-start=\"380\" data-end=\"565\">\n<p data-start=\"383\" data-end=\"565\">जनता पार्टी सरकार ने पंचम पंचवर्षीय योजना को समाप्त कर रोलिंग प्लान लागू किया।<br data-start=\"461\" data-end=\"464\" />The Janata Party government terminated the Fifth Five-Year Plan and introduced the Rolling Plan.</p>\n</li>\n<li data-start=\"567\" data-end=\"790\">\n<p data-start=\"570\" data-end=\"790\">रोलिंग प्लान में योजना का वार्षिक मूल्यांकन किया जाता था और लक्ष्यों व आवंटन को हर वर्ष संशोधित किया जाता था।<br data-start=\"679\" data-end=\"682\" />In a rolling plan, the plan was evaluated annually and targets and allocations were revised every year.</p>\n</li>\n<li data-start=\"792\" data-end=\"946\">\n<p data-start=\"795\" data-end=\"946\">1980 में इंदिरा गांधी की वापसी के बाद इस योजना को समाप्त कर दिया गया।<br data-start=\"864\" data-end=\"867\" />After Indira Gandhi returned to power in 1980, this plan was discontinued.</p>\n</li>\n<li data-start=\"948\" data-end=\"1133\">\n<p data-start=\"951\" data-end=\"1133\">रोलिंग प्लान में पाँच वर्षों के लिए निश्चित लक्ष्य तय किए जाते थे और उन्हें बदला नहीं जाता था।<br data-start=\"1045\" data-end=\"1048\" />In the Rolling Plan, fixed targets were set for five years and were not changed.</p>\n</li>\n</ol>\n<h3 data-start=\"1140\" data-end=\"1161\">विकल्प / Options:</h3>\n<p data-start=\"1163\" data-end=\"1197\">(a) केवल 1 और 2<br data-start=\"1178\" data-end=\"1181\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"1199\" data-end=\"1239\">(b) केवल 1, 2 और 3<br data-start=\"1217\" data-end=\"1220\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"1241\" data-end=\"1275\">(c) केवल 2 और 4<br data-start=\"1256\" data-end=\"1259\" />&emsp;&emsp;2 and 4 only</p>\n<p></p>\n<p data-start=\"1277\" data-end=\"1313\">(d) 1, 2, 3 और 4<br data-start=\"1293\" data-end=\"1296\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"1442\" data-end=\"1665\">छठी (1980&ndash;85) और सातवीं (1985&ndash;90) पंचवर्षीय योजनाओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"1547\" data-end=\"1550\" /><strong data-start=\"1550\" data-end=\"1665\">With reference to the Sixth (1980&ndash;85) and Seventh (1985&ndash;90) Five-Year Plans, consider the following statements:</strong></p>\n<ol data-start=\"1667\" data-end=\"2478\">\n<li data-start=\"1667\" data-end=\"1851\">\n<p data-start=\"1670\" data-end=\"1851\">छठी योजना में मूल्य नियंत्रण हटाने तथा आर्थिक उदारीकरण की शुरुआत पर बल दिया गया।<br data-start=\"1750\" data-end=\"1753\" />The Sixth Plan emphasised removal of price controls and beginning of economic liberalisation.</p>\n</li>\n<li data-start=\"1853\" data-end=\"2028\">\n<p data-start=\"1856\" data-end=\"2028\">राष्ट्रीय कृषि और ग्रामीण विकास बैंक (NABARD) की स्थापना शिवरामन समिति की सिफारिश पर की गई।<br data-start=\"1947\" data-end=\"1950\" />NABARD was established on the recommendation of the Shivaraman Committee.</p>\n</li>\n<li data-start=\"2030\" data-end=\"2303\">\n<p data-start=\"2033\" data-end=\"2303\">सातवीं योजना राजीव गांधी के प्रधानमंत्रित्व काल में शुरू हुई और तकनीक के उपयोग से औद्योगिक उत्पादकता बढ़ाने पर बल दिया गया।<br data-start=\"2156\" data-end=\"2159\" />The Seventh Plan was launched during Rajiv Gandhi&rsquo;s Prime Ministership and focused on improving industrial productivity through technology.</p>\n</li>\n<li data-start=\"2305\" data-end=\"2478\">\n<p data-start=\"2308\" data-end=\"2478\">सातवीं योजना का लक्ष्य विकास दर 5% था, जबकि वास्तविक विकास दर 6.01% रही।<br data-start=\"2380\" data-end=\"2383\" />The target growth rate of the Seventh Plan was 5%, while the actual growth rate was 6.01%.</p>\n</li>\n</ol>\n<h3 data-start=\"2485\" data-end=\"2506\">विकल्प / Options:</h3>\n<p data-start=\"2508\" data-end=\"2542\">(a) केवल 1 और 2<br data-start=\"2523\" data-end=\"2526\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"2544\" data-end=\"2584\">(b) केवल 1, 2 और 3<br data-start=\"2562\" data-end=\"2565\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"2586\" data-end=\"2622\">(c) 1, 2, 3 और 4<br data-start=\"2602\" data-end=\"2605\" />&emsp;&emsp;1, 2, 3 and 4</p>\n<p></p>\n<p data-start=\"2624\" data-end=\"2658\">(d) केवल 3 और 4<br data-start=\"2639\" data-end=\"2642\" />&emsp;&emsp;3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"2775\" data-end=\"2941\">वार्षिक योजनाओं (1990&ndash;92) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"2854\" data-end=\"2857\" /><strong data-start=\"2857\" data-end=\"2941\">With reference to the Annual Plans (1990&ndash;92), consider the following statements:</strong></p>\n<ol data-start=\"2943\" data-end=\"3677\">\n<li data-start=\"2943\" data-end=\"3179\">\n<p data-start=\"2946\" data-end=\"3179\">1990&ndash;91 और 1991&ndash;92 को वार्षिक योजनाओं के रूप में लागू किया गया क्योंकि आठवीं पंचवर्षीय योजना शुरू नहीं हो सकी।<br data-start=\"3056\" data-end=\"3059\" />The years 1990&ndash;91 and 1991&ndash;92 were treated as Annual Plans because the Eighth Five-Year Plan could not be launched.</p>\n</li>\n<li data-start=\"3181\" data-end=\"3308\">\n<p data-start=\"3184\" data-end=\"3308\">इस अवधि में भारत को विदेशी मुद्रा संकट का सामना करना पड़ा।<br data-start=\"3242\" data-end=\"3245\" />During this period, India faced a foreign exchange crisis.</p>\n</li>\n<li data-start=\"3310\" data-end=\"3554\">\n<p data-start=\"3313\" data-end=\"3554\">इसी समय प्रधानमंत्री पी.वी. नरसिंह राव के नेतृत्व में उदारीकरण, निजीकरण और वैश्वीकरण (LPG) की शुरुआत हुई।<br data-start=\"3418\" data-end=\"3421\" />During this time, Liberalisation, Privatisation and Globalisation (LPG) were introduced under Prime Minister P.V. Narasimha Rao.</p>\n</li>\n<li data-start=\"3556\" data-end=\"3677\">\n<p data-start=\"3559\" data-end=\"3677\">इस अवधि में भारत की आर्थिक स्थिति पूरी तरह स्थिर थी।<br data-start=\"3611\" data-end=\"3614\" />During this period, India&rsquo;s economy was completely stable.</p>\n</li>\n</ol>\n<h3 data-start=\"3684\" data-end=\"3705\">विकल्प / Options:</h3>\n<p data-start=\"3707\" data-end=\"3741\">(a) केवल 1 और 2<br data-start=\"3722\" data-end=\"3725\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"3743\" data-end=\"3783\">(b) केवल 1, 2 और 3<br data-start=\"3761\" data-end=\"3764\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"3785\" data-end=\"3819\">(c) केवल 2 और 4<br data-start=\"3800\" data-end=\"3803\" />&emsp;&emsp;2 and 4 only</p>\n<p></p>\n<p data-start=\"3821\" data-end=\"3857\">(d) 1, 2, 3 और 4<br data-start=\"3837\" data-end=\"3840\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"252\" data-end=\"479\">आठवीं (1992&ndash;97) और नौवीं (1997&ndash;2002) पंचवर्षीय योजनाओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"360\" data-end=\"363\" /><strong data-start=\"363\" data-end=\"479\">With reference to the Eighth (1992&ndash;97) and Ninth (1997&ndash;2002) Five-Year Plans, consider the following statements:</strong></p>\n<ol data-start=\"481\" data-end=\"1299\">\n<li data-start=\"481\" data-end=\"713\">\n<p data-start=\"484\" data-end=\"713\">आठवीं योजना में उद्योगों के आधुनिकीकरण, विकेंद्रीकरण तथा पंचायती राज संस्थाओं की भागीदारी पर बल दिया गया।<br data-start=\"589\" data-end=\"592\" />The Eighth Plan promoted industrial modernisation, decentralisation and involvement of Panchayats and Nagar Palikas.</p>\n</li>\n<li data-start=\"715\" data-end=\"864\">\n<p data-start=\"718\" data-end=\"864\">भारत 1 जनवरी 1995 को विश्व व्यापार संगठन (WTO) का सदस्य बना।<br data-start=\"778\" data-end=\"781\" />India became a member of the World Trade Organization (WTO) on 1 January 1995.</p>\n</li>\n<li data-start=\"866\" data-end=\"1125\">\n<p data-start=\"869\" data-end=\"1125\">नौवीं योजना अटल बिहारी वाजपेयी के प्रधानमंत्रित्व काल में शुरू हुई और इसका उद्देश्य गरीबी उन्मूलन तथा सामाजिक न्याय था।<br data-start=\"988\" data-end=\"991\" />The Ninth Plan was launched during Atal Bihari Vajpayee&rsquo;s Prime Ministership and aimed at poverty eradication and social justice.</p>\n</li>\n<li data-start=\"1127\" data-end=\"1299\">\n<p data-start=\"1130\" data-end=\"1299\">नौवीं योजना की लक्षित विकास दर 7.1% थी, जबकि वास्तविक विकास दर 6.8% रही।<br data-start=\"1202\" data-end=\"1205\" />The target growth rate of the Ninth Plan was 7.1%, while the actual growth rate was 6.8%.</p>\n</li>\n</ol>\n<h3 data-start=\"1306\" data-end=\"1327\">विकल्प / Options:</h3>\n<p data-start=\"1329\" data-end=\"1363\">(a) केवल 1 और 2<br data-start=\"1344\" data-end=\"1347\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"1365\" data-end=\"1405\">(b) केवल 1, 2 और 4<br data-start=\"1383\" data-end=\"1386\" />&emsp;&emsp;1, 2 and 4 only</p>\n<p data-start=\"1407\" data-end=\"1443\">(c) 1, 2, 3 और 4<br data-start=\"1423\" data-end=\"1426\" />&emsp;&emsp;1, 2, 3 and 4</p>\n<p></p>\n<p data-start=\"1445\" data-end=\"1479\">(d) केवल 3 और 4<br data-start=\"1460\" data-end=\"1463\" />&emsp;&emsp;3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"1607\" data-end=\"1836\">दसवीं (2002&ndash;07) और ग्यारहवीं (2007&ndash;12) पंचवर्षीय योजनाओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"1717\" data-end=\"1720\" /><strong data-start=\"1720\" data-end=\"1836\">With reference to the Tenth (2002&ndash;07) and Eleventh (2007&ndash;12) Five-Year Plans, consider the following statements:</strong></p>\n<ol data-start=\"1838\" data-end=\"2575\">\n<li data-start=\"1838\" data-end=\"2001\">\n<p data-start=\"1841\" data-end=\"2001\">दसवीं योजना का उद्देश्य समावेशी वृद्धि (Inclusive Growth) और गरीबी को आधा करना था।<br data-start=\"1923\" data-end=\"1926\" />The Tenth Plan aimed at inclusive growth and reducing poverty by half.</p>\n</li>\n<li data-start=\"2003\" data-end=\"2175\">\n<p data-start=\"2006\" data-end=\"2175\">दसवीं योजना की लक्षित विकास दर 8.1% थी, जबकि वास्तविक विकास दर 7.6% रही।<br data-start=\"2078\" data-end=\"2081\" />The target growth rate of the Tenth Plan was 8.1%, while the actual growth rate was 7.6%.</p>\n</li>\n<li data-start=\"2177\" data-end=\"2420\">\n<p data-start=\"2180\" data-end=\"2420\">ग्यारहवीं योजना का मुख्य विषय &ldquo;तेज और अधिक समावेशी वृद्धि&rdquo; था तथा यह पर्यावरणीय स्थिरता पर भी केंद्रित थी।<br data-start=\"2286\" data-end=\"2289\" />The main theme of the Eleventh Plan was &ldquo;Rapid and More Inclusive Growth&rdquo; and it also focused on environmental sustainability.</p>\n</li>\n<li data-start=\"2422\" data-end=\"2575\">\n<p data-start=\"2425\" data-end=\"2575\">शिक्षा का अधिकार अधिनियम 2009 ग्यारहवीं योजना के दौरान पारित हुआ।<br data-start=\"2490\" data-end=\"2493\" />The Right to Education Act, 2009 was enacted during the Eleventh Plan period.</p>\n</li>\n</ol>\n<h3 data-start=\"2582\" data-end=\"2603\">विकल्प / Options:</h3>\n<p data-start=\"2605\" data-end=\"2639\">(a) केवल 1 और 2<br data-start=\"2620\" data-end=\"2623\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"2641\" data-end=\"2681\">(b) केवल 1, 3 और 4<br data-start=\"2659\" data-end=\"2662\" />&emsp;&emsp;1, 3 and 4 only</p>\n<p data-start=\"2683\" data-end=\"2719\">(c) 1, 2, 3 और 4<br data-start=\"2699\" data-end=\"2702\" />&emsp;&emsp;1, 2, 3 and 4</p>\n<p></p>\n<p data-start=\"2721\" data-end=\"2755\">(d) केवल 2 और 4<br data-start=\"2736\" data-end=\"2739\" />&emsp;&emsp;2 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"2882\" data-end=\"3066\">बारहवीं पंचवर्षीय योजना (2012&ndash;17) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"2969\" data-end=\"2972\" /><strong data-start=\"2972\" data-end=\"3066\">With reference to the Twelfth Five-Year Plan (2012&ndash;17), consider the following statements:</strong></p>\n<ol data-start=\"3068\" data-end=\"3703\">\n<li data-start=\"3068\" data-end=\"3198\">\n<p data-start=\"3071\" data-end=\"3198\">इसका मुख्य विषय &ldquo;तेज, अधिक समावेशी और सतत विकास&rdquo; था।<br data-start=\"3123\" data-end=\"3126\" />Its main theme was &ldquo;Faster, More Inclusive and Sustainable Growth.&rdquo;</p>\n</li>\n<li data-start=\"3200\" data-end=\"3416\">\n<p data-start=\"3203\" data-end=\"3416\">इस योजना में आधारभूत संरचना (Infrastructure) को सुदृढ़ करने तथा सभी गाँवों में बिजली उपलब्ध कराने का लक्ष्य रखा गया।<br data-start=\"3319\" data-end=\"3322\" />The plan aimed at strengthening infrastructure and providing electricity to all villages.</p>\n</li>\n<li data-start=\"3418\" data-end=\"3614\">\n<p data-start=\"3421\" data-end=\"3614\">योजना की प्रारंभिक लक्षित विकास दर 9% थी, परंतु राष्ट्रीय विकास परिषद ने 8% की दर को स्वीकृति दी।<br data-start=\"3518\" data-end=\"3521\" />The initial target growth rate was 9%, but the National Development Council approved 8%.</p>\n</li>\n<li data-start=\"3616\" data-end=\"3703\">\n<p data-start=\"3619\" data-end=\"3703\">यह भारत की अंतिम पंचवर्षीय योजना थी।<br data-start=\"3655\" data-end=\"3658\" />It was the last Five-Year Plan of India.</p>\n</li>\n</ol>\n<hr data-start=\"3705\" data-end=\"3708\" />\n<h3 data-start=\"3710\" data-end=\"3731\">विकल्प / Options:</h3>\n<p data-start=\"3733\" data-end=\"3767\">(a) केवल 1 और 2<br data-start=\"3748\" data-end=\"3751\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"3769\" data-end=\"3809\">(b) केवल 1, 2 और 3<br data-start=\"3787\" data-end=\"3790\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"3811\" data-end=\"3845\">(c) केवल 3 और 4<br data-start=\"3826\" data-end=\"3829\" />&emsp;&emsp;3 and 4 only</p>\n<p></p>\n<p data-start=\"3847\" data-end=\"3883\">(d) 1, 2, 3 और 4<br data-start=\"3863\" data-end=\"3866\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"126\" data-end=\"293\">भारत की पंचवर्षीय योजनाओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:<br data-start=\"204\" data-end=\"207\" /><strong data-start=\"207\" data-end=\"293\">With reference to the Five-Year Plans of India, consider the following statements:</strong></p>\n<ol data-start=\"295\" data-end=\"1693\">\n<li data-start=\"295\" data-end=\"521\">\n<p data-start=\"298\" data-end=\"521\">प्रथम पंचवर्षीय योजना हैरॉड-डोमर मॉडल पर आधारित थी तथा कृषि और सिंचाई को सर्वोच्च प्राथमिकता दी गई थी।<br data-start=\"400\" data-end=\"403\" />The First Five-Year Plan was based on the Harrod-Domar Model and gave top priority to agriculture and irrigation.</p>\n</li>\n<li data-start=\"523\" data-end=\"839\">\n<p data-start=\"526\" data-end=\"839\">द्वितीय पंचवर्षीय योजना (1956&ndash;61) के दौरान दुर्गापुर, भिलाई और राउरकेला इस्पात संयंत्र स्थापित किए गए तथा भारत ने मिश्रित अर्थव्यवस्था (Mixed Economy) को अपनाया।<br data-start=\"687\" data-end=\"690\" />During the Second Five-Year Plan (1956&ndash;61), Durgapur, Bhilai and Rourkela steel plants were established and India adopted a Mixed Economy model.</p>\n</li>\n<li data-start=\"841\" data-end=\"1145\">\n<p data-start=\"844\" data-end=\"1145\">तृतीय पंचवर्षीय योजना का मुख्य उद्देश्य भारत को आत्मनिर्भर एवं स्व-उत्पादक अर्थव्यवस्था बनाना था, परंतु 1962 और 1965 के युद्धों से यह प्रभावित हुई।<br data-start=\"991\" data-end=\"994\" />The Third Five-Year Plan aimed to establish India as a self-reliant and self-generating economy, but it was affected by the wars of 1962 and 1965.</p>\n</li>\n<li data-start=\"1147\" data-end=\"1693\">\n<p data-start=\"1150\" data-end=\"1693\">पंचम योजना का मुख्य नारा &ldquo;गरीबी हटाओ&rdquo; था, आठवीं योजना में आर्थिक उदारीकरण पर बल दिया गया, नौवीं योजना का फोकस &ldquo;सामाजिक न्याय के साथ विकास&rdquo; था, और बारहवीं योजना का विषय &ldquo;Faster, More Inclusive and Sustainable Growth&rdquo; था; योजना आयोग की स्थापना 1950 में हुई थी।<br data-start=\"1408\" data-end=\"1411\" />The Fifth Plan focused on &ldquo;Garibi Hatao,&rdquo; the Eighth Plan emphasised economic liberalisation, the Ninth Plan focused on &ldquo;Growth with Social Justice,&rdquo; and the Twelfth Plan had the theme &ldquo;Faster, More Inclusive and Sustainable Growth&rdquo;; the Planning Commission was set up in 1950.</p>\n</li>\n</ol>\n<h3 data-start=\"1700\" data-end=\"1721\">विकल्प / Options:</h3>\n<p data-start=\"1723\" data-end=\"1757\">(a) केवल 1 और 2<br data-start=\"1738\" data-end=\"1741\" />&emsp;&emsp;1 and 2 only</p>\n<p data-start=\"1759\" data-end=\"1799\">(b) केवल 1, 2 और 3<br data-start=\"1777\" data-end=\"1780\" />&emsp;&emsp;1, 2 and 3 only</p>\n<p data-start=\"1801\" data-end=\"1841\">(c) केवल 2, 3 और 4<br data-start=\"1819\" data-end=\"1822\" />&emsp;&emsp;2, 3 and 4 only</p>\n<p></p>\n<p data-start=\"1843\" data-end=\"1879\">(d) 1, 2, 3 और 4<br data-start=\"1859\" data-end=\"1862\" />&emsp;&emsp;1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h2 data-start=\"0\" data-end=\"43\">&nbsp;Self-Reliance in Five-Year Plans&nbsp;</h2>\n<hr data-start=\"103\" data-end=\"106\" />\n<h3 data-start=\"108\" data-end=\"151\">🔹 <strong data-start=\"115\" data-end=\"149\">Third Five-Year Plan (1961&ndash;66)</strong></h3>\n<p data-start=\"152\" data-end=\"405\"><strong data-start=\"152\" data-end=\"162\">Hindi:</strong> इस योजना का मुख्य उद्देश्य भारत को <strong data-start=\"198\" data-end=\"227\">आत्मनिर्भर (Self-Reliant)</strong> और <strong data-start=\"231\" data-end=\"285\">स्व-उत्पादक अर्थव्यवस्था (Self-Generating Economy)</strong> बनाना था।<br data-start=\"295\" data-end=\"298\" /><strong data-start=\"298\" data-end=\"310\">English:</strong> The main objective was to establish India as a <strong data-start=\"358\" data-end=\"402\">self-reliant and self-generating economy</strong>.</p>\n<p data-start=\"407\" data-end=\"501\">👉 Focus: कृषि + बुनियादी उद्योग<br data-start=\"439\" data-end=\"442\" />👉 Context: आर्थिक स्वतंत्रता और दीर्घकालिक विकास की नींव</p>\n<hr data-start=\"503\" data-end=\"506\" />\n<h3 data-start=\"508\" data-end=\"552\">🔹 <strong data-start=\"515\" data-end=\"550\">Fourth Five-Year Plan (1969&ndash;74)</strong></h3>\n<p data-start=\"553\" data-end=\"784\"><strong data-start=\"553\" data-end=\"563\">Hindi:</strong> इस योजना का उद्देश्य था <strong data-start=\"588\" data-end=\"638\">&ldquo;स्थिरता के साथ विकास (Growth with Stability)&rdquo;</strong> तथा आत्मनिर्भरता की क्रमिक प्राप्ति।<br data-start=\"675\" data-end=\"678\" /><strong data-start=\"678\" data-end=\"690\">English:</strong> The objective was <strong data-start=\"709\" data-end=\"736\">&ldquo;Growth with Stability&rdquo;</strong> and progressive achievement of self-reliance.</p>\n<p data-start=\"786\" data-end=\"892\">👉 Focus: आर्थिक स्थिरता + नियंत्रित मुद्रास्फीति + आत्मनिर्भरता<br data-start=\"850\" data-end=\"853\" />👉 Context: पिछली असफलताओं को सुधारना</p>\n<hr data-start=\"894\" data-end=\"897\" />\n<h3 data-start=\"899\" data-end=\"942\">🔹 <strong data-start=\"906\" data-end=\"940\">Fifth Five-Year Plan (1974&ndash;79)</strong></h3>\n<p data-start=\"943\" data-end=\"1150\"><strong data-start=\"943\" data-end=\"953\">Hindi:</strong> इस योजना में <strong data-start=\"967\" data-end=\"999\">गरीबी उन्मूलन (Garibi Hatao)</strong> और आत्मनिर्भरता प्राप्त करने पर बल दिया गया।<br data-start=\"1044\" data-end=\"1047\" /><strong data-start=\"1047\" data-end=\"1059\">English:</strong> This plan emphasised <strong data-start=\"1081\" data-end=\"1115\">poverty removal (Garibi Hatao)</strong> and attainment of self-reliance.</p>\n<p data-start=\"1152\" data-end=\"1237\">👉 Focus: रोजगार + गरीबी हटाओ<br data-start=\"1181\" data-end=\"1184\" />👉 Context: सामाजिक न्याय के माध्यम से आत्मनिर्भरता</p>\n<hr data-start=\"1239\" data-end=\"1242\" />\n<h2 data-start=\"1244\" data-end=\"1294\">⚠️ Important Distinction&nbsp;</h2>\n<p></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"1296\" data-end=\"1572\">\n<thead data-start=\"1296\" data-end=\"1328\">\n<tr data-start=\"1296\" data-end=\"1328\">\n<th class=\"\" data-start=\"1296\" data-end=\"1303\" data-col-size=\"sm\">Plan</th>\n<th class=\"\" data-start=\"1303\" data-end=\"1328\" data-col-size=\"md\">Self-Reliance Context</th>\n</tr>\n</thead>\n<tbody data-start=\"1362\" data-end=\"1572\">\n<tr data-start=\"1362\" data-end=\"1422\">\n<td data-start=\"1362\" data-end=\"1375\" data-col-size=\"sm\">Third Plan</td>\n<td data-col-size=\"md\" data-start=\"1375\" data-end=\"1422\">आर्थिक आत्मनिर्भरता (Economic Independence)</td>\n</tr>\n<tr data-start=\"1423\" data-end=\"1496\">\n<td data-start=\"1423\" data-end=\"1437\" data-col-size=\"sm\">Fourth Plan</td>\n<td data-col-size=\"md\" data-start=\"1437\" data-end=\"1496\">स्थिरता के साथ आत्मनिर्भरता (Stability + Self-Reliance)</td>\n</tr>\n<tr data-start=\"1497\" data-end=\"1572\">\n<td data-start=\"1497\" data-end=\"1510\" data-col-size=\"sm\">Fifth Plan</td>\n<td data-col-size=\"md\" data-start=\"1510\" data-end=\"1572\">गरीबी हटाकर आत्मनिर्भरता (Poverty Removal + Self-Reliance)</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"217\" data-end=\"286\"> सूची&ndash;I को सूची&ndash;II से मिलाइए:<br data-start=\"253\" data-end=\"256\" /><strong data-start=\"256\" data-end=\"286\">Match List&ndash;I with List&ndash;II:</strong></p>\n<h3 data-start=\"288\" data-end=\"307\">सूची&ndash;I (Plan)</h3>\n<p data-start=\"308\" data-end=\"456\">A. प्रथम पंचवर्षीय योजना (1951&ndash;56)<br data-start=\"342\" data-end=\"345\" />B. द्वितीय पंचवर्षीय योजना (1956&ndash;61)<br data-start=\"381\" data-end=\"384\" />C. तृतीय पंचवर्षीय योजना (1961&ndash;66)<br data-start=\"418\" data-end=\"421\" />D. पंचम पंचवर्षीय योजना (1974&ndash;78)</p>\n<h3 data-start=\"458\" data-end=\"486\">सूची&ndash;II (Main Feature)</h3>\n<ol data-start=\"487\" data-end=\"672\">\n<li data-start=\"487\" data-end=\"535\">\n<p data-start=\"490\" data-end=\"535\">गरीबी हटाओ एवं न्यूनतम आवश्यकताएँ कार्यक्रम</p>\n</li>\n<li data-start=\"536\" data-end=\"576\">\n<p data-start=\"539\" data-end=\"576\">हैरॉड&ndash;डोमर मॉडल एवं कृषि प्राथमिकता</p>\n</li>\n<li data-start=\"577\" data-end=\"617\">\n<p data-start=\"580\" data-end=\"617\">महालनोबिस मॉडल एवं तीव्र औद्योगीकरण</p>\n</li>\n<li data-start=\"618\" data-end=\"672\">\n<p data-start=\"621\" data-end=\"672\">आत्मनिर्भरता का लक्ष्य एवं दो युद्धों से प्रभावित</p>\n</li>\n</ol>\n<hr data-start=\"674\" data-end=\"677\" />\n<h3 data-start=\"679\" data-end=\"695\">Codes / कूट:</h3>\n<p></p>\n<p data-start=\"697\" data-end=\"796\">(a) A&ndash;2, B&ndash;3, C&ndash;4, D&ndash;1<br data-start=\"719\" data-end=\"722\" />(b) A&ndash;3, B&ndash;2, C&ndash;1, D&ndash;4<br data-start=\"744\" data-end=\"747\" />(c) A&ndash;2, B&ndash;4, C&ndash;3, D&ndash;1<br data-start=\"769\" data-end=\"772\" />(d) A&ndash;1, B&ndash;3, C&ndash;4, D&ndash;2</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"900\" data-end=\"969\">सूची&ndash;I को सूची&ndash;II से मिलाइए:<br data-start=\"936\" data-end=\"939\" /><strong data-start=\"939\" data-end=\"969\">Match List&ndash;I with List&ndash;II:</strong></p>\n<h3 data-start=\"971\" data-end=\"990\">सूची&ndash;I (Plan)</h3>\n<p data-start=\"991\" data-end=\"1142\">A. छठी पंचवर्षीय योजना (1980&ndash;85)<br data-start=\"1023\" data-end=\"1026\" />B. आठवीं पंचवर्षीय योजना (1992&ndash;97)<br data-start=\"1060\" data-end=\"1063\" />C. ग्यारहवीं पंचवर्षीय योजना (2007&ndash;12)<br data-start=\"1101\" data-end=\"1104\" />D. बारहवीं पंचवर्षीय योजना (2012&ndash;17)</p>\n<h3 data-start=\"1144\" data-end=\"1173\">सूची&ndash;II (Theme/Feature)</h3>\n<ol data-start=\"1174\" data-end=\"1357\">\n<li data-start=\"1174\" data-end=\"1223\">\n<p data-start=\"1177\" data-end=\"1223\">NABARD की स्थापना एवं मूल्य नियंत्रण समाप्ति</p>\n</li>\n<li data-start=\"1224\" data-end=\"1265\">\n<p data-start=\"1227\" data-end=\"1265\">WTO सदस्यता (1995) एवं 6.8% विकास दर</p>\n</li>\n<li data-start=\"1266\" data-end=\"1304\">\n<p data-start=\"1269\" data-end=\"1304\">&ldquo;Rapid and More Inclusive Growth&rdquo;</p>\n</li>\n<li data-start=\"1305\" data-end=\"1357\">\n<p data-start=\"1308\" data-end=\"1357\">&ldquo;Faster, More Inclusive and Sustainable Growth&rdquo;</p>\n</li>\n</ol>\n<hr data-start=\"1359\" data-end=\"1362\" />\n<h3 data-start=\"1364\" data-end=\"1380\">Codes / कूट:</h3>\n<p></p>\n<p data-start=\"1382\" data-end=\"1481\">(a) A&ndash;1, B&ndash;2, C&ndash;3, D&ndash;4<br data-start=\"1404\" data-end=\"1407\" />(b) A&ndash;2, B&ndash;1, C&ndash;4, D&ndash;3<br data-start=\"1429\" data-end=\"1432\" />(c) A&ndash;1, B&ndash;3, C&ndash;2, D&ndash;4<br data-start=\"1454\" data-end=\"1457\" />(d) A&ndash;4, B&ndash;2, C&ndash;3, D&ndash;1</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"254\" data-end=\"322\">&nbsp;सूची&ndash;I को सूची&ndash;II से मिलाइए:<br data-start=\"289\" data-end=\"292\" /><strong data-start=\"292\" data-end=\"322\">Match List&ndash;I with List&ndash;II:</strong></p>\n<h3 data-start=\"324\" data-end=\"341\">सूची&ndash;I (Plan)</h3>\n<p data-start=\"343\" data-end=\"494\">A. प्रथम पंचवर्षीय योजना (1951&ndash;56)<br data-start=\"377\" data-end=\"380\" />B. द्वितीय पंचवर्षीय योजना (1956&ndash;61)<br data-start=\"416\" data-end=\"419\" />C. तृतीय पंचवर्षीय योजना (1961&ndash;66)<br data-start=\"453\" data-end=\"456\" />D. बारहवीं पंचवर्षीय योजना (2012&ndash;17)</p>\n<hr data-start=\"496\" data-end=\"499\" />\n<h3 data-start=\"501\" data-end=\"534\">सूची&ndash;II (Key Feature / Theme)</h3>\n<ol data-start=\"536\" data-end=\"748\">\n<li data-start=\"536\" data-end=\"588\">\n<p data-start=\"539\" data-end=\"588\">&ldquo;Faster, More Inclusive and Sustainable Growth&rdquo;</p>\n</li>\n<li data-start=\"589\" data-end=\"641\">\n<p data-start=\"592\" data-end=\"641\">हैरॉड&ndash;डोमर मॉडल तथा कृषि को सर्वोच्च प्राथमिकता</p>\n</li>\n<li data-start=\"642\" data-end=\"684\">\n<p data-start=\"645\" data-end=\"684\">महालनोबिस मॉडल एवं तीव्र औद्योगिकीकरण</p>\n</li>\n<li data-start=\"685\" data-end=\"748\">\n<p data-start=\"688\" data-end=\"748\">आत्मनिर्भरता का लक्ष्य, 1962 व 1965 के युद्धों से प्रभावित</p>\n</li>\n</ol>\n<hr data-start=\"750\" data-end=\"753\" />\n<h3 data-start=\"755\" data-end=\"771\">Codes / कूट:</h3>\n<p data-start=\"773\" data-end=\"872\">(a) A&ndash;2, B&ndash;3, C&ndash;4, D&ndash;1<br data-start=\"795\" data-end=\"798\" />(b) A&ndash;3, B&ndash;2, C&ndash;1, D&ndash;4<br data-start=\"820\" data-end=\"823\" />(c) A&ndash;2, B&ndash;4, C&ndash;3, D&ndash;1<br data-start=\"845\" data-end=\"848\" />(d) A&ndash;1, B&ndash;3, C&ndash;4, D&ndash;2</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h2 data-start=\"879\" data-end=\"901\">✅ Correct Answer:</h2>\n<p data-start=\"902\" data-end=\"928\"><strong data-start=\"902\" data-end=\"928\">(a) A&ndash;2, B&ndash;3, C&ndash;4, D&ndash;1</strong></p>\n<hr style=\"width: 1138.39px;\" data-start=\"930\" data-end=\"933\" />\n<h3 data-start=\"935\" data-end=\"971\">&nbsp;Why This Is Important for SSC</h3>\n<p></p>\n<p data-start=\"973\" data-end=\"1132\">✔ Harrod&ndash;Domar Model &rarr; First Plan<br data-start=\"1006\" data-end=\"1009\" />✔ Mahalanobis Model &rarr; Second Plan<br data-start=\"1042\" data-end=\"1045\" />✔ War Impact + Self-Reliance &rarr; Third Plan<br data-start=\"1086\" data-end=\"1089\" />✔ 12th Plan Theme &rarr; Very Frequently Asked</p>",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"175\" data-end=\"361\">प्रथम पंचवर्षीय योजना (1951&ndash;56) के संबंध में निम्नलिखित में से कौन-सा कथन सही है?<br data-start=\"264\" data-end=\"267\" /><strong data-start=\"267\" data-end=\"361\">Which of the following statements is correct regarding the First Five-Year Plan (1951&ndash;56)?</strong></p>\n<p data-start=\"363\" data-end=\"507\">(a) यह महालनोबिस मॉडल पर आधारित थी और भारी उद्योगों पर केंद्रित थी।<br data-start=\"430\" data-end=\"433\" />&emsp;&emsp;It was based on the Mahalanobis Model and focused on heavy industries.</p>\n<p data-start=\"509\" data-end=\"665\">(b) यह हैरॉड-डोमर मॉडल पर आधारित थी और कृषि को सर्वोच्च प्राथमिकता दी गई।<br data-start=\"582\" data-end=\"585\" />&emsp;&emsp;It was based on the Harrod&ndash;Domar Model and gave top priority to agriculture.</p>\n<p data-start=\"667\" data-end=\"739\">(c) इसका लक्ष्य विकास दर 5.6% था।<br data-start=\"700\" data-end=\"703\" />&emsp;&emsp;Its target growth rate was 5.6%.</p>\n<p data-start=\"741\" data-end=\"812\">(d) यह &ldquo;गरीबी हटाओ&rdquo; पर केंद्रित थी।<br data-start=\"776\" data-end=\"779\" />&emsp;&emsp;It focused on &ldquo;Garibi Hatao.&rdquo;</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"879\" data-end=\"1040\">तृतीय पंचवर्षीय योजना (1961&ndash;66) के असफल होने का मुख्य कारण क्या था?<br data-start=\"954\" data-end=\"957\" /><strong data-start=\"957\" data-end=\"1040\">What was the main reason for the failure of the Third Five-Year Plan (1961&ndash;66)?</strong></p>\n<p data-start=\"1042\" data-end=\"1084\">(a) WTO की सदस्यता<br data-start=\"1060\" data-end=\"1063\" />&emsp;&emsp;Membership of WTO</p>\n<p data-start=\"1086\" data-end=\"1186\">(b) 1962 का चीन युद्ध और 1965 का भारत-पाक युद्ध<br data-start=\"1133\" data-end=\"1136\" />&emsp;&emsp;The 1962 Sino-Indian War and 1965 Indo-Pak War</p>\n<p data-start=\"1188\" data-end=\"1236\">(c) बैंक राष्ट्रीयकरण<br data-start=\"1209\" data-end=\"1212\" />&emsp;&emsp;Bank nationalisation</p>\n<p></p>\n<p data-start=\"1238\" data-end=\"1269\">(d) LPG सुधार<br data-start=\"1251\" data-end=\"1254\" />&emsp;&emsp;LPG reforms</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  },
+  {
+    "question": "<p data-start=\"1336\" data-end=\"1516\">Faster, More Inclusive and Sustainable Growth&rdquo; किस पंचवर्षीय योजना का विषय था?<br data-start=\"1423\" data-end=\"1426\" /><strong data-start=\"1426\" data-end=\"1516\">&ldquo;Faster, More Inclusive and Sustainable Growth&rdquo; was the theme of which Five-Year Plan?</strong></p>\n<p data-start=\"1518\" data-end=\"1570\">(a) दसवीं पंचवर्षीय योजना<br data-start=\"1543\" data-end=\"1546\" />&emsp;&emsp;Tenth Five-Year Plan</p>\n<p data-start=\"1572\" data-end=\"1631\">(b) ग्यारहवीं पंचवर्षीय योजना<br data-start=\"1601\" data-end=\"1604\" />&emsp;&emsp;Eleventh Five-Year Plan</p>\n<p data-start=\"1633\" data-end=\"1689\">(c) बारहवीं पंचवर्षीय योजना<br data-start=\"1660\" data-end=\"1663\" />&emsp;&emsp;Twelfth Five-Year Plan</p>\n<p></p>\n<p data-start=\"1691\" data-end=\"1744\">(d) आठवीं पंचवर्षीय योजना<br data-start=\"1716\" data-end=\"1719\" />&emsp;&emsp;Eighth Five-Year Plan</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "FIVE YEAR PLANS"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

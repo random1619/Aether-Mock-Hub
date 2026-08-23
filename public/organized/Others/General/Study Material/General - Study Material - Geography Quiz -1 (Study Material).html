@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar system + latitude & longitude + Earth's interior and plate tectonics
+
+
+
+</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);min-height:100vh;padding-bottom:50px}
+        .quiz-container {max-width:800px;margin:20px auto;background:white;border-radius:15px;box-shadow:0 15px 40px rgba(0,0,0,0.12);overflow:hidden;animation:fadeIn 0.5s;touch-action:pan-y}
+         fadeIn {from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+         slideIn {from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+        .quiz-header {position:sticky;top:0;z-index:1000;background:white;padding:20px;border-bottom:1px solid rgba(0,0,0,0.08)}
+        .timer {font-size:22px;font-weight:600;color:#4361ee}
+        .question-card {border:none;box-shadow:0 5px 20px rgba(0,0,0,0.06);margin-bottom:25px;border-radius:15px;overflow:hidden;transition:all 0.4s ease;animation:slideIn 0.4s}
+        .question-reference {background-color:#f0f7ff;border-left:5px solid #4361ee;padding:15px;margin-bottom:15px;border-radius:5px}
+        .option-btn {display:block;width:100%;text-align:left;padding:16px 20px;margin:0 0 12px 0;border-radius:12px;transition:all 0.3s ease;position:relative;overflow:hidden;border:1px solid #e6e6e6}
+        .option-btn:hover {background-color:#f8f9fa;transform:translateX(5px);box-shadow:0 3px 10px rgba(0,0,0,0.05)}
+        .option-btn.selected {background-color:#e9f3ff;border-color:#4361ee;font-weight:500;box-shadow:0 5px 15px rgba(67,97,238,0.15)}
+        .option-btn.correct {background-color:#d4edda;border-color:#28a745}
+        .option-btn.incorrect {background-color:#f8d7da;border-color:#dc3545}
+        .progress {height:8px;border-radius:4px;overflow:hidden}
+        .progress-bar {transition:width 1s linear}
+        .result-card {display:none;animation:fadeIn 0.5s}
+        .score-highlight {font-size:48px;font-weight:700;color:#4361ee;text-align:center;margin:20px 0}
+        .quiz-pagination {display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:15px 0;padding:10px 0}
+        .quiz-pagination .page-box {width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:600;background-color:#f8f9fa;color:#555;border:1px solid #ddd;cursor:pointer;transition:all 0.3s ease}
+        .quiz-pagination .page-box.active {background-color:#4361ee;border-color:#4361ee;color:white}
+        .quiz-pagination .page-box:hover {transform:scale(1.1)}
+        .quiz-pagination .page-box.correct {background-color:#28a745;border-color:#28a745;color:white}
+        .quiz-pagination .page-box.incorrect {background-color:#dc3545;border-color:#dc3545;color:white}
+        .explanation {background-color:#f8f9fa;padding:15px;border-radius:8px;margin-top:15px;border-left:3px solid #4361ee}
+        .analysis-panel {background-color:#f8f9fa;border-radius:10px;padding:15px;margin-top:20px;box-shadow:0 3px 10px rgba(0,0,0,0.05);border:1px solid #e6e6e6}
+        .analysis-item {display:flex;align-items:center;margin-bottom:10px}
+        .analysis-icon {width:24px;height:24px;margin-right:10px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:white}
+        .btn-primary {background-color:#4361ee;border-color:#4361ee;border-radius:30px;padding:10px 25px;transition:all 0.3s ease}
+        .btn-primary:hover {background-color:#3a56d4;border-color:#3a56d4;transform:translateY(-3px);box-shadow:0 5px 15px rgba(67,97,238,0.2)}
+        .confetti {position:fixed;width:10px;height:10px;background-color:#f00;position:absolute;top:0;z-index:9999}
+        .chart-container {height:220px}
+        .time-bar {height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-top:5px}
+        .time-fill {height:100%;background:linear-gradient(90deg,#4361ee 0%,#7e96ff 100%);border-radius:4px;transition:width 0.5s}
+        .badge-avg {background-color:#e9f3ff;color:#4361ee;font-weight:500;padding:5px 10px;border-radius:20px}
+        .badge-fast {background-color:#d4edda;color:#28a745;font-weight:500;padding:5px 10px;border-radius:20px}
+        .badge-slow {background-color:#f8d7da;color:#dc3545;font-weight:500;padding:5px 10px;border-radius:20px}
+    </style>
+</head>
+<body>
+    <!-- Hidden audio elements for sound effects -->
+    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/269/269.wav" preload="auto"></audio>
+    <audio id="swipeSound" src="https://assets.mixkit.co/active_storage/sfx/1897/1897.wav" preload="auto"></audio>
+    <audio id="correctSound" src="https://assets.mixkit.co/active_storage/sfx/2870/2870.wav" preload="auto"></audio>
+    <audio id="wrongSound" src="https://assets.mixkit.co/active_storage/sfx/2964/2964.wav" preload="auto"></audio>
+    
+    <div style="text-align:center;padding:10px;font-weight:bold;">
+Join Telegram: <a href="https://t.me/+onyiRcm00J8xNzRl" target="_blank">https://t.me/+onyiRcm00J8xNzRl</a>
+</div>
+<div class="container my-4">
+        <div class="quiz-container" id="quizContainer">
+            <div class="quiz-header shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="m-0 fw-bold">Mock Test</h2>
+                    <div id="timer" class="timer">
+                        <i class="fas fa-clock me-2"></i>
+                        <span id="minutes">00</span>:<span id="seconds">00</span>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2">
+                    <h5 class="m-0">Solar system + latitude & longitude + Earth's interior and plate tectonics
+
+
+
+</h5>
+                </div>
+                <div class="progress mt-3">
+                  <div id="timeProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width:100%"></div>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div id="questionContainer"></div>
+                <button id="toggleNav" class="btn btn-secondary mb-2">Hide/Show Numbers</button><div class="quiz-pagination" id="questionNav"></div>
+                <div class="d-flex justify-content-center my-4">
+                    <button id="submitBtn" class="btn btn-primary btn-lg px-5 py-2 rounded-pill shadow">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Test
+                    </button>
+                </div>
+            </div>
+            
+            <div id="resultContainer" class="result-card p-4">
+                <h3 class="text-center fw-bold mb-4">Quiz Results</h3>
+                <div class="score-highlight" id="scoreDisplay"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Score Summary</h5>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>Total Questions:</div>
+                                    <div id="totalQuestions" class="fw-bold">136</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>Correct Answers:</div>
+                                    <div id="correctAnswers" class="fw-bold text-success">0</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>Incorrect Answers:</div>
+                                    <div id="incorrectAnswers" class="fw-bold text-danger">0</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>Unattempted:</div>
+                                    <div id="unattempted" class="fw-bold text-warning">0</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>Negative Marking:</div>
+                                    <div id="negativeMarks" class="fw-bold text-danger">-0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Performance</h5>
+                                <div class="chart-container">
+                                    <canvas id="performanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">Time Analysis</h5>
+                                <div class="chart-container">
+                                    <canvas id="timeAnalysisChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-4">
+                    <button id="reviewBtn" class="btn btn-primary btn-lg px-5 py-2 rounded-pill shadow">
+                        <i class="fas fa-search me-2"></i>View Solution
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap.3.0/dist/js/bootstrap.bundle.min.js">document.getElementById("toggleNav").onclick=function(){let n=document.getElementById("questionNav");n.style.display=n.style.display=="none"?"flex":"none";};</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Quiz data and state
+        const quizData = { questions: [{
+            id: 0,
+            text: "What is the scientific study of the origin, evolution, and eventual fate of the universe called? / ब्रह्मांड की उत्पत्ति, विकास और अंतिम भाग्य के वैज्ञानिक अध्ययन को क्या कहा जाता है?",
+            reference: "",
+            options: ["Astrology/\u091c\u094d\u092f\u094b\u0924\u093f\u0937", "Meteorology/\u092e\u094c\u0938\u092e \u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Cosmology/\u092c\u094d\u0930\u0939\u094d\u092e\u093e\u0902\u0921 \u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Geology/\u092d\u0942\u0935\u093f\u091c\u094d\u091e\u093e\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Cosmology is the branch of astronomy that studies the origin and evolution of the universe."
+        },{
+            id: 1,
+            text: "Which theory states that the universe began as a hot, dense point about 13.8 billion years ago? / कौन सा सिद्धांत कहता है कि ब्रह्मांड की शुरुआत लगभग 13.8 अरब साल पहले एक गर्म, सघन बिंदु के रूप में हुई थी?",
+            reference: "",
+            options: ["Geocentric Theory/\u092d\u0942-\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u093f\u0924 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Nebular Hypothesis/\u0928\u0947\u092c\u0941\u0932\u0930 \u092a\u0930\u093f\u0915\u0932\u094d\u092a\u0928\u093e", "Big Bang Theory/\u092e\u0939\u093e\u0935\u093f\u0938\u094d\u092b\u094b\u091f \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Steady State Theory/\u0938\u094d\u0925\u093f\u0930 \u0905\u0935\u0938\u094d\u0925\u093e \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Big Bang Theory is the leading scientific model for the origin of the universe."
+        },{
+            id: 2,
+            text: "Which cosmological theory suggests the universe is always expanding but maintains a constant average density? / कौन सा ब्रह्माण्ड संबंधी सिद्धांत बताता है कि ब्रह्मांड हमेशा विस्तार कर रहा है लेकिन एक स्थिर औसत घनत्व बनाए रखता है?",
+            reference: "",
+            options: ["Big Crunch Theory/\u092c\u093f\u0917 \u0915\u094d\u0930\u0902\u091a \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Oscillating Universe Theory/\u0926\u094b\u0932\u0928 \u092c\u094d\u0930\u0939\u094d\u092e\u093e\u0902\u0921 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Steady State Theory/\u0938\u094d\u0925\u093f\u0930 \u0905\u0935\u0938\u094d\u0925\u093e \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Inflationary Universe/\u0938\u094d\u092b\u0940\u0924\u093f\u0915\u093e\u0930\u0940 \u092c\u094d\u0930\u0939\u094d\u092e\u093e\u0902\u0921"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Steady State Theory proposes that matter is continuously created as the universe expands."
+        },{
+            id: 3,
+            text: "What is a massive, gravitationally bound system of stars, stellar remnants, gas, dust, and dark matter called? / तारों, तारकीय अवशेषों, गैस, धूल और डार्क मैटर की एक विशाल, गुरुत्वाकर्षण से बंधी प्रणाली को क्या कहा जाता है?",
+            reference: "",
+            options: ["Nebula/\u0928\u0940\u0939\u093e\u0930\u093f\u0915\u093e", "Galaxy/\u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e", "Solar System/\u0938\u094c\u0930 \u092e\u0902\u0921\u0932", "Constellation/\u0924\u093e\u0930\u093e\u092e\u0902\u0921\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Our solar system is located within the Milky Way galaxy."
+        },{
+            id: 4,
+            text: "Which major galaxy is the nearest to our Milky Way? / हमारी आकाशगंगा (मिल्की वे) के सबसे निकट कौन सी प्रमुख आकाशगंगा है?",
+            reference: "",
+            options: ["Triangulum Galaxy/\u0924\u094d\u0930\u093f\u0915\u094b\u0923\u0940\u092f \u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e", "Sombrero Galaxy/\u0938\u094b\u092e\u094d\u092c\u094d\u0930\u0947\u0930\u094b \u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e", "Whirlpool Galaxy/\u0935\u094d\u0939\u0930\u094d\u0932\u092a\u0942\u0932 \u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e", "Andromeda Galaxy/\u090f\u0902\u0921\u094d\u0930\u094b\u092e\u0947\u0921\u093e \u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Andromeda is a spiral galaxy approximately 2.5 million light-years from Earth."
+        },{
+            id: 5,
+            text: "The origin of our solar system is best explained by the collapse of a giant interstellar molecular cloud, or what? / हमारे सौर मंडल की उत्पत्ति को एक विशाल अंतरतारकीय आणविक बादल के ढहने से सबसे अच्छी तरह समझाया गया है, जिसे और क्या कहते हैं?",
+            reference: "",
+            options: ["Supernova/\u0938\u0941\u092a\u0930\u0928\u094b\u0935\u093e", "Black Hole/\u092c\u094d\u0932\u0948\u0915 \u0939\u094b\u0932", "Pulsar/\u092a\u0932\u094d\u0938\u0930", "Nebula/\u0928\u0947\u092c\u0941\u0932\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The solar system formed about 4.6 billion years ago from the gravitational collapse of a giant nebula."
+        },{
+            id: 6,
+            text: "Which early 20th-century theory proposed that planets formed from material drawn out of the sun by a passing star? / 20वीं सदी के आरम्भ का कौन सा सिद्धांत प्रस्तावित करता है कि ग्रहों का निर्माण गुजरते हुए तारे द्वारा सूर्य से खींचे गए पदार्थ से हुआ?",
+            reference: "",
+            options: ["Capture Theory/\u0915\u0948\u092a\u094d\u091a\u0930 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Protoplanet Theory/\u0906\u0926\u093f\u0917\u094d\u0930\u0939 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Planetesimal Theory/\u0917\u094d\u0930\u0939\u093e\u0923\u0941 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Nebular Hypothesis/\u0928\u0947\u092c\u0941\u0932\u0930 \u092a\u0930\u093f\u0915\u0932\u094d\u092a\u0928\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Planetesimal Theory, proposed by Chamberlin and Moulton, is now largely discarded."
+        },{
+            id: 7,
+            text: "Which model, first proposed by Immanuel Kant, describes the formation of the solar system from a rotating cloud of gas and dust? / इमैनुएल कांट द्वारा पहली बार प्रस्तावित कौन सा मॉडल, गैस और धूल के घूमते हुए बादल से सौर मंडल के गठन का वर्णन करता है?",
+            reference: "",
+            options: ["Planetesimal Theory/\u0917\u094d\u0930\u0939\u093e\u0923\u0941 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Big Bang Theory/\u092e\u0939\u093e\u0935\u093f\u0938\u094d\u092b\u094b\u091f \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924", "Nebular Hypothesis/\u0928\u0947\u092c\u0941\u0932\u0930 \u092a\u0930\u093f\u0915\u0932\u094d\u092a\u0928\u093e", "Capture Theory/\u0915\u0948\u092a\u094d\u091a\u0930 \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Nebular Hypothesis is the most widely accepted model explaining the formation of the Solar System."
+        },{
+            id: 8,
+            text: "What is the astronomical model called in which the Earth and planets revolve around the Sun at the center of the Solar System? / उस खगोलीय मॉडल को क्या कहा जाता है जिसमें पृथ्वी और ग्रह सौर मंडल के केंद्र में सूर्य के चारों ओर घूमते हैं?",
+            reference: "",
+            options: ["Tychonic System/\u091f\u093e\u0907\u0915\u094b\u0928\u093f\u0915 \u092a\u094d\u0930\u0923\u093e\u0932\u0940", "Ptolemaic System/\u091f\u0949\u0932\u0947\u092e\u093f\u0915 \u092a\u094d\u0930\u0923\u093e\u0932\u0940", "Geocentric Model/\u092d\u0942-\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u093f\u0924 \u092e\u0949\u0921\u0932", "Heliocentric Model/\u0938\u0942\u0930\u094d\u092f-\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u093f\u0924 \u092e\u0949\u0921\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Nicolaus Copernicus is credited with proposing the Heliocentric Model, also known as the Copernicus Theory."
+        },{
+            id: 9,
+            text: "What term describes celestial objects like stars, candles, and fireflies that produce their own light? / तारों, मोमबत्तियों और जुगनुओं जैसे खगोलीय पिंडों का वर्णन करने के लिए किस शब्द का उपयोग किया जाता है जो अपना प्रकाश स्वयं उत्पन्न करते हैं?",
+            reference: "",
+            options: ["Opaque Bodies/\u0905\u092a\u093e\u0930\u0926\u0930\u094d\u0936\u0940 \u092a\u093f\u0902\u0921", "Luminous Bodies/\u0926\u0940\u092a\u094d\u0924 \u092a\u093f\u0902\u0921", "Reflective Bodies/\u092a\u0930\u093e\u0935\u0930\u094d\u0924\u0915 \u092a\u093f\u0902\u0921", "Non-Luminous Bodies/\u0905\u0926\u0940\u092a\u094d\u0924 \u092a\u093f\u0902\u0921"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Luminous bodies emit their own light, whereas non-luminous bodies like the Moon reflect light."
+        },{
+            id: 10,
+            text: "What are icy, small Solar System bodies that, when passing close to the Sun, warm and begin to release gases, a process called outgassing? / बर्फीले, छोटे सौरमंडलीय पिंड क्या हैं, जो सूर्य के पास से गुजरने पर गर्म हो जाते हैं और गैस छोड़ना शुरू कर देते हैं?",
+            reference: "",
+            options: ["Dwarf Planets/\u092c\u094c\u0928\u0947 \u0917\u094d\u0930\u0939", "Meteoroids/\u0909\u0932\u094d\u0915\u093e\u092a\u093f\u0902\u0921", "Comets/\u0927\u0942\u092e\u0915\u0947\u0924\u0941", "Asteroids/\u0915\u094d\u0937\u0941\u0926\u094d\u0930\u0917\u094d\u0930\u0939"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "This outgassing creates a visible atmosphere or coma, and sometimes also a tail."
+        },{
+            id: 11,
+            text: "Which famous short-period comet is visible from Earth every 75–76 years? / कौन सा प्रसिद्ध अल्प-अवधि धूमकेतु हर 75-76 वर्षों में पृथ्वी से दिखाई देता है?",
+            reference: "",
+            options: ["Comet Hyakutake/\u0939\u094d\u092f\u093e\u0915\u0941\u091f\u0947\u0915 \u0927\u0942\u092e\u0915\u0947\u0924\u0941", "Halley's Comet/\u0939\u0948\u0932\u0940 \u0915\u093e \u0927\u0942\u092e\u0915\u0947\u0924\u0941", "Comet Shoemaker-Levy 9/\u0936\u0942\u092e\u0947\u0915\u0930-\u0932\u0947\u0935\u0940 9 \u0927\u0942\u092e\u0915\u0947\u0924\u0941", "Comet Hale-Bopp/\u0939\u0947\u0932-\u092c\u0949\u092a \u0927\u0942\u092e\u0915\u0947\u0924\u0941"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Halley\'s Comet last appeared in 1986 and is expected to return in 2061."
+        },{
+            id: 12,
+            text: "What are the minor planets, especially those of the inner Solar System, called? / छोटे ग्रहों, विशेषकर आंतरिक सौर मंडल के ग्रहों को क्या कहा जाता है?",
+            reference: "",
+            options: ["Comets/\u0927\u0942\u092e\u0915\u0947\u0924\u0941", "Asteroids/\u0915\u094d\u0937\u0941\u0926\u094d\u0930\u0917\u094d\u0930\u0939", "Moons/\u0909\u092a\u0917\u094d\u0930\u0939", "Kuiper Belt Objects/\u0915\u093e\u0907\u092a\u0930 \u092c\u0947\u0932\u094d\u091f \u0935\u0938\u094d\u0924\u0941\u090f\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Most asteroids are found in the main asteroid belt between Mars and Jupiter."
+        },{
+            id: 13,
+            text: "What is a space rock called when it enters Earth\'s atmosphere and burns up, creating a \"shooting star\"? / अंतरिक्ष चट्टान को क्या कहा जाता है जब वह पृथ्वी के वायुमंडल में प्रवेश करती है और जल जाती है, जिससे \"टूटता तारा\" बनता है?",
+            reference: "",
+            options: ["Meteoroid/\u0909\u0932\u094d\u0915\u093e\u092a\u093f\u0902\u0921", "Meteorite/\u0909\u0932\u094d\u0915\u093e\u0936\u094d\u092e", "Asteroid/\u0915\u094d\u0937\u0941\u0926\u094d\u0930\u0917\u094d\u0930\u0939", "Meteor/\u0909\u0932\u094d\u0915\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "A meteoroid is the rock in space, a meteor is the streak of light, and a meteorite is what hits the ground."
+        },{
+            id: 14,
+            text: "What is a group of visible stars that form a pattern when viewed from Earth called? / पृथ्वी से देखने पर एक पैटर्न बनाने वाले दृश्यमान तारों के समूह को क्या कहा जाता है?",
+            reference: "",
+            options: ["Nebula/\u0928\u0940\u0939\u093e\u0930\u093f\u0915\u093e", "Constellation/\u0924\u093e\u0930\u093e\u092e\u0902\u0921\u0932", "Galaxy/\u0906\u0915\u093e\u0936\u0917\u0902\u0917\u093e", "Solar System/\u0938\u094c\u0930 \u092e\u0902\u0921\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Ursa Major (The Great Bear) is one of the most well-known constellations."
+        },{
+            id: 15,
+            text: "What is the star at the center of our Solar System, composed primarily of hydrogen and helium? / हमारे सौर मंडल के केंद्र में स्थित तारा, जो मुख्य रूप से हाइड्रोजन और हीलियम से बना है, क्या है?",
+            reference: "",
+            options: ["Alpha Centauri/\u0905\u0932\u094d\u092b\u093e \u0938\u0947\u0902\u091f\u0949\u0930\u0940", "Proxima Centauri/\u092a\u094d\u0930\u0949\u0915\u094d\u0938\u093f\u092e\u093e \u0938\u0947\u0902\u091f\u0949\u0930\u0940", "Sirius/\u0938\u0940\u0930\u093f\u092f\u0938", "The Sun/\u0938\u0942\u0930\u094d\u092f"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The Sun\'s energy, generated by nuclear fusion, supports almost all life on Earth."
+        },{
+            id: 16,
+            text: "What unit of length, equal to about 9.46 trillion kilometers, is used to express astronomical distances? / खगोलीय दूरियों को व्यक्त करने के लिए उपयोग की जाने वाली लंबाई की इकाई क्या है, जो लगभग 9.46 ट्रिलियन किलोमीटर के बराबर है?",
+            reference: "",
+            options: ["Kilometer/\u0915\u093f\u0932\u094b\u092e\u0940\u091f\u0930", "Astronomical Unit/\u0916\u0917\u094b\u0932\u0940\u092f \u0907\u0915\u093e\u0908", "Parsec/\u092a\u093e\u0930\u0938\u0947\u0915", "Light-Year/\u092a\u094d\u0930\u0915\u093e\u0936-\u0935\u0930\u094d\u0937"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "A light-year is the distance that light travels in a vacuum in one Julian year."
+        },{
+            id: 17,
+            text: "What is a sudden, powerful burst of energy and radiation from the Sun\'s surface called? / सूर्य की सतह से ऊर्जा और विकिरण के अचानक, शक्तिशाली विस्फोट को क्या कहा जाता है?",
+            reference: "",
+            options: ["Sunspot/\u0938\u094c\u0930 \u0915\u0932\u0902\u0915", "Solar Wind/\u0938\u094c\u0930 \u092a\u0935\u0928", "Solar Flare/\u0938\u094c\u0930 \u091c\u094d\u0935\u093e\u0932\u093e", "Aurora/\u0911\u0930\u094b\u0930\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Solar flares are caused by the release of magnetic energy stored near sunspots."
+        },{
+            id: 18,
+            text: "What are the temporary, dark regions on the Sun\'s surface caused by intense magnetic activity? / सूर्य की सतह पर तीव्र चुंबकीय गतिविधि के कारण बने अस्थायी, गहरे क्षेत्रों को क्या कहते हैं?",
+            reference: "",
+            options: ["Solar Prominences/\u0938\u094c\u0930 \u092a\u094d\u0930\u092e\u0941\u0916\u0924\u093e", "Granules/\u0915\u0923\u093f\u0915\u093e\u090f\u0901", "Coronal Holes/\u0915\u094b\u0930\u094b\u0928\u0932 \u0939\u094b\u0932", "Sunspots/\u0938\u094c\u0930 \u0915\u0932\u0902\u0915"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Sunspots are cooler than their surroundings because the magnetic fields inhibit heat transfer."
+        },{
+            id: 19,
+            text: "What is the natural light display in the Earth\'s sky, predominantly seen in high-latitude regions, caused by solar wind particles? / पृथ्वी के आकाश में प्राकृतिक प्रकाश प्रदर्शन, जो मुख्य रूप से उच्च-अक्षांश क्षेत्रों में देखा जाता है, और सौर पवन कणों के कारण होता है, उसे क्या कहते हैं?",
+            reference: "",
+            options: ["Airglow/\u0935\u093e\u092f\u0941\u0926\u0940\u092a\u094d\u0924\u093f", "Aurora/\u0927\u094d\u0930\u0941\u0935\u0940\u092f \u091c\u094d\u092f\u094b\u0924\u093f", "Twilight/\u0917\u094b\u0927\u0942\u0932\u093f", "Zodiacal Light/\u0930\u093e\u0936\u093f\u091a\u0915\u094d\u0930\u0940\u092f \u092a\u094d\u0930\u0915\u093e\u0936"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "This phenomenon is known as Aurora Borealis in the north and Aurora Australis in the south."
+        },{
+            id: 20,
+            text: "Which is the outermost and extremely hot layer of the Sun, visible only during a total solar eclipse? / सूर्य की सबसे बाहरी और अत्यधिक गर्म परत कौन सी है, जो केवल पूर्ण सूर्य ग्रहण के दौरान दिखाई देती है?",
+            reference: "",
+            options: ["Photosphere/\u092a\u094d\u0930\u0915\u093e\u0936\u092e\u0902\u0921\u0932", "Chromosphere/\u0935\u0930\u094d\u0923\u092e\u0902\u0921\u0932", "Radiative Zone/\u0935\u093f\u0915\u093f\u0930\u0923 \u0915\u094d\u0937\u0947\u0924\u094d\u0930", "Corona/\u0915\u094b\u0930\u094b\u0928\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The corona is a layer of plasma that extends millions of kilometers into space."
+        },{
+            id: 21,
+            text: "Planets like Jupiter, Saturn, Uranus, and Neptune, which are large and composed mainly of gas, are known as what? / बृहस्पति, शनि, यूरेनस और नेपच्यून जैसे ग्रह, जो बड़े हैं और मुख्य रूप से गैस से बने हैं, उन्हें किस रूप में जाना जाता है?",
+            reference: "",
+            options: ["Terrestrial Planets/\u0938\u094d\u0925\u0932\u0940\u092f \u0917\u094d\u0930\u0939", "Inner Planets/\u0906\u0902\u0924\u0930\u093f\u0915 \u0917\u094d\u0930\u0939", "Jovian Planets/\u091c\u094b\u0935\u093f\u092f\u0928 \u0917\u094d\u0930\u0939", "Dwarf Planets/\u092c\u094c\u0928\u0947 \u0917\u094d\u0930\u0939"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Jovian planets are also known as gas giants and are located in the outer solar system."
+        },{
+            id: 22,
+            text: "Which is the smallest and innermost planet in the Solar System, with the fastest orbital period of about 88 Earth days? / सौरमंडल का सबसे छोटा और सबसे भीतरी ग्रह कौन सा है, जिसकी कक्षीय अवधि लगभग 88 पृथ्वी दिवस है?",
+            reference: "",
+            options: ["Mars/\u092e\u0902\u0917\u0932", "Venus/\u0936\u0941\u0915\u094d\u0930", "Mercury/\u092c\u0941\u0927", "Earth/\u092a\u0943\u0925\u094d\u0935\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Mercury has almost no atmosphere to retain heat, leading to extreme temperature variations."
+        },{
+            id: 23,
+            text: "Which planet is known as Earth\'s \"twin\" due to its similar size and mass, and is the hottest planet in our solar system? / किस ग्रह को उसके समान आकार और द्रव्यमान के कारण पृथ्वी का \"जुड़वां\" कहा जाता है, और यह हमारे सौर मंडल का सबसे गर्म ग्रह है?",
+            reference: "",
+            options: ["Mars/\u092e\u0902\u0917\u0932", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Venus/\u0936\u0941\u0915\u094d\u0930", "Mercury/\u092c\u0941\u0927"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Venus has a thick, toxic atmosphere of carbon dioxide and clouds of sulfuric acid, creating a runaway greenhouse effect."
+        },{
+            id: 24,
+            text: "Which is the third planet from the Sun and the only astronomical object known to harbor life? / सूर्य से तीसरा ग्रह और जीवन को आश्रय देने वाला एकमात्र ज्ञात खगोलीय पिंड कौन सा है?",
+            reference: "",
+            options: ["Venus/\u0936\u0941\u0915\u094d\u0930", "Earth/\u092a\u0943\u0925\u094d\u0935\u0940", "Europa/\u092f\u0942\u0930\u094b\u092a\u093e", "Mars/\u092e\u0902\u0917\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Earth has a unique combination of liquid water, a protective atmosphere, and a suitable temperature range for life."
+        },{
+            id: 25,
+            text: "Which planet is known as the \"Red Planet\" due to its iron-rich soil and is home to the largest volcano, Olympus Mons? / किस ग्रह को उसकी लौह युक्त मिट्टी के कारण \"लाल ग्रह\" के रूप में जाना जाता है और यह सबसे बड़े ज्वालामुखी, ओलिंप मॉन्स का घर है?",
+            reference: "",
+            options: ["Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Mars/\u092e\u0902\u0917\u0932", "Venus/\u0936\u0941\u0915\u094d\u0930", "Saturn/\u0936\u0928\u093f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Mars has a thin atmosphere and features polar ice caps, volcanoes, and canyons."
+        },{
+            id: 26,
+            text: "Which is the largest planet in the Solar System, known for its Great Red Spot, a giant storm? / सौरमंडल का सबसे बड़ा ग्रह कौन सा है, जो अपने ग्रेट रेड स्पॉट, एक विशाल तूफान, के लिए जाना जाता है?",
+            reference: "",
+            options: ["Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Saturn/\u0936\u0928\u093f", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Jupiter is a gas giant with a strong magnetic field and dozens of moons, including the four large Galilean moons."
+        },{
+            id: 27,
+            text: "Which planet is the second-largest and is known for its extensive ring system made of ice and rock particles? / कौन सा ग्रह दूसरा सबसे बड़ा है और बर्फ और चट्टान के कणों से बनी अपनी विस्तृत वलय प्रणाली के लिए जाना जाता है?",
+            reference: "",
+            options: ["Uranus/\u092f\u0942\u0930\u0947\u0928\u0938", "Saturn/\u0936\u0928\u093f", "Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Saturn is the least dense planet in the Solar System; it could float in water."
+        },{
+            id: 28,
+            text: "Which planet is known as the \"Green Planet\" due to methane gas and is tilted on its side, making it a \"Rolling Planet\"? / किस ग्रह को मीथेन गैस के कारण \"हरा ग्रह\" कहा जाता है और यह अपनी धुरी पर झुका हुआ है, जिससे यह एक \"लुढ़कता हुआ ग्रह\" बन जाता है?",
+            reference: "",
+            options: ["Saturn/\u0936\u0928\u093f", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Uranus has an extreme axial tilt of about 98 degrees, causing unique seasonal patterns."
+        },{
+            id: 29,
+            text: "Which is the windiest planet in the Solar System and the only one found by mathematical prediction rather than by empirical observation? / सौरमंडल का सबसे हवादार ग्रह और एकमात्र ग्रह कौन सा है जिसे अनुभवजन्य अवलोकन के बजाय गणितीय भविष्यवाणी द्वारा खोजा गया था?",
+            reference: "",
+            options: ["Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938", "Saturn/\u0936\u0928\u093f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Neptune\'s existence was predicted by Urbain Le Verrier before it was directly observed by Johann Galle."
+        },{
+            id: 30,
+            text: "What is the name of Earth\'s only natural satellite, which has a gravitational pull that causes tides? / पृथ्वी के एकमात्र प्राकृतिक उपग्रह का क्या नाम है, जिसका गुरुत्वाकर्षण खिंचाव ज्वार का कारण बनता है?",
+            reference: "",
+            options: ["Titan/\u091f\u093e\u0907\u091f\u0928", "Phobos/\u092b\u094b\u092c\u094b\u0938", "Europa/\u092f\u0942\u0930\u094b\u092a\u093e", "Moon/\u091a\u0902\u0926\u094d\u0930\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The Moon\'s rotation is tidally locked with Earth, so we always see the same side."
+        },{
+            id: 31,
+            text: "Which celestial body was reclassified from a planet to a dwarf planet in 2006 by the International Astronomical Union? / अंतर्राष्ट्रीय खगोलीय संघ द्वारा 2006 में किस खगोलीय पिंड को ग्रह से बौने ग्रह के रूप में पुनर्वर्गीकृत किया गया था?",
+            reference: "",
+            options: ["Pluto/\u092a\u094d\u0932\u0942\u091f\u094b", "Makemake/\u092e\u093e\u0915\u0947\u092e\u093e\u0915\u0947", "Ceres/\u0938\u0947\u0930\u0947\u0938", "Eris/\u090f\u0930\u093f\u0938"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Pluto was reclassified because it has not \"cleared its neighboring region of other objects.\""
+        },{
+            id: 32,
+            text: "What is the disc-shaped region of icy bodies beyond the orbit of Neptune called? / नेप्च्यून की कक्षा से परे बर्फीले पिंडों के डिस्क के आकार के क्षेत्र को क्या कहा जाता है?",
+            reference: "",
+            options: ["Kuiper Belt/\u0915\u093e\u0907\u092a\u0930 \u092c\u0947\u0932\u094d\u091f", "Van Allen Belt/\u0935\u0948\u0928 \u090f\u0932\u0928 \u092c\u0947\u0932\u094d\u091f", "Oort Cloud/\u090a\u0930\u094d\u091f \u092c\u093e\u0926\u0932", "Asteroid Belt/\u0915\u094d\u0937\u0941\u0926\u094d\u0930\u0917\u094d\u0930\u0939 \u092c\u0947\u0932\u094d\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The Kuiper Belt is home to many dwarf planets, including Pluto."
+        },{
+            id: 33,
+            text: "What is the name of India\'s first solar observatory mission, launched by ISRO in September 2023? / इसरो द्वारा सितंबर 2023 में लॉन्च किए गए भारत के पहले सौर वेधशाला मिशन का क्या नाम है?",
+            reference: "",
+            options: ["Aditya-L1/\u0906\u0926\u093f\u0924\u094d\u092f-\u090f\u09321", "Mangalyaan/\u092e\u0902\u0917\u0932\u092f\u093e\u0928", "Chandrayaan-3/\u091a\u0902\u0926\u094d\u0930\u092f\u093e\u0928-3", "Gaganyaan/\u0917\u0917\u0928\u092f\u093e\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Aditya-L1 is designed to study the Sun from a halo orbit around the Sun-Earth Lagrangian point 1 (L1)."
+        },{
+            id: 34,
+            text: "What was India\'s first interplanetary mission, which made it the fourth space agency to reach Mars\'s orbit? / भारत का पहला अंतर्ग्रहीय मिशन कौन सा था, जिसने इसे मंगल की कक्षा में पहुंचने वाली चौथी अंतरिक्ष एजेंसी बनाया?",
+            reference: "",
+            options: ["Chandrayaan-2/\u091a\u0902\u0926\u094d\u0930\u092f\u093e\u0928-2", "Chandrayaan-1/\u091a\u0902\u0926\u094d\u0930\u092f\u093e\u0928-1", "Mangalyaan/\u092e\u0902\u0917\u0932\u092f\u093e\u0928", "Aditya-L1/\u0906\u0926\u093f\u0924\u094d\u092f-\u090f\u09321"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Also known as the Mars Orbiter Mission (MOM), it was launched on November 5, 2013."
+        },{
+            id: 35,
+            text: "What are the imaginary horizontal lines on the globe that run from East to West called? / ग्लोब पर पूर्व से पश्चिम की ओर चलने वाली काल्पनिक क्षैतिज रेखाओं को क्या कहा जाता है?",
+            reference: "",
+            options: ["Great Circles/\u0935\u0943\u0939\u0924\u094d \u0935\u0943\u0924\u094d\u0924", "Longitudes/\u0926\u0947\u0936\u093e\u0902\u0924\u0930", "Latitudes/\u0905\u0915\u094d\u0937\u093e\u0902\u0936", "Meridians/\u092e\u0927\u094d\u092f\u093e\u0939\u094d\u0928 \u0930\u0947\u0916\u093e\u090f\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Latitudes are also known as parallels because they are parallel to the Equator."
+        },{
+            id: 36,
+            text: "Which important latitude is located at 23.5° North and marks the northernmost point where the Sun can be directly overhead? / कौन सा महत्वपूर्ण अक्षांश 23.5° उत्तर में स्थित है और उस उत्तरी बिंदु को चिह्नित करता है जहाँ सूर्य सीधे सिर के ऊपर हो सकता है?",
+            reference: "",
+            options: ["Tropic of Capricorn/\u092e\u0915\u0930 \u0930\u0947\u0916\u093e", "Tropic of Cancer/\u0915\u0930\u094d\u0915 \u0930\u0947\u0916\u093e", "Arctic Circle/\u0906\u0930\u094d\u0915\u091f\u093f\u0915 \u0935\u0943\u0924\u094d\u0924", "Equator/\u0935\u093f\u0937\u0941\u0935\u0924\u094d \u0930\u0947\u0916\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The Tropic of Cancer is significant for its relationship with the summer solstice in the Northern Hemisphere."
+        },{
+            id: 37,
+            text: "What are the imaginary vertical lines on the globe that run from the North Pole to the South Pole called? / ग्लोब पर उत्तरी ध्रुव से दक्षिणी ध्रुव तक चलने वाली काल्पनिक ऊर्ध्वाधर रेखाओं को क्या कहा जाता है?",
+            reference: "",
+            options: ["Tropic Lines/\u0909\u0937\u094d\u0923\u0915\u091f\u093f\u092c\u0902\u0927\u0940\u092f \u0930\u0947\u0916\u093e\u090f\u0902", "Longitudes/\u0926\u0947\u0936\u093e\u0902\u0924\u0930", "Latitudes/\u0905\u0915\u094d\u0937\u093e\u0902\u0936", "Parallels/\u0938\u092e\u093e\u0902\u0924\u0930 \u0930\u0947\u0916\u093e\u090f\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Longitudes are also known as meridians and are used to measure distance east or west."
+        },{
+            id: 38,
+            text: "Which longitude is designated as 0° and passes through Greenwich, London? / किस देशांतर को 0° के रूप में नामित किया गया है और यह ग्रीनविच, लंदन से होकर गुजरता है?",
+            reference: "",
+            options: ["Tropic of Cancer/\u0915\u0930\u094d\u0915 \u0930\u0947\u0916\u093e", "International Date Line/\u0905\u0902\u0924\u0930\u094d\u0930\u093e\u0937\u094d\u091f\u094d\u0930\u0940\u092f \u0924\u093f\u0925\u093f \u0930\u0947\u0916\u093e", "Equator/\u0935\u093f\u0937\u0941\u0935\u0924\u094d \u0930\u0947\u0916\u093e", "Prime Meridian/\u092a\u094d\u0930\u0927\u093e\u0928 \u092e\u0927\u094d\u092f\u093e\u0939\u094d\u0928 \u0930\u0947\u0916\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The Prime Meridian serves as the reference point for all other longitudes and for Coordinated Universal Time (UTC)."
+        },{
+            id: 39,
+            text: "Which imaginary line, roughly following the 180° longitude, marks the boundary where one calendar day ends and the next begins? / कौन सी काल्पनिक रेखा, जो मोटे तौर पर 180° देशांतर का अनुसरण करती है, उस सीमा को चिह्नित करती है जहाँ एक कैलेंडर दिन समाप्त होता है और अगला शुरू होता है?",
+            reference: "",
+            options: ["Equator/\u0935\u093f\u0937\u0941\u0935\u0924\u094d \u0930\u0947\u0916\u093e", "Prime Meridian/\u092a\u094d\u0930\u0927\u093e\u0928 \u092e\u0927\u094d\u092f\u093e\u0939\u094d\u0928 \u0930\u0947\u0916\u093e", "International Date Line/\u0905\u0902\u0924\u0930\u094d\u0930\u093e\u0937\u094d\u091f\u094d\u0930\u0940\u092f \u0924\u093f\u0925\u093f \u0930\u0947\u0916\u093e", "Arctic Circle/\u0906\u0930\u094d\u0915\u091f\u093f\u0915 \u0935\u0943\u0924\u094d\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Crossing this line from west to east results in gaining a day, while crossing from east to west results in losing a day."
+        },{
+            id: 40,
+            text: "How many degrees does the Earth rotate in one hour, forming the basis for the world\'s time zones? / पृथ्वी एक घंटे में कितने डिग्री घूमती है, जो दुनिया के समय क्षेत्रों का आधार बनती है?",
+            reference: "",
+            options: ["24\u00b0", "30\u00b0", "15\u00b0", "10\u00b0"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Since the Earth completes a 360° rotation in 24 hours, it rotates 15° per hour (360/24)."
+        },{
+            id: 41,
+            text: "What is the term for any circle on the surface of a sphere whose center coincides with the center of the sphere? / किसी गोले की सतह पर उस किसी भी वृत्त के लिए क्या शब्द है जिसका केंद्र गोले के केंद्र के साथ मेल खाता है?",
+            reference: "",
+            options: ["Meridian Arc/\u092e\u0927\u094d\u092f\u093e\u0939\u094d\u0928 \u091a\u093e\u092a", "Small Circle/\u0932\u0918\u0941 \u0935\u0943\u0924\u094d\u0924", "Great Circle/\u0935\u0943\u0939\u0924\u094d \u0935\u0943\u0924\u094d\u0924", "Parallel of Latitude/\u0905\u0915\u094d\u0937\u093e\u0902\u0936 \u0935\u0943\u0924\u094d\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Equator is a great circle, and all lines of longitude are great circles. It represents the shortest distance between two points."
+        },{
+            id: 42,
+            text: "What is the term for the true shape of the Earth, which is slightly flattened at the poles and bulging at the Equator? / पृथ्वी के वास्तविक आकार के लिए क्या शब्द है, जो ध्रुवों पर थोड़ा चपटा और विषुवत् रेखा पर उभरा हुआ है?",
+            reference: "",
+            options: ["Perfect Sphere/\u092a\u0942\u0930\u094d\u0923 \u0917\u094b\u0932\u093e", "Oblate Ellipsoid/\u0932\u0918\u0941-\u0905\u0915\u094d\u0937 \u0926\u0940\u0930\u094d\u0918\u0935\u0943\u0924\u094d\u0924\u091c", "Geoid/\u092d\u0941\u0906\u092d", "Spheroid/\u0917\u094b\u0932\u093e\u092d"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The geoid is an irregular shape defined by Earth\'s gravity field."
+        },{
+            id: 43,
+            text: "What force, caused by the Earth\'s rotation, is responsible for its bulge at the Equator? / पृथ्वी के घूर्णन के कारण कौन सा बल विषुवत् रेखा पर इसके उभार के लिए जिम्मेदार है?",
+            reference: "",
+            options: ["Centripetal Force/\u0905\u092d\u093f\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u0940 \u092c\u0932", "Centrifugal Force/\u0905\u092a\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u0940 \u092c\u0932", "Gravitational Force/\u0917\u0941\u0930\u0941\u0924\u094d\u0935\u093e\u0915\u0930\u094d\u0937\u0923 \u092c\u0932", "Frictional Force/\u0918\u0930\u094d\u0937\u0923 \u092c\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "This outward force pushes mass away from the center of rotation, causing the equatorial bulge."
+        },{
+            id: 44,
+            text: "Due to the Earth\'s geoid shape, which of its diameters is larger? / पृथ्वी के भुआभ आकार के कारण, इसका कौन सा व्यास बड़ा है?",
+            reference: "",
+            options: ["Equatorial Diameter/\u092d\u0942\u092e\u0927\u094d\u092f\u0930\u0947\u0916\u0940\u092f \u0935\u094d\u092f\u093e\u0938", "Polar Diameter/\u0927\u094d\u0930\u0941\u0935\u0940\u092f \u0935\u094d\u092f\u093e\u0938", "Mean Diameter/\u092e\u093e\u0927\u094d\u092f \u0935\u094d\u092f\u093e\u0938", "They are equal/\u0935\u0947 \u092c\u0930\u093e\u092c\u0930 \u0939\u0948\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The equatorial diameter is roughly 43 km greater than the polar diameter."
+        },{
+            id: 45,
+            text: "What is the science of accurately measuring and understanding the Earth\'s geometric shape, orientation in space, and gravity field? / पृथ्वी के ज्यामितीय आकार, अंतरिक्ष में अभिविन्यास और गुरुत्वाकर्षण क्षेत्र को सटीक रूप से मापने और समझने का विज्ञान क्या है?",
+            reference: "",
+            options: ["Geology/\u092d\u0942\u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Cartography/\u092e\u093e\u0928\u091a\u093f\u0924\u094d\u0930\u0915\u0932\u093e", "Topography/\u0938\u094d\u0925\u0932\u093e\u0915\u0943\u0924\u093f", "Geodesy/\u092d\u0942\u0917\u0923\u093f\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Geodesy provides the foundational coordinates for GPS, mapping, and navigation."
+        },{
+            id: 46,
+            text: "What movement of the Earth on its axis causes the cycle of day and night? / पृथ्वी की अपनी धुरी पर कौन सी गति दिन और रात के चक्र का कारण बनती है?",
+            reference: "",
+            options: ["Precession/\u0905\u092f\u0928", "Nutation/\u0905\u0915\u094d\u0937 \u0935\u093f\u091a\u0932\u0928", "Revolution/\u092a\u0930\u093f\u0915\u094d\u0930\u092e\u0923", "Rotation/\u0918\u0942\u0930\u094d\u0923\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The Earth completes one rotation approximately every 24 hours."
+        },{
+            id: 47,
+            text: "What is the angle between an object\'s rotational axis and its orbital axis, which is approximately 23.5° for Earth? / किसी वस्तु की घूर्णन अक्ष और उसकी कक्षीय अक्ष के बीच का कोण क्या है, जो पृथ्वी के लिए लगभग 23.5° है?",
+            reference: "",
+            options: ["Orbital Inclination/\u0915\u0915\u094d\u0937\u0940\u092f \u091d\u0941\u0915\u093e\u0935", "Magnetic Declination/\u091a\u0941\u0902\u092c\u0915\u0940\u092f \u0926\u093f\u0915\u094d\u092a\u093e\u0924", "Equatorial Tilt/\u092d\u0942\u092e\u0927\u094d\u092f\u0930\u0947\u0916\u0940\u092f \u091d\u0941\u0915\u093e\u0935", "Axial Tilt/\u0905\u0915\u094d\u0937\u0940\u092f \u091d\u0941\u0915\u093e\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Earth\'s axial tilt is the primary reason for the changing seasons."
+        },{
+            id: 48,
+            text: "What is the term for the Earth\'s movement in its orbit around the Sun, which takes approximately 365.25 days to complete? / सूर्य के चारों ओर अपनी कक्षा में पृथ्वी की गति के लिए क्या शब्द है, जिसे पूरा होने में लगभग 365.25 दिन लगते हैं?",
+            reference: "",
+            options: ["Rotation/\u0918\u0942\u0930\u094d\u0923\u0928", "Precession/\u0905\u092f\u0928", "Apogee/\u0905\u092a\u092d\u0942", "Revolution/\u092a\u0930\u093f\u0915\u094d\u0930\u092e\u0923"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "This movement, combined with the axial tilt, causes the seasons."
+        },{
+            id: 49,
+            text: "The speed at which a planet travels around the sun is known as what? / जिस गति से कोई ग्रह सूर्य के चारों ओर यात्रा करता है, उसे क्या कहा जाता है?",
+            reference: "",
+            options: ["Terminal Velocity/\u091f\u0930\u094d\u092e\u093f\u0928\u0932 \u0935\u0947\u0917", "Rotational Speed/\u0918\u0942\u0930\u094d\u0923\u0928 \u0917\u0924\u093f", "Orbital Speed/\u0915\u0915\u094d\u0937\u0940\u092f \u0917\u0924\u093f", "Escape Velocity/\u092a\u0932\u093e\u092f\u0928 \u0935\u0947\u0917"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Earth\'s average orbital speed is approximately 29.8 km/s."
+        },{
+            id: 50,
+            text: "Whose laws of planetary motion state that planets move in elliptical orbits with the Sun at one focus? / किसके ग्रहीय गति के नियम बताते हैं कि ग्रह सूर्य को एक फोकस पर रखकर अण्डाकार कक्षाओं में घूमते हैं?",
+            reference: "",
+            options: ["Galileo's Laws/\u0917\u0948\u0932\u0940\u0932\u093f\u092f\u094b \u0915\u0947 \u0928\u093f\u092f\u092e", "Copernicus's Laws/\u0915\u094b\u092a\u0930\u0928\u093f\u0915\u0938 \u0915\u0947 \u0928\u093f\u092f\u092e", "Kepler's Laws/\u0915\u0947\u092a\u094d\u0932\u0930 \u0915\u0947 \u0928\u093f\u092f\u092e", "Newton's Laws/\u0928\u094d\u092f\u0942\u091f\u0928 \u0915\u0947 \u0928\u093f\u092f\u092e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Kepler\'s three laws describe the motion of planets around the Sun."
+        },{
+            id: 51,
+            text: "What are the two astronomical events that mark the longest and shortest days of the year (solstice) and the times of equal day and night (equinox)? / वे दो खगोलीय घटनाएँ कौन सी हैं जो वर्ष के सबसे लंबे और सबसे छोटे दिनों (अयनांत) और समान दिन और रात के समय (विषुव) को चिह्नित करती हैं?",
+            reference: "",
+            options: ["Solstice and Equinox/\u0905\u092f\u0928\u093e\u0902\u0924 \u0914\u0930 \u0935\u093f\u0937\u0941\u0935", "Syzygy and Quadrature/\u092f\u0941\u0924\u093f-\u0935\u093f\u092f\u0941\u0924\u093f \u0914\u0930 \u0938\u092e\u0915\u094b\u0923", "Eclipse and Transit/\u0917\u094d\u0930\u0939\u0923 \u0914\u0930 \u092a\u093e\u0930\u0917\u092e\u0928", "Aphelion and Perihelion/\u0905\u092a\u0938\u094c\u0930 \u0914\u0930 \u0909\u092a\u0938\u094c\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "These events are caused by Earth\'s axial tilt and its revolution around the Sun."
+        },{
+            id: 52,
+            text: "Which event occurs around June 21st, when the Northern Hemisphere is tilted most directly toward the Sun, resulting in the longest day of the year? / कौन सी घटना 21 जून के आसपास होती है, जब उत्तरी गोलार्ध सूर्य की ओर सबसे सीधे झुका होता है, जिसके परिणामस्वरूप वर्ष का सबसे लंबा दिन होता है?",
+            reference: "",
+            options: ["Winter Solstice/\u0936\u0940\u0924\u0915\u093e\u0932\u0940\u0928 \u0905\u092f\u0928\u093e\u0902\u0924", "Vernal Equinox/\u0935\u0938\u0902\u0924 \u0935\u093f\u0937\u0941\u0935", "Summer Solstice/\u0917\u094d\u0930\u0940\u0937\u094d\u092e\u0915\u093e\u0932\u0940\u0928 \u0905\u092f\u0928\u093e\u0902\u0924", "Autumnal Equinox/\u0936\u0930\u0926 \u0935\u093f\u0937\u0941\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "On this day, the Sun is directly overhead at the Tropic of Cancer."
+        },{
+            id: 53,
+            text: "Which event occurs around December 22nd, marking the shortest day of the year in the Northern Hemisphere? / कौन सी घटना 22 दिसंबर के आसपास होती है, जो उत्तरी गोलार्ध में वर्ष के सबसे छोटे दिन को चिह्नित करती है?",
+            reference: "",
+            options: ["Vernal Equinox/\u0935\u0938\u0902\u0924 \u0935\u093f\u0937\u0941\u0935", "Autumnal Equinox/\u0936\u0930\u0926 \u0935\u093f\u0937\u0941\u0935", "Summer Solstice/\u0917\u094d\u0930\u0940\u0937\u094d\u092e\u0915\u093e\u0932\u0940\u0928 \u0905\u092f\u0928\u093e\u0902\u0924", "Winter Solstice/\u0936\u0940\u0924\u0915\u093e\u0932\u0940\u0928 \u0905\u092f\u0928\u093e\u0902\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "During the winter solstice, the Sun is directly overhead at the Tropic of Capricorn."
+        },{
+            id: 54,
+            text: "The equinoxes that occur in March and September are respectively known as what? / मार्च और सितंबर में होने वाले विषुवों को क्रमशः किस नाम से जाना जाता है?",
+            reference: "",
+            options: ["Aphelion and Perihelion/\u0905\u092a\u0938\u094c\u0930 \u0914\u0930 \u0909\u092a\u0938\u094c\u0930", "Ascending and Descending/\u0906\u0930\u094b\u0939\u0940 \u0914\u0930 \u0905\u0935\u0930\u094b\u0939\u0940", "Summer and Winter/\u0917\u094d\u0930\u0940\u0937\u094d\u092e \u0914\u0930 \u0936\u0940\u0924", "Vernal and Autumnal/\u0935\u0938\u0902\u0924 \u0914\u0930 \u0936\u0930\u0926"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The Vernal (Spring) Equinox is in March, and the Autumnal (Fall) Equinox is in September in the Northern Hemisphere."
+        },{
+            id: 55,
+            text: "What are the terms for the point in Earth\'s orbit where it is farthest from the Sun (Aphelion) and closest to the Sun (Perihelion)? / पृथ्वी की कक्षा में उस बिंदु के लिए क्या शब्द हैं जहाँ यह सूर्य से सबसे दूर (अपसौर) और सूर्य के सबसे निकट (उपसौर) है?",
+            reference: "",
+            options: ["Perihelion and Aphelion/\u0909\u092a\u0938\u094c\u0930 \u0914\u0930 \u0905\u092a\u0938\u094c\u0930", "Perigee and Apogee/\u0909\u092a\u092d\u0942 \u0914\u0930 \u0905\u092a\u092d\u0942", "Zenith and Nadir/\u0936\u093f\u0930\u094b\u092c\u093f\u0902\u0926\u0941 \u0914\u0930 \u0905\u0927\u094b\u092c\u093f\u0902\u0926\u0941", "Solstice and Equinox/\u0905\u092f\u0928\u093e\u0902\u0924 \u0914\u0930 \u0935\u093f\u0937\u0941\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Earth reaches perihelion in early January and aphelion in early July."
+        },{
+            id: 56,
+            text: "Which climate zone, located between the Tropic of Cancer and the Tropic of Capricorn, receives the most direct sunlight throughout the year? / कौन सा जलवायु क्षेत्र, जो कर्क रेखा और मकर रेखा के बीच स्थित है, वर्ष भर सबसे सीधी धूप प्राप्त करता है?",
+            reference: "",
+            options: ["Temperate Zone/\u0936\u0940\u0924\u094b\u0937\u094d\u0923 \u0915\u091f\u093f\u092c\u0902\u0927", "Polar Zone/\u0927\u094d\u0930\u0941\u0935\u0940\u092f \u0915\u094d\u0937\u0947\u0924\u094d\u0930", "Torrid Zone/\u0909\u0937\u094d\u0923 \u0915\u091f\u093f\u092c\u0902\u0927", "Frigid Zone/\u0936\u0940\u0924 \u0915\u091f\u093f\u092c\u0902\u0927"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Torrid Zone is characterized by a hot, tropical climate."
+        },{
+            id: 57,
+            text: "What astronomical event occurs when the Moon passes between the Sun and Earth, casting a shadow on Earth? / कौन सी खगोलीय घटना तब होती है जब चंद्रमा सूर्य और पृथ्वी के बीच से गुजरता है, जिससे पृथ्वी पर छाया पड़ती है?",
+            reference: "",
+            options: ["Solar Eclipse/\u0938\u0942\u0930\u094d\u092f \u0917\u094d\u0930\u0939\u0923", "Lunar Eclipse/\u091a\u0902\u0926\u094d\u0930 \u0917\u094d\u0930\u0939\u0923", "Transit of Venus/\u0936\u0941\u0915\u094d\u0930 \u092a\u093e\u0930\u0917\u092e\u0928", "Occultation/\u092a\u093f\u0927\u093e\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "A solar eclipse can only happen during a new moon phase."
+        },{
+            id: 58,
+            text: "What event occurs when the Earth passes directly between the Sun and the Moon, and Earth\'s shadow obscures the Moon? / कौन सी घटना तब होती है जब पृथ्वी सीधे सूर्य और चंद्रमा के बीच से गुजरती है, और पृथ्वी की छाया चंद्रमा को ढक लेती है?",
+            reference: "",
+            options: ["Blue Moon/\u092c\u094d\u0932\u0942 \u092e\u0942\u0928", "Supermoon/\u0938\u0941\u092a\u0930\u092e\u0942\u0928", "Solar Eclipse/\u0938\u0942\u0930\u094d\u092f \u0917\u094d\u0930\u0939\u0923", "Lunar Eclipse/\u091a\u0902\u0926\u094d\u0930 \u0917\u094d\u0930\u0939\u0923"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "A lunar eclipse can only occur on the night of a full moon."
+        },{
+            id: 59,
+            text: "What is the periodic rise and fall of the ocean\'s water levels, caused mainly by the gravitational pull of the Moon and the Sun? / समुद्र के जल स्तर का आवधिक उतार-चढ़ाव, जो मुख्य रूप से चंद्रमा और सूर्य के गुरुत्वाकर्षण खिंचाव के कारण होता है, क्या कहलाता है?",
+            reference: "",
+            options: ["Tides/\u091c\u094d\u0935\u093e\u0930-\u092d\u093e\u091f\u093e", "Waves/\u0932\u0939\u0930\u0947\u0902", "Surges/\u0909\u092b\u093e\u0928", "Currents/\u0927\u093e\u0930\u093e\u090f\u0901"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Spring tides (higher) and neap tides (lower) are the two main types based on the alignment of the Sun, Earth, and Moon."
+        },{
+            id: 60,
+            text: "What is the term for a straight-line alignment of three celestial bodies (like the Sun, Earth, and Moon during an eclipse)? / तीन खगोलीय पिंडों (जैसे ग्रहण के दौरान सूर्य, पृथ्वी और चंद्रमा) के एक सीधी रेखा में संरेखण के लिए क्या शब्द है?",
+            reference: "",
+            options: ["Syzygy/\u092f\u0941\u0924\u093f-\u0935\u093f\u092f\u0941\u0924\u093f", "Conjunction/\u092f\u0941\u0924\u093f", "Opposition/\u0935\u093f\u092f\u0941\u0924\u093f", "Quadrature/\u0938\u092e\u0915\u094b\u0923"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Syzygy occurs during full moons and new moons, leading to spring tides."
+        },{
+            id: 61,
+            text: "What is the scientific study of the Earth, its composition, structure, and the processes that shape it? / पृथ्वी, उसकी संरचना, और उसे आकार देने वाली प्रक्रियाओं का वैज्ञानिक अध्ययन क्या है?",
+            reference: "",
+            options: ["Oceanography/\u0938\u092e\u0941\u0926\u094d\u0930 \u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Geology/\u092d\u0942\u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Paleontology/\u091c\u0940\u0935\u093e\u0936\u094d\u092e \u0935\u093f\u091c\u094d\u091e\u093e\u0928", "Meteorology/\u092e\u094c\u0938\u092e \u0935\u093f\u091c\u094d\u091e\u093e\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Geology examines the solid Earth, the rocks of which it is composed, and the processes by which they change over time."
+        },{
+            id: 62,
+            text: "Which of these is an indirect source used by scientists to study the Earth\'s interior? / वैज्ञानिकों द्वारा पृथ्वी के आंतरिक भाग का अध्ययन करने के लिए इनमें से कौन सा एक अप्रत्यक्ष स्रोत है?",
+            reference: "",
+            options: ["Deep Ocean Drilling/\u0917\u0939\u0930\u0947 \u092e\u0939\u093e\u0938\u093e\u0917\u0930 \u0915\u0940 \u0921\u094d\u0930\u093f\u0932\u093f\u0902\u0917", "Seismic Waves/\u092d\u0942\u0915\u0902\u092a\u0940\u092f \u0924\u0930\u0902\u0917\u0947\u0902", "Volcanic Rocks/\u091c\u094d\u0935\u093e\u0932\u093e\u092e\u0941\u0916\u0940 \u091a\u091f\u094d\u091f\u093e\u0928\u0947\u0902", "Mining Samples/\u0916\u0928\u0928 \u0928\u092e\u0942\u0928\u0947"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The behavior of seismic waves as they travel through Earth provides critical information about its layered structure."
+        },{
+            id: 63,
+            text: "What are the three main chemical layers of the Earth, from the outside in? / बाहर से अंदर की ओर, पृथ्वी की तीन मुख्य रासायनिक परतें कौन सी हैं?",
+            reference: "",
+            options: ["Atmosphere, Hydrosphere, Lithosphere/\u0935\u093e\u092f\u0941\u092e\u0902\u0921\u0932, \u091c\u0932\u092e\u0902\u0921\u0932, \u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932", "Lithosphere, Asthenosphere, Mesosphere/\u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932, \u0926\u0941\u0930\u094d\u092c\u0932\u0924\u093e\u092e\u0902\u0921\u0932, \u092e\u0927\u094d\u092f\u092e\u0902\u0921\u0932", "Crust, Mantle, Core/\u0915\u094d\u0930\u0938\u094d\u091f, \u092e\u0948\u0902\u091f\u0932, \u0915\u094b\u0930", "Core, Mantle, Crust/\u0915\u094b\u0930, \u092e\u0948\u0902\u091f\u0932, \u0915\u094d\u0930\u0938\u094d\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The crust is the outermost solid layer, followed by the mantle, and the core at the center."
+        },{
+            id: 64,
+            text: "Which layer makes up the vast majority (about 84%) of Earth\'s volume? / कौन सी परत पृथ्वी के आयतन का विशाल बहुमत (लगभग 84%) बनाती है?",
+            reference: "",
+            options: ["Inner Core/\u0906\u0902\u0924\u0930\u093f\u0915 \u0915\u094b\u0930", "Outer Core/\u092c\u093e\u0939\u0930\u0940 \u0915\u094b\u0930", "Crust/\u0915\u094d\u0930\u0938\u094d\u091f", "Mantle/\u092e\u0948\u0902\u091f\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The mantle is the thick layer of silicate rock between the crust and the outer core."
+        },{
+            id: 65,
+            text: "Which type of Earth\'s crust is thinner, denser, and primarily composed of basaltic rock? / पृथ्वी की कौन सी पर्पटी पतली, सघन और मुख्य रूप से बेसाल्टिक चट्टान से बनी है?",
+            reference: "",
+            options: ["Lithosphere/\u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932", "Continental Crust/\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a\u0940\u092f \u092a\u0930\u094d\u092a\u091f\u0940", "Tectonic Plate/\u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915 \u092a\u094d\u0932\u0947\u091f", "Oceanic Crust/\u092e\u0939\u093e\u0938\u093e\u0917\u0930\u0940\u092f \u092a\u0930\u094d\u092a\u091f\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The oceanic crust lies beneath the ocean basins."
+        },{
+            id: 66,
+            text: "What is the most abundant metallic element in the Earth\'s crust? / पृथ्वी की पर्पटी में सबसे प्रचुर धात्विक तत्व कौन सा है?",
+            reference: "",
+            options: ["Aluminum/\u090f\u0932\u094d\u092f\u0942\u092e\u0940\u0928\u093f\u092f\u092e", "Oxygen/\u0911\u0915\u094d\u0938\u0940\u091c\u0928", "Iron/\u0932\u094b\u0939\u093e", "Silicon/\u0938\u093f\u0932\u093f\u0915\u0949\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "While oxygen and silicon are more abundant overall, aluminum is the most common metal."
+        },{
+            id: 67,
+            text: "What is the thickest layer of the Earth, situated between the crust and the outer core? / पृथ्वी की सबसे मोटी परत कौन सी है, जो पर्पटी और बाहरी कोर के बीच स्थित है?",
+            reference: "",
+            options: ["Lithosphere/\u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932", "Mantle/\u092e\u0948\u0902\u091f\u0932", "Crust/\u0915\u094d\u0930\u0938\u094d\u091f", "Core/\u0915\u094b\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The mantle is about 2,900 kilometers thick and is composed of silicate rocks."
+        },{
+            id: 68,
+            text: "What is the highly viscous, mechanically weak, and ductile region of the upper mantle on which the lithosphere floats? / ऊपरी मैंटल का अत्यधिक श्यान, यांत्रिक रूप से कमजोर और नमनीय क्षेत्र कौन सा है जिस पर स्थलमंडल तैरता है?",
+            reference: "",
+            options: ["Lithosphere/\u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932", "Asthenosphere/\u0926\u0941\u0930\u094d\u092c\u0932\u0924\u093e\u092e\u0902\u0921\u0932", "Outer Core/\u092c\u093e\u0939\u0930\u0940 \u0915\u094b\u0930", "Mesosphere/\u092e\u0927\u094d\u092f\u092e\u0902\u0921\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The asthenosphere is crucial for plate tectonic movement."
+        },{
+            id: 69,
+            text: "The Earth\'s core is primarily composed of which two elements, often abbreviated as NiFe? / पृथ्वी का कोर मुख्य रूप से किन दो तत्वों से बना है, जिन्हें अक्सर NiFe के रूप में संक्षिप्त किया जाता है?",
+            reference: "",
+            options: ["Silicon and Magnesium/\u0938\u093f\u0932\u093f\u0915\u0949\u0928 \u0914\u0930 \u092e\u0948\u0917\u094d\u0928\u0940\u0936\u093f\u092f\u092e", "Silicon and Aluminum/\u0938\u093f\u0932\u093f\u0915\u0949\u0928 \u0914\u0930 \u090f\u0932\u094d\u092f\u0942\u092e\u0940\u0928\u093f\u092f\u092e", "Nickel and Iron/\u0928\u093f\u0915\u0947\u0932 \u0914\u0930 \u0932\u094b\u0939\u093e", "Nickel and Copper/\u0928\u093f\u0915\u0947\u0932 \u0914\u0930 \u0924\u093e\u0902\u092c\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The outer core is liquid and the inner core is solid, both composed mainly of a nickel-iron alloy."
+        },{
+            id: 70,
+            text: "Which discontinuity marks the boundary between the Earth\'s crust and the mantle? / कौन सी असातत्यता पृथ्वी की पर्पटी और मैंटल के बीच की सीमा को चिह्नित करती है?",
+            reference: "",
+            options: ["Mohorovi\u010di\u0107 Discontinuity (Moho)/\u092e\u094b\u0939\u094b\u0930\u094b\u0935\u093f\u0938\u093f\u0915 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e (\u092e\u094b\u0939\u094b)", "Gutenberg Discontinuity/\u0917\u0941\u091f\u0947\u0928\u092c\u0930\u094d\u0917 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Lehmann Discontinuity/\u0932\u0947\u0939\u092e\u0928 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Conrad Discontinuity/\u0915\u094b\u0928\u0930\u093e\u0921 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The Moho is identified by a distinct change in the velocity of seismic waves."
+        },{
+            id: 71,
+            text: "What is the scientific theory that describes the large-scale motions of Earth\'s lithosphere? / वह वैज्ञानिक सिद्धांत क्या है जो पृथ्वी के स्थलमंडल की बड़े पैमाने की गतियों का वर्णन करता है?",
+            reference: "",
+            options: ["Plate Tectonics/\u092a\u094d\u0932\u0947\u091f \u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915\u0940", "Continental Drift/\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a\u0940\u092f \u0935\u093f\u0938\u094d\u0925\u093e\u092a\u0928", "Seafloor Spreading/\u0938\u092e\u0941\u0926\u094d\u0930\u0940 \u0924\u0932 \u0915\u093e \u092a\u094d\u0930\u0938\u093e\u0930", "Elastic Rebound Theory/\u092a\u094d\u0930\u0924\u094d\u092f\u093e\u0938\u094d\u0925 \u092a\u094d\u0930\u0924\u093f\u0915\u094d\u0937\u0947\u092a \u0938\u093f\u0926\u094d\u0927\u093e\u0902\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "This theory explains that the lithosphere is divided into several large plates that move over the asthenosphere."
+        },{
+            id: 72,
+            text: "What mechanism, proposed by Arthur Holmes, is believed to be the driving force behind plate tectonics? / आर्थर होम्स द्वारा प्रस्तावित कौन सी क्रियाविधि, प्लेट विवर्तनिकी के पीछे की प्रेरक शक्ति मानी जाती है?",
+            reference: "",
+            options: ["Convection Currents in the Mantle/\u092e\u0948\u0902\u091f\u0932 \u092e\u0947\u0902 \u0938\u0902\u0935\u0939\u0928 \u0927\u093e\u0930\u093e\u090f\u0901", "Ridge Push/\u0930\u093f\u091c \u0927\u0915\u094d\u0915\u093e", "Slab Pull/\u0938\u094d\u0932\u0948\u092c \u0916\u093f\u0902\u091a\u093e\u0935", "Earth's Rotation/\u092a\u0943\u0925\u094d\u0935\u0940 \u0915\u093e \u0918\u0942\u0930\u094d\u0923\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Hot, less dense material rises, and cooler, denser material sinks, creating a circular motion that moves the plates."
+        },{
+            id: 73,
+            text: "The Pacific Plate, North American Plate, and African Plate are all examples of what? / प्रशांत प्लेट, उत्तरी अमेरिकी प्लेट और अफ्रीकी प्लेट, ये सभी किसके उदाहरण हैं?",
+            reference: "",
+            options: ["Continental Plates/\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a\u0940\u092f \u092a\u094d\u0932\u0947\u091f\u0947\u0902", "Minor Tectonic Plates/\u0932\u0918\u0941 \u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915 \u092a\u094d\u0932\u0947\u091f\u0947\u0902", "Major Tectonic Plates/\u092a\u094d\u0930\u092e\u0941\u0916 \u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915 \u092a\u094d\u0932\u0947\u091f\u0947\u0902", "Oceanic Plates/\u092e\u0939\u093e\u0938\u093e\u0917\u0930\u0940\u092f \u092a\u094d\u0932\u0947\u091f\u0947\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Geologists generally agree that there are seven major tectonic plates that make up most of the Earth\'s surface."
+        },{
+            id: 74,
+            text: "The Nazca Plate, Cocos Plate, and Juan de Fuca Plate are examples of what? / नाज़्का प्लेट, कोकोस प्लेट और जुआन डी फूका प्लेट किसके उदाहरण हैं?",
+            reference: "",
+            options: ["Continental Shields/\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a\u0940\u092f \u0936\u0940\u0932\u094d\u0921", "Major Tectonic Plates/\u092a\u094d\u0930\u092e\u0941\u0916 \u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915 \u092a\u094d\u0932\u0947\u091f\u0947\u0902", "Ancient Supercontinents/\u092a\u094d\u0930\u093e\u091a\u0940\u0928 \u092e\u0939\u093e\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a", "Minor Tectonic Plates/\u0932\u0918\u0941 \u0935\u093f\u0935\u0930\u094d\u0924\u0928\u093f\u0915 \u092a\u094d\u0932\u0947\u091f\u0947\u0902"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Minor plates are smaller tectonic plates that are often located between major plates."
+        },{
+            id: 75,
+            text: "What type of plate boundary involves two plates moving towards each other, often resulting in subduction or mountain building? / किस प्रकार की प्लेट सीमा में दो प्लेटें एक-दूसरे की ओर बढ़ती हैं, जिसके परिणामस्वरूप अक्सर सबडक्शन या पर्वत निर्माण होता है?",
+            reference: "",
+            options: ["Convergent Boundary/\u0905\u092d\u093f\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Divergent Boundary/\u0905\u092a\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Transform Boundary/\u0930\u0942\u092a\u093e\u0902\u0924\u0930\u0923 \u0938\u0940\u092e\u093e", "Constructive Boundary/\u0930\u091a\u0928\u093e\u0924\u094d\u092e\u0915 \u0938\u0940\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The collision of the Indian Plate with the Eurasian Plate, a convergent boundary, formed the Himalayas."
+        },{
+            id: 76,
+            text: "At which type of plate boundary do two plates move away from each other, leading to the formation of new crust? / किस प्रकार की प्लेट सीमा पर दो प्लेटें एक-दूसरे से दूर जाती हैं, जिससे नई पर्पटी का निर्माण होता है?",
+            reference: "",
+            options: ["Convergent Boundary/\u0905\u092d\u093f\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Transform Boundary/\u0930\u0942\u092a\u093e\u0902\u0924\u0930\u0923 \u0938\u0940\u092e\u093e", "Divergent Boundary/\u0905\u092a\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Destructive Boundary/\u0935\u093f\u0928\u093e\u0936\u0915\u093e\u0930\u0940 \u0938\u0940\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The Mid-Atlantic Ridge is a classic example of a divergent boundary."
+        },{
+            id: 77,
+            text: "What type of plate boundary occurs where two plates slide horizontally past one another? / किस प्रकार की प्लेट सीमा तब होती है जहाँ दो प्लेटें एक-दूसरे के समानांतर क्षैतिज रूप से खिसकती हैं?",
+            reference: "",
+            options: ["Divergent Boundary/\u0905\u092a\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Convergent Boundary/\u0905\u092d\u093f\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Subduction Zone/\u0938\u092c\u0921\u0915\u094d\u0936\u0928 \u0915\u094d\u0937\u0947\u0924\u094d\u0930", "Transform Boundary/\u0930\u0942\u092a\u093e\u0902\u0924\u0930\u0923 \u0938\u0940\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The San Andreas Fault in California is a well-known transform boundary."
+        },{
+            id: 78,
+            text: "What is the term for a boundary where plates slide past each other, often causing earthquakes, such as the San Andreas Fault? / उस सीमा के लिए क्या शब्द है जहां प्लेटें एक-दूसरे से खिसकती हैं, जिससे अक्सर भूकंप आते हैं, जैसे कि सैन एंड्रियास फॉल्ट?",
+            reference: "",
+            options: ["Subduction Zone/\u0938\u092c\u0921\u0915\u094d\u0936\u0928 \u0915\u094d\u0937\u0947\u0924\u094d\u0930", "Rift Valley/\u092d\u094d\u0930\u0902\u0936 \u0918\u093e\u091f\u0940", "Mid-Ocean Ridge/\u092e\u0927\u094d\u092f-\u092e\u0939\u093e\u0938\u093e\u0917\u0930\u0940\u092f \u0930\u093f\u091c", "Transform Fault/\u0930\u0942\u092a\u093e\u0902\u0924\u0930\u0923 \u092d\u094d\u0930\u0902\u0936"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Transform faults are a type of transform plate boundary."
+        },{
+            id: 79,
+            text: "What is the sudden shaking of the ground caused by the movement of tectonic plates? / विवर्तनिक प्लेटों की गति के कारण जमीन के अचानक हिलने को क्या कहते हैं?",
+            reference: "",
+            options: ["Tsunami/\u0938\u0941\u0928\u093e\u092e\u0940", "Volcano/\u091c\u094d\u0935\u093e\u0932\u093e\u092e\u0941\u0916\u0940", "Earthquake/\u092d\u0942\u0915\u0902\u092a", "Landslide/\u092d\u0942\u0938\u094d\u0916\u0932\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Earthquakes are caused by a sudden release of energy in the Earth\'s lithosphere that creates seismic waves."
+        },{
+            id: 80,
+            text: "What are the terms for the underground point of origin of an earthquake (Hypocentre) and the point directly above it on the surface (Epicentre)? / भूकंप के भूमिगत उद्गम बिंदु (अवकेन्द्र) और सतह पर ठीक इसके ऊपर के बिंदु (उपरिकेंद्र) के लिए क्या शब्द हैं?",
+            reference: "",
+            options: ["Nadir and Zenith/\u0905\u0927\u094b\u092c\u093f\u0902\u0926\u0941 \u0914\u0930 \u0936\u093f\u0930\u094b\u092c\u093f\u0902\u0926\u0941", "Hypocentre and Epicentre/\u0905\u0935\u0915\u0947\u0928\u094d\u0926\u094d\u0930 \u0914\u0930 \u0909\u092a\u0930\u093f\u0915\u0947\u0902\u0926\u094d\u0930", "Focus and Fault/\u092b\u094b\u0915\u0938 \u0914\u0930 \u092d\u094d\u0930\u0902\u0936", "Core and Crust/\u0915\u094b\u0930 \u0914\u0930 \u0915\u094d\u0930\u0938\u094d\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The most severe shaking is typically felt at the epicentre."
+        },{
+            id: 81,
+            text: "Which type of seismic waves can travel through solids, liquids, and gases and are the first to be detected by a seismograph? / किस प्रकार की भूकंपीय तरंगें ठोस, तरल और गैसों के माध्यम से यात्रा कर सकती हैं और सीस्मोग्राफ द्वारा सबसे पहले पता लगाई जाती हैं?",
+            reference: "",
+            options: ["Rayleigh waves/\u0930\u0947\u0932\u0947 \u0924\u0930\u0902\u0917\u0947\u0902", "Love waves/\u0932\u0935 \u0924\u0930\u0902\u0917\u0947\u0902", "P-waves (Primary waves)/\u092a\u0940-\u0924\u0930\u0902\u0917\u0947\u0902 (\u092a\u094d\u0930\u093e\u0925\u092e\u093f\u0915 \u0924\u0930\u0902\u0917\u0947\u0902)", "S-waves (Secondary waves)/\u090f\u0938-\u0924\u0930\u0902\u0917\u0947\u0902 (\u0926\u094d\u0935\u093f\u0924\u0940\u092f\u0915 \u0924\u0930\u0902\u0917\u0947\u0902)"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "P-waves are compressional waves, meaning they compress and expand the material they pass through."
+        },{
+            id: 82,
+            text: "Which scale measures the magnitude of an earthquake based on the energy released at its source? / कौन सा पैमाना भूकंप के स्रोत पर जारी ऊर्जा के आधार पर उसके परिमाण को मापता है?",
+            reference: "",
+            options: ["Richter Scale/\u0930\u093f\u0915\u094d\u091f\u0930 \u092a\u0948\u092e\u093e\u0928\u093e", "Mercalli Scale/\u092e\u0930\u0915\u0947\u0932\u0940 \u092a\u0948\u092e\u093e\u0928\u093e", "Moment Magnitude Scale/\u0906\u0918\u0942\u0930\u094d\u0923 \u092a\u0930\u093f\u092e\u093e\u0923 \u092a\u0948\u092e\u093e\u0928\u093e", "Fujita Scale/\u092b\u0941\u091c\u093f\u0924\u093e \u092a\u0948\u092e\u093e\u0928\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The Richter scale is logarithmic, meaning a magnitude 6 earthquake is ten times more powerful than a magnitude 5."
+        },{
+            id: 83,
+            text: "What is the term for a series of large ocean waves, often caused by underwater earthquakes or volcanic eruptions? / बड़ी समुद्री लहरों की श्रृंखला के लिए क्या शब्द है, जो अक्सर पानी के नीचे भूकंप या ज्वालामुखी विस्फोट के कारण होती हैं?",
+            reference: "",
+            options: ["Tidal Wave/\u091c\u094d\u0935\u093e\u0930\u0940\u092f \u0932\u0939\u0930", "Tsunami/\u0938\u0941\u0928\u093e\u092e\u0940", "Storm Surge/\u0924\u0942\u092b\u093e\u0928\u0940 \u0932\u0939\u0930", "Rogue Wave/\u0926\u0941\u0937\u094d\u091f \u0932\u0939\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Tsunamis can travel across entire oceans and cause immense destruction on coastal areas."
+        },{
+            id: 84,
+            text: "What is the largest moon in our Solar System, which is even larger than the planet Mercury? / हमारे सौर मंडल का सबसे बड़ा चंद्रमा कौन सा है, जो बुध ग्रह से भी बड़ा है?",
+            reference: "",
+            options: ["Ganymede/\u0917\u0948\u0928\u0940\u092e\u0947\u0921", "Europa/\u092f\u0942\u0930\u094b\u092a\u093e", "Titan/\u091f\u093e\u0907\u091f\u0928", "Moon/\u091a\u0902\u0926\u094d\u0930\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Ganymede is one of Jupiter\'s four Galilean moons and the only moon known to have its own magnetic field."
+        },{
+            id: 85,
+            text: "The Great Rift Valley in Africa is a prime example of which type of tectonic plate boundary? / अफ्रीका में ग्रेट रिफ्ट वैली किस प्रकार की टेक्टोनिक प्लेट सीमा का एक प्रमुख उदाहरण है?",
+            reference: "",
+            options: ["Divergent Boundary/\u0905\u092a\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Transform Boundary/\u0930\u0942\u092a\u093e\u0902\u0924\u0930\u0923 \u0938\u0940\u092e\u093e", "Convergent Boundary/\u0905\u092d\u093f\u0938\u093e\u0930\u0940 \u0938\u0940\u092e\u093e", "Subduction Zone/\u0938\u092c\u0921\u0915\u094d\u0936\u0928 \u0915\u094d\u0937\u0947\u0924\u094d\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "This is a developing divergent boundary where the African Plate is in the process of splitting into two new plates."
+        },{
+            id: 86,
+            text: "Which planet is unique for its extreme retrograde rotation, meaning it spins backward compared to most other planets? / कौन सा ग्रह अपनी अत्यधिक प्रतिगामी घूर्णन के लिए अद्वितीय है, जिसका अर्थ है कि यह अधिकांश अन्य ग्रहों की तुलना में पीछे की ओर घूमता है?",
+            reference: "",
+            options: ["Mars/\u092e\u0902\u0917\u0932", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938", "Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Venus/\u0936\u0941\u0915\u094d\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "On Venus, the Sun rises in the west and sets in the east. Its day is longer than its year."
+        },{
+            id: 87,
+            text: "The \"shadow zone\" for S-waves is much larger than for P-waves because S-waves cannot travel through which layer of the Earth? / S-तरंगों के लिए \"छाया क्षेत्र\" P-तरंगों की तुलना में बहुत बड़ा है क्योंकि S-तरंगें पृथ्वी की किस परत से नहीं गुजर सकती हैं?",
+            reference: "",
+            options: ["Inner Core/\u0906\u0902\u0924\u0930\u093f\u0915 \u0915\u094b\u0930", "Outer Core/\u092c\u093e\u0939\u0930\u0940 \u0915\u094b\u0930", "Crust/\u0915\u094d\u0930\u0938\u094d\u091f", "Mantle/\u092e\u0948\u0902\u091f\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "The inability of S-waves to pass through the liquid outer core provides key evidence of its state."
+        },{
+            id: 88,
+            text: "Who is the scientist credited with proposing the theory of continental drift and the idea of a supercontinent named Pangaea? / किस वैज्ञानिक को महाद्वीपीय विस्थापन का सिद्धांत और पैंजिया नामक एक महामहाद्वीप के विचार का प्रस्ताव देने का श्रेय दिया जाता है?",
+            reference: "",
+            options: ["James Hutton/\u091c\u0947\u092e\u094d\u0938 \u0939\u091f\u0928", "Harry Hess/\u0939\u0948\u0930\u0940 \u0939\u0947\u0938", "Arthur Holmes/\u0906\u0930\u094d\u0925\u0930 \u0939\u094b\u092e\u094d\u0938", "Alfred Wegener/\u0905\u0932\u094d\u092b\u094d\u0930\u0947\u0921 \u0935\u0947\u0917\u0947\u0928\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Wegener\'s theory was initially dismissed but became the foundation for modern plate tectonics."
+        },{
+            id: 89,
+            text: "If it is 3:00 PM at a location on 45° West longitude, what would be the time at the Prime Meridian (0° longitude)? / यदि 45° पश्चिम देशांतर पर स्थित किसी स्थान पर दोपहर के 3:00 बजे हैं, तो प्रधान मध्याह्न रेखा (0° देशांतर) पर क्या समय होगा?",
+            reference: "",
+            options: ["9:00 PM/\u0930\u093e\u0924 9:00 \u092c\u091c\u0947", "6:00 PM/\u0936\u093e\u092e 6:00 \u092c\u091c\u0947", "12:00 PM/\u0926\u094b\u092a\u0939\u0930 12:00 \u092c\u091c\u0947", "12:00 AM/\u092e\u0927\u094d\u092f\u0930\u093e\u0924\u094d\u0930\u093f 12:00 \u092c\u091c\u0947"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Moving east, time increases. 45 degrees equals 3 hours (45/15), so 3:00 PM + 3 hours = 6:00 PM."
+        },{
+            id: 90,
+            text: "The constant stream of charged particles flowing outwards from the Sun is known as what? / सूर्य से बाहर की ओर बहने वाले आवेशित कणों की निरंतर धारा को किस नाम से जाना जाता है?",
+            reference: "",
+            options: ["Solar Wind/\u0938\u094c\u0930 \u092a\u0935\u0928", "Solar Flare/\u0938\u094c\u0930 \u091c\u094d\u0935\u093e\u0932\u093e", "Solar Prominence/\u0938\u094c\u0930 \u092a\u094d\u0930\u092e\u0941\u0916\u0924\u093e", "Coronal Mass Ejection/\u0915\u094b\u0930\u094b\u0928\u0932 \u092e\u093e\u0938 \u0907\u091c\u0947\u0915\u094d\u0936\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The solar wind interacts with Earth\'s magnetosphere to create auroras."
+        },{
+            id: 91,
+            text: "What term is used to describe the point in the Moon\'s orbit where it is closest to Earth? / चंद्रमा की कक्षा में उस बिंदु का वर्णन करने के लिए किस शब्द का उपयोग किया जाता है जहाँ वह पृथ्वी के सबसे निकट होता है?",
+            reference: "",
+            options: ["Apogee/\u0905\u092a\u092d\u0942", "Perihelion/\u0909\u092a\u0938\u094c\u0930", "Perigee/\u0909\u092a\u092d\u0942", "Aphelion/\u0905\u092a\u0938\u094c\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "When a full moon or new moon occurs at perigee, it is known as a supermoon."
+        },{
+            id: 92,
+            text: "The boundary between the Earth\'s mantle and the outer core is known as which discontinuity? / पृथ्वी के मैंटल और बाहरी कोर के बीच की सीमा को किस असातत्यता के रूप में जाना जाता है?",
+            reference: "",
+            options: ["Gutenberg Discontinuity/\u0917\u0941\u091f\u0947\u0928\u092c\u0930\u094d\u0917 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Lehmann Discontinuity/\u0932\u0947\u0939\u092e\u0928 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Conrad Discontinuity/\u0915\u094b\u0928\u0930\u093e\u0921 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Mohorovi\u010di\u0107 Discontinuity/\u092e\u094b\u0939\u094b\u0930\u094b\u0935\u093f\u0938\u093f\u0915 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "It is located at a depth of about 2,900 km and is defined by a sharp drop in P-wave velocity."
+        },{
+            id: 93,
+            text: "Which planet has the most prominent and complex ring system in our Solar System? / हमारे सौर मंडल में किस ग्रह की वलय प्रणाली सबसे प्रमुख और जटिल है?",
+            reference: "",
+            options: ["Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938", "Saturn/\u0936\u0928\u093f"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Saturn\'s rings are made mostly of ice particles with a smaller amount of rocky debris and dust."
+        },{
+            id: 94,
+            text: "An isochrone is a line on a map that connects points of equal what? / एक समकालिक रेखा (आइसोक्रोन) नक्शे पर एक रेखा है जो समान ____ वाले बिंदुओं को जोड़ती है?",
+            reference: "",
+            options: ["Salinity/\u0932\u0935\u0923\u0924\u093e", "Travel Time/\u092f\u093e\u0924\u094d\u0930\u093e \u0938\u092e\u092f", "Temperature/\u0924\u093e\u092a\u092e\u093e\u0928", "Pressure/\u0926\u092c\u093e\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Isochrones are often used in transportation planning and geography to show travel times from a central point."
+        },{
+            id: 95,
+            text: "The measure of the total energy released by an earthquake at its source is referred to as its what? / किसी भूकंप द्वारा उसके स्रोत पर छोड़ी गई कुल ऊर्जा के माप को क्या कहा जाता है?",
+            reference: "",
+            options: ["Epicenter/\u0909\u092a\u0930\u093f\u0915\u0947\u0902\u0926\u094d\u0930", "Focus/\u092b\u094b\u0915\u0938", "Magnitude/\u092a\u0930\u093f\u092e\u093e\u0923", "Intensity/\u0924\u0940\u0935\u094d\u0930\u0924\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Magnitude is measured using scales like the Richter scale, while intensity describes the shaking effect."
+        },{
+            id: 96,
+            text: "On June 21st (Summer Solstice), which of the following locations would experience the longest period of daylight? / 21 जून (ग्रीष्मकालीन अयनांत) को, निम्नलिखित में से किस स्थान पर दिन के उजाले की अवधि सबसे लंबी होगी?",
+            reference: "",
+            options: ["Tropic of Cancer/\u0915\u0930\u094d\u0915 \u0930\u0947\u0916\u093e", "Arctic Circle/\u0906\u0930\u094d\u0915\u091f\u093f\u0915 \u0935\u0943\u0924\u094d\u0924", "Tropic of Capricorn/\u092e\u0915\u0930 \u0930\u0947\u0916\u093e", "Equator/\u0935\u093f\u0937\u0941\u0935\u0924\u094d \u0930\u0947\u0916\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Locations closer to the pole in the summer hemisphere experience longer daylight hours, with 24 hours of daylight at the pole itself."
+        },{
+            id: 97,
+            text: "Who published the paper \"The History of Ocean Basins\" in 1962, which outlined the theory of seafloor spreading? / 1962 में \"द हिस्ट्री ऑफ ओशन बेसिन\" नामक शोधपत्र किसने प्रकाशित किया, जिसमें समुद्री तल के प्रसार के सिद्धांत की रूपरेखा दी गई थी?",
+            reference: "",
+            options: ["Arthur Holmes/\u0906\u0930\u094d\u0925\u0930 \u0939\u094b\u092e\u094d\u0938", "Harry Hess/\u0939\u0948\u0930\u0940 \u0939\u0947\u0938", "Alfred Wegener/\u0905\u0932\u094d\u092b\u094d\u0930\u0947\u0921 \u0935\u0947\u0917\u0947\u0928\u0930", "Robert S. Dietz/\u0930\u0949\u092c\u0930\u094d\u091f \u090f\u0938. \u0921\u0940\u091f\u094d\u091c"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Harry Hess\'s theory of seafloor spreading provided a crucial mechanism for Wegener\'s earlier continental drift hypothesis."
+        },{
+            id: 98,
+            text: "What is the second most abundant gas in Mars\'s thin atmosphere, after carbon dioxide? / कार्बन डाइऑक्साइड के बाद, मंगल के पतले वायुमंडल में दूसरी सबसे प्रचुर गैस कौन सी है?",
+            reference: "",
+            options: ["Argon/\u0906\u0930\u094d\u0917\u0928", "Water Vapor/\u091c\u0932 \u0935\u093e\u0937\u094d\u092a", "Oxygen/\u0911\u0915\u094d\u0938\u0940\u091c\u0928", "Nitrogen/\u0928\u093e\u0907\u091f\u094d\u0930\u094b\u091c\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Mars\'s atmosphere is about 95% carbon dioxide, 2.6% argon, and 1.9% nitrogen, with traces of other gases."
+        },{
+            id: 99,
+            text: "The time it takes for the Earth to complete one full rotation relative to the distant stars (about 23 hours, 56 minutes) is known as what? / पृथ्वी को दूर के तारों के सापेक्ष एक पूर्ण घूर्णन पूरा करने में लगने वाले समय (लगभग 23 घंटे, 56 मिनट) को क्या कहा जाता है?",
+            reference: "",
+            options: ["Mean Solar Day/\u092e\u093e\u0927\u094d\u092f \u0938\u094c\u0930 \u0926\u093f\u0935\u0938", "Sidereal Day/\u0928\u093e\u0915\u094d\u0937\u0924\u094d\u0930 \u0926\u093f\u0935\u0938", "Apparent Solar Day/\u0938\u094d\u092a\u0937\u094d\u091f \u0938\u094c\u0930 \u0926\u093f\u0935\u0938", "Solar Day/\u0938\u094c\u0930 \u0926\u093f\u0935\u0938"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "A sidereal day is about 4 minutes shorter than a solar day."
+        },{
+            id: 100,
+            text: "What type of volcanic eruption is characterized by fluid lava flows and is common in the Hawaiian Islands? / किस प्रकार का ज्वालामुखी विस्फोट तरल लावा प्रवाह द्वारा caractérisé है और हवाई द्वीपों में आम है?",
+            reference: "",
+            options: ["Strombolian Eruption/\u0938\u094d\u091f\u094d\u0930\u094b\u092e\u094d\u092c\u094b\u0932\u093f\u092f\u0928 \u0935\u093f\u0938\u094d\u092b\u094b\u091f", "Plinian Eruption/\u092a\u094d\u0932\u093f\u0928\u093f\u092f\u0928 \u0935\u093f\u0938\u094d\u092b\u094b\u091f", "Hawaiian Eruption/\u0939\u0935\u093e\u0908\u092f\u0928 \u0935\u093f\u0938\u094d\u092b\u094b\u091f", "Vulcanian Eruption/\u0935\u0932\u094d\u0915\u0947\u0928\u093f\u092f\u0928 \u0935\u093f\u0938\u094d\u092b\u094b\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Hawaiian eruptions are effusive, not explosive, and build broad shield volcanoes."
+        },{
+            id: 101,
+            text: "Which of the Voyager spacecraft was the first human-made object to enter interstellar space? / कौन सा वायेजर अंतरिक्ष यान अंतरातारकीय अंतरिक्ष में प्रवेश करने वाली पहली मानव निर्मित वस्तु थी?",
+            reference: "",
+            options: ["Pioneer 10/\u092a\u093e\u092f\u0928\u093f\u092f\u0930 10", "Voyager 1/\u0935\u093e\u092f\u0947\u091c\u0930 1", "New Horizons/\u0928\u094d\u092f\u0942 \u0939\u094b\u0930\u093e\u0907\u091c\u0928\u094d\u0938", "Voyager 2/\u0935\u093e\u092f\u0947\u091c\u0930 2"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Voyager 1 crossed the heliopause, the boundary of the Sun\'s influence, in 2012."
+        },{
+            id: 102,
+            text: "What is the largest known object in the asteroid belt, classified as both an asteroid and a dwarf planet? / क्षुद्रग्रह बेल्ट में सबसे बड़ी ज्ञात वस्तु कौन सी है, जिसे क्षुद्रग्रह और बौने ग्रह दोनों के रूप में वर्गीकृत किया गया है?",
+            reference: "",
+            options: ["Ceres/\u0938\u0947\u0930\u0947\u0938", "Pallas/\u092a\u0948\u0932\u0938", "Vesta/\u0935\u0947\u0938\u094d\u091f\u093e", "Hygiea/\u0939\u093e\u0907\u091c\u093f\u092f\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Ceres is the only dwarf planet located in the inner Solar System."
+        },{
+            id: 103,
+            text: "The process where a saturated or partially saturated soil substantially loses strength and stiffness in response to an earthquake is called what? / वह प्रक्रिया क्या कहलाती है जिसमें भूकंप के कारण एक संतृप्त या आंशिक रूप से संतृप्त मिट्टी अपनी ताकत और कठोरता को काफी हद तक खो देती है?",
+            reference: "",
+            options: ["Soil Creep/\u092e\u0943\u0926\u093e \u0935\u093f\u0938\u0930\u094d\u092a\u0923", "Land Subsidence/\u092d\u0942\u092e\u093f \u0905\u0935\u0924\u0932\u0928", "Soil Liquefaction/\u092e\u0943\u0926\u093e \u0926\u094d\u0930\u0935\u0940\u0915\u0930\u0923", "Mass Wasting/\u0935\u0943\u0939\u0924 \u0915\u094d\u0937\u0930\u0923"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Liquefaction can cause buildings to sink and underground pipes to rise to the surface."
+        },{
+            id: 104,
+            text: "What are the two concentric, doughnut-shaped regions of energetic charged particles held in place by Earth\'s magnetic field called? / पृथ्वी के चुंबकीय क्षेत्र द्वारा बनाए गए ऊर्जावान आवेशित कणों के दो संकेंद्रित, डोनट के आकार के क्षेत्रों को क्या कहा जाता है?",
+            reference: "",
+            options: ["Ionosphere Belts/\u0906\u092f\u0928\u092e\u0902\u0921\u0932 \u092c\u0947\u0932\u094d\u091f", "Van Allen Radiation Belts/\u0935\u0948\u0928 \u090f\u0932\u0928 \u0935\u093f\u0915\u093f\u0930\u0923 \u092c\u0947\u0932\u094d\u091f", "Aurora Belts/\u0927\u094d\u0930\u0941\u0935\u0940\u092f \u091c\u094d\u092f\u094b\u0924\u093f \u092c\u0947\u0932\u094d\u091f", "Magnetotail Belts/\u092e\u0948\u0917\u094d\u0928\u0947\u091f\u094b\u091f\u0947\u0932 \u092c\u0947\u0932\u094d\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "These belts protect Earth from harmful solar radiation but can pose a hazard to satellites."
+        },{
+            id: 105,
+            text: "What is the largest moon of Saturn and the only moon in the solar system with a dense, nitrogen-rich atmosphere? / शनि का सबसे बड़ा चंद्रमा और सौर मंडल का एकमात्र चंद्रमा कौन सा है जिसका घना, नाइट्रोजन युक्त वायुमंडल है?",
+            reference: "",
+            options: ["Titan/\u091f\u093e\u0907\u091f\u0928", "Ganymede/\u0917\u0948\u0928\u0940\u092e\u0947\u0921", "Europa/\u092f\u0942\u0930\u094b\u092a\u093e", "Triton/\u091f\u094d\u0930\u093e\u0907\u091f\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Titan\'s atmosphere is thicker than Earth\'s and has clouds and rain of methane."
+        },{
+            id: 106,
+            text: "The figure-eight curve that results from plotting the position of the Sun in the sky at the same time each day for a year is called what? / एक वर्ष के लिए प्रत्येक दिन एक ही समय पर आकाश में सूर्य की स्थिति को अंकित करने से बनने वाले आठ-आकृति के वक्र को क्या कहा जाता है?",
+            reference: "",
+            options: ["Analemma/\u090f\u0928\u093e\u0932\u0947\u092e\u093e", "Celestial Equator/\u0916\u0917\u094b\u0932\u0940\u092f \u0935\u093f\u0937\u0941\u0935\u0924\u094d \u0930\u0947\u0916\u093e", "Terminator/\u091f\u0930\u094d\u092e\u093f\u0928\u0947\u091f\u0930", "Ecliptic/\u0915\u094d\u0930\u093e\u0902\u0924\u093f\u0935\u0943\u0924\u094d\u0924"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The analemma\'s shape is due to Earth\'s axial tilt and its elliptical orbit around the Sun."
+        },{
+            id: 107,
+            text: "What type of fault is formed when the hanging wall moves down relative to the footwall, typically caused by tensional forces? / किस प्रकार का भ्रंश तब बनता है जब हैंगिंग वॉल फुटवॉल के सापेक्ष नीचे की ओर खिसकती है, जो आमतौर पर तनाव बलों के कारण होता है?",
+            reference: "",
+            options: ["Oblique Fault/\u0924\u093f\u0930\u094d\u092f\u0915 \u092d\u094d\u0930\u0902\u0936", "Normal Fault/\u0938\u093e\u092e\u093e\u0928\u094d\u092f \u092d\u094d\u0930\u0902\u0936", "Reverse Fault/\u0909\u0924\u094d\u0915\u094d\u0930\u092e \u092d\u094d\u0930\u0902\u0936", "Strike-Slip Fault/\u0938\u094d\u091f\u094d\u0930\u093e\u0907\u0915-\u0938\u094d\u0932\u093f\u092a \u092d\u094d\u0930\u0902\u0936"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Normal faults are common at divergent plate boundaries."
+        },{
+            id: 108,
+            text: "Which NASA mission successfully collected a sample from the asteroid Bennu and returned it to Earth? / किस नासा मिशन ने क्षुद्रग्रह बेन्नू से सफलतापूर्वक एक नमूना एकत्र किया और उसे पृथ्वी पर वापस लाया?",
+            reference: "",
+            options: ["Rosetta/\u0930\u094b\u0938\u0947\u091f\u093e", "Hayabusa2/\u0939\u093e\u092f\u093e\u092c\u0941\u0938\u093e2", "OSIRIS-REx/\u0913\u0938\u093e\u0907\u0930\u093f\u0938-\u0930\u0947\u0915\u094d\u0938", "Lucy/\u0932\u0942\u0938\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The OSIRIS-REx mission was designed to study an asteroid and bring back a sample to better understand the early solar system."
+        },{
+            id: 109,
+            text: "What is the term for the tide pattern that features two high tides and two low tides of unequal height each lunar day? / उस ज्वार पैटर्न के लिए क्या शब्द है जिसमें प्रत्येक चंद्र दिवस में असमान ऊंचाई के दो उच्च ज्वार और दो निम्न ज्वार होते हैं?",
+            reference: "",
+            options: ["Diurnal Tide/\u0926\u0948\u0928\u093f\u0915 \u091c\u094d\u0935\u093e\u0930", "Mixed Semi-diurnal Tide/\u092e\u093f\u0936\u094d\u0930\u093f\u0924 \u0905\u0930\u094d\u0927-\u0926\u0948\u0928\u093f\u0915 \u091c\u094d\u0935\u093e\u0930", "Semi-diurnal Tide/\u0905\u0930\u094d\u0927-\u0926\u0948\u0928\u093f\u0915 \u091c\u094d\u0935\u093e\u0930", "Spring Tide/\u0935\u0943\u0939\u0924\u094d \u091c\u094d\u0935\u093e\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "This pattern is common along the Pacific coast of North America."
+        },{
+            id: 110,
+            text: "A chain of volcanoes that form on the non-subducting plate parallel to an ocean trench at a convergent boundary is called what? / एक अभिसारी सीमा पर एक महासागरीय खाई के समानांतर गैर-सबडक्टिंग प्लेट पर बनने वाले ज्वालामुखियों की श्रृंखला को क्या कहा जाता है?",
+            reference: "",
+            options: ["Rift Valley/\u092d\u094d\u0930\u0902\u0936 \u0918\u093e\u091f\u0940", "Mid-Ocean Ridge/\u092e\u0927\u094d\u092f-\u092e\u0939\u093e\u0938\u093e\u0917\u0930\u0940\u092f \u0930\u093f\u091c", "Volcanic Island Arc/\u091c\u094d\u0935\u093e\u0932\u093e\u092e\u0941\u0916\u0940\u092f \u0926\u094d\u0935\u0940\u092a \u091a\u093e\u092a", "Hotspot Chain/\u0939\u0949\u091f\u0938\u094d\u092a\u0949\u091f \u0936\u094d\u0930\u0943\u0902\u0916\u0932\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The islands of Japan and the Aleutian Islands are examples of volcanic island arcs."
+        },{
+            id: 111,
+            text: "Which dwarf planet, located in the Kuiper Belt, is known to be the most massive and second-largest dwarf planet in our Solar System? / काइपर बेल्ट में स्थित कौन सा बौना ग्रह हमारे सौर मंडल में सबसे विशाल और दूसरा सबसे बड़ा बौना ग्रह माना जाता है?",
+            reference: "",
+            options: ["Haumea/\u0939\u0909\u092e\u0947\u092f\u093e", "Makemake/\u092e\u093e\u0915\u0947\u092e\u093e\u0915\u0947", "Eris/\u090f\u0930\u093f\u0938", "Pluto/\u092a\u094d\u0932\u0942\u091f\u094b"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "The discovery of Eris in 2005 was a major factor in the reclassification of Pluto."
+        },{
+            id: 112,
+            text: "The phenomenon where the Moon appears reddish during a total lunar eclipse is often called what? / पूर्ण चंद्र ग्रहण के दौरान चंद्रमा के लाल दिखाई देने की घटना को अक्सर क्या कहा जाता है?",
+            reference: "",
+            options: ["Blue Moon/\u092c\u094d\u0932\u0942 \u092e\u0942\u0928", "Harvest Moon/\u0939\u093e\u0930\u094d\u0935\u0947\u0938\u094d\u091f \u092e\u0942\u0928", "Supermoon/\u0938\u0941\u092a\u0930\u092e\u0942\u0928", "Blood Moon/\u092c\u094d\u0932\u0921 \u092e\u0942\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "This occurs because sunlight is refracted through Earth\'s atmosphere, scattering blue light and allowing red light to reach the Moon."
+        },{
+            id: 113,
+            text: "Which planet boasts the strongest magnetic field in the Solar System, creating an immense magnetosphere? / सौर मंडल में किस ग्रह का चुंबकीय क्षेत्र सबसे मजबूत है, जो एक विशाल मैग्नेटोस्फीयर बनाता है?",
+            reference: "",
+            options: ["Saturn/\u0936\u0928\u093f", "Neptune/\u0928\u0947\u092a\u094d\u091a\u094d\u092f\u0942\u0928", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Earth/\u092a\u0943\u0925\u094d\u0935\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Jupiter\'s magnetosphere is so large that it would appear several times the size of the full moon in our sky if it were visible."
+        },{
+            id: 114,
+            text: "What is the term for the imaginary line on the Earth\'s surface separating daylight from darkness? / पृथ्वी की सतह पर दिन के उजाले को अंधेरे से अलग करने वाली काल्पनिक रेखा को क्या कहा जाता है?",
+            reference: "",
+            options: ["Terminator/\u091f\u0930\u094d\u092e\u093f\u0928\u0947\u091f\u0930", "Equinox Line/\u0935\u093f\u0937\u0941\u0935 \u0930\u0947\u0916\u093e", "Prime Meridian/\u092a\u094d\u0930\u0927\u093e\u0928 \u092e\u0927\u094d\u092f\u093e\u0939\u094d\u0928 \u0930\u0947\u0916\u093e", "Isobar/\u0938\u092e\u0926\u093e\u092c \u0930\u0947\u0916\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The terminator line moves across the planet\'s surface as the Earth rotates."
+        },{
+            id: 115,
+            text: "What is the name for a volcanic feature formed when lava and gas erupt from a linear crack in the Earth\'s surface rather than a central vent? / उस ज्वालामुखी विशेषता का क्या नाम है जो एक केंद्रीय निकास के बजाय पृथ्वी की सतह में एक रैखिक दरार से लावा और गैस के फूटने पर बनती है?",
+            reference: "",
+            options: ["Fissure Vent/\u0935\u093f\u0926\u0930 \u0928\u093f\u0915\u093e\u0938", "Lava Dome/\u0932\u093e\u0935\u093e \u0917\u0941\u0902\u092c\u0926", "Caldera/\u0915\u0948\u0932\u094d\u0921\u0947\u0930\u093e", "Shield Volcano/\u0936\u0940\u0932\u094d\u0921 \u091c\u094d\u0935\u093e\u0932\u093e\u092e\u0941\u0916\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Fissure vents are common in Iceland and are associated with rift zones."
+        },{
+            id: 116,
+            text: "The apparent shifting of a nearby star\'s position against the background of more distant stars as the Earth orbits the Sun is called what? / पृथ्वी के सूर्य की परिक्रमा करने के कारण दूर के तारों की पृष्ठभूमि में पास के तारे की स्थिति का स्पष्ट विस्थापन क्या कहलाता है?",
+            reference: "",
+            options: ["Redshift/\u0930\u0947\u0921\u0936\u093f\u092b\u094d\u091f", "Proper Motion/\u0909\u091a\u093f\u0924 \u0917\u0924\u093f", "Aberration of Starlight/\u0924\u093e\u0930\u0915\u0940\u092f \u0935\u093f\u092a\u0925\u0928", "Stellar Parallax/\u0924\u093e\u0930\u0915\u0940\u092f \u0932\u0902\u092c\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Stellar parallax is a primary method used to measure the distances to nearby stars."
+        },{
+            id: 117,
+            text: "What is the term for the second full moon that occurs within a single calendar month? / एक ही कैलेंडर महीने में होने वाले दूसरे पूर्णिमा के लिए क्या शब्द है?",
+            reference: "",
+            options: ["Supermoon/\u0938\u0941\u092a\u0930\u092e\u0942\u0928", "Blood Moon/\u092c\u094d\u0932\u0921 \u092e\u0942\u0928", "Blue Moon/\u092c\u094d\u0932\u0942 \u092e\u0942\u0928", "Harvest Moon/\u0939\u093e\u0930\u094d\u0935\u0947\u0938\u094d\u091f \u092e\u0942\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "This is a relatively rare calendrical event, occurring roughly once every 2.7 years."
+        },{
+            id: 118,
+            text: "What is the classification of our Sun based on its temperature and luminosity? / हमारे सूर्य का उसके तापमान और चमक के आधार पर क्या वर्गीकरण है?",
+            reference: "",
+            options: ["Blue Supergiant/\u0928\u0940\u0932\u093e \u092e\u0939\u093e\u0926\u093e\u0928\u0935", "White Dwarf/\u0936\u094d\u0935\u0947\u0924 \u0935\u093e\u092e\u0928", "G-type main-sequence star (Yellow Dwarf)/G-\u092a\u094d\u0930\u0915\u093e\u0930 \u0915\u093e \u092e\u0941\u0916\u094d\u092f-\u0905\u0928\u0941\u0915\u094d\u0930\u092e \u0924\u093e\u0930\u093e (\u092a\u0940\u0932\u093e \u092c\u094c\u0928\u093e)", "Red Giant/\u0932\u093e\u0932 \u0926\u093e\u0928\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "G-type stars are often informally called yellow dwarfs; they are in the main phase of their life cycle."
+        },{
+            id: 119,
+            text: "The rigid, outermost shell of a terrestrial-type planet or natural satellite that is defined by its rigid mechanical properties is called the what? / किसी स्थलीय-प्रकार के ग्रह या प्राकृतिक उपग्रह का कठोर, सबसे बाहरी आवरण जो उसके कठोर यांत्रिक गुणों द्वारा परिभाषित होता है, क्या कहलाता है?",
+            reference: "",
+            options: ["Lithosphere/\u0938\u094d\u0925\u0932\u092e\u0902\u0921\u0932", "Asthenosphere/\u0926\u0941\u0930\u094d\u092c\u0932\u0924\u093e\u092e\u0902\u0921\u0932", "Crust/\u0915\u094d\u0930\u0938\u094d\u091f", "Mantle/\u092e\u0948\u0902\u091f\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "On Earth, the lithosphere includes the crust and the uppermost part of the mantle."
+        },{
+            id: 120,
+            text: "The deflection of moving objects (like winds and ocean currents) due to the Earth\'s rotation is known as the what? / पृथ्वी के घूर्णन के कारण गतिमान वस्तुओं (जैसे हवाएं और महासागरीय धाराएं) के विक्षेपण को क्या कहा जाता है?",
+            reference: "",
+            options: ["Geostrophic Effect/\u092d\u0942\u0938\u094d\u0925\u0948\u0924\u093f\u0915 \u092a\u094d\u0930\u092d\u093e\u0935", "Venturi Effect/\u0935\u0947\u0902\u091a\u0941\u0930\u0940 \u092a\u094d\u0930\u092d\u093e\u0935", "Coriolis Effect/\u0915\u094b\u0930\u093f\u0913\u0932\u093f\u0938 \u092a\u094d\u0930\u092d\u093e\u0935", "Centrifugal Effect/\u0905\u092a\u0915\u0947\u0928\u094d\u0926\u094d\u0930\u0940 \u092a\u094d\u0930\u092d\u093e\u0935"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "In the Northern Hemisphere, it deflects objects to the right; in the Southern Hemisphere, to the left."
+        },{
+            id: 121,
+            text: "What is a large depression formed when a volcano erupts and collapses? / एक बड़ा गर्त क्या है जो एक ज्वालामुखी के फूटने और ढहने पर बनता है?",
+            reference: "",
+            options: ["Caldera/\u0915\u0948\u0932\u094d\u0921\u0947\u0930\u093e", "Lava Plateau/\u0932\u093e\u0935\u093e \u092a\u0920\u093e\u0930", "Fissure/\u0935\u093f\u0926\u0930", "Crater/\u0915\u094d\u0930\u0947\u091f\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "Yellowstone National Park is situated within a massive caldera from a past supervolcano eruption."
+        },{
+            id: 122,
+            text: "What is the standard unit of distance used by astronomers within the Solar System, defined as the average distance from the Earth to the Sun? / सौर मंडल के भीतर खगोलविदों द्वारा उपयोग की जाने वाली दूरी की मानक इकाई क्या है, जिसे पृथ्वी से सूर्य की औसत दूरी के रूप में परिभाषित किया गया है?",
+            reference: "",
+            options: ["Light-Year/\u092a\u094d\u0930\u0915\u093e\u0936-\u0935\u0930\u094d\u0937", "Parsec/\u092a\u093e\u0930\u0938\u0947\u0915", "Kilometer/\u0915\u093f\u0932\u094b\u092e\u0940\u091f\u0930", "Astronomical Unit (AU)/\u0916\u0917\u094b\u0932\u0940\u092f \u0907\u0915\u093e\u0908 (AU)"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "One Astronomical Unit (AU) is approximately 149.6 million kilometers."
+        },{
+            id: 123,
+            text: "The Richter scale is logarithmic. How much more ground motion is recorded for a magnitude 7 earthquake compared to a magnitude 5? / रिक्टर पैमाना लघुगणकीय है। परिमाण 5 की तुलना में परिमाण 7 के भूकंप के लिए कितनी अधिक जमीनी गति दर्ज की जाती है?",
+            reference: "",
+            options: ["2 times more/2 \u0917\u0941\u0928\u093e \u0905\u0927\u093f\u0915", "100 times more/100 \u0917\u0941\u0928\u093e \u0905\u0927\u093f\u0915", "10 times more/10 \u0917\u0941\u0928\u093e \u0905\u0927\u093f\u0915", "20 times more/20 \u0917\u0941\u0928\u093e \u0905\u0927\u093f\u0915"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Each whole number increase on the Richter scale represents a tenfold increase in measured amplitude."
+        },{
+            id: 124,
+            text: "Which planet has polar ice caps composed of both water ice and frozen carbon dioxide (dry ice)? / किस ग्रह पर ध्रुवीय बर्फ की चोटियाँ हैं जो जल बर्फ और जमी हुई कार्बन डाइऑक्साइड (सूखी बर्फ) दोनों से बनी हैं?",
+            reference: "",
+            options: ["Mars/\u092e\u0902\u0917\u0932", "Earth/\u092a\u0943\u0925\u094d\u0935\u0940", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Uranus/\u092f\u0942\u0930\u0947\u0928\u0938"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "The Martian polar caps grow and shrink with the changing seasons."
+        },{
+            id: 125,
+            text: "The change in the orientation of the rotational axis of a rotating body, like the slow wobble of Earth\'s axis, is called what? / एक घूमते हुए पिंड की घूर्णन अक्ष के अभिविन्यास में परिवर्तन, जैसे पृथ्वी की अक्ष का धीमा डगमगाना, क्या कहलाता है?",
+            reference: "",
+            options: ["Libration/\u091a\u0902\u0926\u094d\u0930 \u0926\u094b\u0932\u0928", "Precession/\u0905\u092f\u0928", "Revolution/\u092a\u0930\u093f\u0915\u094d\u0930\u092e\u0923", "Nutation/\u0905\u0915\u094d\u0937 \u0935\u093f\u091a\u0932\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Earth\'s precession has a cycle of about 26,000 years and causes the position of the pole stars to change over time."
+        },{
+            id: 126,
+            text: "The Trojan asteroids are a large group of asteroids that share the orbit of which planet? / ट्रोजन क्षुद्रग्रह क्षुद्रग्रहों का एक बड़ा समूह है जो किस ग्रह की कक्षा साझा करते हैं?",
+            reference: "",
+            options: ["Saturn/\u0936\u0928\u093f", "Jupiter/\u092c\u0943\u0939\u0938\u094d\u092a\u0924\u093f", "Mars/\u092e\u0902\u0917\u0932", "Earth/\u092a\u0943\u0925\u094d\u0935\u0940"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "They are located in stable Lagrangian points, either 60 degrees ahead of or behind Jupiter in its orbit."
+        },{
+            id: 127,
+            text: "The scientific concept that the physical, chemical, and biological laws that operate today have also operated in the geologic past is known as what? / वह वैज्ञानिक अवधारणा क्या है जिसके अनुसार आज संचालित होने वाले भौतिक, रासायनिक और जैविक नियम भूवैज्ञानिक अतीत में भी संचालित हुए हैं?",
+            reference: "",
+            options: ["Evolution/\u0935\u093f\u0915\u093e\u0938", "Uniformitarianism/\u090f\u0915\u0930\u0942\u092a\u0924\u093e\u0935\u093e\u0926", "Catastrophism/\u092a\u094d\u0930\u0932\u092f\u0935\u093e\u0926", "Isostasy/\u0938\u092e\u0938\u094d\u0925\u093f\u0924\u093f"],  // Using json.dumps for proper escaping
+            correctIndex: 1,
+            explanation: "Often summarized as \"the present is the key to the past,\" it\'s a fundamental principle of geology."
+        },{
+            id: 128,
+            text: "What is the point in the orbit of the Moon or a satellite at which it is furthest from the Earth? / चंद्रमा या किसी उपग्रह की कक्षा में वह बिंदु कौन सा है जिस पर वह पृथ्वी से सबसे दूर होता है?",
+            reference: "",
+            options: ["Aphelion/\u0905\u092a\u0938\u094c\u0930", "Perigee/\u0909\u092a\u092d\u0942", "Apogee/\u0905\u092a\u092d\u0942", "Perihelion/\u0909\u092a\u0938\u094c\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "This term is specific to orbits around the Earth, whereas aphelion refers to orbits around the Sun."
+        },{
+            id: 129,
+            text: "The boundary between the Earth\'s solid inner core and liquid outer core is called what? / पृथ्वी के ठोस आंतरिक कोर और तरल बाहरी कोर के बीच की सीमा को क्या कहा जाता है?",
+            reference: "",
+            options: ["Lehmann Discontinuity/\u0932\u0947\u0939\u092e\u0928 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Repetti Discontinuity/\u0930\u0947\u092a\u0947\u091f\u094d\u091f\u0940 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Mohorovi\u010di\u0107 Discontinuity/\u092e\u094b\u0939\u094b\u0930\u094b\u0935\u093f\u0938\u093f\u0915 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e", "Gutenberg Discontinuity/\u0917\u0941\u091f\u0947\u0928\u092c\u0930\u094d\u0917 \u0905\u0938\u093e\u0924\u0924\u094d\u092f\u0924\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 0,
+            explanation: "This boundary is responsible for reflecting and refracting seismic waves, helping define the core\'s structure."
+        },{
+            id: 130,
+            text: "The day on which the Sun\'s direct rays cross the celestial equator is called the what? / जिस दिन सूर्य की सीधी किरणें खगोलीय भूमध्य रेखा को पार करती हैं, उसे क्या कहा जाता है?",
+            reference: "",
+            options: ["Perihelion/\u0909\u092a\u0938\u094c\u0930", "Solstice/\u0905\u092f\u0928\u093e\u0902\u0924", "Equinox/\u0935\u093f\u0937\u0941\u0935", "Aphelion/\u0905\u092a\u0938\u094c\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "On the equinox, the length of day and night is nearly equal all over the world."
+        },{
+            id: 131,
+            text: "What geological term describes the process where one tectonic plate is forced to move under another and into the mantle? / कौन सा भूवैज्ञानिक शब्द उस प्रक्रिया का वर्णन करता है जिसमें एक टेक्टोनिक प्लेट को दूसरे के नीचे और मैंटल में जाने के लिए मजबूर किया जाता है?",
+            reference: "",
+            options: ["Obduction/\u0905\u0927\u093f\u0930\u094b\u092a\u0923", "Spreading/\u092a\u094d\u0930\u0938\u093e\u0930", "Rifting/\u0935\u093f\u0926\u0930", "Subduction/\u0938\u092c\u0921\u0915\u094d\u0936\u0928"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "Subduction zones are sites of many of the world\'s most powerful earthquakes and volcanoes."
+        },{
+            id: 132,
+            text: "In which layer of Earth\'s atmosphere do meteors typically burn up? / पृथ्वी के वायुमंडल की किस परत में उल्काएं आमतौर पर जल जाती हैं?",
+            reference: "",
+            options: ["Thermosphere/\u0924\u093e\u092a\u092e\u0902\u0921\u0932", "Stratosphere/\u0938\u092e\u0924\u093e\u092a\u092e\u0902\u0921\u0932", "Troposphere/\u0915\u094d\u0937\u094b\u092d\u092e\u0902\u0921\u0932", "Mesosphere/\u092e\u0927\u094d\u092f\u092e\u0902\u0921\u0932"],  // Using json.dumps for proper escaping
+            correctIndex: 3,
+            explanation: "The mesosphere has enough gases to cause friction and heat, but is still very thin."
+        },{
+            id: 133,
+            text: "What is the term for a long, narrow depression on the seafloor, representing the deepest parts of the ocean? / समुद्र तल पर एक लंबी, संकीर्ण खाई के लिए क्या शब्द है, जो महासागर के सबसे गहरे भागों का प्रतिनिधित्व करती है?",
+            reference: "",
+            options: ["Abyssal Plain/\u0935\u093f\u0924\u0932\u0940\u092f \u092e\u0948\u0926\u093e\u0928", "Continental Shelf/\u092e\u0939\u093e\u0926\u094d\u0935\u0940\u092a\u0940\u092f \u0936\u0947\u0932\u094d\u092b", "Oceanic Trench/\u092e\u0939\u093e\u0938\u093e\u0917\u0930\u0940\u092f \u0916\u093e\u0908", "Guyot/\u0917\u0941\u092f\u094b\u091f"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "Oceanic trenches are a distinctive feature of convergent plate boundaries."
+        },{
+            id: 134,
+            text: "What is the term for the less dense, granitic rock that makes up the bulk of the Earth\'s continental crust? / कम घनत्व वाली, ग्रेनाइटिक चट्टान के लिए क्या शब्द है जो पृथ्वी की महाद्वीपीय पर्पटी का बड़ा हिस्सा बनाती है?",
+            reference: "",
+            options: ["Basalt/\u092c\u0947\u0938\u093e\u0932\u094d\u091f", "Gabbro/\u0917\u0948\u092c\u094d\u0930\u094b", "Sial/\u0938\u093f\u092f\u093e\u0932", "Sima/\u0938\u093f\u092e\u093e"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "\"Sial\" is a mnemonic for its primary components: Silicon (Si) and Aluminum (Al)."
+        },{
+            id: 135,
+            text: "A tide pattern with only one high tide and one low tide each lunar day is known as what? / प्रत्येक चंद्र दिवस में केवल एक उच्च ज्वार और एक निम्न ज्वार वाले ज्वार पैटर्न को किस रूप में जाना जाता है?",
+            reference: "",
+            options: ["Semi-diurnal Tide/\u0905\u0930\u094d\u0927-\u0926\u0948\u0928\u093f\u0915 \u091c\u094d\u0935\u093e\u0930", "Mixed Tide/\u092e\u093f\u0936\u094d\u0930\u093f\u0924 \u091c\u094d\u0935\u093e\u0930", "Diurnal Tide/\u0926\u0948\u0928\u093f\u0915 \u091c\u094d\u0935\u093e\u0930", "Neap Tide/\u0932\u0918\u0941 \u091c\u094d\u0935\u093e\u0930"],  // Using json.dumps for proper escaping
+            correctIndex: 2,
+            explanation: "This type of tide is common in locations like the Gulf of Mexico."
+        }] };
+        const state = {
+            currentQuestion: 0,
+            answers: Array(quizData.questions.length).fill(null),
+            startTime: new Date(),
+            timePerQuestion: Array(quizData.questions.length).fill(0),
+            avgTimePerQuestion: 0,
+            totalTime: 2312,
+            negativeMark: 0.25,
+            submitted: false,
+            touchStartX: 0,
+            touchEndX: 0,
+            inReviewMode: false,
+            lastPlayedQuestion: -1
+        };
+
+        // Audio elements
+        const clickSound = document.getElementById('clickSound');
+        const swipeSound = document.getElementById('swipeSound');
+        const correctSound = document.getElementById('correctSound');
+        const wrongSound = document.getElementById('wrongSound');
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initQuiz();
+            initSwipeDetection();
+        });
+
+        function initQuiz() {
+            startTimer();
+            createNumberedNav();
+            renderQuestion(0);
+            
+            document.getElementById('submitBtn').addEventListener('click', submitQuiz);
+            document.getElementById('reviewBtn').addEventListener('click', reviewAnswers);
+            
+            // Enable keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') navigate(-1);
+                if (e.key === 'ArrowRight') navigate(1);
+                if (e.key >= '1' && e.key <= quizData.questions.length.toString()) {
+                    if (!state.submitted) updateQuestionTime();
+                    renderQuestion(parseInt(e.key) - 1);
+                }
+            });
+        }
+
+        function initSwipeDetection() {
+            const container = document.getElementById('quizContainer');
+            container.addEventListener('touchstart', (e) => { 
+                state.touchStartX = e.changedTouches[0].screenX; 
+            }, false);
+            
+            container.addEventListener('touchend', (e) => {
+                state.touchEndX = e.changedTouches[0].screenX;
+                if (Math.abs(state.touchStartX - state.touchEndX) > 50) {
+                    if (!state.inReviewMode) {
+                        swipeSound.currentTime = 0;
+                        swipeSound.play();
+                    }
+                    navigate(state.touchStartX > state.touchEndX ? 1 : -1);
+                }
+            }, false);
+        }
+
+        function navigate(direction) {
+            const newIndex = state.currentQuestion + direction;
+            if (newIndex >= 0 && newIndex < quizData.questions.length) {
+                if (!state.submitted) updateQuestionTime();
+                renderQuestion(newIndex);
+            }
+        }
+
+        function startTimer() {
+            const startTime = new Date().getTime();
+            const duration = state.totalTime * 1000;
+            const endTime = startTime + duration;
+            
+            updateTimer(duration);
+            
+            state.timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const timeLeft = endTime - now;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(state.timerInterval);
+                    updateTimer(0);
+                    submitQuiz();
+                } else {
+                    updateTimer(timeLeft);
+                    document.getElementById('timeProgress').style.width = `${(timeLeft / duration) * 100}%`;
+                    
+                    if (timeLeft < duration * 0.25) {
+                        document.getElementById('timeProgress').className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
+                    } else if (timeLeft < duration * 0.5) {
+                        document.getElementById('timeProgress').className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimer(timeLeft) {
+            const minutes = Math.floor(timeLeft / 60000).toString().padStart(2, '0');
+            const seconds = Math.floor((timeLeft % 60000) / 1000).toString().padStart(2, '0');
+            
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+            
+            if (timeLeft < 60000) document.getElementById('timer').classList.add('text-danger');
+        }
+
+        function createNumberedNav() {
+            const nav = document.getElementById('questionNav');
+            quizData.questions.forEach((_, idx) => {
+                const box = document.createElement('div');
+                box.className = 'page-box';
+                box.textContent = idx + 1;
+                box.dataset.index = idx;
+                box.addEventListener('click', () => {
+                    if (!state.submitted) updateQuestionTime();
+                    renderQuestion(idx);
+                });
+                nav.appendChild(box);
+            });
+        }
+
+        function renderQuestion(idx) {
+            state.currentQuestion = idx;
+            const question = quizData.questions[idx];
+            
+            let html = `<div class="card question-card shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Question ${idx + 1} of ${quizData.questions.length}</h5>`;
+            
+            if (question.reference) html += `<div class="question-reference">${question.reference}</div>`;
+            
+            html += `<p class="question-text mb-4 fw-bold">${question.text}</p><div class="options">`;
+            
+            question.options.forEach((option, optionIdx) => {
+                let btnClass = 'option-btn w-100';
+                if (state.answers[idx] === optionIdx) btnClass += ' selected';
+                if (state.submitted) {
+                    if (optionIdx === question.correctIndex) btnClass += ' correct';
+                    else if (state.answers[idx] === optionIdx) btnClass += ' incorrect';
+                }
+                html += `<button class="${btnClass}" data-index="${optionIdx}">${option}</button>`;
+            });
+            
+            html += `</div>`;
+            
+            // Add explanation section
+            html += `<div class="explanation mt-3" ${state.submitted ? '' : 'style="display:none"'}>
+                <h6 class="fw-bold"><i class="fas fa-lightbulb me-2"></i>Explanation</h6>
+                ${question.explanation}
+            </div>`;
+            
+            // Add analysis panel when in review mode
+            if (state.submitted) {
+                const timeSpent = state.timePerQuestion[idx];
+                const avgTime = state.avgTimePerQuestion;
+                let timeStatus, iconColor;
+                
+                if (timeSpent < avgTime * 0.7) {
+                    timeStatus = "Fast";
+                    iconColor = "#28a745";
+                } else if (timeSpent > avgTime * 1.3) {
+                    timeStatus = "Slow";
+                    iconColor = "#dc3545";
+                } else {
+                    timeStatus = "Average";
+                    iconColor = "#4361ee";
+                }
+                
+                const isCorrect = state.answers[idx] === question.correctIndex;
+                const isAttempted = state.answers[idx] !== null;
+                
+                html += `
+                <div class="analysis-panel mt-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-chart-line me-2"></i>Question Analysis</h6>
+                    
+                    <div class="analysis-item">
+                        <div class="analysis-icon" style="background-color:${isAttempted ? (isCorrect ? '#28a745' : '#dc3545') : '#ffc107'}">
+                            <i class="fas fa-${isAttempted ? (isCorrect ? 'check' : 'times') : 'question'}"></i>
+                        </div>
+                        <div>Status: <strong>${isAttempted ? (isCorrect ? 'Correct' : 'Incorrect') : 'Unattempted'}</strong></div>
+                    </div>
+                    
+                    <div class="analysis-item">
+                        <div class="analysis-icon" style="background-color:${iconColor}">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>Time spent: <strong>${timeSpent.toFixed(1)} seconds</strong> 
+                            <span class="badge-${timeStatus.toLowerCase()}">${timeStatus}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-2">Time compared to average:</div>
+                    <div class="time-bar">
+                        <div class="time-fill" style="width:${Math.min(timeSpent/avgTime * 100, 200)}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                        <small>0s</small>
+                        <small>${avgTime.toFixed(1)}s (avg)</small>
+                        <small>${(avgTime * 2).toFixed(1)}s+</small>
+                    </div>
+                </div>`;
+            }
+            
+            html += `</div></div>`;
+            
+            document.getElementById('questionContainer').innerHTML = html;
+            
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!state.submitted) {
+                        clickSound.currentTime = 0;
+                        clickSound.play();
+                        selectOption(btn.dataset.index);
+                    }
+                });
+            });
+            
+            updateQuestionNav();
+            
+            // Play correct/wrong sound when in review mode and showing answer
+            if (state.inReviewMode && state.lastPlayedQuestion !== idx) {
+                state.lastPlayedQuestion = idx;
+                const question = quizData.questions[idx];
+                const isCorrect = state.answers[idx] === question.correctIndex;
+                const isAttempted = state.answers[idx] !== null;
+                
+                if (isAttempted) {
+                    setTimeout(() => {
+                        if (isCorrect) {
+                            correctSound.currentTime = 0;
+                            correctSound.play();
+                        } else {
+                            wrongSound.currentTime = 0;
+                            wrongSound.play();
+                        }
+                    }, 300);
+                }
+            }
+        }
+
+        function updateQuestionNav() {
+            document.querySelectorAll('#questionNav .page-box').forEach((box, idx) => {
+                box.className = 'page-box';
+                
+                if (idx === state.currentQuestion) {
+                    box.classList.add('active');
+                }
+                
+                if (state.answers[idx] !== null) {
+                    if (state.submitted) {
+                        if (state.answers[idx] === quizData.questions[idx].correctIndex) {
+                            box.classList.add('correct');
+                        } else {
+                            box.classList.add('incorrect');
+                        }
+                    }
+                }
+            });
+        }
+
+        function selectOption(optionIdx) {
+            state.answers[state.currentQuestion] = parseInt(optionIdx);
+            
+            document.querySelectorAll('.option-btn').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector(`.option-btn[data-index="${optionIdx}"]`).classList.add('selected');
+            
+            updateQuestionNav();
+            
+            // Auto advance to next question after selection (with delay)
+            if (state.currentQuestion < quizData.questions.length - 1) {
+                setTimeout(() => {
+                    updateQuestionTime();
+                    renderQuestion(state.currentQuestion + 1);
+                }, 800);
+            }
+        }
+
+        function updateQuestionTime() {
+            const now = new Date();
+            state.timePerQuestion[state.currentQuestion] += (now - state.startTime) / 1000;
+            state.startTime = now;
+        }
+
+        function submitQuiz() {
+            if (state.submitted) return;
+            
+            clearInterval(state.timerInterval);
+            updateQuestionTime();
+            state.submitted = true;
+            
+            // Calculate average time per question
+            let totalTimeSpent = state.timePerQuestion.reduce((acc, time) => acc + time, 0);
+            state.avgTimePerQuestion = totalTimeSpent / quizData.questions.length;
+            
+            const results = {
+                correct: 0,
+                incorrect: 0,
+                unattempted: 0,
+                score: 0,
+                negativeMarks: 0
+            };
+            
+            state.answers.forEach((answer, idx) => {
+                if (answer === null) {
+                    results.unattempted++;
+                } else if (answer === quizData.questions[idx].correctIndex) {
+                    results.correct++;
+                    results.score++;
+                } else {
+                    results.incorrect++;
+                    results.score -= state.negativeMark;
+                    results.negativeMarks += state.negativeMark;
+                }
+            });
+            
+            // Don't clamp score to zero - show negative scores if they occur
+            const percentage = (results.score / quizData.questions.length) * 100;
+            
+            document.getElementById('scoreDisplay').textContent = `${results.score.toFixed(2)} / ${quizData.questions.length} (${percentage.toFixed(1)}%)`;
+            document.getElementById('correctAnswers').textContent = results.correct;
+            document.getElementById('incorrectAnswers').textContent = results.incorrect;
+            document.getElementById('unattempted').textContent = results.unattempted;
+            document.getElementById('negativeMarks').textContent = `-${results.negativeMarks.toFixed(2)}`;
+            
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('questionNav').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            createPerformanceChart(results);
+            createTimeAnalysisChart();
+            
+            // Play appropriate sound based on score
+            if (percentage >= 70) {
+                createConfetti();
+                correctSound.currentTime = 0;
+                correctSound.play();
+            } else if (percentage < 50) {
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+            }
+        }
+
+        function createPerformanceChart(results) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Incorrect', 'Unattempted'],
+                    datasets: [{
+                        data: [results.correct, results.incorrect, results.unattempted],
+                        backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+        
+        function createTimeAnalysisChart() {
+            const ctx = document.getElementById('timeAnalysisChart').getContext('2d');
+            const questionLabels = Array.from({length: quizData.questions.length}, (_, i) => `Q${i+1}`);
+            
+            // Create data for correct vs incorrect answers
+            const correctData = [];
+            const incorrectData = [];
+            const unattemptedData = [];
+            
+            state.answers.forEach((answer, idx) => {
+                const time = state.timePerQuestion[idx];
+                if (answer === null) {
+                    unattemptedData.push(time);
+                    correctData.push(0);
+                    incorrectData.push(0);
+                } else if (answer === quizData.questions[idx].correctIndex) {
+                    correctData.push(time);
+                    incorrectData.push(0);
+                    unattemptedData.push(0);
+                } else {
+                    incorrectData.push(time);
+                    correctData.push(0);
+                    unattemptedData.push(0);
+                }
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: questionLabels,
+                    datasets: [
+                        {
+                            label: 'Correct',
+                            data: correctData,
+                            backgroundColor: '#28a745',
+                            borderColor: '#28a745',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Incorrect',
+                            data: incorrectData,
+                            backgroundColor: '#dc3545',
+                            borderColor: '#dc3545',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Unattempted',
+                            data: unattemptedData,
+                            backgroundColor: '#ffc107',
+                            borderColor: '#ffc107',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Questions'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Time (seconds)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `Question ${tooltipItems[0].dataIndex + 1}`;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label && context.parsed.y > 0) {
+                                        label += `: ${context.parsed.y.toFixed(1)} seconds`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function reviewAnswers() {
+            state.inReviewMode = true;
+            state.lastPlayedQuestion = -1; // Reset last played question
+            document.getElementById('questionContainer').style.display = 'block';
+            document.getElementById('questionNav').style.display = 'flex';
+            document.getElementById('resultContainer').style.display = 'none';
+            renderQuestion(0);
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                
+                document.body.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0)', opacity: 1 },
+                    { transform: `translateY(${Math.random() * 500 + 500}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], { duration: Math.random() * 3000 + 2000, easing: 'cubic-bezier(.23,1,.32,1)' });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+    </script>
+</body>
+</html>

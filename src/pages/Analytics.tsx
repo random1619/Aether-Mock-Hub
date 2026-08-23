@@ -11,6 +11,7 @@ import { getDb, getStats, onDbChange } from '@/services/attemptStore';
 import { computeSectionStats } from '@/services/sectionAnalytics';
 import type { SectionStat } from '@/services/sectionAnalytics';
 import { loadMockCatalog } from '@/services/mockCatalog';
+import { examPath } from '@/lib/examLink';
 import { AppChrome, StatTile } from '@/components/layout';
 import { Card, CardHeader, Reveal } from '@/components/ui';
 import type { Attempt, MockEntry } from '@/types';
@@ -121,7 +122,7 @@ export default function Analytics() {
   const axisTick = { fill: 'var(--text-muted)', fontSize: 11 } as const;
 
   return (
-    <div className="min-h-screen page-surface">
+    <div className="min-h-screen page-surface pb-[calc(84px+env(safe-area-inset-bottom))] md:pb-0">
       <AppChrome title="Analytics" icon={<ChartPie size={14} />} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -149,23 +150,23 @@ export default function Analytics() {
           <>
             {/* Summary cards */}
             <Reveal>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                <StatTile icon={<PenSquare size={16} />} value={stats.totalAttempted} format="plain" label="Attempted" tone="primary" />
-                <StatTile icon={<Target size={16} />} value={stats.avgAccuracy} format="percent" label="Avg Accuracy" tone="success" />
-                <StatTile icon={<Flame size={16} />} value={stats.streakDays} format="plain" label="Day Streak" tone="warning" />
-                <StatTile icon={<Trophy size={16} />} value={stats.bestScore ? stats.bestScore.score : null} format="score" label="Best Score" tone="info" />
-                <StatTile icon={<CheckCircle2 size={16} />} value={dist.find((d) => d.name === 'Correct')?.value ?? 0} format="plain" label="Total Correct" tone="primary" />
-                <StatTile icon={<ChartPie size={16} />} value={series.length} format="plain" label="Total Attempts" tone="info" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4 mb-4 sm:mb-8">
+                <StatTile icon={<PenSquare size={15} />} value={stats.totalAttempted} format="plain" label="Attempted" tone="primary" />
+                <StatTile icon={<Target size={15} />} value={stats.avgAccuracy} format="percent" label="Avg Accuracy" tone="success" />
+                <StatTile icon={<Flame size={15} />} value={stats.streakDays} format="plain" label="Day Streak" tone="warning" />
+                <StatTile icon={<Trophy size={15} />} value={stats.bestScore ? stats.bestScore.score : null} format="score" label="Best Score" tone="info" />
+                <StatTile icon={<CheckCircle2 size={15} />} value={dist.find((d) => d.name === 'Correct')?.value ?? 0} format="plain" label="Total Correct" tone="primary" />
+                <StatTile icon={<ChartPie size={15} />} value={series.length} format="plain" label="Attempts" tone="info" />
               </div>
             </Reveal>
 
             {/* Score trend */}
             <Reveal delay={0.05}>
-              <Card className="mb-6" shine>
+              <Card className="mb-4 sm:mb-6" shine>
                 <CardHeader title="Score Trend" hint="score % per attempt" />
-              <div className="h-72">
+              <div className="h-60 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={series} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
+                  <AreaChart data={series} margin={{ top: 8, right: 12, bottom: 0, left: -18 }}>
                     <defs>
                       <linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.28} />
@@ -185,15 +186,15 @@ export default function Analytics() {
             </Card>
             </Reveal>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
               {/* Answer distribution */}
               <Reveal delay={0.1}>
                 <Card>
                   <CardHeader title="Answer Distribution" />
-                  <div className="h-64">
+                  <div className="h-56 sm:h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                      <Pie data={dist} dataKey="value" nameKey="name" innerRadius={60} outerRadius={88} paddingAngle={4} cornerRadius={4} stroke="var(--surface)" strokeWidth={2}>
+                      <Pie data={dist} dataKey="value" nameKey="name" innerRadius={50} outerRadius={78} paddingAngle={4} cornerRadius={4} stroke="var(--surface)" strokeWidth={2}>
                         {dist.map((d) => (
                           <Cell key={d.name} fill={d.color} />
                         ))}
@@ -210,9 +211,9 @@ export default function Analytics() {
               <Reveal delay={0.15}>
                 <Card>
                   <CardHeader title="Provider Accuracy" hint="average per provider" />
-                  <div className="h-64">
+                  <div className="h-56 sm:h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={providerData} margin={{ top: 8, right: 16, bottom: 0, left: -18 }}>
+                      <BarChart data={providerData} margin={{ top: 8, right: 12, bottom: 0, left: -22 }}>
                         <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
                         <XAxis dataKey="name" tick={{ ...axisTick, fontSize: 10 }} stroke="var(--border)" tickLine={false} />
                         <YAxis tick={axisTick} stroke="var(--border)" domain={[0, 100]} tickLine={false} axisLine={false} />
@@ -228,9 +229,9 @@ export default function Analytics() {
             {/* Weak-section heatmap */}
             {sectionStats.length > 0 && (
               <Reveal delay={0.18}>
-                <Card className="mb-6">
+                <Card className="mb-4 sm:mb-6">
                   <CardHeader title="Section Strength" hint="accuracy across all attempts — weakest first" />
-                  <div className="space-y-3">
+                  <div className="space-y-2.5 sm:space-y-3">
                     {sectionStats.map((s) => (
                       <SectionRow key={s.name} stat={s} />
                     ))}
@@ -242,27 +243,35 @@ export default function Analytics() {
             {/* Recent attempts */}
             <Reveal delay={0.2}>
               <Card padded={false}>
-                <div className="px-5 pt-5">
+                <div className="px-4 sm:px-5 pt-4 sm:pt-5">
                   <CardHeader title="Recent Attempts" hint="latest score per mock" />
                 </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto scrollbar-none">
+                <table className="w-full text-xs sm:text-sm min-w-[500px] sm:min-w-[600px]">
                   <thead>
-                    <tr className="bg-surface-2 text-muted text-xs uppercase tracking-wide">
-                      <th className="text-left px-5 py-3 font-semibold">Mock</th>
-                      <th className="text-right px-4 py-3 font-semibold">Score</th>
-                      <th className="text-right px-4 py-3 font-semibold">Accuracy</th>
-                      <th className="text-right px-5 py-3 font-semibold">Date</th>
+                    <tr className="bg-surface-2 text-muted text-[11px] sm:text-xs uppercase tracking-wide">
+                      <th className="text-left px-4 sm:px-5 py-2.5 sm:py-3 font-semibold">Mock</th>
+                      <th className="text-right px-3 sm:px-4 py-2.5 sm:py-3 font-semibold">Score</th>
+                      <th className="text-right px-3 sm:px-4 py-2.5 sm:py-3 font-semibold">Accuracy</th>
+                      <th className="text-right px-4 sm:px-5 py-2.5 sm:py-3 font-semibold">Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recent.map((r) => (
                       <tr key={r.path + r.date} className="border-t border-border hover:bg-surface-2 transition-colors">
-                        <td className="px-5 py-3 font-medium text-text max-w-[280px] truncate">{nameByPath.get(r.path) || r.path}</td>
-                        <td className="px-4 py-3 text-right tabular-nums text-text-2">{r.score.toFixed(1)}<span className="text-muted">/{r.maxScore.toFixed(0)}</span></td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 sm:px-5 py-2.5 sm:py-3 font-medium text-text max-w-[200px] sm:max-w-[280px] truncate">
+                          <Link
+                            to={examPath(r.path, { mode: 'review' })}
+                            className="hover:text-primary transition-colors block truncate"
+                            title={`Review ${nameByPath.get(r.path) || r.path}`}
+                          >
+                            {nameByPath.get(r.path) || r.path}
+                          </Link>
+                        </td>
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-right tabular-nums text-text-2">{r.score.toFixed(1)}<span className="text-muted text-[11px]">/{r.maxScore.toFixed(0)}</span></td>
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-right">
                           <span
-                            className="inline-block px-2 py-0.5 rounded-md text-xs font-bold tabular-nums"
+                            className="inline-block px-1.5 sm:px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-bold tabular-nums"
                             style={
                               r.accuracy >= 70
                                 ? { background: 'var(--success-soft)', color: 'var(--success-fg)' }
@@ -274,7 +283,7 @@ export default function Analytics() {
                             {r.accuracy}%
                           </span>
                         </td>
-                        <td className="px-5 py-3 text-right text-muted text-xs whitespace-nowrap">{r.date.slice(0, 10)}</td>
+                        <td className="px-4 sm:px-5 py-2.5 sm:py-3 text-right text-muted text-[11px] sm:text-xs whitespace-nowrap">{r.date.slice(0, 10)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -303,8 +312,8 @@ function SectionRow({ stat }: { stat: SectionStat }) {
           : { bar: 'var(--danger)', fg: 'var(--danger-fg)', soft: 'var(--danger-soft)' };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="w-40 sm:w-52 shrink-0 truncate text-sm font-medium text-text" title={stat.name}>
+    <div className="flex items-center gap-2 sm:gap-4">
+      <div className="w-28 sm:w-40 md:w-52 shrink-0 truncate text-sm font-medium text-text" title={stat.name}>
         {stat.name}
       </div>
       <div className="flex-1 min-w-0">

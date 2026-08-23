@@ -40,18 +40,18 @@ export function StatTile({ icon, value, format = 'plain', label, sub, tone = 'ne
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 380, damping: 25 }}
       className={clsx(
-        'rounded-2xl bg-surface p-5 min-w-0 ring-1 ring-[var(--glass-border)] shadow-sm',
+        'rounded-2xl bg-surface p-3.5 sm:p-5 min-w-0 ring-1 ring-[var(--glass-border)] shadow-sm',
         'card-elevated-hover transition-colors duration-200',
         className,
       )}
     >
-      <div className={clsx('w-8 h-8 grid place-items-center rounded-full transition-transform group-hover:scale-110', chips[tone])}>
+      <div className={clsx('w-7 h-7 sm:w-8 sm:h-8 grid place-items-center rounded-full transition-transform group-hover:scale-110', chips[tone])}>
         {icon}
       </div>
-      <div className="text-3xl sm:text-4xl font-bold text-text tabular-nums leading-none tracking-[-0.02em] mt-3">
+      <div className="text-2xl sm:text-4xl font-bold text-text tabular-nums leading-none tracking-[-0.02em] mt-2 sm:mt-3">
         {value === null ? '—' : <AnimatedNumber value={value} format={format} />}
       </div>
-      <div className="text-[13px] text-muted font-medium mt-1.5">
+      <div className="text-xs sm:text-[13px] text-muted font-medium mt-1 sm:mt-1.5 truncate">
         {label}
         {sub && <span className="ml-1 tabular-nums">({sub})</span>}
       </div>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">25</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{word:"Adversely", q:"Choose the word which closely means <span class='word'>'adversely'</span>.", tag:"SSC CHSL (T-II) 18/11/24",
+ opts:["Distressing","Scarcely","Digressing","Detrimentally"], ans:3,
+ sol:"<span class='hindi'>'Adversely' का अर्थ है <b>प्रतिकूल रूप से</b>। इसके सबसे नज़दीक 'Detrimentally' (<b>हानिकारक ढंग से</b>) है।</span><br>Distressing – व्यथित करने वाला, Scarcely – मुश्किल से, Digressing – विषयांतर करना।"},
+
+{word:"Abolish", q:"Select the most appropriate synonym of <span class='word'>'Abolish'</span>.", tag:"SSC CHSL (T-II) 18/11/24",
+ opts:["Worship","Cancel","Assist","Subside"], ans:1,
+ sol:"<span class='hindi'>'Abolish' का अर्थ है <b>समाप्त करना</b>। Synonym 'Cancel' (<b>रद्द करना</b>) है।</span><br>Worship – पूजा करना, Assist – सहायता देना, Subside – कम होना। (अन्य synonyms: Eradicate, Obliterate, Annihilate, Rescind, Repeal)"},
+
+{word:"Adversity", q:"Select the most appropriate synonym of <span class='word'>'Adversity'</span>.", tag:"SSC CGL 11/09/24 (Shift-I)",
+ opts:["Pleasure","Advantage","Misfortune","Success"], ans:2,
+ sol:"<span class='hindi'>'Adversity' का अर्थ है <b>आपदा/विपत्ति</b>। Synonym 'Misfortune' (<b>दुर्भाग्य</b>) है।</span><br>Pleasure – आनंद, Advantage – फायदा, Success – सफलता।"},
+
+{word:"Adapt", q:"It takes time to <span class='word'>adapt</span> to a new environment. Select the synonym of the underlined word.", tag:"SSC CGL 19/09/24 (Shift-II)",
+ opts:["Apply","Adjust","Understand","Control"], ans:1,
+ sol:"<span class='hindi'>'Adapt' का अर्थ है <b>अनुकूल बनाना</b>। Synonym 'Adjust' (<b>समायोजित करना</b>) है।</span><br>Apply – लागू करना, Understand – समझना, Control – नियंत्रण करना।"},
+
+{word:"Acquiesce", q:"Select the most appropriate synonym of the given word: <span class='word'>Acquiesce</span>.", tag:"SSC CGL 12/09/24 (Shift-I)",
+ opts:["Desist","Cease","Thwart","Concur"], ans:3,
+ sol:"<span class='hindi'>'Acquiesce' का अर्थ है <b>सहमत होना/मान लेना</b>। Synonym 'Concur' (<b>सहमत होना</b>) है।</span><br>Desist – रुकना, Cease – बंद करना, Thwart – विफल करना।"},
+
+{word:"Ambition", q:"His <span class='word'>ambition</span> in life is to become a happy and satisfied man. Select the synonym of the underlined word.", tag:"SSC CGL 12/09/24 (Shift-I)",
+ opts:["Apathy","Satisfaction","Eagerness","Amend"], ans:2,
+ sol:"<span class='hindi'>'Ambition' का अर्थ है <b>महत्वाकांक्षा/अभिलाषा</b>। निकटतम पर्याय 'Eagerness' (<b>उत्सुकता</b>) है।</span><br>Apathy – उदासीनता, Satisfaction – संतुष्टि, Amend – संशोधन करना।"},
+
+{word:"Assent", q:"Choose the word nearest in meaning: <span class='word'>ASSENT</span>", tag:"CDS 2014 (Shift-II) / KVS PRT 28/02/23",
+ opts:["Dispatch","Climb","Flavour","Agreement"], ans:3,
+ sol:"<span class='hindi'>'Assent' का अर्थ है <b>स्वीकृति/अनुमति</b>। Synonym 'Agreement' (<b>सहमति</b>) है।</span><br>Dispatch – भेजना, Climb – चढ़ना, Flavour – स्वाद।"},
+
+{word:"Argument", q:"Well, you want an <span class='word'>(argument)</span>, he added, 'come on then.' Select the word similar in meaning to the bracketed word.", tag:"SSC MTS 12/05/23 (Shift-III)",
+ opts:["Enhancement","Capability","Explanation","Agreement"], ans:2,
+ sol:"<span class='hindi'>'Argument' का अर्थ है <b>तर्क/बहस</b>। Synonym 'Explanation' (<b>व्याख्या</b>) है।</span><br>Enhancement – वृद्धि, Capability – क्षमता, Agreement – समझौता।"},
+
+{word:"Ample", q:"Select the most appropriate synonym of <span class='word'>'Ample'</span>.", tag:"SSC GD 23/01/23 (Shift-IV)",
+ opts:["Entertain","Sample","Temple","Sufficient"], ans:3,
+ sol:"<span class='hindi'>'Ample' का अर्थ है <b>पर्याप्त</b>। Synonym 'Sufficient' (<b>प्रचुर</b>) है।</span><br>Entertain – मनोरंजन करना, Sample – नमूना, Temple – मंदिर।"},
+
+{word:"Awkward", q:"Select the most appropriate synonym of <span class='word'>'Awkward'</span>.", tag:"SSC GD 12/01/23 (Shift-II)",
+ opts:["Dormant","Asleep","Clever","Unskillful"], ans:3,
+ sol:"<span class='hindi'>'Awkward' का अर्थ है <b>भद्दा/अनाड़ी</b>। Synonym 'Unskillful' (<b>अकुशल</b>) है।</span><br>Dormant – निष्क्रिय, Asleep – सुप्त, Clever – चतुर।"},
+
+{word:"Absorbed", q:"Select the most appropriate synonym of <span class='word'>'Absorbed'</span>.", tag:"SSC CGL (T-I) 21/07/23 (Shift-II)",
+ opts:["Preoccupied","Soaked","Replaced","Restored"], ans:1,
+ sol:"<span class='hindi'>'Absorbed' का अर्थ है <b>सोखा हुआ/तल्लीन</b>। Synonym 'Soaked' (<b>भीगा हुआ</b>) है।</span><br>Preoccupied – व्यस्त, Replaced – प्रतिस्थापित, Restored – सुधारना।"},
+
+{word:"Announced", q:"Select the most appropriate synonym of <span class='word'>'Announced'</span>.", tag:"SSC CGL (T-I) 24/07/23 (Shift-III)",
+ opts:["Secret","Declared","Hid","Estrange"], ans:1,
+ sol:"<span class='hindi'>'Announced' का अर्थ है <b>घोषणा की</b>। Synonym 'Declared' (<b>घोषित</b>) है।</span><br>Secret – गुप्त, Hid – छिपाना, Estrange – दूर करना।"},
+
+{word:"Attune", q:"Select the word closest in meaning (synonym): <span class='word'>Attune</span>", tag:"SSC CHSL (T-I) 17/03/23 (Shift-III)",
+ opts:["Assimilate","Skew","Estrange","Disrupt"], ans:0,
+ sol:"<span class='hindi'>'Attune' का अर्थ है <b>अनुकूल करना</b>। Synonym 'Assimilate' (<b>आत्मसात करना</b>) है।</span><br>Skew – तिरछा करना, Estrange – दूर करना, Disrupt – भंग करना।"},
+
+{word:"Antipathy", q:"Select the word closest in meaning (SYNONYM): <span class='word'>Antipathy</span>", tag:"KVS PRT 25/02/23 & 20/02/23",
+ opts:["Affinity","Rapport","Antagonism","Relish"], ans:2,
+ sol:"<span class='hindi'>'Antipathy' का अर्थ है <b>विरोध/घृणा</b>। Synonym 'Antagonism' (<b>विरोध</b>) है।</span><br>Affinity – आत्मीयता, Rapport – तालमेल, Relish – आनंद लेना।"},
+
+{word:"Adoration", q:"Choose the word similar in meaning: <span class='word'>ADORATION</span>", tag:"KVS PRT 24-02-23 (Shift-I)",
+ opts:["Liking","Worship","Admiration","Respect"], ans:1,
+ sol:"<span class='hindi'>'Adoration' का अर्थ है <b>आराधना/पूजा</b>। Synonym 'Worship' (<b>पूजा करना</b>) है।</span><br>Liking – अभिलाषा, Admiration – प्रशंसा, Respect – आदर करना।"},
+
+{word:"Accumulate", q:"Choose the word similar in meaning: <span class='word'>ACCUMULATE</span>", tag:"KVS PRT 21-Feb-23 (Shift-I)",
+ opts:["Accuse","Predict","Store","Accord"], ans:2,
+ sol:"<span class='hindi'>'Accumulate' का अर्थ है <b>संग्रह करना</b>। Synonym 'Store' (<b>एकत्र करना</b>) है।</span><br>Accuse – आरोप लगाना, Predict – भविष्यवाणी, Accord – सहमति।"},
+
+{word:"Abhorrent", q:"Choose the word nearest in meaning: <span class='word'>ABHORRENT</span>", tag:"KVS PRT 26-02-23 (Shift-I)",
+ opts:["Stinking","Violent","Hateful","Jealous"], ans:2,
+ sol:"<span class='hindi'>'Abhorrent' का अर्थ है <b>घृणित</b>। Synonym 'Hateful' (<b>घृणा करने योग्य</b>) है।</span><br>Stinking – दुर्गंधयुक्त, Violent – हिंसक, Jealous – ईर्ष्यालु।"},
+
+{word:"Applaud", q:"Choose the word nearest in meaning: <span class='word'>APPLAUD</span>", tag:"KVS PRT 25-02-23 (Shift-I)",
+ opts:["Exaggerate","Criticise","Praise","Worship"], ans:2,
+ sol:"<span class='hindi'>'Applaud' का अर्थ है <b>तारीफ करना</b>। Synonym 'Praise' (<b>प्रशंसा करना</b>) है।</span><br>Exaggerate – अतिशयोक्ति करना, Criticise – आलोचना करना, Worship – पूजा करना।"},
+
+{word:"Astonishment", q:"The public watched in <span class='word'>astonishment</span> as he took a sudden jump from the bridge. Select the synonym of the underlined word.", tag:"UPSC NDA & NA 16/04/23 (Shift-I)",
+ opts:["Anticipation","Hurriedly","Wonderment","Calmness"], ans:2,
+ sol:"<span class='hindi'>'Astonishment' का अर्थ है <b>आश्चर्य</b>। Synonym 'Wonderment' (<b>विस्मय</b>) है।</span><br>Anticipation – प्रत्याशा, Hurriedly – शीघ्रता से, Calmness – शांति।"},
+
+{word:"August", q:"Select the most appropriate synonym of <span class='word'>'August'</span>.", tag:"SSC MTS 14/07/22 (Shift-III)",
+ opts:["Imminent","Eminent","Permanent","Illicit"], ans:1,
+ sol:"<span class='hindi'>'August' (adjective) का अर्थ है <b>प्रतिष्ठित/गरिमामय</b>। Synonym 'Eminent' (<b>विख्यात</b>) है।</span><br>Imminent – निकटस्थ, Permanent – स्थायी, Illicit – अवैध।"},
+
+{word:"Avert", q:"Select the most appropriate synonym of <span class='word'>'Avert'</span>.", tag:"SSC CGL (T-I) 11/04/22 (Shift-I)",
+ opts:["Prevent","Confront","Face","Permit"], ans:0,
+ sol:"<span class='hindi'>'Avert' का अर्थ है <b>रोक देना</b>। Synonym 'Prevent' (<b>बाधा डालना</b>) है।</span><br>Confront/Face – सामना करना, Permit – अनुमति देना।"},
+
+{word:"Arid", q:"Select the most appropriate synonym of <span class='word'>'Arid'</span>.", tag:"SSC CGL (T-I) 19/04/22 (Shift-III)",
+ opts:["Fertile","Lively","Dry","Damp"], ans:2,
+ sol:"<span class='hindi'>'Arid' का अर्थ है <b>बंजर/शुष्क</b>। Synonym 'Dry' (<b>सूखा</b>) है।</span><br>Fertile – उपजाऊ, Lively – जीवंत, Damp – नम/गीला।"},
+
+{word:"Abandon", q:"Select the most appropriate synonym of <span class='word'>'Abandon'</span>.", tag:"SSC CGL (T-II) 08/08/22 & (T-I) 19/04/22",
+ opts:["Retain","Possess","Quit","Rescue"], ans:2,
+ sol:"<span class='hindi'>'Abandon' का अर्थ है <b>त्याग करना</b>। Synonym 'Quit' (<b>छोड़ देना</b>) है।</span><br>Retain – बनाए रखना, Possess – अधिकार रखना, Rescue – बचाव।"},
+
+{word:"Audacity", q:"Select the most appropriate synonym of <span class='word'>'Audacity'</span>.", tag:"SSC CGL (T-I) 21/04/22 & 25/07/23",
+ opts:["Kindness","Daring","Caution","Meekness"], ans:1,
+ sol:"<span class='hindi'>'Audacity' का अर्थ है <b>साहस</b>। Synonym 'Daring' (<b>साहसी</b>) है।</span><br>Kindness – दयालुता, Caution – सावधानी, Meekness – नम्रता।"},
+
+{word:"Arraign", q:"Select the most appropriate synonym of <span class='word'>'Arraign'</span>.", tag:"SSC CHSL 31.05.2022 (Shift-III)",
+ opts:["Prosecute","Arrive","Persecute","Arrange"], ans:0,
+ sol:"<span class='hindi'>'Arraign' का अर्थ है <b>आरोप लगाना</b>। Synonym 'Prosecute' (<b>अभियोग चलाना</b>) है।</span><br>Arrive – पहुंचना, Persecute – सताना, Arrange – व्यवस्था करना।"}
+];
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

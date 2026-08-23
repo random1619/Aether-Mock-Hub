@@ -75,18 +75,18 @@ export function MockAlarmModal() {
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -50, scale: 0.9 }}
-            className="fixed top-16 left-1/2 -translate-x-1/2 z-[10000] w-full max-w-md p-4 rounded-3xl bg-warning/90 backdrop-blur-2xl text-white shadow-2xl border border-warning/40 flex items-center justify-between gap-4"
+            className="fixed top-16 left-1/2 -translate-x-1/2 z-[10000] w-[calc(100%-2rem)] max-w-md p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-warning/90 backdrop-blur-2xl text-white shadow-2xl border border-warning/40 flex items-center justify-between gap-3 sm:gap-4"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-2xl bg-white/20 grid place-items-center shrink-0">
-                <Bell size={20} className="animate-bounce text-white" />
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/20 grid place-items-center shrink-0">
+                <Bell size={18} className="animate-bounce text-white" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold uppercase tracking-wider opacity-80">Practice Alarm Fired!</div>
-                <div className="text-sm font-extrabold truncate">{activeFiredAlarm.title}</div>
+                <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider opacity-80">Practice Alarm Fired!</div>
+                <div className="text-xs sm:text-sm font-extrabold truncate">{activeFiredAlarm.title}</div>
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={() => {
                   setFiredAlarm(null);
@@ -96,13 +96,13 @@ export function MockAlarmModal() {
                     navigate('/');
                   }
                 }}
-                className="px-3 py-1.5 rounded-full bg-white text-warning-fg text-xs font-bold hover:bg-white/90 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white text-warning-fg text-xs font-bold hover:bg-white/90 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
               >
-                <Play size={12} fill="currentColor" /> Start Now
+                <Play size={11} fill="currentColor" /> Start
               </button>
               <button
                 onClick={() => setFiredAlarm(null)}
-                className="p-1.5 rounded-full hover:bg-white/20 transition-colors cursor-pointer text-white"
+                className="p-1 sm:p-1.5 rounded-full hover:bg-white/20 transition-colors cursor-pointer text-white"
               >
                 <X size={14} />
               </button>
@@ -114,7 +114,7 @@ export function MockAlarmModal() {
       {/* Modal Manager */}
       <AnimatePresence>
         {open && (
-          <div className="fixed inset-0 z-[10000] overflow-y-auto grid place-items-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[10000] overflow-y-auto grid place-items-center p-3 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -128,7 +128,7 @@ export function MockAlarmModal() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-lg my-auto rounded-3xl bg-bg-raised border border-[var(--glass-border)] shadow-2xl p-6 overflow-hidden z-10"
+              className="relative w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl bg-bg-raised border border-[var(--glass-border)] shadow-2xl p-4 sm:p-6 overflow-hidden z-10"
             >
               {/* Header */}
               <div className="flex items-center justify-between gap-4 pb-4 border-b border-[var(--glass-border)]">

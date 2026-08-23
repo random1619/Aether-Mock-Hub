@@ -69,7 +69,7 @@ export function DynamicHeader({ mockCount }: { mockCount?: number | null }) {
   return (
     <div className="flex flex-col items-center justify-center max-w-4xl mx-auto px-2">
       {/* Dynamic Headline — responsive text sizing & auto line height without overflow clipping */}
-      <h1 className="hero-headline text-3xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.025em] text-text leading-[1.12] min-h-[1.3em] flex items-center justify-center text-center">
+      <h1 className="hero-headline text-2xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.025em] text-text leading-[1.12] min-h-[1.3em] flex items-center justify-center text-center">
         <AnimatePresence mode="wait">
           <motion.span
             key={greetingIndex}
@@ -77,7 +77,7 @@ export function DynamicHeader({ mockCount }: { mockCount?: number | null }) {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -10, filter: 'blur(2px)' }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-block bg-gradient-to-r from-text via-text to-text/80 bg-clip-text py-1"
+            className="inline-block bg-gradient-to-r from-text via-text to-text/80 bg-clip-text py-0.5 sm:py-1"
           >
             {dynamicGreetings[greetingIndex]}
           </motion.span>
@@ -85,7 +85,7 @@ export function DynamicHeader({ mockCount }: { mockCount?: number | null }) {
       </h1>
 
       {/* Dynamic Subtitle */}
-      <div className="hero-sub mt-3 text-sm sm:text-base lg:text-lg text-muted font-medium tracking-[-0.01em] min-h-[1.5em] flex items-center justify-center text-center max-w-2xl mx-auto">
+      <div className="hero-sub mt-2 sm:mt-3 text-xs sm:text-base lg:text-lg text-muted font-medium tracking-[-0.01em] min-h-[1.5em] flex items-center justify-center text-center max-w-2xl mx-auto">
         <AnimatePresence mode="wait">
           <motion.p
             key={subtitleIndex}

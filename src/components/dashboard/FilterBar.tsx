@@ -40,13 +40,13 @@ export function FilterBar({ provider, subject, status, providers, subjects, filt
         <ChevronDown size={16} className={clsx('text-muted transition-transform', open && 'rotate-180')} />
       </button>
 
-      <div id="filter-panel" className={clsx('p-5 flex-col gap-5', open ? 'flex' : 'hidden lg:flex')}>
-        <div className="flex items-center justify-between">
+      <div id="filter-panel" className={clsx('p-4 sm:p-5 flex-col gap-4 sm:gap-5', open ? 'flex' : 'hidden lg:flex')}>
+        <div className="flex items-center justify-between gap-3">
           <span className="text-[15px] font-semibold text-text">Filters</span>
-          <span className="text-xs font-medium text-muted bg-surface-2 px-2.5 py-1 rounded-full tabular-nums">{filteredCount} mocks</span>
+          <span className="text-xs font-medium text-muted bg-surface-2 px-2.5 py-1 rounded-full tabular-nums shrink-0">{filteredCount} mocks</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           <FilterGroup label="Provider">
             <PillRow group="provider" options={['all', ...providers]} active={provider} onSelect={onProvider} />
           </FilterGroup>
@@ -85,7 +85,7 @@ function FilterGroup({ label, children }: { label: string; children: React.React
 
 function PillRow({ group, options, active, onSelect }: { group: string; options: string[]; active: string; onSelect: (v: string) => void }) {
   return (
-    <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+    <div className="flex flex-wrap gap-2 max-h-44 sm:max-h-32 overflow-y-auto overscroll-contain p-0.5 -m-0.5">
       {options.map((o) => {
         const isActive = active === o;
         return (
@@ -94,7 +94,7 @@ function PillRow({ group, options, active, onSelect }: { group: string; options:
             onClick={() => onSelect(o)}
             aria-pressed={isActive}
             className={clsx(
-              'relative text-xs font-medium px-3.5 py-1.5 rounded-full transition-colors duration-150 capitalize',
+              'relative text-xs sm:text-xs font-medium px-3.5 py-2 sm:py-1.5 rounded-full transition-colors duration-150 capitalize min-h-[36px] sm:min-h-0 active:scale-95',
               isActive
                 ? 'text-white'
                 : 'bg-surface-2 text-text-2 hover:bg-surface-3 hover:text-text',

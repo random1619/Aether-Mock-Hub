@@ -2,11 +2,13 @@
    Owns: questions, answers, flags, visited, timer, sections,
    navigation, review mode, scoring. Pure logic lives in lib/scoring. */
 import { create } from 'zustand';
-import type { ExamMeta, ExamPhase, Question, PerQuestionRecord, LangView } from '@/types';
+import type { ExamMeta, ExamPhase, Question, PerQuestionRecord, LangView, ExamPattern, Attempt } from '@/types';
 import { scoreAttempt, type ScoreResult } from '@/lib/scoring';
-import { saveAttempt, attachAttemptToSaved, recordSubjectAttempt, storageHealthy } from '@/services/attemptStore';
+import { saveAttempt, attachAttemptToSaved, recordSubjectAttempt, storageHealthy, getLatestAttempt, getAllAttempts, canonicalizePath } from '@/services/attemptStore';
+import { persistAttemptToBackend } from '@/services/backendApi';
 import {
   saveProgress,
+  loadProgress,
   loadProgressFor,
   loadProgressFromDisk,
   clearProgress,
@@ -19,6 +21,12 @@ import {
   releaseExamLock,
   LOCK_HEARTBEAT_MS,
 } from '@/services/examLock';
+import {
+  detectAndConfigurePattern,
+  canAccessSection,
+  getSectionGroupIndices,
+  getGroupBounds,
+} from '@/services/cglPattern';
 
 /** Cap one flush of per-question elapsed time: a suspended background tab
     would otherwise accrue hours into the question the user left open. */
@@ -43,13 +51,24 @@ interface ExamState {
   flags: Set<number>;
   visited: Set<number>;
 
-  /** Seconds remaining (whole exam or active section). */
+  /** Seconds remaining (whole exam). */
   timeRemaining: number;
   /** Seconds spent per question. */
   questionTimes: Record<number, number>;
 
   isSectionalMode: boolean;
   currentSectionIdx: number;
+
+  /** CGL & Sectional timing and lock states */
+  pattern: ExamPattern;
+  patternDescription: string;
+  sectionalTimerEnabled: boolean;
+  /** Seconds remaining in the current active section */
+  sectionTimeRemaining: number;
+  /** Set of section indices that are locked during active phase */
+  lockedSections: Set<number>;
+  /** Set of section indices that have been submitted/completed */
+  completedSections: Set<number>;
 
   /** Review mode */
   reattemptMode: boolean;
@@ -62,11 +81,6 @@ interface ExamState {
   tabSwitches: number;
   /** Wall-clock jump detected mid-exam (possible timer tampering). */
   clockTampered: boolean;
-  /** Shuffle answer options during the active phase (anti-cheat). */
-  optionsShuffled: boolean;
-  /** qIdx → display permutation of ORIGINAL option indices (answers are
-      always stored in original space, so scoring is unaffected). */
-  optionOrder: Record<number, number[]>;
   /** True when start/resume was refused: another tab holds this mock's lock. */
   lockBlocked: boolean;
 
@@ -83,8 +97,20 @@ interface ExamState {
       warning so the user knows their score won't survive a reload. */
   persistFailed: boolean;
 
+  /** Historical attempts for this mock */
+  latestAttempt: Attempt | null;
+  allAttempts: Attempt[];
+  /** Currently active attempt being inspected in review mode */
+  activeAttempt: Attempt | null;
+
   /* ── actions ── */
   loadExam: (meta: ExamMeta, questions: Question[]) => void;
+  /** Load and inspect previously submitted responses into full review mode */
+  reviewAttempt: (targetAttempt?: Attempt | number, keepCurrentIdx?: boolean) => void;
+  /** Switch which attempt's responses are being viewed in review mode without losing question cursor */
+  switchReviewAttempt: (attemptNumber: number) => void;
+  /** Re-take the mock test from the beginning */
+  reattemptMock: () => void;
   /** Returns false when another tab/window holds this mock's attempt lock. */
   startExam: () => boolean;
   /** Restore the resumeAvailable snapshot into a live active exam.
@@ -95,6 +121,9 @@ interface ExamState {
   navigateTo: (idx: number) => void;
   /** Switch the active section (sectional exams). Unlocks navigation into that section. */
   setCurrentSection: (secIdx: number) => void;
+  /** Submit current section and advance to next section, or submit exam if final section. */
+  submitCurrentSection: () => void;
+  setSectionalTimerEnabled: (enabled: boolean) => void;
   next: () => void;
   prev: () => void;
   selectOption: (qIdx: number, optIdx: number) => void;
@@ -110,8 +139,6 @@ interface ExamState {
   recordFsExit: () => void;
   /** Record a focus-loss violation (tab switch / window blur). */
   recordTabSwitch: () => void;
-  /** Pre-start preference: shuffle option order during the active phase. */
-  setOptionsShuffled: (v: boolean) => void;
   tick: () => void;
   setLang: (lang: LangView) => void;
   toggleReattempt: () => void;
@@ -122,14 +149,12 @@ interface ExamState {
 }
 
 let _qEnterTs: number | null = null;
-/** Wall-clock deadline (ms epoch) for the active exam. The countdown is derived
-    from Date.now() each tick, so background-tab throttling or sleep can never
-    grant extra time — setInterval is only a UI refresh trigger. */
+/** Wall-clock deadline (ms epoch) for the whole active exam. */
 let _endsAt: number | null = null;
+/** Wall-clock deadline (ms epoch) for the current active section. */
+let _sectionEndsAt: number | null = null;
 let _progressTimer: ReturnType<typeof setTimeout> | null = null;
-/** Last tick's wall + monotonic readings, for clock-tamper detection.
-    performance.now() is monotonic (immune to system-clock edits); a wall
-    jump without a matching monotonic jump means the clock was tampered. */
+/** Last tick's wall + monotonic readings, for clock-tamper detection. */
 let _lastTickWall: number | null = null;
 let _lastTickMono: number | null = null;
 /** Interval that keeps this tab's attempt lock fresh while the exam runs. */
@@ -150,21 +175,6 @@ function desktopExamStart(): void {
 function desktopExamEnd(): void {
   try { (window as any).aetherDesktop?.endExam?.(); } catch { /* non-Electron */ }
   stopBatteryWatch();
-}
-
-/** Fisher–Yates permutation of each question's option indices. The store and
-    scorer never see the shuffle — answers are recorded in original space. */
-function buildOptionOrder(questions: Question[]): Record<number, number[]> {
-  const order: Record<number, number[]> = {};
-  questions.forEach((q, idx) => {
-    const perm = q.options.map((_, i) => i);
-    for (let i = perm.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [perm[i], perm[j]] = [perm[j], perm[i]];
-    }
-    order[idx] = perm;
-  });
-  return order;
 }
 
 function startLockHeartbeat(): void {
@@ -191,6 +201,12 @@ export const useExamStore = create<ExamState>((set, get) => ({
   questionTimes: {},
   isSectionalMode: false,
   currentSectionIdx: 0,
+  pattern: 'standard',
+  patternDescription: '',
+  sectionalTimerEnabled: false,
+  sectionTimeRemaining: 0,
+  lockedSections: new Set(),
+  completedSections: new Set(),
   reattemptMode: false,
   revealedSolutions: new Set(),
   // Default to 'both': most mocks are code-mixed, so a single-script view would
@@ -199,63 +215,220 @@ export const useExamStore = create<ExamState>((set, get) => ({
   fsExits: 0,
   tabSwitches: 0,
   clockTampered: false,
-  optionsShuffled: true,
-  optionOrder: {},
   lockBlocked: false,
   result: null,
   submittedAnswers: null,
   resumeAvailable: null,
   persistFailed: false,
+  latestAttempt: null,
+  allAttempts: [],
+  activeAttempt: null,
 
   loadExam: (meta, questions) => {
-    const isSectional = meta.sections.length > 1;
+    const patternConfig = detectAndConfigurePattern(meta, questions);
+    const enrichedMeta: ExamMeta = {
+      ...meta,
+      sections: patternConfig.sections,
+      durationMinutes: patternConfig.totalDurationMinutes,
+      pattern: patternConfig.pattern,
+      hasSectionalTimer: patternConfig.hasSectionalTimer,
+    };
+    const isSectional = enrichedMeta.sections.length > 1;
     _endsAt = null;
+    _sectionEndsAt = null;
     _lastTickWall = null;
     _lastTickMono = null;
     cancelScheduledProgressSave();
     desktopExamEnd(); // belt-and-braces if a previous exam wasn't reset cleanly
     stopLockHeartbeat();
     releaseExamLock();
+
+    // If an expired in-progress attempt exists with answers, auto-submit and save it
+    // so the candidate's marked responses are never discarded!
+    const rawSnap = loadProgress();
+    if (rawSnap && canonicalizePath(rawSnap.path) === canonicalizePath(meta.path) && rawSnap.endsAt <= Date.now()) {
+      const answeredCount = Object.keys(rawSnap.answers || {}).length;
+      if (answeredCount > 0) {
+        try {
+          const scored = scoreAttempt(questions, rawSnap.answers, enrichedMeta.sections);
+          const perQuestion: PerQuestionRecord[] = questions.map((q, idx) => {
+            const chosen = rawSnap.answers[idx];
+            const correctOpt = q.correct_option_id;
+            return {
+              idx,
+              chosen,
+              correctOption: correctOpt,
+              isCorrect: chosen !== undefined && chosen === correctOpt,
+              isIncorrect: chosen !== undefined && chosen !== correctOpt,
+              isSkipped: chosen === undefined,
+              flagged: (rawSnap.flags || []).includes(idx),
+              timeSec: rawSnap.questionTimes?.[idx] || 0,
+            };
+          });
+          saveAttempt(meta.path, {
+            score: scored.score,
+            maxScore: scored.maxScore,
+            correct: scored.correct,
+            incorrect: scored.incorrect,
+            unattempted: scored.unattempted,
+            accuracy: scored.accuracy,
+            sections: enrichedMeta.sections.map((s) => ({ name: s.name, start: s.start, end: s.end })),
+            questionTimes: rawSnap.questionTimes || {},
+            fsExits: rawSnap.fsExits || 0,
+            tabSwitches: rawSnap.tabSwitches || 0,
+            clockTampered: rawSnap.clockTampered || false,
+            perQuestion,
+            provider: meta.provider,
+          });
+        } catch (err) {
+          console.warn('[exam] failed to auto-submit expired snapshot', err);
+        }
+      }
+      clearProgress();
+    }
+
+    const latestAttempt = getLatestAttempt(meta.path);
+    const allAttempts = getAllAttempts(meta.path);
+    const initialSecDuration = (enrichedMeta.sections[0]?.durationMinutes || 15) * 60;
+
     set({
-      meta,
+      meta: enrichedMeta,
       questions,
       phase: 'welcome',
       currentIdx: 0,
       answers: {},
       flags: new Set(),
       visited: new Set([0]),
-      timeRemaining: meta.durationMinutes * 60,
+      timeRemaining: enrichedMeta.durationMinutes * 60,
       questionTimes: {},
       isSectionalMode: isSectional,
       currentSectionIdx: 0,
+      pattern: patternConfig.pattern,
+      patternDescription: patternConfig.description,
+      sectionalTimerEnabled: patternConfig.hasSectionalTimer,
+      sectionTimeRemaining: initialSecDuration,
+      lockedSections: new Set(),
+      completedSections: new Set(),
       reattemptMode: false,
       revealedSolutions: new Set(),
       fsExits: 0,
       tabSwitches: 0,
       clockTampered: false,
-      optionOrder: {},
       lockBlocked: false,
       result: null,
       submittedAnswers: null,
       persistFailed: false,
-      // 360 Mocks are now tagged with explicit eqt/hqt markers at parse time,
-      // so a single-language view is exact (no loanword loss). Default them to
-      // English; the user can still flip to HI / BOTH in the header. Every
-      // other provider keeps the lossless 'both' default.
       lang: /(^|\/)providers\/Mocks360\//i.test(meta.path) ? 'en' : 'both',
-      // Offer a resume only when a snapshot matches THIS mock and its clock
-      // hasn't already expired (loadProgressFor enforces both).
       resumeAvailable: loadProgressFor(meta.path),
+      latestAttempt,
+      allAttempts,
     });
-    // Crash recovery: localStorage commits are async and can be lost in a
-    // hard crash. Fall back to the atomic on-disk mirror (Electron only).
     if (!get().resumeAvailable) {
       loadProgressFromDisk(meta.path).then((snap) => {
-        // Don't clobber a newer state if the user already started the exam.
         if (snap && get().phase === 'welcome' && get().meta?.path === meta.path) {
           set({ resumeAvailable: snap });
         }
       });
+    }
+  },
+
+  reviewAttempt: (targetAttempt, keepCurrentIdx = false) => {
+    const { meta, questions, allAttempts, currentIdx: existingIdx } = get();
+    if (!meta || !questions.length) return;
+
+    let attempt: Attempt | null = null;
+    if (typeof targetAttempt === 'number') {
+      attempt = allAttempts.find((a) => a.attemptNumber === targetAttempt) || null;
+    } else if (targetAttempt && typeof targetAttempt === 'object') {
+      attempt = targetAttempt;
+    } else {
+      attempt = get().latestAttempt || (allAttempts.length > 0 ? allAttempts[allAttempts.length - 1] : null) || getLatestAttempt(meta.path);
+    }
+    if (!attempt) return;
+
+    const answers: Record<number, number> = {};
+    const flags = new Set<number>();
+    const questionTimes: Record<number, number> = { ...(attempt.questionTimes || {}) };
+
+    // Restore user responses from perQuestion data
+    if (attempt.perQuestion && attempt.perQuestion.length > 0) {
+      attempt.perQuestion.forEach((pq) => {
+        // Restore chosen answer if it exists (including 0 as a valid option index)
+        if (typeof pq.chosen === 'number' && pq.chosen >= 0) {
+          answers[pq.idx] = pq.chosen;
+        }
+        // Restore flagged status
+        if (pq.flagged) {
+          flags.add(pq.idx);
+        }
+        // Restore time spent on question
+        if (typeof pq.timeSec === 'number' && pq.timeSec > 0) {
+          questionTimes[pq.idx] = pq.timeSec;
+        }
+      });
+    }
+
+    const scored = scoreAttempt(questions, answers, meta.sections);
+    const result: ScoreResult = {
+      ...scored,
+      score: attempt.score,
+      maxScore: attempt.maxScore,
+      correct: attempt.correct,
+      incorrect: attempt.incorrect,
+      unattempted: attempt.unattempted,
+      accuracy: attempt.accuracy,
+    };
+
+    cancelScheduledProgressSave();
+    desktopExamEnd();
+    stopLockHeartbeat();
+    releaseExamLock();
+    _sectionEndsAt = null;
+
+    set({
+      phase: 'submitted',
+      answers,
+      submittedAnswers: { ...answers },
+      flags,
+      visited: new Set(questions.map((_, i) => i)),
+      questionTimes,
+      result,
+      activeAttempt: attempt,
+      fsExits: attempt.fsExits || 0,
+      tabSwitches: attempt.tabSwitches || 0,
+      clockTampered: attempt.clockTampered || false,
+      reattemptMode: false,
+      revealedSolutions: new Set(),
+      persistFailed: false,
+      currentIdx: keepCurrentIdx ? Math.min(existingIdx, questions.length - 1) : 0,
+      currentSectionIdx: 0,
+    });
+  },
+
+  switchReviewAttempt: (attemptNumber) => {
+    get().reviewAttempt(attemptNumber, true);
+  },
+
+  reattemptMock: () => {
+    const { meta, questions } = get();
+    if (!meta || !questions.length) return;
+    get().loadExam(meta, questions);
+  },
+
+  setSectionalTimerEnabled: (enabled) => {
+    const { phase, meta, currentSectionIdx, sectionTimeRemaining } = get();
+    if (enabled && phase === 'active' && meta && !_sectionEndsAt) {
+      // Re-arm current group's timer when turning on mid-exam
+      const remaining = sectionTimeRemaining > 0 ? sectionTimeRemaining : (meta.sections[currentSectionIdx]?.durationMinutes || 15) * 60;
+      _sectionEndsAt = Date.now() + remaining * 1000;
+      set({ sectionalTimerEnabled: enabled, sectionTimeRemaining: remaining });
+      scheduleProgressSave(get);
+    } else if (!enabled) {
+      _sectionEndsAt = null;
+      set({ sectionalTimerEnabled: enabled });
+      scheduleProgressSave(get);
+    } else {
+      set({ sectionalTimerEnabled: enabled });
     }
   },
 
@@ -271,19 +444,28 @@ export const useExamStore = create<ExamState>((set, get) => ({
     _qEnterTs = Date.now();
     // Set the wall-clock deadline once; tick() derives remaining time from it.
     _endsAt = Date.now() + get().timeRemaining * 1000;
+
+    if (get().sectionalTimerEnabled && meta && meta.sections.length > 0) {
+      const secDur = (meta.sections[0]?.durationMinutes || 15) * 60;
+      _sectionEndsAt = Date.now() + secDur * 1000;
+      set({ sectionTimeRemaining: secDur });
+    } else {
+      _sectionEndsAt = null;
+    }
+
     _warnedThresholds = new Set();
     _lastTickWall = null;
     _lastTickMono = null;
     desktopExamStart();
     startLockHeartbeat();
-    const shuffle = get().optionsShuffled;
     set({
       phase: 'active',
       resumeAvailable: null,
       lockBlocked: false,
-      optionOrder: shuffle ? buildOptionOrder(get().questions) : {},
+      lockedSections: new Set(),
+      completedSections: new Set(),
     });
-    // Persist right away so a fast crash/resume keeps the same option layout.
+    // Persist right away so a fast crash/resume keeps the state intact.
     scheduleProgressSave(get);
     return true;
   },
@@ -303,8 +485,21 @@ export const useExamStore = create<ExamState>((set, get) => ({
     desktopExamStart();
     startLockHeartbeat();
     const remaining = Math.max(0, Math.ceil((_endsAt - Date.now()) / 1000));
-    // Strip null answers — they can appear in hand-edited snapshots after
-    // clearSelection writes. Null in the record is semantically "no answer".
+
+    const secTimerEnabled = snap.sectionalTimerEnabled ?? get().sectionalTimerEnabled;
+    let secRemaining = 0;
+    if (secTimerEnabled && snap.sectionEndsAt) {
+      _sectionEndsAt = snap.sectionEndsAt;
+      secRemaining = Math.max(0, Math.ceil((_sectionEndsAt - Date.now()) / 1000));
+    } else if (secTimerEnabled && get().meta) {
+      const secIdx = snap.currentSectionIdx || 0;
+      const secDur = (get().meta?.sections[secIdx]?.durationMinutes || 15) * 60;
+      _sectionEndsAt = Date.now() + secDur * 1000;
+      secRemaining = secDur;
+    } else {
+      _sectionEndsAt = null;
+    }
+
     const cleanAnswers: Record<number, number> = {};
     for (const [k, v] of Object.entries(snap.answers)) {
       if (typeof v === 'number' && Number.isFinite(v)) {
@@ -317,16 +512,6 @@ export const useExamStore = create<ExamState>((set, get) => ({
         cleanTimes[Number(k)] = v;
       }
     }
-    // Restore the same option shuffle the attempt started with — a missing
-    // order (legacy snapshot) is regenerated; scoring is unaffected either
-    // way because answers live in original index space.
-    const shuffled = snap.optionsShuffled ?? false;
-    const restoredOrder =
-      shuffled && snap.optionOrder && Object.keys(snap.optionOrder).length > 0
-        ? snap.optionOrder
-        : shuffled
-          ? buildOptionOrder(get().questions)
-          : {};
     set({
       phase: 'active',
       answers: cleanAnswers,
@@ -334,12 +519,14 @@ export const useExamStore = create<ExamState>((set, get) => ({
       visited: new Set(snap.visited),
       currentIdx: Math.min(snap.currentIdx, get().questions.length - 1),
       currentSectionIdx: snap.currentSectionIdx,
+      sectionalTimerEnabled: secTimerEnabled,
+      sectionTimeRemaining: secRemaining,
+      lockedSections: new Set(snap.lockedSections || []),
+      completedSections: new Set(snap.completedSections || []),
       questionTimes: cleanTimes,
       fsExits: snap.fsExits,
       tabSwitches: snap.tabSwitches ?? 0,
       clockTampered: snap.clockTampered ?? false,
-      optionsShuffled: shuffled,
-      optionOrder: restoredOrder,
       lockBlocked: false,
       timeRemaining: remaining,
       resumeAvailable: null,
@@ -354,13 +541,41 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   navigateTo: (idx) => {
-    const { questions, isSectionalMode, meta, currentSectionIdx, phase } = get();
+    const { questions, isSectionalMode, sectionalTimerEnabled, meta, currentSectionIdx, lockedSections, phase } = get();
     if (idx < 0 || idx >= questions.length) return;
-    // In sectional mode (pre-submit), clamp to active section.
-    if (phase === 'active' && isSectionalMode && meta) {
-      const sec = meta.sections[currentSectionIdx];
-      if (idx < sec.start || idx > sec.end) return;
+
+    // Post-submit: ALL UNLOCKED!
+    if (phase === 'submitted') {
+      flushTime(get, set);
+      _qEnterTs = Date.now();
+      let targetSecIdx = currentSectionIdx;
+      if (meta) {
+        const found = meta.sections.findIndex((s) => idx >= s.start && idx <= s.end);
+        if (found >= 0) targetSecIdx = found;
+      }
+      set((s) => ({ currentIdx: idx, currentSectionIdx: targetSecIdx, visited: new Set(s.visited).add(idx) }));
+      return;
     }
+
+    // In active phase: check if target question is in an accessible section
+    if (phase === 'active' && meta) {
+      const targetSecIdx = meta.sections.findIndex((s) => idx >= s.start && idx <= s.end);
+      if (targetSecIdx >= 0) {
+        const accessible = canAccessSection(
+          targetSecIdx,
+          currentSectionIdx,
+          lockedSections,
+          sectionalTimerEnabled,
+          false,
+          meta.sections,
+        );
+        if (!accessible) return; // Blocked by section lock!
+      } else if (isSectionalMode) {
+        const sec = meta.sections[currentSectionIdx];
+        if (idx < sec.start || idx > sec.end) return;
+      }
+    }
+
     flushTime(get, set);
     _qEnterTs = Date.now();
     set((s) => ({ currentIdx: idx, visited: new Set(s.visited).add(idx) }));
@@ -368,13 +583,35 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   setCurrentSection: (secIdx) => {
-    const { meta, phase, isSectionalMode } = get();
+    const { meta, phase, sectionalTimerEnabled, currentSectionIdx, lockedSections } = get();
     if (!meta) return;
     if (secIdx < 0 || secIdx >= meta.sections.length) return;
-    // In the active phase of a sectional exam, jump to the section's first
-    // question and make it the active section (palette/controls/nav clamp follow).
-    // Post-submit (review) sections are informational only — nothing is clamped then.
-    if (phase === 'active' && isSectionalMode) {
+
+    // Post-submit: ALL UNLOCKED!
+    if (phase === 'submitted') {
+      const sec = meta.sections[secIdx];
+      flushTime(get, set);
+      _qEnterTs = Date.now();
+      set((s) => ({
+        currentSectionIdx: secIdx,
+        currentIdx: sec.start,
+        visited: new Set(s.visited).add(sec.start),
+      }));
+      return;
+    }
+
+    // In active phase: check access permissions
+    if (phase === 'active') {
+      const accessible = canAccessSection(
+        secIdx,
+        currentSectionIdx,
+        lockedSections,
+        sectionalTimerEnabled,
+        false,
+        meta.sections,
+      );
+      if (!accessible) return; // Blocked by section lock!
+
       const sec = meta.sections[secIdx];
       flushTime(get, set);
       _qEnterTs = Date.now();
@@ -384,27 +621,88 @@ export const useExamStore = create<ExamState>((set, get) => ({
         visited: new Set(s.visited).add(sec.start),
       }));
       scheduleProgressSave(get);
-    } else {
-      set({ currentSectionIdx: secIdx });
     }
   },
 
+  submitCurrentSection: () => {
+    const { meta, currentSectionIdx, lockedSections, completedSections, sectionalTimerEnabled, phase } = get();
+    if (phase !== 'active' || !meta) return;
+
+    flushTime(get, set);
+    _qEnterTs = Date.now();
+
+    // Lock all modules in the current group
+    const currentGroupIndices = getSectionGroupIndices(currentSectionIdx, meta.sections);
+    const newLocked = new Set(lockedSections);
+    const newCompleted = new Set(completedSections);
+    for (const idx of currentGroupIndices) {
+      newLocked.add(idx);
+      newCompleted.add(idx);
+    }
+
+    // Find the next uncompleted section
+    let nextSecIdx: number | null = null;
+    for (let i = 0; i < meta.sections.length; i++) {
+      if (!newLocked.has(i)) {
+        nextSecIdx = i;
+        break;
+      }
+    }
+
+    if (nextSecIdx === null) {
+      // No more sections — submit the whole exam
+      set({ lockedSections: newLocked, completedSections: newCompleted });
+      get().submit();
+      return;
+    }
+
+    // Advance to next section and arm its timer
+    const nextSec = meta.sections[nextSecIdx];
+    const nextDuration = (nextSec.durationMinutes || 15) * 60;
+    _sectionEndsAt = sectionalTimerEnabled ? Date.now() + nextDuration * 1000 : null;
+
+    set((s) => ({
+      currentSectionIdx: nextSecIdx!,
+      currentIdx: nextSec.start,
+      visited: new Set(s.visited).add(nextSec.start),
+      lockedSections: newLocked,
+      completedSections: newCompleted,
+      sectionTimeRemaining: nextDuration,
+    }));
+
+    scheduleProgressSave(get);
+  },
+
   next: () => {
-    const { currentIdx, questions, isSectionalMode, meta, currentSectionIdx, phase } = get();
+    const { currentIdx, questions, isSectionalMode, meta, currentSectionIdx, phase, sectionalTimerEnabled } = get();
     let max = questions.length - 1;
-    if (phase === 'active' && isSectionalMode && meta) max = meta.sections[currentSectionIdx].end;
+    if (phase === 'active' && isSectionalMode && meta) {
+      // When sectional timer is on and Tier 2 groups exist, allow free movement
+      // within the whole group (e.g. Math ↔ Reasoning share 60m)
+      if (sectionalTimerEnabled && meta.sections[currentSectionIdx]?.groupId) {
+        max = getGroupBounds(currentSectionIdx, meta.sections).end;
+      } else {
+        max = meta.sections[currentSectionIdx].end;
+      }
+    }
     if (currentIdx < max) get().navigateTo(currentIdx + 1);
   },
 
   prev: () => {
-    const { currentIdx, isSectionalMode, meta, currentSectionIdx, phase } = get();
+    const { currentIdx, isSectionalMode, meta, currentSectionIdx, phase, sectionalTimerEnabled } = get();
     let min = 0;
-    if (phase === 'active' && isSectionalMode && meta) min = meta.sections[currentSectionIdx].start;
+    if (phase === 'active' && isSectionalMode && meta) {
+      if (sectionalTimerEnabled && meta.sections[currentSectionIdx]?.groupId) {
+        min = getGroupBounds(currentSectionIdx, meta.sections).start;
+      } else {
+        min = meta.sections[currentSectionIdx].start;
+      }
+    }
     if (currentIdx > min) get().navigateTo(currentIdx - 1);
   },
 
   selectOption: (qIdx, optIdx) => {
-    const { phase, reattemptMode, revealedSolutions, isSectionalMode, meta, currentSectionIdx } = get();
+    const { phase, reattemptMode, revealedSolutions, sectionalTimerEnabled, meta, currentSectionIdx, lockedSections } = get();
     // Post-submit: only allow changes in reattempt mode before revealing.
     if (phase === 'submitted') {
       if (!reattemptMode || revealedSolutions.has(qIdx)) return;
@@ -412,9 +710,19 @@ export const useExamStore = create<ExamState>((set, get) => ({
       return;
     }
     if (phase !== 'active') return;
-    if (isSectionalMode && meta) {
-      const sec = meta.sections[currentSectionIdx];
-      if (qIdx < sec.start || qIdx > sec.end) return;
+    if (meta) {
+      const targetSecIdx = meta.sections.findIndex((s) => qIdx >= s.start && qIdx <= s.end);
+      if (targetSecIdx >= 0) {
+        const accessible = canAccessSection(
+          targetSecIdx,
+          currentSectionIdx,
+          lockedSections,
+          sectionalTimerEnabled,
+          false,
+          meta.sections,
+        );
+        if (!accessible) return;
+      }
     }
     set((s) => ({ answers: { ...s.answers, [qIdx]: optIdx } }));
     scheduleProgressSave(get);
@@ -442,7 +750,6 @@ export const useExamStore = create<ExamState>((set, get) => ({
   },
 
   saveNext: () => {
-    // Save is implicit (selectOption already persists). Just advance.
     get().next();
   },
 
@@ -453,8 +760,6 @@ export const useExamStore = create<ExamState>((set, get) => ({
       set((s) => ({ flags: new Set(s.flags).add(currentIdx) }));
     }
     get().next();
-    // next() saves on advance; on the last question it no-ops, so persist the
-    // flag here or it would be missing from a crash-recovery snapshot.
     scheduleProgressSave(get);
   },
 
@@ -473,14 +778,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
     scheduleProgressSave(get);
   },
 
-  setOptionsShuffled: (v) => set({ optionsShuffled: v }),
-
   tick: () => {
-    const { phase, timeRemaining, meta } = get();
+    const { phase, timeRemaining, meta, sectionalTimerEnabled, sectionTimeRemaining } = get();
     if (phase !== 'active') return;
-    // Clock-tamper detection: the monotonic clock can't be rewound by system
-    // settings, so a wall-clock jump without a matching monotonic jump means
-    // someone moved the system clock (e.g. to extend the deadline).
     const now = Date.now();
     const mono = typeof performance !== 'undefined' ? performance.now() : now;
     if (_lastTickWall !== null && _lastTickMono !== null) {
@@ -492,15 +792,27 @@ export const useExamStore = create<ExamState>((set, get) => ({
     }
     _lastTickWall = now;
     _lastTickMono = mono;
-    // Derive remaining time from the wall-clock deadline so a throttled or
-    // paused interval (background tab / sleep) can't extend the exam.
+
+    // ── Handle Sectional Timer ──
+    if (sectionalTimerEnabled && _sectionEndsAt !== null) {
+      const wallSecRemaining = Math.max(0, Math.ceil((_sectionEndsAt - now) / 1000));
+      if (wallSecRemaining <= 0) {
+        // Section timer expired — auto-advance to next section
+        try {
+          (window as any).aetherDesktop?.notify?.('Section Time Over', 'Time for this section has ended. Moving to the next section.');
+        } catch { /* non-Electron */ }
+        get().submitCurrentSection();
+        return;
+      }
+      if (wallSecRemaining !== sectionTimeRemaining) {
+        set({ sectionTimeRemaining: wallSecRemaining });
+      }
+    }
+
+    // ── Handle Overall Timer ──
     let remaining: number;
     if (_endsAt !== null) {
-      const wallRemaining = Math.max(0, Math.ceil((_endsAt - Date.now()) / 1000));
-      // Guard against system-clock jumps (NTP correction / timezone change).
-      // A single tick cannot legitimately drop more than the exam duration;
-      // anything larger means the wall clock jumped and we fall back to a
-      // safe per-tick decrement to avoid a false auto-submit.
+      const wallRemaining = Math.max(0, Math.ceil((_endsAt - now) / 1000));
       const totalDuration = meta?.durationMinutes
         ? meta.durationMinutes * 60
         : 3600;
@@ -510,7 +822,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         remaining = wallRemaining;
       }
     } else {
-      remaining = timeRemaining - 1; // fallback for safety if startExam never ran
+      remaining = timeRemaining - 1;
     }
     if (remaining <= 0) {
       set({ timeRemaining: 0 });
@@ -524,7 +836,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         const mins = Math.floor(t / 60);
         const label = mins >= 1 ? `${mins} minute${mins > 1 ? 's' : ''} remaining` : `${t} seconds remaining`;
         try { (window as any).aetherDesktop?.notify?.('Time Warning', label); } catch { /* non-Electron */ }
-        break; // only fire one per tick
+        break;
       }
     }
     if (remaining !== timeRemaining) set({ timeRemaining: remaining });
@@ -536,25 +848,22 @@ export const useExamStore = create<ExamState>((set, get) => ({
     set((s) => ({ revealedSolutions: new Set(s.revealedSolutions).add(qIdx) })),
 
   submit: () => {
-    const { questions, answers, meta, flags, fsExits, tabSwitches, clockTampered, optionsShuffled } = get();
+    const { questions, answers, meta, flags, fsExits, tabSwitches, clockTampered } = get();
     if (get().phase === 'submitted') return;
-    // Guard before any side effects: an ignored submit must leave the
-    // resume snapshot, exam lock, and heartbeat untouched.
     if (!questions.length) {
       console.warn('[exam] submit ignored: no questions loaded');
       return;
     }
-    // The attempt is over — a resume snapshot must not outlive it.
     cancelScheduledProgressSave();
     clearProgress();
     desktopExamEnd();
     stopLockHeartbeat();
     releaseExamLock();
+    _sectionEndsAt = null;
     flushTime(get, set);
     const finalTimes = get().questionTimes;
     const result = scoreAttempt(questions, get().answers, meta?.sections);
 
-    // Build per-question snapshot — exactly what review + analytics need.
     const perQuestion: PerQuestionRecord[] = questions.map((q, idx) => {
       const chosen = answers[idx];
       const correctOpt = q.correct_option_id;
@@ -570,11 +879,16 @@ export const useExamStore = create<ExamState>((set, get) => ({
       };
     });
 
-    // Freeze what the user actually submitted. Re-attempt mode continues to
-    // mutate `answers` as a working copy; review UI reads submittedAnswers.
-    set({ phase: 'submitted', result, answers, submittedAnswers: { ...answers }, persistFailed: false });
+    // Unlocks all sections upon submission.
+    set({
+      phase: 'submitted',
+      result,
+      answers,
+      submittedAnswers: { ...answers },
+      persistFailed: false,
+      sectionTimeRemaining: 0,
+    });
 
-    // Persist to the shared aether-db (compatible with the legacy site).
     if (meta) {
       try {
         saveAttempt(meta.path, {
@@ -589,22 +903,27 @@ export const useExamStore = create<ExamState>((set, get) => ({
           fsExits,
           tabSwitches,
           clockTampered,
-          optionsShuffled,
           perQuestion,
           provider: meta.provider,
         });
-        // Roll up subject stats.
         if (meta.subject) recordSubjectAttempt(meta.subject, result.accuracy);
-        // Fold outcome back into any saved questions of this exam.
         attachAttemptToSaved(meta.path, perQuestion.map(({ idx, chosen, isCorrect, isIncorrect, isSkipped, flagged }) => ({
           idx, chosen, isCorrect, isIncorrect, isSkipped, flagged,
         })));
+        const updatedLatest = getLatestAttempt(meta.path);
+        const updatedAll = getAllAttempts(meta.path);
+        if (updatedLatest) {
+          persistAttemptToBackend(meta.path, updatedLatest);
+        }
+        set({
+          latestAttempt: updatedLatest,
+          allAttempts: updatedAll,
+          activeAttempt: updatedLatest,
+        });
       } catch (e) {
         console.warn('[exam] persist failed', e);
         set({ persistFailed: true });
       }
-      // saveAttempt swallows internal quota errors (the session stays usable),
-      // so also check the storage health flag the attempt store maintains.
       if (!storageHealthy()) {
         set({ persistFailed: true });
       }
@@ -622,11 +941,9 @@ export const useExamStore = create<ExamState>((set, get) => ({
     desktopExamEnd();
     stopLockHeartbeat();
     releaseExamLock();
+    _sectionEndsAt = null;
     _lastTickWall = null;
     _lastTickMono = null;
-    // Do NOT clear the progress snapshot here — submit() already clears it
-    // on exam completion, and clearing on unmount breaks the resume feature
-    // (any clean navigation away from the exam would wipe the snapshot).
     set({
       meta: null,
       questions: [],
@@ -639,18 +956,25 @@ export const useExamStore = create<ExamState>((set, get) => ({
       questionTimes: {},
       isSectionalMode: false,
       currentSectionIdx: 0,
+      pattern: 'standard',
+      patternDescription: '',
+      sectionalTimerEnabled: false,
+      sectionTimeRemaining: 0,
+      lockedSections: new Set(),
+      completedSections: new Set(),
       reattemptMode: false,
       revealedSolutions: new Set(),
       fsExits: 0,
       tabSwitches: 0,
       clockTampered: false,
-      optionsShuffled: true,
-      optionOrder: {},
       lockBlocked: false,
       result: null,
       submittedAnswers: null,
       resumeAvailable: null,
       persistFailed: false,
+      latestAttempt: null,
+      allAttempts: [],
+      activeAttempt: null,
     });
   },
 }));
@@ -661,8 +985,6 @@ function flushTime(
 ) {
   if (_qEnterTs !== null) {
     const idx = get().currentIdx;
-    // Cap a single flush: a suspended background tab would otherwise dump
-    // hours into whichever question happened to be open.
     const elapsed = Math.min(MAX_FLUSH_SECS, Math.round((Date.now() - _qEnterTs) / 1000));
     set((s) => ({
       questionTimes: {
@@ -692,10 +1014,10 @@ function persistProgressNow(get: () => ExamState): void {
     fsExits: s.fsExits,
     tabSwitches: s.tabSwitches,
     clockTampered: s.clockTampered,
-    optionsShuffled: s.optionsShuffled,
-    // The permutation is only meaningful (and only saved) when shuffling —
-    // keeps the snapshot small for the default canonical layout.
-    ...(s.optionsShuffled ? { optionOrder: s.optionOrder } : {}),
+    sectionalTimerEnabled: s.sectionalTimerEnabled,
+    sectionEndsAt: _sectionEndsAt ?? undefined,
+    lockedSections: [...s.lockedSections],
+    completedSections: [...s.completedSections],
   });
 }
 

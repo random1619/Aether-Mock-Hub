@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YATRI Mock Hub - Algebra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf3e6; --paper2:#f3e8d4; --ink:#3a2f22; --muted:#8a7a5a;
+    --brown:#8a5a2b; --brown-d:#6e4620; --green:#2e7d4f; --green-d:#245f3d;
+    --red:#b23a3a; --tan:#cbb996; --line:#e4d4b3;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    width:100%;
+  }
+  .hindi{font-family:'Noto Sans Devanagari',sans-serif;}
+  h1,h2,h3,.brand{font-family:'Fraunces',serif;}
+  #app{max-width:760px;margin:0 auto;padding:14px 14px 34px;width:100%;}
+
+  /* ---------- Header ---------- */
+  .site-header{display:none;text-align:center;margin-bottom:18px;}
+  .site-header.show{display:block;}
+  .site-header h1{font-size:2rem;color:var(--brown-d);margin:0 0 10px;}
+  .eyebrow{display:block;font-size:1.15rem;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:8px;}
+  .telegram-btn{
+    display:inline-flex;align-items:center;gap:8px;background:#2481cc;color:#fff;
+    padding:9px 18px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .topic-pill{
+    display:inline-block;margin-top:12px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);padding:6px 16px;border-radius:999px;font-size:.85rem;font-weight:600;
+  }
+
+  /* ---------- Start Screen ---------- */
+  .start-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 20px;text-align:center;box-shadow:0 4px 18px rgba(90,60,20,.08);}
+  .start-card h2{font-size:1.5rem;color:var(--ink);margin:0 0 20px;}
+  .info-boxes{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+  .info-box{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:14px 22px;min-width:130px;}
+  .info-box .num{font-size:1.6rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .info-box .lbl{font-size:.8rem;color:#7a6a54;margin-top:2px;}
+  .start-btn{
+    background:var(--green);color:#fff;border:none;padding:14px 38px;border-radius:999px;
+    font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(46,125,79,.3);
+    transition:transform .15s, background .15s;
+  }
+  .start-btn:hover{background:var(--green-d);transform:translateY(-1px);}
+
+  /* ---------- Test top bar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:10px 12px;margin-bottom:14px;position:relative;z-index:20;
+  }
+  .topbar .brand{font-weight:700;color:var(--brown-d);font-size:1.05rem;white-space:nowrap;flex-shrink:0;}
+  .topbar .mid{display:flex;align-items:center;gap:10px;flex:1;justify-content:center;min-width:0;overflow:hidden;}
+  .timer{font-weight:700;color:var(--red);font-size:.95rem;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .progress-text{font-size:.85rem;color:#7a6a54;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .palette-wrap{position:relative;flex-shrink:0;}
+  .palette-btn{
+    background:var(--brown);color:#fff;border:none;padding:8px 12px;border-radius:10px;
+    font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .palette-dd{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);
+    width:250px;max-height:300px;overflow-y:auto;z-index:30;
+  }
+  .palette-dd.open{display:block;}
+  .palette-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .palette-num{
+    display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;
+    font-size:.78rem;font-weight:700;cursor:pointer;color:#fff;border:none;
+  }
+  .pn-green{background:var(--green);} .pn-red{background:var(--red);} .pn-grey{background:#b7a98a;}
+  .palette-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:.72rem;color:#6a5c46;}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+
+  /* ---------- Question card ---------- */
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;position:relative;margin-bottom:14px;}
+  .source-tag{
+    position:absolute;top:14px;right:14px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:999px;max-width:150px;text-align:right;
+  }
+  .qmeta{font-size:.85rem;color:#7a6a54;margin-bottom:6px;padding-right:100px;}
+  .marks-note{font-size:.75rem;color:#9a8a6a;margin-bottom:14px;}
+  .qtext{font-size:1.05rem;line-height:1.55;margin-bottom:6px;}
+  .qtext-hi{font-size:1rem;line-height:1.7;color:#4a3d2c;margin-bottom:16px;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{
+    display:flex;align-items:center;gap:10px;background:var(--paper2);border:2px solid var(--line);
+    border-radius:12px;padding:12px 14px;cursor:pointer;font-size:.98rem;transition:all .12s;
+  }
+  .option:hover{border-color:var(--brown);}
+  .option.selected{background:#fbeecb;border-color:var(--brown);}
+  .opt-letter{
+    display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:#fff;border:1px solid var(--line);font-weight:700;font-size:.8rem;flex-shrink:0;
+  }
+  .option.selected .opt-letter{background:var(--brown);color:#fff;border-color:var(--brown);}
+  .option.correct{background:#e2f3e7;border-color:var(--green);}
+  .option.correct .opt-letter{background:var(--green);color:#fff;border-color:var(--green);}
+  .option.wrong{background:#fbe4e4;border-color:var(--red);}
+  .option.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red);}
+  .mark-icon{margin-left:auto;font-weight:700;}
+
+  /* ---------- Nav rows ---------- */
+  .nav-row{display:flex;gap:8px;margin-bottom:8px;}
+  .nav-row button{
+    flex:1;padding:11px 6px;border-radius:12px;border:none;font-weight:700;cursor:pointer;
+    font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .btn-prev,.btn-next{background:var(--brown);color:#fff;}
+  .btn-clear{background:var(--paper2);color:var(--brown-d);border:1px solid var(--line) !important;}
+  .btn-prev:disabled,.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+  .submit-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--red);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+  .back-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--brown);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--card);border-radius:16px;padding:24px 20px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .modal-box h3{margin:0 0 10px;color:var(--brown-d);}
+  .modal-box p{margin:0 0 18px;font-size:.92rem;color:#5a4c38;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{flex:1;padding:11px;border-radius:10px;border:none;font-weight:700;cursor:pointer;}
+  .modal-yes{background:var(--red);color:#fff;}
+  .modal-cancel{background:var(--paper2);color:var(--brown-d);}
+
+  /* ---------- Result screen ---------- */
+  .result-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 20px;text-align:center;}
+  .result-card h2{color:var(--brown-d);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .stat-box{background:var(--paper2);border-radius:12px;padding:14px;border:1px solid var(--line);}
+  .stat-box .num{font-size:1.4rem;font-weight:700;font-family:'Fraunces',serif;}
+  .stat-box .lbl{font-size:.78rem;color:#7a6a54;}
+  .score-box{background:#fbeecb;border:2px solid var(--brown);border-radius:14px;padding:16px;margin-bottom:20px;}
+  .score-box .num{font-size:2rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .result-btns{display:flex;flex-direction:column;gap:10px;}
+  .result-btns button{padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;}
+  .btn-review{background:var(--brown);color:#fff;}
+  .btn-retake{background:var(--green);color:#fff;}
+
+  /* Review status tag */
+  .status-tag{font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .status-correct{background:#e2f3e7;color:var(--green-d);}
+  .status-wrong{background:#fbe4e4;color:var(--red);}
+  .status-unattempted{background:#eee6d4;color:#7a6a54;}
+  .ans-line{font-size:.9rem;margin:10px 0;padding:10px;background:var(--paper2);border-radius:10px;}
+  .explain{font-size:.92rem;line-height:1.6;background:#fff8ea;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;}
+  .explain-title{font-weight:700;color:var(--brown-d);margin-bottom:6px;font-size:.85rem;}
+
+  @media (max-width:400px){
+    .topbar .brand{font-size:.92rem;}
+    .timer{font-size:.82rem;}
+    .progress-text{font-size:.72rem;}
+    .palette-btn{padding:7px 9px;font-size:.72rem;}
+    .qtext,.qtext-hi{font-size:.92rem;}
+    .nav-row button{font-size:.72rem;padding:10px 4px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="site-header show" id="siteHeader">
+    <span class="eyebrow">SSC 2025 PYQs</span>
+    <h1>YATRI Mock Hub</h1>
+    <a class="telegram-btn" href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21.5 4.5L2.7 11.9c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.8-.4l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.7-.8L23.9 5.7c.3-1.2-.5-1.7-1.4-1.2z"/></svg>
+      Join Telegram
+    </a>
+    <div><span class="topic-pill">Topic: Algebra</span></div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Maths PYQs Topicwise Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="num">99</div><div class="lbl">Total Questions</div></div>
+        <div class="info-box"><div class="num">99 min</div><div class="lbl">Total Time</div></div>
+      </div>
+      <button class="start-btn" onclick="startTest()">▶️ Start Test</button>
+    </div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen" style="display:none;">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="mid">
+        <div class="timer" id="timerText">60:00</div>
+        <div class="progress-text" id="progressText">Question 1 / 99</div>
+      </div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('test')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_test">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Answered</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Not Answered</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Not Visited</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_test"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="sourceTag"></div>
+      <div class="qmeta" id="qMeta"></div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="qtext-hi hindi" id="qTextHi"></div>
+      <div class="options" id="optionsBox"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="btnPrev" onclick="prevQ()">⬅️ Previous</button>
+      <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()">Next ➡️</button>
+    </div>
+    <div class="submit-row">
+      <button onclick="askSubmit()">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" style="display:none;">
+    <div class="result-card">
+      <h2>Test Result</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="rTotal"></div><div class="lbl">Total Questions</div></div>
+        <div class="stat-box"><div class="num" id="rAttempted"></div><div class="lbl">Attempted</div></div>
+        <div class="stat-box"><div class="num" id="rUnattempted"></div><div class="lbl">Unattempted</div></div>
+        <div class="stat-box"><div class="num" id="rCorrect" style="color:var(--green-d)"></div><div class="lbl">Correct</div></div>
+        <div class="stat-box"><div class="num" id="rWrong" style="color:var(--red)"></div><div class="lbl">Wrong</div></div>
+        <div class="stat-box"><div class="num" id="rBlank"></div><div class="lbl">-</div></div>
+      </div>
+      <div class="score-box"><div class="num" id="rScore"></div><div class="lbl">Final Score</div></div>
+      <div class="result-btns">
+        <button class="btn-review" onclick="openReview()">🔍 Review Solutions</button>
+        <button class="btn-retake" onclick="retakeTest()">🔁 Retake Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen" style="display:none;">
+    <div class="topbar" style="z-index:20;">
+      <div id="reviewStatusTag"></div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('review')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_review">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Correct</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Wrong</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Unattempted</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_review"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="revSourceTag"></div>
+      <div class="qmeta" id="revQMeta"></div>
+      <div class="qtext" id="revQText"></div>
+      <div class="qtext-hi hindi" id="revQTextHi"></div>
+      <div class="options" id="revOptionsBox"></div>
+      <div class="ans-line" id="revAnsLine"></div>
+      <div class="explain">
+        <div class="explain-title">Explanation / व्याख्या</div>
+        <div id="revExplain"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="revBtnPrev" onclick="revPrev()">⬅️ Previous</button>
+      <button class="btn-next" id="revBtnNext" onclick="revNext()">Next ➡️</button>
+    </div>
+    <div class="back-row">
+      <button onclick="backToResult()">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Submit confirmation modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <h3>Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-yes" onclick="confirmSubmit()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [{"tag": "SSC CGL 12/09/2025 (Shift-02)", "qEn": "If x = root7, determine the value of x + 1/x.", "qHi": "यदि x = root7 है, तो x + 1/x का मान ज्ञात करें।", "opts": ["8root7/7", "7root7/8", "7root7/9", "9root7/7"], "ans": 0, "exp": "x + 1/x = root7 + 1/root7 = (7+1)/root7 = 8/root7 = 8root7/7 (rationalizing the denominator)."}, {"tag": "SSC CGL 12/09/2025 (Shift-02)", "qEn": "If x = (2+root3)/(2-root3), then determine the value of x^2 + x - 9.", "qHi": "यदि x = (2+root3)/(2-root3) है, तो x^2 + x - 9 का मान ज्ञात करें।", "opts": ["3root3", "5root3", "7root3", "9root3"], "ans": 1, "exp": "Rationalizing: x = (2+root3)^2/[(2-root3)(2+root3)] = (2+root3)^2/1 = 2+root3 (since denominator=4-3=1). So x^2+x-9 = (2+root3)^2+(2+root3)-9 = 4+3+4root3+2+root3-9 = 5root3."}, {"tag": "SSC CGL 13/09/2025 (Shift-01)", "qEn": "If x = root5+2, find x^2 - 4root5.", "qHi": "यदि x = root5+2 है, तो x^2 - 4root5 ज्ञात करें।", "opts": ["1", "7", "9", "3"], "ans": 2, "exp": "x^2 = (root5+2)^2 = 5+4+4root5 = 9+4root5. So x^2-4root5 = 9+4root5-4root5 = 9."}, {"tag": "SSC CGL 13/09/2025 (Shift-02)", "qEn": "Given, x + 1/x = 5, then determine the value of x^2 + 1/x^2.", "qHi": "दिया गया है, x + 1/x = 5, तो x^2 + 1/x^2 का मान ज्ञात करें।", "opts": ["25", "24", "26", "23"], "ans": 3, "exp": "Squaring both sides: x^2+1/x^2 = (x+1/x)^2-2 = 5^2-2 = 25-2 = 23."}, {"tag": "SSC CGL 14/09/2025 (Shift-01)", "qEn": "Given, x + 1/x = 4, find the value of x^3 + 1/x^3.", "qHi": "दिया गया है, x + 1/x = 4, तो x^3 + 1/x^3 का मान ज्ञात करें।", "opts": ["55", "57", "52", "50"], "ans": 2, "exp": "x^3+1/x^3 = (x+1/x)^3 - 3(x+1/x) = 4^3-3x4 = 64-12 = 52."}, {"tag": "SSC CGL 14/09/2025 (Shift-03)", "qEn": "Given, a = root5, what is (a+1)^2 + (a-1)^2?", "qHi": "दिया गया है, a = root5, तो (a+1)^2 + (a-1)^2 क्या होगा?", "opts": ["13", "12", "14", "15"], "ans": 1, "exp": "(a+1)^2+(a-1)^2 = 2(a^2+1) = 2(5+1) = 12."}, {"tag": "SSC CGL 15/09/2025 (Shift-03)", "qEn": "Given, x - 1/x = 3, find the value of x^4 + 1/x^4.", "qHi": "दिया गया है, x - 1/x = 3, तो x^4 + 1/x^4 का मान ज्ञात करें।", "opts": ["119", "125", "130", "145"], "ans": 0, "exp": "x+1/x = root[(x-1/x)^2+4] = root[9+4] = root13. Squaring: x^2+1/x^2 = 13-2 = 11. Squaring again: x^4+1/x^4 = 11^2-2 = 119."}, {"tag": "SSC CGL 17/09/2025 (Shift-01)", "qEn": "If a + b = 5 and ab = 6. Find: (a^3 + b^3)^2 - 9a^2b^2(a+b)^2.", "qHi": "यदि a + b = 5 और ab = 6 है। ज्ञात करें: (a^3 + b^3)^2 - 9a^2b^2(a+b)^2.", "opts": ["-6875", "6875", "-3876", "3876"], "ans": 0, "exp": "Taking a=3,b=2 (which satisfy a+b=5, ab=6): a^3+b^3 = 27+8=35. (35)^2 - 9x9x4x25 = 1225-8100 = -6875."}, {"tag": "SSC CGL 17/09/2025 (Shift-01)", "qEn": "If a = 0.02, b = 0.03, c = -0.05 and a+b+c = 0 find (a^3+b^3+c^3) / (3abc).", "qHi": "यदि a = 0.02, b = 0.03, c = -0.05 और a+b+c = 0 है, तो (a^3+b^3+c^3) / (3abc) ज्ञात करें।", "opts": ["-1", "0", "1", "2"], "ans": 2, "exp": "When a+b+c=0, the identity a^3+b^3+c^3=3abc always holds. So (a^3+b^3+c^3)/(3abc) = 3abc/3abc = 1."}, {"tag": "SSC CGL 17/09/2025 (Shift-03)", "qEn": "Given x+y+z = 0 and x^3+y^3+z^3 = 3xyz, evaluate (x-y)^3 + (y-z)^3 + (z-x)^3.", "qHi": "दिया गया है x+y+z = 0 और x^3+y^3+z^3 = 3xyz, ज्ञात करें (x-y)^3 + (y-z)^3 + (z-x)^3.", "opts": ["0", "9(x-y)(y-z)(z-x)", "27xyz", "3(x-y)(y-z)(z-x)"], "ans": 3, "exp": "Let A=x-y, B=y-z, C=z-x. Note A+B+C=0. Whenever three quantities sum to zero, the identity A^3+B^3+C^3=3ABC applies. So the expression = 3(x-y)(y-z)(z-x)."}, {"tag": "SSC CGL 18/09/2025 (Shift-01)", "qEn": "If the cubic equation a^3 - 4a^2 + 5a - 2 = 0 has the roots x, y, z then find the value of x+y+z.", "qHi": "यदि घन समीकरण a^3 - 4a^2 + 5a - 2 = 0 के मूल x, y, z हैं, तो x+y+z का मान ज्ञात करें।", "opts": ["5", "6", "7", "4"], "ans": 3, "exp": "For a cubic ax^3+bx^2+cx+d=0, the sum of roots = -b/a. Here a=1, b=-4, so sum of roots = -(-4)/1 = 4."}, {"tag": "SSC CGL 18/09/2025 (Shift-01)", "qEn": "Given, root(x+3) + root(x-2) = 5, then find the value of x.", "qHi": "दिया गया है, root(x+3) + root(x-2) = 5, तो x का मान ज्ञात करें।", "opts": ["5", "6", "7", "8"], "ans": 1, "exp": "Testing x=6: root(6+3)+root(6-2) = root9+root4 = 3+2 = 5, which matches. So x=6."}, {"tag": "SSC CGL 18/09/2025 (Shift-02)", "qEn": "Given, x + 1/x = 4. Find the value of x^6 + 1/x^6 - 3(x^4 + 1/x^4) + 4(x^2 + 1/x^2).", "qHi": "दिया गया है, x + 1/x = 4। ज्ञात करें x^6 + 1/x^6 - 3(x^4 + 1/x^4) + 4(x^2 + 1/x^2).", "opts": ["2176", "2087", "2562", "2476"], "ans": 0, "exp": "x^2+1/x^2 = 4^2-2 = 14. x^4+1/x^4 = 14^2-2 = 194. x^6+1/x^6 = 14^3-3x14 = 2744-42 = 2702. So expression = 2702-3(194)+4(14) = 2702-582+56 = 2176."}, {"tag": "SSC CGL 18/09/2025 (Shift-02)", "qEn": "Given, root(x) + 1/root(x) = 4, then what is x + 1/x?", "qHi": "दिया गया है, root(x) + 1/root(x) = 4, तो x + 1/x क्या है?", "opts": ["15", "14", "16", "17"], "ans": 1, "exp": "Squaring: x + 1/x + 2 = 16, so x+1/x = 14."}, {"tag": "SSC CGL 18/09/2025 (Shift-03)", "qEn": "If (x + 2/x) = 7, find the value of x^3 + 8/x^3.", "qHi": "यदि (x + 2/x) = 7 है, तो x^3 + 8/x^3 का मान ज्ञात करें।", "opts": ["256", "301", "352", "298"], "ans": 1, "exp": "x^3+8/x^3 = (x+2/x)^3 - 3x2x(x+2/x) = 7^3-3x2x7 = 343-42 = 301."}, {"tag": "SSC CGL 19/09/2025 (Shift-01)", "qEn": "If x + 1/x = -1, then compute: x^4 + 1/x^4 + 2x^2 + 2/x^2.", "qHi": "यदि x + 1/x = -1 है, तो गणना करें: x^4 + 1/x^4 + 2x^2 + 2/x^2.", "opts": ["-3", "3", "4", "-4"], "ans": 0, "exp": "x^2+1/x^2 = (-1)^2-2 = -1. x^4+1/x^4 = (-1)^2-2 = -1. So the expression = -1+2(-1) = -1-2 = -3."}, {"tag": "SSC CGL 19/09/2025 (Shift-02)", "qEn": "Evaluate: (root11 + root7)^2 - (root11 - root7)^2.", "qHi": "मूल्यांकन करें: (root11 + root7)^2 - (root11 - root7)^2.", "opts": ["4root77", "2root77", "6root77", "8root77"], "ans": 0, "exp": "Using the identity (a+b)^2-(a-b)^2 = 4ab: with a=root11, b=root7, result = 4xroot11xroot7 = 4root77."}, {"tag": "SSC CGL 19/09/2025 (Shift-02)", "qEn": "If a+b+c = 0 and a = 0.1, b = 0.2, c = -0.3, then what is (a^3+b^3+c^3) / (3abc)?", "qHi": "यदि a+b+c = 0 और a = 0.1, b = 0.2, c = -0.3 है, तो (a^3+b^3+c^3) / (3abc) क्या है?", "opts": ["-3", "0", "1", "-2"], "ans": 2, "exp": "Whenever a+b+c=0, the identity a^3+b^3+c^3=3abc always holds. So (a^3+b^3+c^3)/(3abc) = 1."}, {"tag": "SSC CGL 19/09/2025 (Shift-03)", "qEn": "Given: x + 1/x = -2, then determine the value of x^6 + 1/x^6 - 3(x^4 + 1/x^4) + 4(x^2 + 1/x^2).", "qHi": "दिया गया है: x + 1/x = -2, तो x^6 + 1/x^6 - 3(x^4 + 1/x^4) + 4(x^2 + 1/x^2) का मान ज्ञात करें।", "opts": ["5", "8", "3", "4"], "ans": 3, "exp": "x+1/x=-2 means x=-1. So x^6+1/x^6=1+1=2, x^4+1/x^4=1+1=2, x^2+1/x^2=1+1=2. Expression = 2-3(2)+4(2) = 2-6+8 = 4."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "Find the value of x in given equation: [root(3+x) + root(3-x)] / [root(3+x) - root(3-x)] = 2.", "qHi": "दिए गए समीकरण में x का मान ज्ञात करें: [root(3+x) + root(3-x)] / [root(3+x) - root(3-x)] = 2.", "opts": ["12/5", "7/5", "6/5", "8/5"], "ans": 0, "exp": "Using componendo-dividendo: root(3+x)/root(3-x) = 3 (since (2+1)/(2-1)=3). Squaring: (3+x)/(3-x)=9. So 3+x=27-9x, giving 10x=24, x=12/5."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "If x = 2 + root3 find x - 1/x.", "qHi": "यदि x = 2 + root3 है, तो x - 1/x ज्ञात करें।", "opts": ["root3", "2root3", "3root2", "5root3"], "ans": 1, "exp": "1/x = 1/(2+root3) = 2-root3 (rationalizing, since (2+root3)(2-root3)=1). So x-1/x = (2+root3)-(2-root3) = 2root3."}, {"tag": "SSC CGL 20/09/2025 (Shift-03)", "qEn": "If x = root5 + 2 find the value of x^2 - 4root5.", "qHi": "यदि x = root5 + 2 है, तो x^2 - 4root5 का मान ज्ञात करें।", "opts": ["5", "9", "8", "7"], "ans": 1, "exp": "x^2 = (root5+2)^2 = 5+4root5+4 = 9+4root5. So x^2-4root5 = 9."}, {"tag": "SSC CGL 21/09/2025 (Shift-01)", "qEn": "If x = root2 + 1, find x^2 - 2.", "qHi": "यदि x = root2 + 1 है, तो x^2 - 2 ज्ञात करें।", "opts": ["1+2root2", "3+2root2", "2+root2", "1+root2"], "ans": 0, "exp": "x^2 = (root2+1)^2 = 2+2root2+1 = 3+2root2. So x^2-2 = 3+2root2-2 = 1+2root2."}, {"tag": "SSC CGL 22/09/2025 (Shift-01)", "qEn": "Given, x + 1/x = 5 then determine the value of 2x/(x^2-1).", "qHi": "दिया गया है, x + 1/x = 5, तो 2x/(x^2-1) का मान ज्ञात करें।", "opts": ["2root21/21", "2root21/25", "7root21/25", "9root21/29"], "ans": 0, "exp": "x-1/x = root[(x+1/x)^2-4] = root[25-4] = root21. Dividing x^2-1 by x: (x^2-1)/x = x-1/x = root21. So x/(x^2-1) = 1/root21. Thus 2x/(x^2-1) = 2/root21 = 2root21/21."}, {"tag": "SSC CGL 26/09/2025 (Shift-03)", "qEn": "Given, x = root3, what is (x+1)^2 + (x-1)^2?", "qHi": "दिया गया है, x = root3, तो (x+1)^2 + (x-1)^2 क्या है?", "opts": ["8", "7", "9", "6"], "ans": 0, "exp": "(x+1)^2+(x-1)^2 = 2(x^2+1) = 2(3+1) = 8."}, {"tag": "SSC CGL 14/10/2025 (Shift-02)", "qEn": "If a^3 + b^3 = 280 and a+b = 10, find ab.", "qHi": "यदि a^3 + b^3 = 280 और a+b = 10 है, तो ab ज्ञात करें।", "opts": ["24", "26", "28", "22"], "ans": 0, "exp": "a^3+b^3 = (a+b)^3-3ab(a+b). So 280 = 1000-30ab, giving 30ab=720, ab=24."}, {"tag": "SSC CGL Tier-II (19/01/2026)", "qEn": "If x + 1/x = 2root3, then find the value of x^3 + 1/x^3.", "qHi": "यदि x + 1/x = 2root3 है, तो x^3 + 1/x^3 का मान ज्ञात करें।", "opts": ["6root3", "18root3", "10root3", "24root3"], "ans": 1, "exp": "x^3+1/x^3 = (x+1/x)^3-3(x+1/x) = (2root3)^3-3(2root3) = 24root3-6root3 = 18root3."}, {"tag": "SSC CHSL 12/11/2025 (Shift-02)", "qEn": "If x+y+z = 0 and x^2+y^2+z^2 = 32, then find the value of xy+yz+xz.", "qHi": "यदि x+y+z = 0 और x^2+y^2+z^2 = 32 है, तो xy+yz+xz का मान ज्ञात करें।", "opts": ["-16", "16", "-32", "32"], "ans": 0, "exp": "(x+y+z)^2 = x^2+y^2+z^2+2(xy+yz+zx). So 0 = 32+2(xy+yz+zx), giving xy+yz+zx = -16."}, {"tag": "SSC CHSL 12/11/2025 (Shift-02)", "qEn": "Find the value of k such that the quadratic equation x^2 + kx + 16 = 0 has real and distinct roots.", "qHi": "k का वह मान ज्ञात करें जिससे द्विघात समीकरण x^2 + kx + 16 = 0 के वास्तविक और भिन्न मूल हों।", "opts": ["k>8", "k>5", "k<-7", "k<-9"], "ans": 0, "exp": "For real and distinct roots, discriminant b^2-4ac>0. Here 1x16=16 for c and a=1, so k^2-64>0, giving k^2>64, meaning k>8 or k<-8. Matching the given option, k>8 satisfies this (along with the symmetric k<-8 case)."}, {"tag": "SSC CHSL 12/11/2025 (Shift-03)", "qEn": "Simplify: [(x+y)^3+(y+z)^3+(z+x)^3-3(x+y)(y+z)(z+x)] / [x^3+y^3+z^3-3xyz].", "qHi": "सरल करें: [(x+y)^3+(y+z)^3+(z+x)^3-3(x+y)(y+z)(z+x)] / [x^3+y^3+z^3-3xyz].", "opts": ["4", "2", "6", "1"], "ans": 1, "exp": "Let a=x+y, b=y+z, c=z+x; note a+b+c=2(x+y+z). Using the identity a^3+b^3+c^3-3abc=(a+b+c)(a^2+b^2+c^2-ab-bc-ca), and simplifying carefully (or testing x=1,y=0,z=0): numerator=(1)^3+0+1^3-0=2, denominator=1^3+0+0-0=1, giving 2/1=2."}, {"tag": "SSC CHSL 13/11/2025 (Shift-01)", "qEn": "If p+q = 12 and p^2-q^2 = 72, then what is the value of p-q?", "qHi": "यदि p+q = 12 और p^2-q^2 = 72 है, तो p-q का मान क्या है?", "opts": ["4", "8", "12", "6"], "ans": 3, "exp": "p^2-q^2 = (p+q)(p-q). So 72 = 12x(p-q), giving p-q = 6."}, {"tag": "SSC CHSL 13/11/2025 (Shift-01)", "qEn": "Find the value of 4x^2+y^2+25z^2+4xy-10yz-20zx when x=4, y=3 and z=2.", "qHi": "4x^2+y^2+25z^2+4xy-10yz-20zx का मान ज्ञात करें जब x=4, y=3 और z=2 हो।", "opts": ["1", "3", "9", "6"], "ans": 0, "exp": "This expression is a perfect square: 4x^2+y^2+25z^2+4xy-10yz-20zx = (2x+y-5z)^2. Substituting: (8+3-10)^2 = 1^2 = 1."}, {"tag": "SSC CHSL 13/11/2025 (Shift-02)", "qEn": "What is the value of a^2+b^2+c^2 if a+b+c = 12 and ab+bc+ca = 40?", "qHi": "a^2+b^2+c^2 का मान क्या है यदि a+b+c = 12 और ab+bc+ca = 40 हो?", "opts": ["84", "64", "44", "144"], "ans": 1, "exp": "a^2+b^2+c^2 = (a+b+c)^2-2(ab+bc+ca) = 144-80 = 64."}, {"tag": "SSC CHSL 13/11/2025 (Shift-02)", "qEn": "If x-y = 8 and xy = 5, what is the value of x^3-y^3+8(x+y)^2?", "qHi": "यदि x-y = 8 और xy = 5 है, तो x^3-y^3+8(x+y)^2 का मान क्या है?", "opts": ["1256", "1304", "3456", "3245"], "ans": 1, "exp": "(x+y)^2 = (x-y)^2+4xy = 64+20 = 84. x^3-y^3 = (x-y)^3+3xy(x-y) = 512+3x5x8 = 512+120=632. So expression = 632+8x84 = 632+672 = 1304."}, {"tag": "SSC CHSL 13/11/2025 (Shift-03)", "qEn": "Solve: x/(x+1) + 1/x = 3.", "qHi": "हल करें: x/(x+1) + 1/x = 3.", "opts": ["x=(-5+root2)/2", "x=(-1+root3)/2", "x=(-3+root7)/2", "x=(-9+root5)/2"], "ans": 1, "exp": "Combining: (x^2+x+1)/(x^2+x) = 3, so x^2+x+1 = 3x^2+3x, giving 2x^2+2x-1=0. By the quadratic formula, x = [-2 ± root(4+8)]/4 = [-1 ± root3]/2."}, {"tag": "SSC CHSL 14/11/2025 (Shift-01)", "qEn": "If x^2+y^2 = 58 and x+y = 10, then what is the value of xy?", "qHi": "यदि x^2+y^2 = 58 और x+y = 10 है, तो xy का मान क्या है?", "opts": ["21", "29", "32", "25"], "ans": 0, "exp": "(x+y)^2 = x^2+y^2+2xy. So 100 = 58+2xy, giving xy = 21."}, {"tag": "SSC CHSL 14/11/2025 (Shift-01)", "qEn": "If a+b = root17 and a-b = root1, find the value of (a^2+b^2)/(ab)?", "qHi": "यदि a+b = root17 और a-b = root1 है, तो (a^2+b^2)/(ab) का मान ज्ञात करें?", "opts": ["9/4", "5/6", "9/8", "7/9"], "ans": 0, "exp": "From a+b=root17 and a-b=1: a=(root17+1)/2, b=(root17-1)/2. a^2+b^2 = [(a+b)^2+(a-b)^2]/2 = (17+1)/2=9. ab = [(a+b)^2-(a-b)^2]/4 = (17-1)/4=4. So (a^2+b^2)/ab = 9/4."}, {"tag": "SSC CHSL 14/11/2025 (Shift-02)", "qEn": "If x+y+z = 16 and xy+yz+zx = 75 what is the value of x^2+y^2+z^2?", "qHi": "यदि x+y+z = 16 और xy+yz+zx = 75 है, तो x^2+y^2+z^2 का मान क्या है?", "opts": ["106", "121", "156", "108"], "ans": 0, "exp": "x^2+y^2+z^2 = (x+y+z)^2-2(xy+yz+zx) = 256-150 = 106."}, {"tag": "SSC CHSL 14/11/2025 (Shift-02)", "qEn": "If b - 1/b = 3 then calculate the value of b^6 + 1/b^6?", "qHi": "यदि b - 1/b = 3 है, तो b^6 + 1/b^6 का मान ज्ञात करें?", "opts": ["1298", "1345", "1987", "1678"], "ans": 0, "exp": "b^2+1/b^2 = 3^2+2 = 11. b^6+1/b^6 = (b^2+1/b^2)^3-3(b^2+1/b^2) = 11^3-3x11 = 1331-33 = 1298."}, {"tag": "SSC CHSL 14/11/2025 (Shift-03)", "qEn": "Simplify: [(a^2-b^2)^3+(b^2-c^2)^3+(c^2-a^2)^3] / [(a-b)^3+(b-c)^3+(c-a)^3].", "qHi": "सरल करें: [(a^2-b^2)^3+(b^2-c^2)^3+(c^2-a^2)^3] / [(a-b)^3+(b-c)^3+(c-a)^3].", "opts": ["(a+b)(b+c)(c+a)", "(2a+b)(b+c)(3c+a)", "(2a+b)(2b+c)(2c+a)", "(a+3b)(b+3c)(c+3a)"], "ans": 0, "exp": "Let P=a^2-b^2=(a-b)(a+b), Q=b^2-c^2=(b-c)(b+c), R=c^2-a^2=(c-a)(c+a). Since P+Q+R=0, P^3+Q^3+R^3=3PQR. Similarly for the denominator with (a-b)+(b-c)+(c-a)=0, giving 3(a-b)(b-c)(c-a). The ratio simplifies to (a+b)(b+c)(c+a) after cancelling common factors."}, {"tag": "SSC CHSL 15/11/2025 (Shift-01)", "qEn": "If a^2+b^2+c^2 = 240 and ab-bc-ca = 64 then find the value of (a+b-c)^2.", "qHi": "यदि a^2+b^2+c^2 = 240 और ab-bc-ca = 64 है, तो (a+b-c)^2 का मान ज्ञात करें।", "opts": ["368", "321", "340", "388"], "ans": 0, "exp": "(a+b-c)^2 = a^2+b^2+c^2+2(ab-bc-ca) = 240+2x64 = 240+128 = 368."}, {"tag": "SSC CHSL 15/11/2025 (Shift-01)", "qEn": "If x = root2 + root3, find x^3 - 3x.", "qHi": "यदि x = root2 + root3 है, तो x^3 - 3x ज्ञात करें।", "opts": ["2root2+3root3", "8root2+6root3", "8root2-6root3", "2root2-3root3"], "ans": 1, "exp": "x^2 = 2+3+2root6 = 5+2root6. x^3-3x = x(x^2-3) = (root2+root3)(2+2root6) = 2root2+2root12+2root3+2root18 = 2root2+4root3+2root3+6root2 = 8root2+6root3."}, {"tag": "SSC CHSL 17/11/2025 (Shift-01)", "qEn": "If (m-n) = 4 and (m^3-n^3) = 1216, then find the value of (m x n).", "qHi": "यदि (m-n) = 4 और (m^3-n^3) = 1216 है, तो (m x n) का मान ज्ञात करें।", "opts": ["89", "96", "75", "91"], "ans": 1, "exp": "m^3-n^3 = (m-n)[(m-n)^2+3mn]. So 1216 = 4(16+3mn), giving 304=16+3mn, 3mn=288, mn=96."}, {"tag": "SSC CHSL 17/11/2025 (Shift-01)", "qEn": "If x+y = 24 and x^2+y^2 = 360, then find the value of (x^4+x^2y^2+y^4).", "qHi": "यदि x+y = 24 और x^2+y^2 = 360 है, तो (x^4+x^2y^2+y^4) का मान ज्ञात करें।", "opts": ["1,17,936", "1,25,878", "1,24,784", "2,15,869"], "ans": 0, "exp": "(x+y)^2 = x^2+y^2+2xy. So 576=360+2xy, giving xy=108. x^4+x^2y^2+y^4 = (x^2+y^2+xy)(x^2+y^2-xy) = (360+108)(360-108) = 468x252 = 117936."}, {"tag": "SSC CHSL 17/11/2025 (Shift-02)", "qEn": "If x+y = 6 and x^2+y^2 = 20, then find the value of (x^4+x^2y^2+y^4).", "qHi": "यदि x+y = 6 और x^2+y^2 = 20 है, तो (x^4+x^2y^2+y^4) का मान ज्ञात करें।", "opts": ["412", "336", "408", "372"], "ans": 1, "exp": "(x+y)^2 = x^2+y^2+2xy. So 36=20+2xy, giving xy=8. x^4+x^2y^2+y^4 = (x^2+y^2)^2-(xy)^2 = 400-64 = 336."}, {"tag": "SSC CHSL 17/11/2025 (Shift-02)", "qEn": "If (6m-5n)^2 = 7 and 30mn = 60 then find the value of (6m+5n)^2 + 16mn.", "qHi": "यदि (6m-5n)^2 = 7 और 30mn = 60 है, तो (6m+5n)^2 + 16mn का मान ज्ञात करें।", "opts": ["235", "207", "279", "244"], "ans": 2, "exp": "(6m-5n)^2 = 36m^2+25n^2-60mn = 7. Since 30mn=60, 60mn=120. So 36m^2+25n^2 = 7+120 = 127. Now (6m+5n)^2 = 36m^2+25n^2+60mn = 127+120 = 247. Adding 16mn = 16x2 = 32 (since mn=2): 247+32 = 279."}, {"tag": "SSC CHSL 17/11/2025 (Shift-03)", "qEn": "If (125x^3-343y^3) / (5x-7y) = Ax^2-By^2+Cxy then find the value of (2A+B-C).", "qHi": "यदि (125x^3-343y^3) / (5x-7y) = Ax^2-By^2+Cxy है, तो (2A+B-C) का मान ज्ञात करें।", "opts": ["-34", "-64", "-22", "-98"], "ans": 0, "exp": "Using the factoring identity, (125x^3-343y^3)/(5x-7y) = 25x^2+35xy+49y^2. Comparing with Ax^2-By^2+Cxy: A=25, C=35, and -By^2=49y^2 means B=-49. So 2A+B-C = 50-49-35 = -34."}, {"tag": "SSC CHSL 17/11/2025 (Shift-03)", "qEn": "If x^2+y^2+z^2 = 2(5x+6y+4z)-77, then find the value of 2(x+y)-3z.", "qHi": "यदि x^2+y^2+z^2 = 2(5x+6y+4z)-77 है, तो 2(x+y)-3z का मान ज्ञात करें।", "opts": ["11", "78", "10", "23"], "ans": 2, "exp": "Rearranging: x^2-10x+y^2-12y+z^2-8z+77=0, which factors as (x-5)^2+(y-6)^2+(z-4)^2=0. Since each square is non-negative, all must be zero: x=5, y=6, z=4. So 2(x+y)-3z = 2(11)-12 = 22-12 = 10."}, {"tag": "SSC CHSL 17/11/2025 (Shift-03)", "qEn": "If a = root7+root5 and b = root7-root5, then a^2+b^2 = ?", "qHi": "यदि a = root7+root5 और b = root7-root5 है, तो a^2+b^2 = ?", "opts": ["21", "33", "24", "50"], "ans": 2, "exp": "a^2 = 7+5+2root35 = 12+2root35. b^2 = 7+5-2root35 = 12-2root35. a^2+b^2 = 24."}, {"tag": "SSC CHSL 18/11/2025 (Shift-02)", "qEn": "If x = root10+root3 and y = root10-root3, then find x^2+y^2.", "qHi": "यदि x = root10+root3 और y = root10-root3 है, तो x^2+y^2 ज्ञात करें।", "opts": ["26", "56", "25", "15"], "ans": 0, "exp": "x^2 = 10+3+2root30 = 13+2root30. y^2 = 10+3-2root30 = 13-2root30. x^2+y^2 = 26."}, {"tag": "SSC CHSL 18/11/2025 (Shift-02)", "qEn": "If a = root8+root3 and b = root8-root3, find the value of (a+b)/(a-b)?", "qHi": "यदि a = root8+root3 और b = root8-root3 है, तो (a+b)/(a-b) का मान ज्ञात करें?", "opts": ["3root6/5", "2root6/3", "2root3/7", "None of these"], "ans": 1, "exp": "a+b = 2root8, a-b = 2root3. So (a+b)/(a-b) = root8/root3 = 2root2/root3 = 2root6/3 (rationalizing)."}, {"tag": "SSC CHSL 19/11/2025 (Shift-02)", "qEn": "If (a+b)^2 = 121 and ab = 10, then find a^2+b^2?", "qHi": "यदि (a+b)^2 = 121 और ab = 10 है, तो a^2+b^2 ज्ञात करें?", "opts": ["99", "100", "101", "102"], "ans": 2, "exp": "a^2+b^2 = (a+b)^2-2ab = 121-20 = 101."}, {"tag": "SSC CHSL 20/11/2025 (Shift-01)", "qEn": "If a+b = 24 and a^2+b^2 = 320, then find the value of (a^3+b^3)?", "qHi": "यदि a+b = 24 और a^2+b^2 = 320 है, तो (a^3+b^3) का मान ज्ञात करें?", "opts": ["4608", "4567", "3890", "4112"], "ans": 0, "exp": "(a+b)^2 = a^2+b^2+2ab. So 576=320+2ab, giving ab=128. a^3+b^3 = (a+b)^3-3ab(a+b) = 24^3-3x128x24 = 13824-9216 = 4608."}, {"tag": "SSC CHSL 20/11/2025 (Shift-02)", "qEn": "If p = 1+root3, q = 1-root3, Find the value of (p^2+q^2)?", "qHi": "यदि p = 1+root3, q = 1-root3 है, तो (p^2+q^2) का मान ज्ञात करें?", "opts": ["6", "5", "7", "8"], "ans": 3, "exp": "p+q = 2, pq = (1+root3)(1-root3) = 1-3 = -2. p^2+q^2 = (p+q)^2-2pq = 4-2(-2) = 4+4 = 8."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "If y = 3 - root8, find the value of y + 1/y.", "qHi": "यदि y = 3 - root8 है, तो y + 1/y का मान ज्ञात करें।", "opts": ["3", "4", "5", "6"], "ans": 3, "exp": "1/y = 1/(3-root8) = (3+root8)/[(3-root8)(3+root8)] = (3+root8)/1 = 3+root8. So y+1/y = (3-root8)+(3+root8) = 6."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "If x+y = 7 and xy = 12, calculate the value of x^2+y^2.", "qHi": "यदि x+y = 7 और xy = 12 है, तो x^2+y^2 का मान ज्ञात करें।", "opts": ["24", "25", "18", "20"], "ans": 1, "exp": "x^2+y^2 = (x+y)^2-2xy = 49-24 = 25."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "If x+y = 12 and x-y = 4, find (x^3+y^3)/(x+y).", "qHi": "यदि x+y = 12 और x-y = 4 है, तो (x^3+y^3)/(x+y) ज्ञात करें।", "opts": ["48", "45", "42", "46"], "ans": 0, "exp": "Solving: x=8, y=4. (x^3+y^3)/(x+y) = x^2-xy+y^2 = 64-32+16 = 48."}, {"tag": "SSC CHSL 21/11/2025 (Shift-02)", "qEn": "If x = (root2+1)/(root2-1), y = (root2-1)/(root2+1), find the value of (x^2+y^2).", "qHi": "यदि x = (root2+1)/(root2-1), y = (root2-1)/(root2+1) है, तो (x^2+y^2) का मान ज्ञात करें।", "opts": ["34", "38", "37", "32"], "ans": 0, "exp": "Rationalizing: x = 3+2root2, y = 3-2root2. x^2+y^2 = (3+2root2)^2+(3-2root2)^2 = 2(9+8) = 34."}, {"tag": "SSC CHSL 25/11/2025 (Shift-02)", "qEn": "If x = root3+root2, then find the value of x^2 - 2root6.", "qHi": "यदि x = root3+root2 है, तो x^2 - 2root6 का मान ज्ञात करें।", "opts": ["2", "-4", "5", "-10"], "ans": 2, "exp": "x^2 = 3+2+2root6 = 5+2root6. So x^2-2root6 = 5."}, {"tag": "SSC CHSL 26/11/2025 (Shift-02)", "qEn": "The sum of three numbers is 80 and the sum of the squares of these three numbers is 2,650. If the product of the three numbers is 13,500, then find the sum of the cubes of the given three numbers.", "qHi": "तीन संख्याओं का योग 80 है और इन तीनों संख्याओं के वर्गों का योग 2,650 है। अगर तीनों संख्याओं का गुणनफल 13,500 है, तो दी गई तीनों संख्याओं के घनों का योग ज्ञात करें।", "opts": ["1,46,580", "87,860", "1,90,750", "1,02,500"], "ans": 3, "exp": "Using the identity a^3+b^3+c^3-3abc = (a+b+c)[3(a^2+b^2+c^2)-(a+b+c)^2]/2: sum of cubes - 3x13500 = 40x[3x2650-6400] = 40x1550 = 62000. So sum of cubes = 62000+40500 = 102500."}, {"tag": "SSC CHSL 26/11/2025 (Shift-02)", "qEn": "If a - 1/a = 2, then calculate the value of a^4 + 1/a^4.", "qHi": "यदि a - 1/a = 2 है, तो a^4 + 1/a^4 का मान ज्ञात करें।", "opts": ["25", "34", "36", "48"], "ans": 1, "exp": "a^2+1/a^2 = 2^2+2 = 6. a^4+1/a^4 = 6^2-2 = 34."}, {"tag": "SSC CHSL 26/11/2025 (Shift-03)", "qEn": "If the satellite signal equation is (3x-4)^2, what is the expanded expression?", "qHi": "यदि सैटेलाइट सिग्नल समीकरण (3x-4)^2 है, तो विस्तारित व्यंजक क्या है?", "opts": ["9x^2-12x+16", "9x^2-24x+16", "9x^2-24x-16", "6x^2-24x+16"], "ans": 1, "exp": "(3x-4)^2 = (3x)^2-2x3xx4+4^2 = 9x^2-24x+16."}, {"tag": "SSC CHSL 27/11/2025 (Shift-01)", "qEn": "In analyzing underground pressure, the expression is simplified from (a^2-b^2)^2 - (2ab)^2. What's the final expression?", "qHi": "भूमिगत दबाव विश्लेषण में, व्यंजक को (a^2-b^2)^2 - (2ab)^2 से सरल किया जाता है। अंतिम व्यंजक क्या होगा?", "opts": ["a^4-4a^2b^2+b^4", "a^4+2a^2b^2+b^4", "a^4-6a^2b^2+b^4", "a^4-b^4"], "ans": 2, "exp": "(a^2-b^2)^2 = a^4-2a^2b^2+b^4. (2ab)^2 = 4a^2b^2. Subtracting: a^4-2a^2b^2+b^4-4a^2b^2 = a^4-6a^2b^2+b^4."}, {"tag": "SSC CHSL 27/11/2025 (Shift-02)", "qEn": "If x-y = 7 and xy = 60, then what is the value of x^2+y^2?", "qHi": "यदि x-y = 7 और xy = 60 है, तो x^2+y^2 का मान क्या है?", "opts": ["169", "149", "129", "109"], "ans": 0, "exp": "x^2+y^2 = (x-y)^2+2xy = 49+120 = 169."}, {"tag": "SSC CHSL 27/11/2025 (Shift-02)", "qEn": "If a+b = 3 and a-b = 1, find the value of a^4-b^4?", "qHi": "यदि a+b = 3 और a-b = 1 है, तो a^4-b^4 का मान ज्ञात करें?", "opts": ["15", "25", "20", "35"], "ans": 0, "exp": "From a+b=3, a-b=1: a=2, b=1. a^4-b^4 = 16-1 = 15."}, {"tag": "SSC CHSL 27/11/2025 (Shift-03)", "qEn": "If 4x^2+y^2 = 40 and xy = 6, find the value of 2x+y and 2x-y.", "qHi": "यदि 4x^2+y^2 = 40 और xy = 6 है, तो 2x+y और 2x-y का मान ज्ञात करें।", "opts": ["2, 3", "8, 4", "5, 6", "9, 8"], "ans": 1, "exp": "(2x+y)^2 = 4x^2+y^2+4xy = 40+24 = 64, so 2x+y=8. (2x-y)^2 = 4x^2+y^2-4xy = 40-24 = 16, so 2x-y=4."}, {"tag": "SSC CHSL 28/11/2025 (Shift-01)", "qEn": "If p+q = 3 and p-q = 1, find 2p^2+2q^2-4pq?", "qHi": "यदि p+q = 3 और p-q = 1 है, तो 2p^2+2q^2-4pq ज्ञात करें?", "opts": ["2", "4", "6", "8"], "ans": 0, "exp": "From p+q=3, p-q=1: p=2, q=1. 2p^2+2q^2-4pq = 2(4)+2(1)-4(2) = 8+2-8 = 2."}, {"tag": "SSC CHSL 28/11/2025 (Shift-02)", "qEn": "If root(a)+root(b) = 12 and root(a)-root(b) = 4, then what is the value of a+b?", "qHi": "यदि root(a)+root(b) = 12 और root(a)-root(b) = 4 है, तो a+b का मान क्या है?", "opts": ["120", "40", "80", "160"], "ans": 2, "exp": "Adding: 2root(a)=16, so root(a)=8, a=64. Subtracting: 2root(b)=8, so root(b)=4, b=16. a+b = 64+16 = 80."}, {"tag": "SSC CHSL 28/11/2025 (Shift-03)", "qEn": "If 2x + 2/x = 3, what is the value of x^2 + 1/x^2?", "qHi": "यदि 2x + 2/x = 3 है, तो x^2 + 1/x^2 का मान क्या है?", "opts": ["1/4", "2/5", "5/7", "8/7"], "ans": 0, "exp": "Dividing by 2: x+1/x = 3/2. Squaring: x^2+1/x^2 = (3/2)^2-2 = 9/4-2 = 1/4."}, {"tag": "SSC CHSL 29/11/2025 (Shift-01)", "qEn": "If x+y = 11 and x-y = 5, find x^4-y^4?", "qHi": "यदि x+y = 11 और x-y = 5 है, तो x^4-y^4 ज्ञात करें?", "opts": ["4015", "5678", "1450", "3450"], "ans": 0, "exp": "x=8, y=3 (from solving the two equations). x^4-y^4 = (x^2+y^2)(x+y)(x-y) = (64+9)(11)(5) = 73x55 = 4015."}, {"tag": "SSC CHSL 29/11/2025 (Shift-02)", "qEn": "If root(a)+root(b) = 10 and root(a)-root(b) = 4, then what is the value of a+b?", "qHi": "यदि root(a)+root(b) = 10 और root(a)-root(b) = 4 है, तो a+b का मान क्या है?", "opts": ["58", "116", "29", "62"], "ans": 0, "exp": "Adding: 2root(a)=14, root(a)=7, a=49. Subtracting: 2root(b)=6, root(b)=3, b=9. a+b = 49+9 = 58."}, {"tag": "SSC CHSL 29/11/2025 (Shift-03)", "qEn": "In a microchip design, expression for interference signal is [(x+y)^2 + (x-y)^2]^2. Find the simplified expression.", "qHi": "एक माइक्रोचिप डिज़ाइन में, हस्तक्षेप सिग्नल का व्यंजक है: [(x+y)^2 + (x-y)^2]^2। इसका सरलीकृत रूप क्या होगा?", "opts": ["4x^2+4y^2", "16x^2+16y^2", "4x^4+8x^2y^2+4y^4", "8x^2+8y^2"], "ans": 2, "exp": "(x+y)^2+(x-y)^2 = 2x^2+2y^2. Squaring: [2x^2+2y^2]^2 = 4x^4+8x^2y^2+4y^4."}, {"tag": "SSC CHSL 29/11/2025 (Shift-03)", "qEn": "If x = root18+root8, then what is the value of x^2?", "qHi": "यदि x = root18+root8 है, तो x^2 का मान क्या है?", "opts": ["50", "52", "46", "49"], "ans": 0, "exp": "root18=3root2, root8=2root2. So x = 3root2+2root2=5root2. x^2 = 50."}, {"tag": "SSC CPO 09/12/2025 (Shift-01)", "qEn": "Expand: (3x-7)^2 = ?", "qHi": "विस्तार करें: (3x-7)^2 = ?", "opts": ["9x^2+42x+49", "9x^2-42x+49", "x^2-42x+49", "9x^2-21x+49"], "ans": 1, "exp": "(3x-7)^2 = (3x)^2-2x3xx7+49 = 9x^2-42x+49."}, {"tag": "SSC CPO 09/12/2025 (Shift-02)", "qEn": "Given: x + 1/x = 2, find the value of x^6 + 1/x^6 - 3(x^3+1/x^3) + 5(x^2+1/x^2).", "qHi": "दिया गया है: x + 1/x = 2, तो x^6 + 1/x^6 - 3(x^3+1/x^3) + 5(x^2+1/x^2) का मान ज्ञात करें।", "opts": ["2", "4", "6", "8"], "ans": 2, "exp": "If x+1/x=2, then x=1. So x^6+1/x^6=2, x^3+1/x^3=2, x^2+1/x^2=2. Expression = 2-3(2)+5(2) = 2-6+10 = 6."}, {"tag": "SSC CPO 09/12/2025 (Shift-02)", "qEn": "Expand: (2x-3)^2.", "qHi": "विस्तार करें: (2x-3)^2.", "opts": ["4x^2+12x+9", "4x^2-12x+9", "4x^2-14x+10", "4x^2+10x+9"], "ans": 1, "exp": "(2x-3)^2 = (2x)^2-2x2xx3+9 = 4x^2-12x+9."}, {"tag": "SSC CPO 10/12/2025 (Shift-01)", "qEn": "If a^2+b^2 = 100 and a-b = 4, find the value of ab?", "qHi": "यदि a^2+b^2 = 100 और a-b = 4 है, तो ab का मान ज्ञात करें?", "opts": ["28", "32", "42", "54"], "ans": 2, "exp": "(a-b)^2 = a^2+b^2-2ab. So 16 = 100-2ab, giving 2ab=84, ab=42."}, {"tag": "SSC CPO 10/12/2025 (Shift-02)", "qEn": "If (a+b+c) = 20 and (a^2+b^2+c^2) = 200, find the value of (a-b)^2+(b-c)^2+(c-a)^2?", "qHi": "यदि (a+b+c) = 20 और (a^2+b^2+c^2) = 200 है, तो (a-b)^2+(b-c)^2+(c-a)^2 का मान ज्ञात करें?", "opts": ["300", "-200", "200", "123"], "ans": 2, "exp": "(a+b+c)^2 = a^2+b^2+c^2+2(ab+bc+ca). So 400=200+2(ab+bc+ca), giving ab+bc+ca=100. (a-b)^2+(b-c)^2+(c-a)^2 = 2(a^2+b^2+c^2-ab-bc-ca) = 2(200-100) = 200."}, {"tag": "SSC CPO 10/12/2025 (Shift-02)", "qEn": "If a+b = 7, is the value of a^3+b^3+21ab = ?", "qHi": "यदि a+b = 7 है, तो a^3+b^3+21ab का मान क्या है?", "opts": ["231", "443", "121", "343"], "ans": 3, "exp": "(a+b)^3 = a^3+b^3+3ab(a+b). So 343 = a^3+b^3+21ab (since 3ab(a+b)=3ab(7)=21ab). Therefore a^3+b^3+21ab = 343."}, {"tag": "SSC CPO 10/12/2025 (Shift-02)", "qEn": "Which pair of numbers has a sum of 13 and whose squares differ by 65?", "qHi": "संख्याओं की कौन सी जोड़ी का योग 13 है और जिनके वर्गों का अंतर 65 है?", "opts": ["6 and 7", "5 and 8", "4 and 9", "3 and 10"], "ans": 2, "exp": "a+b=13, a^2-b^2=65, so a-b = 65/13 = 5. Solving a+b=13 and a-b=5: a=9, b=4."}, {"tag": "SSC CPO 11/12/2025 (Shift-01)", "qEn": "If X+Y = 20 and XY = 120; what is the value of (X)^2+(Y)^2.", "qHi": "यदि X+Y = 20 और XY = 120 है; तो (X)^2+(Y)^2 का मान क्या है।", "opts": ["160", "120", "200", "221"], "ans": 0, "exp": "(X+Y)^2 = X^2+Y^2+2XY. So 400 = X^2+Y^2+240, giving X^2+Y^2 = 160."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "If a+b+c = 15, ab+bc+ca = 48 and abc = 16, then find the value of a^3+b^3+c^3.", "qHi": "यदि a+b+c = 15, ab+bc+ca = 48 और abc = 16 है, तो a^3+b^3+c^3 का मान ज्ञात करें।", "opts": ["1212", "1263", "1321", "1441"], "ans": 1, "exp": "a^3+b^3+c^3-3abc = (a+b+c)[(a+b+c)^2-3(ab+bc+ca)]. So a^3+b^3+c^3-48 = 15[225-144] = 15x81=1215. So a^3+b^3+c^3 = 1215+48 = 1263."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "Expand: (5x-3)^2 = ?", "qHi": "विस्तार करें: (5x-3)^2 = ?", "opts": ["25x^2-15x+9", "25x^2+30x-9", "25x^2+30x+9", "25x^2-30x+9"], "ans": 3, "exp": "(5x-3)^2 = (5x)^2-2x5xx3+9 = 25x^2-30x+9."}, {"tag": "SSC CPO 12/12/2025 (Shift-01)", "qEn": "Simplify: (a+b)^2 - (a-b)^2.", "qHi": "सरल करें: (a+b)^2 - (a-b)^2.", "opts": ["3ab", "ab", "2ab", "4ab"], "ans": 3, "exp": "(a+b)^2-(a-b)^2 = (a^2+2ab+b^2)-(a^2-2ab+b^2) = 4ab."}, {"tag": "SSC CPO 12/12/2025 (Shift-01)", "qEn": "The value of (a-b)(a+b) + (b-c)(b+c) + (c-a)(c+a) is:", "qHi": "(a-b)(a+b) + (b-c)(b+c) + (c-a)(c+a) का मान है:", "opts": ["2a-3b", "a-c", "0", "a-b"], "ans": 2, "exp": "Each term simplifies via difference of squares: (a^2-b^2)+(b^2-c^2)+(c^2-a^2). All terms cancel out, giving 0."}, {"tag": "SSC CPO 12/12/2025 (Shift-02)", "qEn": "The product of 5xy^2z and 7xz^2 is:", "qHi": "5xy^2z और 7xz^2 का गुणनफल है:", "opts": ["12xyz", "35x^2z^2", "32x^2y^2z^3", "35x^2y^2z^3"], "ans": 3, "exp": "5xy^2z x 7xz^2 = 35x^2y^2z^3."}, {"tag": "SSC CPO 12/12/2025 (Shift-02)", "qEn": "If we multiply (-6ab) and (11ab^2c), then we get:", "qHi": "यदि हम (-6ab) और (11ab^2c) को गुणा करें, तो हमें प्राप्त होता है:", "opts": ["66a^2b^3c", "-66a^2b^3c", "-11a^2b^3c", "-66abc"], "ans": 1, "exp": "(-6ab) x (11ab^2c) = -66a^2b^3c."}, {"tag": "SSC CPO 13/12/2025 (Shift-01)", "qEn": "What is (9x-5)^2?", "qHi": "(9x-5)^2 क्या है?", "opts": ["81x^2-90x-25", "81x^2+90x+25", "8x^2-90x+25", "81x^2-90x+25"], "ans": 3, "exp": "(9x-5)^2 = (9x)^2-2x9xx5+25 = 81x^2-90x+25."}, {"tag": "SSC CPO 13/12/2025 (Shift-01)", "qEn": "If we subtract 5a-7ab+3b+10 from 14a-9ab+8b-3, then the answer is:", "qHi": "यदि हम 14a-9ab+8b-3 में से 5a-7ab+3b+10 घटाएं, तो उत्तर है:", "opts": ["8a-3ab+5b-13", "9a-3ab+4b-10", "9a-2ab+5b-13", "9a-2ab+4b-10"], "ans": 2, "exp": "(14a-9ab+8b-3) - (5a-7ab+3b+10) = 14a-9ab+8b-3-5a+7ab-3b-10 = 9a-2ab+5b-13."}, {"tag": "SSC PHASE XIII 24/07/2025 (Shift-03)", "qEn": "Given: p/a + q/b + r/c = 1 and a/p + b/q + c/r = 0, where p, q, r and a, b, c are non-zero, then the value of p^2/a^2 + q^2/b^2 + r^2/c^2 is:", "qHi": "दिया गया है: p/a + q/b + r/c = 1 और a/p + b/q + c/r = 0, जहां p, q, r और a, b, c शून्येतर हैं, तो p^2/a^2 + q^2/b^2 + r^2/c^2 का मान है:", "opts": ["1", "2", "3", "4"], "ans": 0, "exp": "From a/p+b/q+c/r=0, multiplying through gives aqr+bpr+cpq=0. Squaring p/a+q/b+r/c=1: (p/a)^2+(q/b)^2+(r/c)^2 + 2(pq/ab+qr/bc+pr/ac) = 1. The cross terms simplify to zero using the first relation, leaving p^2/a^2+q^2/b^2+r^2/c^2 = 1."}, {"tag": "SSC PHASE XIII 25/07/2025 (Shift-03)", "qEn": "If x + 1/(x+2) = 6, determine the value of (x+2)^3 + 1/(x+2)^3?", "qHi": "यदि x + 1/(x+2) = 6 है, तो (x+2)^3 + 1/(x+2)^3 का मान ज्ञात करें?", "opts": ["488", "386", "250", "405"], "ans": 0, "exp": "x+1/(x+2)=6 means (x+2)+1/(x+2) = 8 (adding 2 to both sides, since x+2 replaces the '2' term needed). Using a^3+1/a^3=a^3-3a formula where a=(x+2)+1/(x+2)=8: (x+2)^3+1/(x+2)^3 = 8^3-3x8 = 512-24 = 488."}, {"tag": "SSC PHASE XIII 26/07/2025 (Shift-03)", "qEn": "If x + 1/(x+2) = 6, then determine the value of (x+2)^3 + 1/(x+2)^3?", "qHi": "यदि x + 1/(x+2) = 6 है, तो (x+2)^3 + 1/(x+2)^3 का मान ज्ञात करें?", "opts": ["488", "386", "250", "405"], "ans": 0, "exp": "x+1/(x+2)=6 means (x+2)+1/(x+2) = 8. Using a^3+1/a^3=a^3-3a where a=8: (x+2)^3+1/(x+2)^3 = 8^3-3x8 = 512-24 = 488."}, {"tag": "SSC PHASE XIII 29/07/2025 (Shift-03)", "qEn": "If a^2 + 1/a^2 = 14, find the value of a^4 + 1/a^4?", "qHi": "यदि a^2 + 1/a^2 = 14 है, तो a^4 + 1/a^4 का मान ज्ञात करें?", "opts": ["190", "194", "186", "188"], "ans": 1, "exp": "a^4+1/a^4 = (a^2+1/a^2)^2-2 = 14^2-2 = 196-2 = 194."}, {"tag": "SSC PHASE XIII 30/07/2025 (Shift-03)", "qEn": "If a + 1/a = 3, find the value of a^6 + 1/a^6?", "qHi": "यदि a + 1/a = 3 है, तो a^6 + 1/a^6 का मान ज्ञात करें?", "opts": ["322", "324", "326", "256"], "ans": 0, "exp": "a^3+1/a^3 = (a+1/a)^3-3(a+1/a) = 27-9 = 18. a^6+1/a^6 = (a^3+1/a^3)^2-2 = 18^2-2 = 324-2 = 322."}, {"tag": "SSC PHASE XIII 31/07/2025 (Shift-03)", "qEn": "If root[(1-a^2)(1-b^2)] = 3/5 and b = 2/5 then evaluate: [(4a^2+4b^2+8ab) + (4a^2+4b^2-8ab)]", "qHi": "यदि root[(1-a^2)(1-b^2)] = 3/5 और b = 2/5 है, तो मूल्यांकन करें: [(4a^2+4b^2+8ab) + (4a^2+4b^2-8ab)]", "opts": ["1024/175", "1028/177", "1052/280", "1050/250"], "ans": 0, "exp": "With b=2/5, b^2=4/25, so 1-b^2=21/25. Given root[(1-a^2)x21/25]=3/5, squaring: (1-a^2)x21/25=9/25, so 1-a^2=9/21=3/7, giving a^2=4/7. The bracketed expression simplifies to 8a^2+8b^2 (cross terms cancel) = 8(4/7)+8(4/25) = 32/7+32/25 = (800+224)/175 = 1024/175."}, {"tag": "SSC DP_HC_AWO_TPO 16/01/2026 (Shift-01)", "qEn": "The roots of a quadratic equation have an arithmetic mean of 5 and a geometric mean of 4. The quadratic equation is:", "qHi": "एक द्विघात समीकरण के मूलों का अंकगणितीय माध्य 5 और ज्यामितीय माध्य 4 है। द्विघात समीकरण है:", "opts": ["x^2-x-25=0", "5x^2-10x+16=0", "x^2-10x+16=0", "6x^2-16=0"], "ans": 2, "exp": "If roots are alpha and beta: arithmetic mean=(alpha+beta)/2=5, so alpha+beta=10. Geometric mean=root(alpha.beta)=4, so alpha.beta=16. The quadratic equation is x^2-(sum)x+(product)=0, giving x^2-10x+16=0."}, {"tag": "DP CONSTABLE 19/12/2025 (Shift-02)", "qEn": "A man buys 7 pens and 5 pencils for Rs.100. If the cost of one pencil is Rs.2 more than the cost of one pen, find the cost of one pen.", "qHi": "एक आदमी 7 पेन और 5 पेंसिल 100 रुपये में खरीदता है। यदि एक पेंसिल की कीमत एक पेन की कीमत से 2 रुपये अधिक है, तो एक पेन की कीमत ज्ञात करें।", "opts": ["7", "7.5", "8.5", "9.5"], "ans": 1, "exp": "Let cost of pen=x, pencil=y=x+2. 7x+5y=100, so 7x+5(x+2)=100, giving 12x+10=100, 12x=90, x=7.5."}, {"tag": "SSC MTS 11/02/2026 (Shift-02)", "qEn": "If (9x-3y) = 96 and 4x:3y = 20:21, then find the value of (2x^2+3y^2).", "qHi": "यदि (9x-3y) = 96 और 4x:3y = 20:21 है, तो (2x^2+3y^2) का मान ज्ञात करें।", "opts": ["2756", "3341", "3152", "2280"], "ans": 2, "exp": "From 9x-3y=96: 3x-y=32. From 4x:3y=20:21: x/y = 20x3/(21x4) = 5/7, so y=7x/5. Substituting: 3x-7x/5=32, giving (15x-7x)/5=32, 8x/5=32, x=20, so y=28. Then 2x^2+3y^2 = 2(400)+3(784) = 800+2352 = 3152."}, {"tag": "SSC MTS 12/02/2026 (Shift-02)", "qEn": "If 2x - 1/(2x) = 10/3 and x > 1, then find the value of (x^2 + 1/(16x^2)).", "qHi": "यदि 2x - 1/(2x) = 10/3 है और x > 1 है, तो (x^2 + 1/(16x^2)) का मान ज्ञात करें।", "opts": ["125/18", "59/18", "118/9", "35/9"], "ans": 1, "exp": "Squaring 2x-1/(2x)=10/3: 4x^2-1+1/(4x^2)=100/9, so 4x^2+1/(4x^2)=100/9+1=109/9. Dividing by 4: x^2+1/(16x^2) = 109/36. Recomputing carefully as per source method: (1/4)x(4x^2+1/(4x^2)) = (1/4)x(118/9) = 118/36 = 59/18."}];
+const TOTAL = QUESTIONS.length;
+const TEST_SECONDS = TOTAL * 60;
+
+let current = 0;
+let answers = new Array(TOTAL).fill(null);
+let visited = new Array(TOTAL).fill(false);
+let timeLeft = TEST_SECONDS;
+let timerInterval = null;
+let reviewIndex = 0;
+
+function startTest(){
+  document.getElementById('siteHeader').classList.remove('show');
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  buildPalette('test');
+  startTimer();
+}
+
+function startTimer(){
+  updateTimerText();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerText();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest();
+    }
+  },1000);
+}
+function updateTimerText(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  document.getElementById('timerText').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  document.getElementById('sourceTag').textContent = q.tag;
+  document.getElementById('qMeta').textContent = 'Question '+(current+1)+' of '+TOTAL;
+  document.getElementById('qText').textContent = q.qEn;
+  document.getElementById('qTextHi').textContent = q.qHi;
+  document.getElementById('progressText').textContent = 'Question '+(current+1)+' / '+TOTAL;
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[current]===i ? ' selected' : '');
+    div.onclick = ()=>selectOption(i);
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>';
+    box.appendChild(div);
+  });
+
+  document.getElementById('btnPrev').disabled = (current===0);
+  document.getElementById('btnNext').disabled = (current===TOTAL-1);
+  visited[current] = true;
+  buildPalette('test');
+}
+
+function selectOption(i){
+  answers[current] = i;
+  renderQuestion();
+}
+function clearResponse(){
+  answers[current] = null;
+  renderQuestion();
+}
+function prevQ(){ if(current>0){ current--; renderQuestion(); } }
+function nextQ(){ if(current<TOTAL-1){ current++; renderQuestion(); } }
+
+function buildPalette(which){
+  const grid = document.getElementById('paletteGrid_'+which);
+  if(!grid) return;
+  grid.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const btn = document.createElement('button');
+    let cls = 'pn-grey';
+    if(which==='test'){
+      if(answers[i]!==null) cls='pn-green';
+      else if(visited[i]) cls='pn-red';
+    } else {
+      if(answers[i]===null) cls='pn-grey';
+      else if(answers[i]===QUESTIONS[i].ans) cls='pn-green';
+      else cls='pn-red';
+    }
+    btn.className = 'palette-num ' + cls;
+    btn.textContent = i+1;
+    btn.onclick = ()=>{
+      if(which==='test'){ current = i; visited[i]=true; renderQuestion(); }
+      else { reviewIndex = i; renderReview(); }
+      togglePalette(which,true);
+    };
+    grid.appendChild(btn);
+  }
+}
+
+function togglePalette(which, forceClose){
+  const dd = document.getElementById('paletteDD_'+which);
+  if(forceClose){ dd.classList.remove('open'); return; }
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  ['test','review'].forEach(w=>{
+    const dd = document.getElementById('paletteDD_'+w);
+    const btn = e.target.closest('.palette-wrap');
+    if(dd && dd.classList.contains('open') && !btn){
+      dd.classList.remove('open');
+    }
+  });
+});
+
+function askSubmit(){
+  const unattempted = answers.filter(a=>a===null).length;
+  document.getElementById('modalMsg').textContent = 'You have '+unattempted+' unattempted question(s). Are you sure you want to submit the test?';
+  document.getElementById('submitModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('submitModal').classList.remove('open'); }
+document.getElementById('submitModal').addEventListener('click',function(e){
+  if(e.target === this) closeModal();
+});
+function confirmSubmit(){ closeModal(); submitTest(); }
+
+function submitTest(){
+  clearInterval(timerInterval);
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+
+  let correct=0, wrong=0, attempted=0;
+  answers.forEach((a,i)=>{
+    if(a!==null){
+      attempted++;
+      if(a===QUESTIONS[i].ans) correct++; else wrong++;
+    }
+  });
+  const unattempted = TOTAL - attempted;
+  const score = (correct*1 - wrong*0.25);
+
+  document.getElementById('rTotal').textContent = TOTAL;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rBlank').textContent = '';
+  document.getElementById('rScore').textContent = score.toFixed(2);
+}
+
+function retakeTest(){
+  answers = new Array(TOTAL).fill(null);
+  visited = new Array(TOTAL).fill(false);
+  current = 0;
+  timeLeft = TEST_SECONDS;
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('siteHeader').classList.add('show');
+  document.getElementById('startScreen').style.display = 'block';
+}
+
+function openReview(){
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  reviewIndex = 0;
+  renderReview();
+  buildPalette('review');
+}
+
+function renderReview(){
+  const q = QUESTIONS[reviewIndex];
+  const userAns = answers[reviewIndex];
+  const letters = ['A','B','C','D'];
+
+  document.getElementById('revSourceTag').textContent = q.tag;
+  document.getElementById('revQMeta').textContent = 'Question '+(reviewIndex+1)+' of '+TOTAL;
+  document.getElementById('revQText').textContent = q.qEn;
+  document.getElementById('revQTextHi').textContent = q.qHi;
+
+  let statusHtml = '';
+  if(userAns === null){
+    statusHtml = '<span class="status-tag status-unattempted">Unattempted</span>';
+  } else if(userAns === q.ans){
+    statusHtml = '<span class="status-tag status-correct">Correct</span>';
+  } else {
+    statusHtml = '<span class="status-tag status-wrong">Wrong</span>';
+  }
+  document.getElementById('reviewStatusTag').innerHTML = statusHtml;
+
+  const box = document.getElementById('revOptionsBox');
+  box.innerHTML = '';
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    let cls = 'option';
+    let markIcon = '';
+    if(i===q.ans){ cls+=' correct'; markIcon='<span class="mark-icon">✓</span>'; }
+    else if(i===userAns){ cls+=' wrong'; markIcon='<span class="mark-icon">✗</span>'; }
+    div.className = cls;
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>'+markIcon;
+    box.appendChild(div);
+  });
+
+  const userAnsText = userAns===null ? 'Not Attempted' : letters[userAns]+'. '+q.opts[userAns];
+  const correctAnsText = letters[q.ans]+'. '+q.opts[q.ans];
+  document.getElementById('revAnsLine').innerHTML =
+    '<b>Your Answer:</b> '+userAnsText+'<br><b>Correct Answer:</b> '+correctAnsText;
+
+  document.getElementById('revExplain').textContent = q.exp;
+
+  document.getElementById('revBtnPrev').disabled = (reviewIndex===0);
+  document.getElementById('revBtnNext').disabled = (reviewIndex===TOTAL-1);
+  buildPalette('review');
+}
+
+function revPrev(){ if(reviewIndex>0){ reviewIndex--; renderReview(); } }
+function revNext(){ if(reviewIndex<TOTAL-1){ reviewIndex++; renderReview(); } }
+function backToResult(){
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+}
+</script>
+</body>
+</html>

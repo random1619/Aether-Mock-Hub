@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computer Subject Test 3</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    Computer Subject Test 3 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>&#39;JPG&#39; extension refers usually to what kind of file ?</p></div>
+  <div class="question lang-hi">&#39;JPG&#39; एक्सटेंशन आमतौर पर किस तरह की फाइल को संदर्भित करता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">System file</div><div class="option">Animation or Movie file</div><div class="option">MS Encarta document</div><div class="option correct">Image file</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सिस्टम फाइल</div><div class="option">एनिमेशन या मूवी फाइल</div><div class="option"><span style="color: rgb(33, 37, 41);">MS</span> एनकार्टा डॉक्यूमेंट</div><div class="option correct">इमेज फाइल</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u>Image file</u></strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>JPG </strong>extension refers usually to the <strong>image file</strong>.</li> <li><strong>JPG </strong>stands for&nbsp;<strong>Joint Photographic Experts Group.</strong></li> <li><strong>JPEG </strong>(often seen with its file extension <strong>. jpg or . jpeg</strong>) stands for &quot;<strong>Joint Photographic Experts Group</strong>&quot;, which is the <strong>name of the group that created the JPEG</strong> <strong>standard</strong>.</li> </ul> <p><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><span style="font-weight: 700;">Extension of some other important files:</span></p> <ul> <li>Excel file - Xls</li> <li>Word file - doc</li> <li>Powerpoint file - ppt&nbsp;</li> <li>Open document -&nbsp;Odt&nbsp;</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>इमेज फाइल</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>जेपीजी </strong>विस्तार आमतौर पर <strong>छवि फ़ाइल</strong> को संदर्भित करता है।</li> <li><strong>जेपीजी </strong>का मतलब है <strong>ज्वाइंट फोटोग्राफिक एक्सपर्ट्स ग्रुप</strong>।</li> <li><strong>जेपीईजी </strong>(अक्सर इसके फ़ाइल एक्सटेंशन- <span style="font-weight: 700;">. jpg या . jpeg</span> के साथ देखा जाता है) का अर्थ <strong>&quot;ज्वाइंट फोटोग्राफिक एक्सपर्ट्स ग्रुप&quot;</strong> है, जो <strong>उस समूह का नाम है जिसने जेपीईजी मानक बनाया है</strong>।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><strong>कुछ अन्य महत्वपूर्ण फाइलों के एक्सटेंशन:</strong></p> <ul> <li>एक्सेल फ़ाइल - Xls</li> <li>वर्ड फ़ाइल - doc</li> <li>पावरपॉइंट फ़ाइल - ppt</li> <li>ओपन डॉक्यूमेंट - Odt</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">How Much free storage does Gmail provide?</div>
+  <div class="question lang-hi">Gmail कितना फ्री स्टोरेज प्रदान करता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">5 GB</div><div class="option">10 GB</div><div class="option correct">15 GB</div><div class="option">20 GB</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">5 GB</div><div class="option">10 GB</div><div class="option correct">15 GB</div><div class="option">20 GB</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>option 3.</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Google gives users <strong>15 GB o</strong>f digital storage for free. <ul> <li>That includes everything in Gmail, Google Drive, and any uncompressed images stored in Google Photos.</li> <li>Every Google Account comes with<strong> 15 GB of storage</strong> that&#39;s shared across Google Drive, Gmail, and Google Photos.</li> <li>When you upgrade to Google One, your total storage increases to <strong>100 GB </strong>or more depending on what plan you choose.</li> </ul> </li> </ul> <p><strong>Hence the correct answer is 15 GB</strong><em><span style="background-color: rgb(255, 255, 255);">.</span></em></p></div>
+    <div class="lang-hi"><p>सही उत्तर <strong>विकल्प 3 </strong>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><span style="">गूगल (Google)</span> यूजर्स <strong>को फ्री में 15 जीबी की</strong> डिजिटल स्टोरेज देता है। <ul> <li>इसमें Gmail, Google डिस्क और Google फ़ोटो में संग्रहित सभी असम्पीडित छवियाँ शामिल होती हैं।</li> <li>प्रत्येक Google अकाउंट में <strong>15 GB <span style="">स्टोरेज </span></strong><strong>होता है</strong> जिसे Google डिस्क, Gmail और Google फ़ोटो में साझा किया जाता है।</li> <li>जब आप Google One में अपग्रेड करते हैं तो आपके द्वारा <strong>चुने गए प्लान के आधार पर आपका कुल </strong><span style="font-weight: 700; ">स्टोरेज </span><strong>बढ़कर 100 GB</strong> या उससे अधिक हो जाता है।</li> </ul> </li> </ul> <p><strong>अत:, सही उत्तर 15 GB<em> </em>है।</strong></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">ASCII is a coding system that provides ________ different characters.</div>
+  <div class="question lang-hi">ASCII एक कूट लेखन प्रणाली है जो कितने विभिन्न केरेक्टेर्स प्रदान करती है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">128</div><div class="option">357</div><div class="option">1024</div><div class="option">2024</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">128</div><div class="option">357</div><div class="option">1024</div><div class="option">2024</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<b><u>128.</u></b></p> <ul> <li>The abbreviation of ASCII is the&nbsp;<strong>&quot; American Standard Code for Information Interchange&quot;.&nbsp;</strong>It provides <strong>128</strong> different characters.</li> <li>It is a character encoding standard for electronic communication. The text represents text in computers, telecommunications equipment, and other devices.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>It was designed in the <strong>early &#39;60s</strong>, as a standard character set for computers and electronic devices.</li> <li>ASCII is a <strong>7-bit character</strong> set containing 128 characters.</li> <li>It contains the numbers from <strong>0-9,</strong> the <strong>upper</strong> and <strong>lower case</strong> English letters from <strong>A to Z,</strong> and <strong>some special characters.</strong></li> <li>The character sets used in modern computers, in HTML, and on the internet, are all based on ASCII.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>128</strong></u> है।</p> <ul> <li>ASCII का <span style="color: rgb(37, 37, 37); ">संक्षिप्तीकरण</span> &quot;<strong>अमेरिकन स्टैण्डर्ड कोड फॉर इनफार्मेशन इंटरचेंज</strong>&quot; है। यह <strong>128 </strong>विभिन्न वर्ण प्रदान करता है।</li> <li>यह इलेक्ट्रॉनिक संचार के लिए एक वर्ण कूट लेखन&nbsp;मानक है। लेख कंप्यूटर, दूरसंचार उपकरण और अन्य उपकरणों में लेख को दर्शाता&nbsp;है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>यह <strong>60 के दशक की शुरुआत में</strong>, कंप्यूटर और इलेक्ट्रॉनिक उपकरणों के लिए एक मानक वर्ण सेट के रूप में तैयार किया गया था।</li> <li>ASCII एक <strong>7-बिट वर्ण</strong> है जिसमें 128 वर्ण हैं।</li> <li>इसमें&nbsp;नंबर <strong>0-9</strong>, <strong>ऊपरी </strong>और <strong>निचले मामले </strong>में अंग्रेजी के अक्षर<strong> A से Z</strong> और <strong>कुछ विशेष अक्षर</strong> हैं।</li> <li>HTML, और इंटरनेट पर आधुनिक कंप्यूटरों में उपयोग किए जाने वाले वर्ण सेट, सभी ASCII पर आधारित हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Bing is a web search engine owned and operated by</div>
+  <div class="question lang-hi">बिंग एक वेब सर्च इंजन है जिसका स्वामित्व और संचालन निम्न के पास है&nbsp;</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Microsoft</div><div class="option">Yahoo</div><div class="option">Alphabet Inc.</div><div class="option">Amazon</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">माइक्रोसॉफ्ट&nbsp;</div><div class="option">याहू&nbsp;</div><div class="option">अल्फाबेट Inc.&nbsp;</div><div class="option">अमेजॉन</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is&nbsp;<u style=""><span style="font-weight: 700;">Microsoft</span></u>.</p> <ul style=""> <li style=""><u style=""><span style="font-weight: 700;">Bing is a web search engine owned and operated by&nbsp;<u style="">Microsoft</u></span></u>.</li> <li style="">Bing search engine was launched in 2009.</li> </ul> <p style=""><img height="55px" src="https://storage.googleapis.com/tb-img/production/21/10/5f85ab7c7af274b61f656fab_16347942295271.png" style="" width="180px" /></p> <ul style=""> <li style=""><span style="font-weight: 700;">Yahoo&nbsp;</span>is an American web services provider. <ul style=""> <li style="">Yahoo headquartered in Sunnyvale, California.</li> <li style="">The original Yahoo&nbsp;company was founded by&nbsp;<span style="font-weight: 700;">Jerry Yang and David Filo in January 1994.</span></li> </ul> </li> <li style=""><span style="font-weight: 700;">Alphabet Inc.</span>&nbsp;is the parent company of Google. <ul style=""> <li style="">Alphabet Inc. headquartered in Mountain View, California.</li> <li style=""><strong>Larry Page and&nbsp;Sergey Brin</strong> were the founders of&nbsp;Alphabet Inc.</li> </ul> </li> <li style=""><span style="font-weight: 700;">Amazon&nbsp;</span>is&nbsp;based in Seattle, Washington. <ul style=""> <li style="">Amazon deals in e-commerce, cloud computing, digital streaming, and artificial intelligence.</li> <li style=""><span style="font-weight: 700;">Jeff Bezos</span>&nbsp;is the founder of Amazon.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर <strong style=""><u style="">माइक्रोसॉफ्ट </u></strong>है।</p> <ul style=""> <li style=""><strong style=""><u style="">बिंग एक वेब सर्च इंजन है जिसका स्वामित्व और संचालन माइक्रोसॉफ़्ट के पास है। </u></strong></li> <li style="">बिंग सर्च इंजन 2009 में शुरू किया गया।&nbsp;</li> </ul> <p style=""><img height="55px" src="https://cdn.testbook.com/images/production/quesImages/quesImage44.png" style="" width="180px" /></p> <ul style=""> <li style=""><strong style="">याहू </strong>एक अमरीकी वेब सेवा प्रदाता है। <ul style=""> <li style="">याहू का मुख्यालय कैलीफोर्निया में है।</li> <li style="">वास्तविक याहू कंपनी की स्थापना <strong style="">जनवरी 1994 में जेरी यंग और डेविड फिलो </strong>द्वारा की गई थी।</li> </ul> </li> <li style=""><strong style="">अल्फाबेट </strong><span style="font-weight: 700;">Inc.</span><strong style="">&nbsp;</strong>गूगल की मूल कंपनी है। <ul style=""> <li style="">अल्फाबेट Inc.&nbsp;का मुख्यालय माउंटेन वीव, कैलीफोर्निया में है। &nbsp;</li> <li style=""><strong style="">लैरी पेज और सरगे ब्रिन </strong>अल्फाबेट Inc.&nbsp;के संस्थापक थे।</li> </ul> </li> <li style=""><strong style="">अमेजॉन</strong><strong style="">, </strong>सिएटल, वाशिंगटन में स्थित है। &nbsp; <ul style=""> <li style="">अमेजॉन ई-कॉमर्स, क्लाउड कम्प्यूटिंग, डिजिटल स्ट्रीमिंग और आर्टिफिशल इंटेलिजेंस बेचता है।</li> </ul> </li> <li style=""><strong style="">जेफ बेजोस </strong>अमेजॉन के संस्थापक हैं।&nbsp;</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">How many types of page orientation are there in MS Excel?</div>
+  <div class="question lang-hi">एमएस एक्सेल में कितने प्रकार के पेज ओरिएंटेशन हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">One</div><div class="option">Three</div><div class="option correct">Two</div><div class="option">Four</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">एक</div><div class="option">तीन</div><div class="option correct">दो</div><div class="option">चार</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is <strong style=""><u style="">Two.</u></strong></p> <ul style=""> <li style="">Page orientation is a tool used <strong style="">to select the orientation of displayed documents.</strong></li> <li style="">Excel offers two-page orientation options. <ul style=""> <li style=""><strong style="">Portrait</strong>: It refers to an <strong style="">image that is taller in the height and shorter in width</strong>. It helps an <strong style="">image to display in a vertical direction</strong>.</li> <li style=""><strong style="">Landscape</strong>: It refers to <strong style="">the image that is shorter in height and wider in width</strong>. It helps an image to <strong style="">display in a horizontal direction.</strong></li> </ul> </li> </ul> <p><strong style="">​</strong><img alt="" src="https://storage.googleapis.com/tb-img/production/21/08/6013cde85d67d96f243c11d5_16303433127101.png" style="" /></p></div>
+    <div class="lang-hi"><p style="">सही उत्तर <u><strong>दो</strong></u> है।</p> <ul> <li style="">पेज ओरिएंटेशन&nbsp;एक टूल है जिसका उपयोग <strong>प्रदर्शित दस्तावेजों के&nbsp;ओरिएंटेशन</strong><strong>&nbsp;का चयन करने के लिए किया जाता है।</strong></li> <li style="">एक्सेल दो-पेज ओरिएंटेशन विकल्प प्रदान करता है। <ul> <li style=""><strong>पोर्ट्रेट:</strong> यह एक <strong>इमेज&nbsp;को संदर्भित करता है जो ऊंचाई में लंबा और चौड़ाई में छोटा होता है।</strong> यह एक <strong>इमेज&nbsp;को एक ऊर्ध्वाधर दिशा में प्रदर्शित करने में</strong> मदद करता है।</li> <li style=""><strong>लैंडस्केप:</strong> यह उस <strong>इमेज&nbsp;को संदर्भित करता है जो ऊंचाई में कम और चौड़ाई में चौड़ा होता है।</strong> यह एक इमेज&nbsp;को <strong>क्षैतिज दिशा में प्रदर्शित करने में</strong> मदद करता है।</li> </ul> </li> </ul> <p><strong style="">​</strong><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage1829.png" style="" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which among the following is NOT an operating system ?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन ऑपरेटिंग सिस्टम <strong>नहीं</strong> है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Android</div><div class="option">iOS</div><div class="option">Windows</div><div class="option correct">Router</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">एंड्रॉयड</div><div class="option">आईओएस</div><div class="option">विंडोज़</div><div class="option correct">राउटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Router</strong></u>.</p> <ul> <li><strong>The Router </strong>is <strong>not an operating system</strong>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>An<strong> operating system is software</strong> that performs all the basic tasks like <strong>file management, memory management, process management, handling input and output, and controlling peripheral devices such as disk drives and printers.</strong></li> <li>A router is a<strong> physical or&nbsp;virtual appliance</strong>&nbsp;that passes information<strong> between two or more&nbsp;packet-switched&nbsp;computer networks</strong>.</li> <li>A router inspects a given <strong>data&nbsp;packet&#39;s destination Internet Protocol address (IP address)</strong>, calculates the best way for it to <strong>reach its destination,</strong> and then <strong>forwards it</strong> accordingly.</li> <li>It is&nbsp;a common type of&nbsp;<strong>gateway. </strong>It is positioned where two or more networks meet at each&nbsp;point of presence&nbsp;on the internet.&nbsp;</li> <li><strong>Android, iOS, and Windows</strong> are examples of the&nbsp;<strong>operating system.</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>राउटर है।</strong></u></p> <ul> <li><strong>राउटर एक ऑपरेटिंग सिस्टम नहीं है।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>एक ऑपरेटिंग सिस्टम सॉफ्टवेयर है जो फ़ाइल प्रबंधन, मेमोरी मैनेजमेंट, प्रोसेस मैनेजमेंट, हैंडलिंग इनपुट और आउटपुट </strong>जैसे सभी बुनियादी कार्यों को करता है,<strong> और परिधीय उपकरण जैसे कि डिस्क ड्राइव और प्रिंटर को नियंत्रित करता है।</strong></li> <li>एक राउटर <strong>एक भौतिक या आभासी उपकरण है जो दो या अधिक पैकेट-स्विच किए गए कंप्यूटर नेटवर्क</strong> के बीच जानकारी स्थानांतरित करता है।</li> <li>एक राउटर किसी दिए गए <strong>डेटा पैकेट के गंतव्य इंटरनेट प्रोटोकॉल एड्रेस (आईपी एड्रेस)</strong> का निरीक्षण करता है, अपने <strong>गंतव्य तक पहुंचने</strong> के लिए इसके लिए सबसे अच्छे तरीके की गणना करता है और फिर उसी के अनुसार <strong>आगे बढ़ता है।</strong></li> <li>यह एक सामान्य प्रकार का <strong><span class="aCOpRe"><span>गेटवे</span></span></strong> है। यह इंटरनेट पर मौजूद प्रत्येक बिंदु पर <span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-phrase-index="0"><span>तैनात </span></span></span>होता है, जहाँ दो या दो से अधिक नेटवर्क&nbsp; मिलते हैं।</li> <li><strong>एंड्रॉइड, आईओएस और विंडोज ऑपरेटिंग सिस्टम</strong> के उदाहरण हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">World Wide Web (WWW) is a collection _______on the internet forms.</div>
+  <div class="question lang-hi">वर्ल्ड वाइड वेब (WWW) इंटरनेट रूपों पर _________ का एक संग्रह है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Hyperlinked document</div><div class="option"><span style="color: rgb(0, 0, 0); ">E-mail</span></div><div class="option">Mailing list</div><div class="option">Hypertext markup language</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">हाइपरलिंक्ड डॉक्यूमेंट</div><div class="option">ई-मेल</div><div class="option">मेलिंग लिस्ट&nbsp;</div><div class="option">हाइपरटेक्सट मार्कअप लैंग्वेज</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is a&nbsp;<u><strong>Hyperlinked document.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <p><u><strong>World Wide Web</strong></u></p> <ul> <li><strong>The World Wide Web</strong> is commonly<strong> known&nbsp;as the Web</strong>.</li> <li>It is an<strong> information system</strong> where <strong>documents and other web resources</strong> are identified by <strong>Uniform Resource Locators.</strong></li> <li>These documents are&nbsp;<strong>interlinked by hypertext</strong> and are <strong>accessible over the Internet</strong>.</li> <li>The resources of the Web are transferred via <strong>the Hypertext Transfer Protocol (HTTP).</strong></li> <li>These resources are also&nbsp;accessed by users of&nbsp;a <strong>software application called a web browser.</strong></li> <li>And these resources are published by a <strong>software application called a web server.</strong></li> </ul> <p><u><strong>Hyperlinked document</strong></u></p> <ul> <li><strong>A hyperlink</strong>&nbsp;is<strong> a reference to data</strong> that the user can follow by <strong>clicking or tapping.</strong></li> <li><strong>A hyperlink points to a whole document.</strong></li> <li>A hyperlink can also point to a specific element within a document.</li> <li><strong>Hypertext </strong>is text with <strong>hyperlinks.</strong></li> <li><strong>The text that is linked</strong> is called <strong>anchor text.</strong></li> <li><strong>A software system</strong> that is used for viewing and creating<strong> hypertext is a hypertext system, </strong>and to create a hyperlink is to hyperlink.</li> <li>A user following hyperlinks is said to navigate or browse the hypertext.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>Types of Hyperlink Documents</strong></u></p> <table border="1" cellpadding="1" cellspacing="1" style="width:350px;"> <tbody> <tr> <td style="text-align: center;"><strong>Text hyperlink</strong></td> <td style="text-align: center;">Uses a word or phrase to take visitors to another page, file, or document.</td> </tr> <tr> <td style="text-align: center;"><strong>Image hyperlink&nbsp;</strong></td> <td style="text-align: center;">&nbsp;Uses an image to take visitors to another page, file, or document.</td> </tr> <tr> <td style="text-align: center;"><strong>Bookmark hyperlink</strong></td> <td style="text-align: center;">Uses text or an image to take visitors to another part of a web page.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>हाइपरलिंक्ड डॉक्यूमेंट</strong></u>&nbsp;है&nbsp;</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <p><u><strong>वर्ल्ड वाइड वेब</strong></u></p> <ul> <li><strong>वर्ल्ड वाइड वेब</strong> को <strong>आमतौर पर वेब</strong> के रूप में जाना जाता है।</li> <li>यह एक <b>सूचना तंत्र</b>&nbsp;है जहां <strong>डॉक्यूमेंट&nbsp;और अन्य वेब संसाधनों</strong> की पहचान <strong>यूनिफ़ॉर्म रिसोर्स लोकेटर</strong> द्वारा की जाती है।</li> <li>ये डॉक्यूमेंट&nbsp;<strong>हाइपरटेक्स्ट द्वारा इंटरलिंक</strong> किए गए हैं और <strong>इंटरनेट पर उपलब्ध</strong> हैं।</li> <li>वेब के संसाधनों को <strong>हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल (HTTP)</strong> के माध्यम से स्थानांतरित किया जाता है।</li> <li>ये संसाधन <strong>वेब ब्राउज़र नामक एक सॉफ़्टवेयर एप्लिकेशन</strong> के यूज़र्स द्वारा भी एक्सेस किए जाते हैं।</li> <li>और ये संसाधन <strong>वेब सर्वर नामक एक सॉफ्टवेयर एप्लिकेशन</strong> द्वारा प्रकाशित किए जाते हैं।</li> </ul> <p><u><strong>हाइपरलिंकड डॉक्यूमेंट</strong></u></p> <ul> <li><strong>हाइपरलिंक डेटा का एक संदर्भ</strong> है जिसे उपयोगकर्ता&nbsp;<strong>क्लिक या टैप</strong> करके अनुसरण कर सकता है।</li> <li><strong>हाइपरलिंक पूरे डॉक्यूमेंट&nbsp;को इंगित करता है।</strong></li> <li>हाइपरलिंक किसी डॉक्यूमेंट&nbsp;के भीतर एक विशिष्ट तत्व को भी इंगित कर सकता है।</li> <li><strong>हाइपरटेक्स्ट </strong>एक<strong>&nbsp;</strong>टेक्स्ट है जो <strong>हाइपरलिंक</strong> से जुडा होता है।</li> <li>जो <strong>टेक्स्ट लिंक्ड</strong>&nbsp;है, उसे <strong>एंकर टेक्स्ट</strong> कहा जाता है।</li> <li><strong>हाइपरटेक्स्ट</strong> को देखने और बनाने के लिए उपयोग किया जाने वाला एक <strong>सॉफ़्टवेयर सिस्टम</strong> एक <strong>हाइपरटेक्स्ट सिस्टम</strong> है, और हाइपरलिंक बनाने के लिए हाइपरलिंक है।</li> <li>हाइपरलिंक का अनुसरण करने वाले उपयोगकर्ता&nbsp;को हाइपरटेक्स्ट को नेविगेट या ब्राउज़ करने के लिए कहा जाता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>हाइपरलिंक डॉक्युमेंट्स के प्रकार</strong></u></p> <table border="1" cellpadding="1" cellspacing="1" style="width:350px;"> <tbody> <tr> <td style="text-align: center;"><strong>टेक्स्ट हाइपरलिंक</strong></td> <td style="text-align: center;">विजिटर्स को दूसरे पेज, फाइल, या डॉक्यूमेंट पर ले जाने के लिए एक शब्द या वाक्यांश का उपयोग करता है।</td> </tr> <tr> <td style="text-align: center;"><strong>इमेज हाइपरलिंक&nbsp;</strong></td> <td style="text-align: center;">&nbsp;विजिटर्स को दूसरे पेज, फाइल या डॉक्यूमेंट पर ले जाने के लिए एक इमेज का उपयोग करता है।</td> </tr> <tr> <td style="text-align: center;"><strong>बुकमार्क हाइपरलिंक</strong></td> <td style="text-align: center;">एक वेब पेज के दूसरे भाग में विजिटर्स को ले जाने के लिए टेक्स्ट या एक इमेज का उपयोग करता है।</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the full form of TCP/IP, with reference to internet protocols?&nbsp;</div>
+  <div class="question lang-hi">इंटरनेट प्रोटोकॉल के संदर्भ में TCP/IP का पूर्ण रूप क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Transfer Control Protocol and Internet Protocol</div><div class="option correct">Transmission Control Protocol and Internet Protocol</div><div class="option">Transmission Control Protocol and International Protocol&nbsp;</div><div class="option">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ट्रांसफर कंट्रोल प्रोटोकॉल और इंटरनेट प्रोटोकॉल</div><div class="option correct">ट्रांसमिशन कंट्रोल प्रोटोकॉल और इंटरनेट प्रोटोकॉल</div><div class="option">ट्रांसमिशन कंट्रोल प्रोटोकॉल और इंटरनेशनल प्रोटोकॉल</div><div class="option">इनमें से कोई भी नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Transmission Control Protocol and Internet Protocol</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>TCP/IP</strong> stands for&nbsp;<strong>Transmission Control Protocol and Internet Protocol.</strong></li> <li>The Internet protocol suite is the <strong>conceptual model</strong> and <strong>set of communications protocols</strong> used in the <strong>Internet and similar computer networks.</strong></li> <li>It is commonly known as <strong>TCP/IP </strong>because the <strong>foundational protocols</strong> in the suite are the Transmission Control Protocol (TCP) and the Internet Protocol (IP).&nbsp;</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Hypertext Transfer Protocol (HTTP) </strong>is an application-layer protocol for transmitting hypermedia documents, such as HTML.</li> <li><strong>SMTP </strong>stands for Simple Mail Transfer Protocol.&nbsp;</li> <li><strong>The File Transfer Protocol (FTP)</strong> is a standard communication protocol used for the transfer of computer files from a server to a client on a computer network.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>ट्रांसमिशन कंट्रोल प्रोटोकॉल और इंटरनेट प्रोटोकॉल</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">TCP/IP</span><strong>&nbsp;का अर्थ ट्रांसमिशन कंट्रोल प्रोटोकॉल और इंटरनेट प्रोटोकॉल है।</strong></li> <li><strong>इंटरनेट प्रोटोकॉल सूट वैचारिक मॉडल और इंटरनेट </strong>और इसी तरह के कंप्यूटर नेटवर्क में उपयोग किए जाने वाले<strong> संचार प्रोटोकॉल का सेट</strong> है।</li> <li>इसे आमतौर पर <span style="font-weight: 700;">TCP/IP</span><strong> </strong>के रूप में जाना जाता है क्योंकि सुइट में <strong>मूलभूत प्रोटोकॉल ट्रांसमिशन कंट्रोल प्रोटोकॉल (TCP) और इंटरनेट प्रोटोकॉल (IP) हैं।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल</strong> <strong>(</strong><span style="font-weight: bolder;">HTTP</span><strong>) </strong>हाइपरमीडिया दस्तावेज़ों को प्रसारित करने के लिए एक एप्लिकेशन-लेयर प्रोटोकॉल है, जैसे HTML.</li> <li><strong>SMTP,</strong> सिंपल मेल ट्रांसफर प्रोटोकॉल है।</li> <li><strong>फ़ाइल ट्रांसफर प्रोटोकॉल (FTP)</strong> एक मानक संचार प्रोटोकॉल है जिसका उपयोग कंप्यूटर फ़ाइलों को सर्वर से क्लाइंट से कंप्यूटर नेटवर्क पर स्थानांतरित करने के लिए किया जाता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is NOT a hardware?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन एक हार्डवेयर नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Processor chip</div><div class="option">Printer</div><div class="option">Mouse</div><div class="option correct">Java</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">प्रोसेसर चिप</div><div class="option">प्रिंटर</div><div class="option">माउस</div><div class="option correct">जावा</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <b><u>Java.</u></b></p> <p><b><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></b></p> <ul style="margin-left: 40px;"> <li><span style="color: rgb(69, 69, 69); ">&nbsp;</span><b style="color: rgb(69, 69, 69); ">Java</b><span style="color: rgb(69, 69, 69); ">&nbsp;is an object-oriented programming language</span><span style="color: rgb(69, 69, 69); ">&nbsp;developed by<strong> James Gosling</strong></span><span style="color: rgb(69, 69, 69); ">&nbsp;and others at <strong>Sun</strong></span><strong><span style="color: rgb(69, 69, 69); ">&nbsp;Microsystems.</span></strong></li> <li><span style="color: rgb(69, 69, 69); ">It was first introduced to the public in <strong>1995</strong></span><span style="color: rgb(69, 69, 69); ">&nbsp;and is widely used to create <strong>Internet</strong></span><span style="color: rgb(69, 69, 69); ">&nbsp;applications and other <strong>software</strong></span><span style="color: rgb(69, 69, 69); ">&nbsp;programs.</span></li> </ul> <p><span style="color: rgb(69, 69, 69); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul style="margin-left: 40px;"> <li><span style="color: rgb(69, 69, 69); ">Today, Java is maintained and owned by <strong>Oracle.</strong></span></li> <li><span style="color: rgb(69, 69, 69); ">Abbreviated as&nbsp;</span><b style="color: rgb(69, 69, 69); ">HW</b><span style="color: rgb(69, 69, 69); ">,&nbsp;</span><b style="color: rgb(69, 69, 69); ">Hardware</b><span style="color: rgb(69, 69, 69); ">&nbsp;is best described as any physical component of a computer system that contains&nbsp;<strong>circuit boards</strong></span><span style="color: rgb(69, 69, 69); ">, <strong>ICs</strong></span><span style="color: rgb(69, 69, 69); ">, or other electronics.</span></li> <li><span style="color: rgb(32, 33, 36); ">Computer&nbsp;</span><b style="color: rgb(32, 33, 36); ">hardware</b><span style="color: rgb(32, 33, 36); ">&nbsp;includes the physical parts of a computer, such as a case, central processing unit (CPU), monitor, mouse, keyboard, computer data storage, graphics card, sound card, speakers, and motherboard.</span></li> <li><span style="color: rgb(32, 33, 36); ">By contrast,<strong> the software</strong> is the set of instructions that can be stored and run by&nbsp;</span><b style="color: rgb(32, 33, 36); ">hardware.</b></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>जावा </strong></u>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style="margin-left: 40px;"> <li><strong>जावा </strong>एक&nbsp;वस्तु-उन्मुख प्रोग्रामिंग भाषा&nbsp;है जिसे <strong>जेम्स गॉस्लिंग</strong> और अन्य ने <strong>सन माइक्रोसिस्टम्स</strong> में विकसित किया है।</li> <li>इसे पहली बार <strong>1995 </strong>में जनता के लिए पेश किया गया था और व्यापक रूप से <strong>इंटरनेट </strong>एप्लिकेशन और अन्य <strong>सॉफ्टवेयर </strong>प्रोग्राम बनाने के लिए उपयोग किया जाता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</p> <ul style="margin-left: 40px;"> <li>आज, जावा को <strong>ओरेकल </strong>द्वारा बनाए रखा गया है।</li> <li>HW के रूप में संक्षिप्त, <strong>हार्डवेयर </strong>को सबसे अच्छा कंप्यूटर सिस्टम के किसी भी भौतिक घटक के रूप में वर्णित किया गया है जिसमें <strong>सर्किट बोर्ड, ICs</strong>&nbsp;या अन्य इलेक्ट्रॉनिक्स शामिल हैं।</li> <li>कंप्यूटर <strong>हार्डवेयर </strong>में कंप्यूटर के भौतिक भाग, जैसे कि केस, सेंट्रल प्रोसेसिंग यूनिट (CPU), मॉनिटर, माउस, कीबोर्ड, कंप्यूटर डेटा स्टोरेज, ग्राफिक्स कार्ड, साउंड कार्ड, स्पीकर और मदरबोर्ड शामिल हैं।</li> <li>इसके विपरीत, <strong>सॉफ्टवेयर</strong> निर्देशों का एक सेट है जिसे <strong>हार्डवेयर </strong>द्वारा संग्रहीत और चलाया जा सकता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The action of a computer to load an operating system into the computer&#39;s main memory or random-access memory (RAM) is called __________.</div>
+  <div class="question lang-hi">कंप्यूटर की मुख्य मेमोरी या रैंडम-एक्सेस मेमोरी (RAM) में ऑपरेटिंग सिस्टम को लोड करने के लिए कंप्यूटर की क्रिया को __________ कहा जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Login</div><div class="option correct">Booting</div><div class="option">Storing</div><div class="option">Loading</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">लॉग इन</div><div class="option correct">बूटिंग</div><div class="option">स्टोरिंग</div><div class="option">लोडिंग</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Booting.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>The action of a computer to load an operating system into the computer&#39;s main memory or random-access memory (RAM) is called&nbsp;Booting</strong>.</li> <li>Booting is a startup sequence that starts the operating system of a computer when it is turned on.</li> <li>A boot sequence is the initial set of operations that the computer performs when it is switched on. <ul> <li>Every computer has a boot sequence.&nbsp;&nbsp;</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The boot device is the device from which the operating system is loaded.</li> <li>A modern PC BIOS (Basic Input/Output System) supports booting from various devices. <ul> <li>These include the local hard disk drive, optical drive, floppy drive, a network interface card, and a USB device. Typically, the BIOS will allow the user to configure a boot order.</li> <li>If the boot order is set to: <ul> <li>CD Drive</li> <li>Hard Disk Drive</li> <li>Network</li> </ul> </li> <li>Then the BIOS will try to boot from the CD drive first, and if that fails then it will try to boot from the hard disk drive, and if that fails then it will try to boot from the network, and if that fails then it won&rsquo;t boot at all.&nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <u><strong>बूटिंग</strong></u>&nbsp;है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>कंप्यूटर की मुख्य मेमोरी या रैंडम-एक्सेस मेमोरी (RAM) में ऑपरेटिंग सिस्टम को लोड करने के लिए कंप्यूटर की क्रिया को बूटिंग कहा जाता है।</strong></li> <li>यह एक प्रारंभिक&nbsp;अनुक्रम है जो चालू होने पर कंप्यूटर के ऑपरेटिंग सिस्टम को शुरू करता है।</li> <li>एक बूट अनुक्रम संचालन का प्रारंभिक सेट है जो कंप्यूटर चालू होने पर करता है। <ul> <li>हर कंप्यूटर में बूट अनुक्रम होता है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>बूट उपकरण&nbsp;वह उपकरण&nbsp;है जिससे ऑपरेटिंग सिस्टम लोड होता है।</li> <li>एक आधुनिक PC BIOS (बेसिक इनपुट/आउटपुट सिस्टम) विभिन्न उपकरणों से बूटिंग का समर्थन करता है। <ul> <li>इनमें स्थानीय हार्ड डिस्क ड्राइव, ऑप्टिकल ड्राइव, फ्लॉपी ड्राइव, एक नेटवर्क इंटरफेस कार्ड और एक USB उपकरण&nbsp;शामिल हैं। सामान्यतया, BIOS उपयोगकर्ता को बूट क्रम को समनुरूप&nbsp;करने की अनुमति देगा।</li> <li>यदि बूट क्रम निम्न&nbsp;है <ul> <li>CD ड्राइव</li> <li>हार्ड डिस्क ड्राइव</li> <li>नेटवर्क</li> </ul> </li> <li>तो BIOS पहले CD&nbsp;ड्राइव से बूट करने का प्रयास करेगा, और यदि वह विफल हो जाता है तो वह हार्ड डिस्क ड्राइव से बूट करने का प्रयास करेगा, और यदि वह विफल हो जाता है तो यह नेटवर्क से बूट करने का प्रयास करेगा, और यदि वह विफल रहता है तो यह इन सभी से&nbsp;बिल्कुल बूट नहीं होता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Windows logo key + _______ will lock the screen.</div>
+  <div class="question lang-hi">Windows logo key + _______&nbsp;&nbsp;स्क्रीन को लॉक करता है<span style="">।</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">I</div><div class="option correct">L</div><div class="option">K</div><div class="option">A</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">I</div><div class="option correct">L</div><div class="option">K</div><div class="option">A</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><span style="font-weight: 700;">L</span></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>The&nbsp;<span style="font-weight: 700;">Start Menu</span>&nbsp;offers an option for&nbsp;<span style="font-weight: 700;">locking your PC</span>. Just click the&nbsp;<span style="font-weight: 700;">Start button</span>&nbsp;(the Windows icon), select your account name, and then click &ldquo;<span style="font-weight: 700;">Lock</span>.&rdquo;</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/20/12/Lock-screen-from-start-menu.png" style="width: 250px; height: 250px;" /></p> <ul> <li>In addition to locking it from the&nbsp;<span style="font-weight: 700;">Start menu</span>, letting it lock&nbsp;<span style="font-weight: 700;">automatically after a period of inactivity</span>, and even using Bluetooth to lock when it senses you&#39;ve left, there are two ways to lock&nbsp;<span rel="nofollow" target="_blank">Windows</span>&nbsp;with quick&nbsp;keyboard shortcuts.&nbsp;</li> <li>The&nbsp;<span style="font-weight: 700;">Ctrl+Alt+Delete&nbsp;</span>keyboard shortcut is commonly used to&nbsp;<span style="font-weight: 700;">kill unresponsive software</span>, but you can also use it to&nbsp;<span style="font-weight: 700;">lock your computer</span>. Press Ctrl+Alt+Delete, and then click &ldquo;<span style="font-weight: 700;">Lock</span>&rdquo; in the menu that appears.</li> <li data-pos="34">There&#39;s an even faster way to lock the screen &mdash; do it in a single keystroke.&nbsp;Press the&nbsp;<span style="font-weight: 700;">Windows and L keys</span>&nbsp;at the same time. It should lock instantly.&nbsp;</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/20/12/lock_comp2.png" style="width: 250px; height: 85px;" /></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Windows logo key + L&nbsp;is used to&nbsp;<span style="font-weight: 700;">lock the computer.</span></li> <li>Windows logo key + I&nbsp;is used to&nbsp;<span style="font-weight: 700;">open settings.</span></li> <li>Windows logo key + F&nbsp;is used to&nbsp;<span style="font-weight: 700;">open the feedback hub.</span></li> <li>Windows logo key + R&nbsp;is used to&nbsp;<span style="font-weight: 700;">open the run window.</span></li> </ul></div>
+    <div class="lang-hi"><p>सही जवाब&nbsp;<u><strong>L&nbsp;</strong></u><span style="">है</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">स्टार्ट मेनू</span> <span style="font-weight: 700;">आपके </span><strong>पीसी</strong> को <span style="font-weight: 700;">लॉक</span> करने का विकल्प देता&nbsp;है। <span style="font-weight: 700;">स्टार्ट बटन</span> (विंडोज आइकन) पर क्लिक करें, अपने खाते का&nbsp;नाम चुनें और फिर &quot;<span style="font-weight: 700;">लॉक</span> &quot; पर क्लिक करें।</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/20/12/Lock-screen-from-start-menu.png" style="width: 250px; height: 250px;" /></p> <ul> <li><strong>स्टार्ट मेनू</strong> से लॉक करने के अलावा, <span style="font-weight: 700;">निष्क्रियता की अवधि के बाद</span> <span style="font-weight: 700;">स्वचालित रूप से</span> <strong>लॉक करने के लिए भी इसका</strong>&nbsp;<strong>इस्तेमाल किया</strong>&nbsp;<span style="font-weight: 700;">जाता है</span>।&nbsp;ब्लूटूथ का उपयोग करते हुए जैसे ही इसे पता चलता है कि आप इसका इस्तेमाल नहीं कर रहे हैं तो यह अपने आप लॉक हो जाता है।&nbsp;कीबोर्ड शॉर्टकट की मदद से&nbsp;<span rel="nofollow" target="_blank">विंडोज</span> को लॉक करने के दो त्वरित तरीके हैं।</li> <li><span style="">&nbsp;आमतौर पर&nbsp;कीबोर्ड शॉर्टकट&nbsp;</span><span style="font-weight: 700;">Ctrl + Alt + Delete</span>&nbsp;का उपयोग&nbsp;<span style="font-weight: 700;">गैर-जिम्मेदार सॉफ़्टवेयर</span> <strong>को</strong>&nbsp;<strong>बंद</strong> <span style="font-weight: 700;">करने&nbsp;के</span> लिए किया <span style="font-weight: 700;">जाता है</span>, लेकिन आप इसका उपयोग <span style="font-weight: 700;">अपने कंप्यूटर</span> <strong>को</strong> <span style="font-weight: 700;">लॉक</span> करने के लिए भी कर सकते हैं। Ctrl + Alt + Delete दबाएं&nbsp;और फिर मेनू में &quot;<span style="font-weight: 700;">लॉक</span>&quot; पर क्लिक करें।</li> <li data-pos="34">स्क्रीन लॉक करने का एक और भी तेज़ तरीका है - सिंगल कीस्ट्रोक में लॉक करें। एक साथ <span style="font-weight: 700;">विंडोज और L keys</span> दबाएं। तुरंत लॉक करें।</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/20/12/lock_comp2.png" style="width: 250px; height: 85px;" /></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">कंप्यूटर</span> को <span style="font-weight: 700;">लॉक</span> करने के लिए विंडोज लोगो <span style="">key</span> + L&nbsp;का उपयोग किया जाता है<span style="font-weight: 700;">।</span></li> <li>विंडोज लोगो <span style="">key</span> + I&nbsp;का उपयोग <span style="font-weight: 700;">सेटिंग्स </span><strong>में जाने के लिए</strong><b> </b>किया जाता है<span style="font-weight: 700;">।</span></li> <li><span style="font-weight: 700;">फीडबैक हब खोलने के</span> लिए विंडोज लोगो <span style="">key</span> + F&nbsp;का उपयोग किया जाता है<span style="font-weight: 700;">।</span></li> <li><span style="font-weight: 700;">रन विंडो</span> को <span style="font-weight: 700;">खोलने के</span> लिए विंडोज लोगो <span style="">key</span> + R&nbsp;का उपयोग किया जाता है<span style="font-weight: 700;">।</span></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Assigning names to text or to positions in an MS Word document is called ________.</div>
+  <div class="question lang-hi">एमएस वर्ड डॉक्यूमेंट में टेक्स्ट या पदों को निर्दिष्ट करने को ________ कहा जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Word Count</div><div class="option correct">Bookmark</div><div class="option">Named word</div><div class="option">Cross-reference</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">वर्ड काउंट</div><div class="option correct">बुकमार्क</div><div class="option">नेम्ड वर्ड</div><div class="option">क्रॉस-रिफरेन्स</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>option 1</strong> i.e. <u><strong>Bookmark</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Assigning names to text or to positions in an MS Word document is called <strong>Bookmark</strong>.</li> <li>A <strong>bookmark</strong> in MS Word serves the same purpose as the bookmark you put in place in a book.</li> <li>The <strong>bookmark</strong> marks a place that you want to find easily, and one that you want to return to when you need it.</li> <li>The definition of <strong>bookmark</strong> in MS Word is a specific word, section, or location in your Word document that you want to name and identify for future reference.</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/23/02/Bookmark.png" style="width: 450px; height: 199px;" /></p></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <strong>1</strong> है अर्थात <u><strong>बुकमार्क</strong></u>।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>एमएस वर्ड डॉक्यूमेंट में टेक्स्ट या&nbsp;पदों को निर्दिष्ट करने को <strong>बुकमार्क</strong> कहा जाता है।</li> <li>एमएस वर्ड में एक <strong>बुकमार्क</strong> उसी उद्देश्य को पूरा करता है जैसा कि आप बुक में रखे गए बुकमार्क को करते हैं।</li> <li><strong>बुकमार्क</strong> एक ऐसी जगह को चिह्नित करता है जिसे आप आसानी से ढूंढना चाहते हैं, और एक जिसे आप आवश्यकता होने पर वापस आना चाहते हैं।</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/23/02/Bookmark.png" style=" width: 450px; height: 199px;" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which technology do third generation computers use?</div>
+  <div class="question lang-hi">तीसरी पीढ़ी के कंप्यूटर कौन-सी तकनीक का उपयोग करते हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Vacuum tubes</div><div class="option">Transistors</div><div class="option">Microprocessors</div><div class="option correct">Integrated circuits</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">निर्वात-ट्यूब</div><div class="option">ट्रांजिस्टर</div><div class="option">माइक्रोप्रोसेसर</div><div class="option correct">इंटीग्रेटेड सर्किट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<u><strong> Integrated Circuits.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The third-generation period in computing was from <strong>1965-1971. </strong></li> <li><strong>Integrated circuits (ICs)</strong> have been used in<strong> third-generation computers</strong> instead of transistors.</li> <li>Along with the related circuitry, a single IC has multiple transistors, resistors, and capacitors.</li> <li>An American electrical engineer named <strong>Jack Kilby</strong> invented the IC.</li> <li>This advancement has enhanced the compactness, reliability, and performance of computers.&nbsp;</li> <li><strong>Remote processing, time-sharing and multiprogramming operating systems have been used in this generation.</strong></li> <li>During that generation, high-level languages (<strong>FORTRAN-II TO IV, COBOL, PASCAL PL/1, BASIC, ALGOL-68, etc.) </strong>were also used.</li> <li style="margin-left: 2pt;"><strong>The main features of third-generation are &minus;</strong> <ul> <li style="margin-left: 2pt;">IC used</li> <li>More reliable in comparison to previous two generations</li> <li>Smaller size</li> <li>Generated less heat</li> <li>Faster</li> <li>Lesser maintenance</li> <li>Costly</li> <li>AC required</li> <li>Consumed lesser electricity</li> <li>Supported high-level language</li> </ul> </li> <li style="margin-left: 2pt;"><strong>Some computers of this generation were &minus;</strong> <ul> <li style="margin-left: 2pt;">IBM-360 series</li> <li>Honeywell-6000 series</li> <li>PDP (Personal Data Processor)</li> <li>IBM-370/168</li> <li>TDC-316</li> </ul> </li> </ul> <p><strong>A Third Generation Computer</strong></p> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/09/600ad559c5185145b42838de_16316806542541.png" /></p></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>इंटीग्रेटेड सर्किट</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>कंप्यूटिंग में तीसरी पीढ़ी की अवधि <strong>1965-1971 </strong>तक थी।</li> <li><strong>तीसरी पीढ़ी के कंप्यूटरों</strong> में <strong>ट्रांजिस्टर की जगह इंटीग्रेटेड सर्किट (आईसी)</strong> का इस्तेमाल किया गया है।</li> <li>संबंधित सर्किटरी के साथ, एक एकल IC में कई ट्रांजिस्टर, प्रतिरोधक और कैपेसिटर होते हैं।</li> <li><strong>जैक किल्बी</strong> नाम के एक अमेरिकी इलेक्ट्रिकल इंजीनियर ने IC&nbsp;का आविष्कार किया था।</li> <li>इस उन्नति ने कंप्यूटर के आकार, विश्वसनीयता और प्रदर्शन को बढ़ाया है।</li> <li>इस पीढ़ी में <strong>रिमोट प्रोसेसिंग, टाइम-शेयरिंग और मल्टीप्रोग्रामिंग ऑपरेटिंग सिस्टम</strong> का उपयोग किया गया है।</li> <li>उस पीढ़ी के दौरान, उच्च-स्तरीय भाषाओं <strong>(FORTRAN-II से IV, COBOL, PASCAL PL/1, BASIC, ALGOL-68, आदि) </strong>का भी उपयोग किया गया था।</li> <li><strong>तीसरी पीढ़ी की मुख्य विशेषताएं हैं -</strong> <ul> <li>IC का इस्तेमाल</li> <li>पिछली दो पीढ़ियों की तुलना में अधिक विश्वसनीय</li> <li>छोटा आकार</li> <li>कम गर्मी पैदा करना</li> <li>तीव्र&nbsp;</li> <li>कम रखरखाव</li> <li>महंगा</li> <li>एसी की आवश्यकता</li> <li>कम बिजली का उपभोग</li> <li>उच्च स्तरीय भाषा का समर्थन</li> </ul> </li> <li><strong>इस पीढ़ी के कुछ कंप्यूटर थे -</strong> <ul> <li>IBM-360 श्रृंखला</li> <li>हनीवेल-6000 श्रृंखला</li> <li>पीडीपी (व्यक्तिगत डेटा प्रोसेसर)</li> <li>आईबीएम -370 / 168</li> <li>TDC-316</li> </ul> </li> </ul> <p><strong>तीसरी पीढ़ी का कंप्यूटर</strong></p> <p><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage4931.png" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">.gov is the ending of a web address that is associated with_____.</div>
+  <div class="question lang-hi">.gov किससे संबंधित वेब एड्रेस के अन्त्याक्षर हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">An education search</div><div class="option">A medical search</div><div class="option correct">A government search</div><div class="option">A local search</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">शिक्षा खोज</div><div class="option">चिकित्सा खोज</div><div class="option correct">सरकारी खोज</div><div class="option">स्थानीय खोज</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>&quot;<u>A government Search</u>&quot;.</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="color: rgb(0, 0, 0); "><strong>&quot;.gov&quot;</strong> is exclusively used for sites owned and operated by the government.&nbsp; </span></li> <li><span style="color: rgb(0, 0, 0); ">No one but the government is authorized to use this ending so it is pretty safe to trust the data and source for most information.</span></li> </ul> <p><span style="color: rgb(0, 0, 0); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span><u><strong><span style="">.edu:</span></strong></u></p> <ul> <li>.edu is always affiliated with universities, colleges, and educational sites.&nbsp;</li> </ul> <p><u><strong style="color: rgb(0, 0, 0); text-align: -webkit-center;">.org</strong></u></p> <ul> <li>.org usually indicates that a site is run by a non-profit organization like Public Broadcast System (PBS) or the Red Cross.&nbsp;</li> <li>Although it is possible for anyone to buy a <strong>.org</strong> ending for their website- even for-profit companies.</li> </ul> <p><u><strong style="color: rgb(0, 0, 0); text-align: -webkit-center;">.com</strong></u></p> <ul> <li>.com is the most popular kind of site because companies want to advertise their products to Internet consumers.&nbsp;</li> <li><strong>&quot;.com&quot;</strong> sites that provide medical or &quot;scholarly&quot; information may just be trying to sell you their product.</li> </ul> <p><u><strong style="color: rgb(0, 0, 0); text-align: -webkit-center;">.net</strong></u></p> <ul> <li>.net is the latest of new endings for URLs. It stands for Network.&nbsp;</li> <li>Some of these sites are not-for-profit, but others are.&nbsp;</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>&quot;सरकारी खोज&quot;</strong></u> है।&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>&quot;.gov&quot; </strong>का उपयोग विशेष रूप से सरकार के स्वामित्व वाली और संचालित साइटों के लिए किया जाता है।</li> <li>केवल सरकार ही इस <span style="">अन्त्याक्षर&nbsp;</span>का उपयोग करने के लिए अधिकृत होता है, इसलिए अधिकांश जानकारी के लिए इस <span style="">अन्त्याक्षर&nbsp;</span>वाले पर डेटा और स्रोत पर भरोसा करना बहुत सुरक्षित है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>.edu:</strong></u></p> <ul> <li>.edu सदैव विश्वविद्यालयों, कॉलेजों और शैक्षिक साइटों से <span style="">संबंधित&nbsp;</span>होता है।</li> </ul> <p><u><strong>.org&nbsp;</strong></u></p> <ul> <li>.org सामान्यतौर पर यह दर्शाता है कि एक साइट सार्वजनिक प्रसारण प्रणाली (PBC) या रेड क्रॉस जैसे गैर-लाभकारी संगठन द्वारा संचालित है।</li> <li>हालांकि किसी के लिए भी&nbsp;यहां तक ​​कि लाभकारी कंपनियों के लिए <strong>.org</strong> <span style="">अन्त्याक्षर&nbsp;</span>खरीदना संभव है।</li> </ul> <p><u><strong>.com</strong></u>&nbsp;</p> <ul> <li>.com सबसे लोकप्रिय प्रकार की साइट है क्योंकि कंपनियां उनके उत्पादों को इंटरनेट उपभोक्ताओं के सामने विज्ञापित करना चाहती हैं।</li> <li><strong>&quot;.com&quot;</strong> ऐसी साइटें हैं जो चिकित्सा या &quot;विद्वान&quot; जानकारी प्रदान करती हैं, हो सकता है कि वे आपको उनका उत्पाद बेचने का प्रयास कर रही हो।</li> </ul> <p><u><strong>.net&nbsp;</strong></u></p> <ul> <li>.net, URL के लिए नवीनतम नए <span style="">अन्त्याक्षर&nbsp;</span>हैं। इसका अर्थ नेटवर्क है।</li> <li>इनमें से कुछ साइटें लाभान्वेषी नहीं&nbsp;हैं, लेकिन अन्य<span style="">&nbsp;होती</span> हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Safari is a software belonging to which category?</div>
+  <div class="question lang-hi">निम्नलिखित में से&nbsp;सफारी किस श्रेणी का सॉफ्टवेयर है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Operating System</div><div class="option">Virus program</div><div class="option">System software</div><div class="option correct">Browser</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ऑपरेटिंग सिस्टम</div><div class="option">वायरस प्रोग्राम</div><div class="option">सिस्टम सॉफ्टवेयर</div><div class="option correct">ब्राउजर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Browser.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>Safari</strong>&nbsp;is software belonging to the web browser category. <ul> <li>It was developed by<strong> Apple.</strong></li> <li>It first appeared as part of Mac OS X Panther on the Mac in<strong> 2003.</strong></li> <li>The Windows version of Safari was first released&nbsp;in<strong> 2007.</strong></li> <li><strong>Other popular web browsers are:</strong> <ul> <li>Google chrome.</li> <li>Firefox.</li> <li>Microsoft Edge.</li> <li>Opera.</li> <li>Chromium.</li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Important examples of&nbsp;Operating systems are:</strong> <ul> <li>Windows.</li> <li>UNIX.</li> <li>Linux.</li> <li>Mac OS.</li> <li>Novell NetWare.</li> <li>Ubuntu.</li> </ul> </li> <li><strong>System software</strong> is software designed to provide a platform for other software.</li> </ul></div>
+    <div class="lang-hi"><p>सही <span style="">उत्तर</span>&nbsp;<u><strong>ब्राउजर</strong></u>&nbsp;है।<br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</p> <ul> <li><strong>सफारी </strong>वेब<strong> </strong>ब्राउजर श्रेणी से संबंधित सॉफ्टवेयर है। <ul> <li>इसे <strong>एप्पल&nbsp;</strong>द्वारा विकसित किया गया था।</li> <li>यह पहली बार <strong>2003</strong> में मैक पर, मैक ऑपरेटिंग सिस्टम एक्स पैंथर के भाग&nbsp;के रूप में दिखाई दिया था।</li> <li>सफारी का विंडोज संस्करण&nbsp;पहली बार <strong>2007</strong> में जारी किया गया था।</li> <li><strong>अन्य लोकप्रिय वेब ब्राउजर&nbsp;</strong><strong>निम्नलिखित&nbsp;हैं:</strong> <ul> <li>गूगल क्रोम</li> <li>फ़ायरफ़ॉक्स</li> <li>माइक्रोसॉफ्ट एज</li> <li>ओपेरा</li> <li>क्रोमियम</li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>ऑपरेटिंग सिस्टम के महत्वपूर्ण उदाहरण निम्नलिखित हैं:</strong> <ul> <li>विंडोज</li> <li>यूनिक्स</li> <li>लिनक्स</li> <li>मैक ऑपरेटिंग सिस्टम&nbsp;</li> <li>नोवेल नेटवेयर</li> <li>उबंटू</li> </ul> </li> <li><strong>सिस्टम सॉफ़्टवेयर,</strong> अन्य सॉफ़्टवेयर के लिए एक मंच&nbsp;प्रदान करने के लिए निर्मित&nbsp;किया गया सॉफ़्टवेयर है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q16</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">To select the whole content of a document in MS word, Which of the following is used ?</div>
+  <div class="question lang-hi">MS Word में किसी दस्तावेज की संपूर्ण सामग्री का चयन करने के लिए, निम्नलिखित में से किसका उपयोग किया जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Ctrl + A</div><div class="option">Ctrl + E</div><div class="option">Ctrl + S</div><div class="option">Ctrl + H</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">Ctrl + A</div><div class="option">Ctrl + E</div><div class="option">Ctrl + S</div><div class="option">Ctrl + H</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Ctrl + A</strong></u>.</p> <ul> <li><u><strong>To select the whole content of a document in MS word, Ctrl + A is used</strong></u>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Ctrl + A is used to&nbsp;select the whole content of a document in MS word.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Ctrl+E</strong> is used to<strong> centre text in&nbsp;MS Word.</strong></li> <li><strong>Ctrl+S</strong> is used to<strong> save the document or file.</strong></li> <li><strong>Ctrl+H</strong> is used to<strong> open the Find and Replace in Notepad, Microsoft Word, and WordPad.</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>Ctrl + A</strong></u> है।</p> <ul> <li><strong><u>MS Word में किसी दस्तावेज़ की संपूर्ण सामग्री का चयन करने के लिए, Ctrl + A का उपयोग किया जाता है।</u></strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Ctrl + A का उपयोग MS Word में किसी दस्तावेज की संपूर्ण सामग्री का चयन करने के लिए किया जाता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>MS Word में टेक्स्ट को सेंटर करने के लिए Ctrl+E</strong> का प्रयोग किया जाता है।</li> <li><strong>दस्तावेज&nbsp;या फाइल को सेव&nbsp;के लिए Ctrl + S </strong>का उपयोग किया जाता है।</li> <li><strong>Ctrl+H</strong> का उपयोग <strong>नोटपैड, माइक्रोसॉफ्ट वर्ड और वर्डपैड में फाइंड एंड रिप्लेस को खोलने के लिए किया जाता है।</strong>​</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q17</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is NOT antivirus software?</div>
+  <div class="question lang-hi">निम्न में से कौन एंटीवायरस सॉफ्टवेयर नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Norton</div><div class="option">McAfee</div><div class="option correct">Cobol</div><div class="option">Kaspersky</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">नाॅर्टन</div><div class="option">McAfee</div><div class="option correct">कोबोल</div><div class="option">कैस्पेस्की</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Cobol.</strong></u></p> <ul> <li><strong>McAfee Corp.</strong> is a San Jose, California-based global computer security software corporation.</li> <li><strong>Norton AntiVirus</strong> is an anti-virus or anti-malware software product, developed and distributed by NortonLifeLock</li> <li><strong>Kaspersky Lab</strong> is a Russian multinational cybersecurity and anti-virus provider headquartered in Moscow, Russia.</li> <li><strong>COBOL stands for Common Business Oriented Language</strong>. <ul> <li>It is first developed in 1960 by the CODASYL Committee (Conference on Data Systems Languages).</li> </ul> </li> <li><strong>Hence COBOL is the answer.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" />&nbsp;<strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Avast Antivirus</strong> is a cross-platform internet security suite created by Avast for Microsoft Windows, macOS, Android, and iOS.</li> <li><strong>Avira Operations</strong> GmbH &amp; Co. KG is a German multinational computer security software firm best known for its <strong>Avira Free Security antivirus software.&nbsp;</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <strong><u><span style="color: rgb(33, 37, 41);">Cobol</span></u></strong><u><strong> </strong></u>है।</p> <ul> <li><strong><span style="background-color: rgb(255, 255, 255);">मैकएफी कॉर्प</span></strong> एक सैन जोस, कैलिफ़ोर्निया स्थित वैश्विक कंप्यूटर सुरक्षा सॉफ़्टवेयर निगम है।</li> <li><strong>नॉर्टन एंटीवायरस</strong> एक एंटी-वायरस या एंटी-मैलवेयर सॉफ़्टवेयर उत्पाद है, जिसे नॉर्टनलाइफ लॉक द्वारा विकसित और वितरित किया गया है</li> <li><span style="background-color: rgb(255, 255, 255);"><strong>कैस्पेस्की लेब</strong> </span>एक रूसी बहुराष्ट्रीय साइबर सुरक्षा और एंटी-वायरस प्रदाता है जिसका मुख्यालय मास्को, रूस में है।</li> <li><strong>Cobol</strong><strong> का मतलब कॉमन बिजनेस ओरिएंटेड लैंग्वेज है।</strong> <ul> <li>इसे पहली बार 1960 में CODASYL समिति (डेटा सिस्टम भाषाओं पर सम्मेलन) द्वारा विकसित किया गया था।</li> </ul> </li> <li><strong>अतः, Cobol​ उत्तर है।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /> <strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>अवास्ट एंटीवायरस</strong> माइक्रोसॉफ्ट विंडोज, मैकओएस, एंड्रॉइड और आईओएस के लिए अवास्ट द्वारा बनाया गया एक क्रॉस-प्लेटफॉर्म इंटरनेट सुरक्षा सूट है।</li> <li><strong>अवीरा ऑपरेशंस</strong> <span style="">GmbH &amp; Co. KG</span> एक जर्मन बहुराष्ट्रीय कंप्यूटर सुरक्षा सॉफ्टवेयर फर्म है जो अपने <strong>अवीरा फ्री सिक्योरिटी एंटीवायरस सॉफ्टवेयर</strong> के लिए जानी जाती है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q18</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A printer is a ______ kind of device.&nbsp;</div>
+  <div class="question lang-hi">प्रिंटर एक __________ डिवाइस है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Input</div><div class="option">Processing</div><div class="option correct">Output</div><div class="option">Memory</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">इनपुट</div><div class="option">प्रोसेसिंग&nbsp;</div><div class="option correct">आउटपुट&nbsp;</div><div class="option">मेमोरी&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Output.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>A printer is an <strong>output device.</strong></li> <li>The printer is a device through which prints of any document are prepared or processed and all the printed information of the computer is obtained.</li> <li>A laser printer is the fastest printer in the world.</li> <li>The first electronic printer was the <strong>EP-101</strong>, which was introduced in 1968.</li> <li>Japanese company Epson invented it<strong>.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>Printers can be divided into two: <ol> <li>I<span id="cke_bm_11788S" style="display: none;">&nbsp;</span>mpact printer.</li> <li>Non-impac<span id="cke_bm_11788E" style="display: none;">&nbsp;</span>t printer.</li> </ol> </li> <li>In <strong>impact printers</strong>, printing heads touch the paper.</li> <li>Examples of impact printers are: <ul> <li>Line printer.</li> <li>Chain printer.</li> <li>Dot-matrix printer.</li> <li>Character printer.</li> <li>Drum printer.</li> <li>Daisy wheel printer.</li> </ul> </li> <li>Examples of <strong>non-impact printers</strong> are: <ul> <li>Laser printer.</li> <li>Inkjet printer.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The device which receives data for processing is called an <strong>input device.</strong></li> <li>A Keyboard is the primary input device.</li> <li>Major input devices are: <ul> <li>Keyboard.</li> <li>Mouse.</li> <li>Light Pen.</li> <li>Touchpad.</li> <li>Barcode Reader.</li> <li>Scanner.</li> <li>Digital Camera.</li> <li>Track Ball.</li> <li>Microphone.</li> <li>Joystick.</li> <li>Graphic Tablet.</li> </ul> </li> <li><strong>Output devices</strong> help users to get the result of processed data.</li> <li>A monitor is the primary output device.</li> <li>Major output devices are: <ul> <li>Monitor.</li> <li>Printer.</li> <li>Headphones.</li> <li>Computer Speakers.</li> <li>Headphone.</li> <li>Projector.</li> <li>Plotter.</li> <li>Sound Card.</li> <li>Video Card.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>आउटपुट</strong></u> है।<br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>प्रिंटर एक आउटपुट डिवाइस है।</li> <li>प्रिंटर एक ऐसा उपकरण है जिसके माध्यम से किसी भी डॉक्यूमेंट के प्रिंट तैयार या एडिट किए जाते हैं और कंप्यूटर की सभी प्रिंटेड इनफार्मेशन प्राप्त की जाती है।</li> <li>लेजर प्रिंटर दुनिया का सबसे तेज प्रिंटर है।</li> <li>पहला इलेक्ट्रॉनिक प्रिंटर EP-101 था, जिसे 1968 में तैयार किया गया था।</li> <li>इसका आविष्कार जापानी कंपनी एप्सन ने किया था।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>प्रिंटर को दो भागों में विभाजित किया जा सकता है:</li> </ul> <ol style="margin-left: 40px;"> <li>इम्पैक्ट प्रिंटर</li> <li>नॉन-इम्पैक्ट प्रिंटर</li> </ol> <ul> <li><strong>इम्पैक्ट प्रिंटर</strong> में, प्रिंटिंग हेड कागज पर स्पर्श करते हैं।</li> <li>इम्पैक्ट प्रिंटर के उदाहरण हैं: <ul> <li>लाइन प्रिंटर</li> <li>चेन प्रिंटर</li> <li>डॉट मैट्रिक्स प्रिंटर</li> <li>करैक्टर प्रिंटर</li> <li>ड्रम प्रिंटर</li> <li>डेज़ी व्हील प्रिंटर</li> </ul> </li> <li><strong>नॉन - इम्पैक्ट प्रिंटर</strong> के उदाहरण हैं: <ul> <li>लेजर प्रिंटर</li> <li>इंकजेट प्रिंटर</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>प्रोसेसिंग के लिए डेटा प्राप्त करने वाले उपकरण को <strong>इनपुट डिवाइस </strong>कहा जाता है।</li> <li>एक कीबोर्ड प्राइमरी इनपुट डिवाइस है।</li> <li>प्रमुख इनपुट डिवाइस हैं: <ul> <li>कीबोर्ड</li> <li>माउस</li> <li>लाइट पेन</li> <li>टचपैड</li> <li>बारकोड रीडर</li> <li>स्कैनर</li> <li>डिजिटल कैमरा</li> <li>ट्रैक बॉल</li> <li>माइक्रोफोन</li> <li>जॉयस्टिक</li> <li>ग्राफिक टैबलेट</li> </ul> </li> <li><strong>आउटपुट डिवाइस</strong> यूज़र्स को संसाधित डेटा का परिणाम प्राप्त करने में मदद करता है।</li> <li>एक मॉनिटर प्राइमरी आउटपुट डिवाइस है।</li> <li>प्रमुख आउटपुट डिवाइस हैं: <ul> <li>मॉनिटर</li> <li>प्रिंटर</li> <li>हेडफोन</li> <li>कंप्यूटर स्पीकर्स</li> <li>हेडफोन</li> <li>प्रोजेक्टर</li> <li>प्लॉट्टर</li> <li>साउंड कार्ड</li> <li>वीडियो कार्ड</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q19</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Which among the following is the Application software?</p></div>
+  <div class="question lang-hi">निम्नलिखित में से कौनसा एप्लीकेशन सॉफ्टवेयर है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Linux</div><div class="option">Unix</div><div class="option correct">Microsoft Power Point</div><div class="option">Macros&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">लाइनेक्स</div><div class="option">यूनिक्स</div><div class="option correct">माइक्रोसॉफ्ट पावर प्वाइंट</div><div class="option">मैक्रोस&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Microsoft PowerPoint</strong></u>.</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>Application software is a <strong>program or group of programs designed for end-users</strong>.</li> <li>Applications may be bundled with the computer and its system software or published separately and may be coded as proprietary, open-source, or projects.</li> <li>Apps built for <strong>mobile platforms are also types of Applications Software</strong>.</li> <li>Applications software is capable of dealing with <strong>user inputs and helps the user to complete the task</strong>.</li> <li>It is also called <strong>end-user programs or only an app</strong>.</li> <li>It programmed <strong>for simple as well as complex tasks,&nbsp;it either be installed or access online.</strong></li> <li>It can be a single program or a group of small programs that referred to as an application suite.</li> <li><strong>Examples of an application</strong> include a word processor, a spreadsheet, an accounting application, a web browser, an email client, a media player, a file viewer, simulators, a console game, or a photo editor.</li> <li><u><strong>Microsoft PowerPoint is a type of Application Software</strong></u>.</li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span>&nbsp;</strong></p> <p><u><strong>Microsoft PowerPoint</strong></u></p> <ul> <li>Microsoft PowerPoint is a presentation program,&nbsp;created by <strong>Robert Gaskins and Dennis Austin.</strong></li> <li>It was released on <strong>April 20, 1987.</strong></li> <li>Microsoft PowerPoint is a powerful presentation software developed by Microsoft.</li> <li>It is a standard component of the company&#39;s Microsoft Office suite software and is bundled together with Word, Excel, and other office productivity tools.</li> <li>The program uses slides to convey information rich in multimedia.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>माइक्रोसॉफ्ट पावर प्वाइंट</strong></u> है।&nbsp;&nbsp;</p> <p><u><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></u></p> <ul> <li>एप्लिकेशन सॉफ्टवेयर <strong>एक प्रोग्राम या प्रोग्राम्स का ग्रुप है जो एंड-यूजर्स के लिए बनाया गया है।</strong></li> <li>एप्लिकेशन को कंप्यूटर और उसके सिस्टम सॉफ्टवेयर के साथ बंडल किया जा सकता है या अलग से प्रकाशित किया जा सकता है और स्वामित्व, ओपन-सोर्स या प्रोजेक्ट के रूप में कोडित किया जा सकता है।</li> <li><strong>मोबाइल प्लेटफ़ॉर्म के लिए</strong> बनाए गए ऐप्स भी <strong>एप्लिकेशन सॉफ़्टवेयर के प्रकार हैं।</strong></li> <li>एप्लिकेशन सॉफ़्टवेयर <strong>यूजर&nbsp;इनपुट से निपटने में सक्षम है और यूजर&nbsp;को कार्य पूरा करने में मदद करता है</strong>।</li> <li>इसे <strong>एंड-यूज़र प्रोग्राम या केवल एक ऐप भी कहा जाता है।</strong></li> <li>इसे&nbsp;<strong>सरल और साथ ही जटिल कार्यों के लिए प्रोग्राम किया गया&nbsp;है, इसे या तो इनस्टॉल&nbsp;या ऑनलाइन एक्सेस किया जा सकता है।</strong></li> <li>यह एक एकल कार्यक्रम या छोटे कार्यक्रमों का एक समूह हो सकता है जिसे एप्लिकेशन सूट कहा जाता है।</li> <li>एक एप्लिकेशन के उदाहरणों में एक वर्ड&nbsp;प्रोसेसर, एक स्प्रेडशीट, एक एकाउंटिंग एप्लीकेशन, एक वेब ब्राउज़र, एक ईमेल क्लाइंट, एक मीडिया प्लेयर, एक फ़ाइल दर्शक, सिमुलेटर, एक कंसोल गेम या एक फोटो संपादक शामिल हैं।</li> <li><strong><u>माइक्रोसॉफ्ट पावर प्वाइंट एक प्रकार का एप्लीकेशन सॉफ्टवेयर है</u>।<strong>​</strong></strong></li> </ul> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></span><u style="color: rgb(33, 37, 41);"><span style="font-weight: bolder;">माइक्रोसॉफ्ट पावर प्वाइंट</span></u></p> <ul> <li>माइक्रोसॉफ्ट पावर प्वाइंट एक प्रेजेंटेशन प्रोग्राम है जिसे&nbsp;<strong>रॉबर्ट गैस्किन्स और डेनिस ऑस्टिन</strong> द्वारा बनाया गया था।</li> <li>इसका विमोचन <strong>20 अप्रैल 1987</strong> को किया गया&nbsp;था।</li> <li>माइक्रोसॉफ्ट पावरपॉइंट माइक्रोसॉफ्ट द्वारा विकसित एक प्रभावशाली प्रेजेंटेशन सॉफ्टवेयर है।</li> <li>यह माइक्रोसॉफ्ट कंपनी के माइक्रोसॉफ्ट ऑफिस सूट सॉफ्टवेयर का एक मानक घटक है तथा इसे वर्ड, एक्सेल और अन्य&nbsp; प्रोडक्टिविटी टूल्स के साथ मिलकर बंडल किया जाता है।</li> <li>यह प्रोग्राम मल्टीमीडिया में समृद्ध जानकारी देने के लिए स्लाइड का उपयोग करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q20</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What does the symbol &quot;Ʃ&quot; indicate in MS Excel?</div>
+  <div class="question lang-hi">एमएस एक्सेल में &quot;Ʃ&quot; <span style="color: rgb(33, 37, 41);">सिम्बल&nbsp;</span>क्या दर्शाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Greater than or equal to</div><div class="option">Less&nbsp;than or equal to</div><div class="option correct">Auto Sum</div><div class="option">Date</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">इससे बड़ा या इसके बराबर</div><div class="option">से कम या बराबर</div><div class="option correct"><span style="color: rgb(33, 37, 41);">ऑटो सम (स्वत: योग)&nbsp;</span></div><div class="option">तारीख</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Auto Sum</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></strong></u></p> <ul> <li>The symbol &quot;Ʃ&quot; indicates the <strong>auto sum </strong>in&nbsp;MS Excel. <ul> <li>&ldquo;<strong>Ʃ</strong>&rdquo;<span style=" ">&nbsp;is a&nbsp;Greek character called Sigma</span></li> <li>Excel <strong>automatically enters a formula</strong>&nbsp;to <strong>sum</strong> the numbers while using the <strong>Auto sum</strong>.</li> <li>The AutoSum button is available in the &#39;<strong>Home</strong>&#39; tab on the excel ribbon.</li> <li>It is also available in the &#39;<strong>Formulas</strong>&#39;&nbsp;tab on the excel ribbon.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The <strong>Autosum&nbsp;Excel function</strong> can be accessed by typing <kbd>ALT + &nbsp;=</kbd> sign in a spreadsheet, and it will <strong>automatically create a formula to sum </strong>all the numbers in a continuous&nbsp;range.&nbsp;It allows you to easily add up a series of numbers either <strong>vertically or horizontally </strong>without having to use the mouse or even the arrow keys on the keyboard.</li> <li>The Autosum Excel shortcut is very simple &ndash; just type two keys:&nbsp;<kbd><strong><span class="formula">ALT </span><span class="formula">=</span></strong></kbd> <ul> <li><strong>Step 1:</strong> Place the cursor below the column of numbers you want to sum (or to the left of the row of numbers you want to sum).</li> <li><strong>Step 2:</strong>&nbsp;hold down the <strong>Alt</strong> key and then press the equals = sign while still holding Alt.</li> <li><strong>Step 3:</strong>&nbsp;press Enter.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The symbol &quot;<strong>&gt;=</strong>&quot;&nbsp;indicates the &#39;Greater than or equal to&#39; in MS Excel.</li> <li>The symbol &quot;<strong>&lt;=</strong>&quot; indicates the &#39;Less than or equal to&#39; in MS Excel.</li> <li>The symbol &quot;<strong>&lt;&gt;</strong>&quot; indicates &#39;Not equal to&#39; in MS Excel.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;है&nbsp;<u><strong>स्वत: योग</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>प्रतीक &quot;Ʃ&quot; एमएस एक्सेल में <strong>ऑटो राशि (</strong>स्वत: योग) को इंगित करता है। <ul> <li><strong>&quot;&Sigma;&quot;</strong> <span style=" ">एक ग्रीक चरित्र सिग्मा कहा जाता है</span></li> <li>एक्सेल <strong>स्वचालित रूप से एक सूत्र</strong> <strong>ऑटो राशि</strong> का उपयोग करते समय संख्या का <strong>योग</strong> करने <strong>में प्रवेश करती है।</strong></li> <li>AutoSum बटन एक्सेल रिबन पर &#39; <strong>होम</strong> &#39; टैब में उपलब्ध है।</li> <li>यह एक्सेल रिबन पर &#39; <strong>सूत्र</strong> &#39; टैब में भी उपलब्ध है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>ऑटोसम एक्सेल फ़ंक्शन</strong> को स्प्रेडशीट में <kbd>ALT + =</kbd> साइन करके एक्सेस किया जा सकता है, और यह <strong>स्वचालित रूप</strong> से एक निरंतर रेंज में सभी नंबरों <strong>को योग करने के लिए एक सूत्र बना</strong> देगा। यह आपको आसानी से <strong>या क्षैतिज रूप से</strong> या कीबोर्ड पर तीर कुंजियों का उपयोग किए बिना संख्याओं की एक श्रृंखला को <strong>खड़ी या क्षैतिज रूप</strong> से जोड़ने की अनुमति देता है।</li> <li>ऑटोसुम एक्सेल शॉर्टकट बहुत सरल है - बस दो कुंजी टाइप करें: <kbd><strong><span class="formula">ALT</span> <span class="formula">=</span></strong></kbd> <ul> <li><strong>चरण 1:</strong> कर्सर को उन संख्याओं के स्तंभ के नीचे रखें जिन्हें आप योग करना चाहते हैं (या उन संख्याओं की पंक्ति के बाईं ओर जिन्हें आप जोड़ना चाहते हैं)।</li> <li><strong>चरण 2:</strong> <strong>Alt</strong> कुंजी को दबाए रखें और फिर <strong>Alt</strong> दबाते हुए बराबर = चिह्न दबाएँ।</li> <li><strong>चरण 3:</strong> Enter दबाएँ।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>प्रतीक &quot; <strong>&gt; =</strong> &quot; एमएस एक्सेल में &#39;अधिक से अधिक या बराबर&#39; इंगित करता है।</li> <li>&quot; <strong>&lt;=</strong> &quot; प्रतीक एमएस एक्सेल में &#39;कम से कम या बराबर&#39; इंगित करता है।</li> <li>एमएस एक्सेल में &quot; <strong>&lt;&gt;</strong> &quot; का प्रतीक &#39;बराबर नहीं&#39; इंगित करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

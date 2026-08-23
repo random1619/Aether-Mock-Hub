@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>YATRI</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#4361ee;--s:#3f37c9;--ok:#4cc9f0;--err:#f72585;--warn:#f8961e}
+body{font-family:'Segoe UI',sans-serif;background:#f5f7fa;min-height:100vh;color:#2d3436;-webkit-tap-highlight-color:transparent}
+.hdr{position:fixed;top:0;width:100%;background:#fff;padding:16px 20px;z-index:100;box-shadow:0 2px 15px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
+.hdr-left{display:flex;align-items:center;gap:16px}
+.ttl{font-weight:700;font-size:18px;color:var(--p)}
+.tmr{font-family:monospace;font-weight:700;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:8px 16px;border-radius:20px;font-size:14px}
+.sub{background:linear-gradient(135deg,var(--err),#c1121f);border:none;color:#fff;padding:10px 20px;border-radius:25px;font-weight:700;font-size:12px;cursor:pointer;transition:all .2s ease}
+.sub:active{transform:scale(.95)}
+.main{margin:80px 0 90px;padding:0 20px}
+.qc{background:#fff;border-radius:20px;padding:24px;margin-bottom:20px;box-shadow:0 5px 20px rgba(0,0,0,.05);position:relative}
+.qc::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--p),var(--s))}
+.qn{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:8px 16px;border-radius:20px;display:inline-block;font-weight:700;font-size:12px;margin-bottom:16px}
+.qt{font-size:16px;line-height:1.6;margin-bottom:24px;color:#212529;font-weight:500}
+.qt p{margin:8px 0}
+.qt strong{font-weight:700}
+.qt em{font-style:italic}
+.qt u{text-decoration:underline}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:#fff;border:1px solid #e9ecef;border-radius:14px;padding:16px;cursor:pointer;transition:all .2s ease;position:relative;font-size:14px;line-height:1.4;text-align:left}
+.opt p{margin:4px 0}
+.opt strong{font-weight:700}
+.opt em{font-style:italic}
+.opt u{text-decoration:underline}
+.opt:hover{border-color:var(--p)}
+.opt:active{transform:scale(.98)}
+.opt.sel{background-color:#edf2ff;border-color:var(--p);color:var(--p)}
+.opt.cor{background-color:#ebfbee;border-color:#2b8a3e;color:#2b8a3e}
+.opt.inc{background-color:#fff5f5;border-color:#c92a2a;color:#c92a2a}
+.opt.unat{background:#f8f9fa;border-color:#dee2e6;color:#6c757d}
+.opt::after{content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;transition:all .2s ease}
+.opt.sel::after{background:var(--p);content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.cor::after{background:#2b8a3e;content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.inc::after{background:#c92a2a;content:'✗';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.unat::after{background:transparent;content:'○';display:flex;align-items:center;justify-content:center;color:#6c757d;font-weight:700;font-size:14px}
+.sol{background:#f8f9fa;border-radius:14px;padding:16px;margin-top:16px;border-left:4px solid var(--warn);display:none}
+.sol h4{color:#e67700;margin-bottom:8px;font-weight:700;font-size:14px}
+.sol-content{color:#495057;font-size:14px;line-height:1.6}
+.sol-content p{margin:8px 0}
+.sol-content strong{font-weight:700}
+.sol-content em{font-style:italic}
+.sol-content u{text-decoration:underline}
+.nav{position:fixed;bottom:0;width:100%;background:#fff;padding:16px 20px;display:flex;justify-content:space-between;box-shadow:0 -2px 15px rgba(0,0,0,.08)}
+.nb{padding:12px 20px;border:none;border-radius:25px;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s ease;display:flex;align-items:center;gap:6px}
+.nb:disabled{opacity:.5;cursor:not-allowed}
+.nb:not(:disabled):active{transform:scale(.95)}
+.nb.prv{background:linear-gradient(135deg,#adb5bd,#6c757d);color:#fff}
+.nb.nxt{background:linear-gradient(135deg,var(--err),#c1121f);color:#fff}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:1000;animation:fadeIn .3s ease}
+.modal.show{display:flex;align-items:center;justify-content:center;padding:20px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-content{background:#fff;border-radius:20px;max-width:400px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{text-align:center;padding:32px 24px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border-radius:20px 20px 0 0}
+.modal-header h2{font-weight:700;font-size:28px;margin-bottom:8px}
+.modal-header p{font-size:16px;opacity:.9}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:20px}
+.stat{text-align:center;padding:16px}
+.stat h4{color:#6c757d;font-weight:600;font-size:12px;margin-bottom:8px;text-transform:uppercase}
+.stat p{color:#212529;font-weight:700;font-size:18px}
+.mark-breakdown{padding:0 20px;margin-bottom:16px}
+.mark-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f3f4}
+.mark-item:last-child{border-bottom:none}
+.mark-label{color:#6c757d;font-size:14px}
+.mark-value{font-weight:600;color:#212529}
+.mark-value.positive{color:#2b8a3e}
+.mark-value.negative{color:#c92a2a}
+.total-marks{background:#f8f9fa;border-radius:12px;padding:16px;margin:16px 20px;text-align:center}
+.total-marks h3{color:#212529;font-size:18px;font-weight:700;margin-bottom:4px}
+.total-marks p{color:#6c757d;font-size:14px}
+.modal-actions{padding:0 20px 20px;display:flex;gap:12px}
+.act-btn{flex:1;padding:12px;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:all .2s ease}
+.act-btn:active{transform:scale(.98)}
+.act-btn.blue{background:#edf2ff;color:var(--p)}
+.act-btn.green{background:#ebfbee;color:#2b8a3e}
+.close{position:absolute;top:15px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px}
+</style></head><body>
+<div class="hdr">
+<div class="hdr-left">
+<div class="ttl">YATRI</div>
+<div class="tmr" id="tmr">5:00</div>
+</div>
+<button class="sub" onclick="sub()" id="sub-btn">Submit</button>
+</div>
+<div class="main">
+<div id="qc" class="qc">
+<div class="qn" id="qn">Question 1</div>
+<div class="qt" id="qt"></div>
+<div class="opts" id="opts"></div>
+<div class="sol" id="sol">
+<h4>💡 Solution</h4>
+<div class="sol-content" id="sol-text"></div>
+</div>
+</div>
+</div>
+<div class="nav">
+<button class="nb prv" id="pb" onclick="prv()">← Previous</button>
+<button class="nb nxt" id="nb" onclick="nxt()">Next →</button>
+</div>
+<div id="modal" class="modal">
+<div class="modal-content">
+<button class="close" onclick="closeModal()">×</button>
+<div class="modal-header">
+<h2 id="fs">Your Score</h2>
+<p id="sp">Marks Obtained</p>
+</div>
+<div class="modal-stats">
+<div class="stat"><h4>Correct</h4><p id="cor">0</p></div>
+<div class="stat"><h4>Incorrect</h4><p id="inc">0</p></div>
+<div class="stat"><h4>Unattempted</h4><p id="unat">0</p></div>
+</div>
+<div class="mark-breakdown">
+<div class="mark-item">
+<span class="mark-label">Correct (2.0 each)</span>
+<span class="mark-value positive" id="pos-marks">+0</span>
+</div>
+<div class="mark-item">
+<span class="mark-label">Incorrect (0.5 each)</span>
+<span class="mark-value negative" id="neg-marks">0</span>
+</div>
+<div class="mark-item">
+<span class="mark-label">Unattempted (0 each)</span>
+<span class="mark-value" id="una-marks">0</span>
+</div>
+</div>
+<div class="total-marks">
+<h3 id="total-score">0 Marks</h3>
+<p id="percentage">0%</p>
+</div>
+<div class="modal-actions">
+<button class="act-btn blue" onclick="showSol()">View Solutions</button>
+<button class="act-btn green" onclick="location.reload()">Retry Test</button>
+</div>
+</div>
+</div>
+<script>
+const qs=[{"id": "148053", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>He would often <strong><em>yearn</em></strong> for the peaceful days of his childhood spent in the countryside.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Forget", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Long for", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignore"], "correct_answer": 1, "solution": "<strong>Synonym: Long for</strong> (verb) – Crave, miss. लालायित होना"}, {"id": "148045", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The city became <strong><em>prosperous</em></strong> after years of hard work and innovation.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Wealthy", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Successful", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Poor", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Flourishing"], "correct_answer": 2, "solution": "<strong>Antonym: Poor</strong> (adjective) – Lacking wealth, unsuccessful (गरीब, दरिद्र)"}, {"id": "148054", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The wise teacher guided his <strong><em>disciple</em></strong> with lessons of truth and self-discipline.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Enemy", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Critic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Stranger", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Follower"], "correct_answer": 3, "solution": "<strong>Synonym: Follower</strong> (noun) – Adherent, pupil. अनुयायी"}, {"id": "148046", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>She was completely <strong><em>enamoured</em></strong> <em>with</em> the beautiful melodies of the classical ragas.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Captivated", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Disgusted", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Fascinated", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Charmed"], "correct_answer": 1, "solution": "<strong>Antonym: Disgusted</strong> (adjective) – Repelled, revolted (घृणा से भरा)"}, {"id": "148052", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Many Eastern philosophies believe in the concept of <strong><em>transmigration</em></strong>, where the soul takes new forms.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Birth", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Death", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Reincarnation", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Extinction"], "correct_answer": 2, "solution": "<strong>Synonym: Reincarnation</strong> (noun) – Rebirth, renewal. अवतार"}, {"id": "148047", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>People naturally <strong><em>gravitate</em></strong> toward those who radiate positivity and kindness.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Move toward", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Drift", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Incline", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Avoid"], "correct_answer": 3, "solution": "<strong>Antonym: Avoid</strong> (verb) – Stay away, evade (टालना, बचना)"}, {"id": "148050", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Despite the <strong><em>trials and tribulations</em></strong> of life, he remained hopeful and determined.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Hardships", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Joys", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Surprises", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Rewards"], "correct_answer": 0, "solution": "<strong>Synonym: Hardships</strong> (noun) – Struggles, sufferings. कष्ट"}, {"id": "148048", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The guru would often <strong><em>exhort</em></strong> his followers <em>to</em> practice patience and compassion.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Discouraged", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Urged", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Advised", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Pressed"], "correct_answer": 0, "solution": "<strong>Antonym: Discouraged</strong> (verb) – Deterred, dissuaded (हतोत्साहित करना)"}, {"id": "148051", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Legends say that the ancient temple has stood for an <strong><em>aeon</em></strong>, witnessing countless generations.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Moment", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Second", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Day", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Era"], "correct_answer": 3, "solution": "<strong>Synonym: Era</strong> (noun) – Long period, epoch. काल"}, {"id": "148049", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Their relationship was <strong><em>harmonious</em></strong>, filled with mutual respect and understanding.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Peaceful", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Balanced", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Chaotic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Friendly"], "correct_answer": 2, "solution": "<strong>Antonym: Chaotic</strong> (adjective) – Disorderly, unstable (अराजक, अव्यवस्थित)"}, {"id": "147918", "question": "<strong>Select the best express synonym of the given underlined word.</strong></p> <p>The <ins><strong>viability</strong> </ins>of the new business model was confirmed by thorough market research, which predicted substantial profitability within the first year.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Judicious", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Magnanimous", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Prudent", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Feasibility"], "correct_answer": 3, "solution": "<strong>Synonym</strong>: <strong>Feasibility</strong> (noun) – The state or degree of being easily or conveniently done. व्यावहारिकता"}, {"id": "147919", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The judge's decision was praised for being <ins><strong>equitable</strong></ins>, ensuring a fair resolution that was unbiased and just.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Biased", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ridiculous", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hasty", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Silly"], "correct_answer": 0, "solution": "<strong>Antonym</strong>: <strong>Biased</strong> (adjective) – Unfairly prejudiced for or against someone or something, partial, prejudiced. पक्षपातपूर्ण"}, {"id": "147920", "question": "<strong>Select the best express synonym of the given underlined word.</strong></p> <p>To <ins><strong>equip</strong> </ins>the new laboratory, the university invested heavily in state-of-the-art scientific instruments and technologies.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Malicious", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Underappreciated", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Prepare", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Miserly"], "correct_answer": 2, "solution": "<strong>Synonym</strong>: <strong>Prepare</strong> (verb) – Make ready or able for a particular purpose or event. तैयार करना"}, {"id": "147921", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>There is a clear <ins><strong>bias</strong> </ins>in media coverage, often favoring one political party over others, which skews public perception.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Relevance", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Neutrality", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Acceptance", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Elegance"], "correct_answer": 1, "solution": "<strong>Antonym</strong>: <strong>Neutrality</strong> (noun) – The state of not supporting or helping either side in a conflict, impartiality, unbiased. तटस्थता"}, {"id": "147922", "question": "<strong>Select the best express synonym of the given underlined word.</strong></p> <p>The <ins><strong>intermittent</strong> </ins>rainfall throughout the summer complicated the farming schedule, causing irregular delays in crop cultivation.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Munificent", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Periodic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Carcass", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Corpse"], "correct_answer": 1, "solution": "<strong>Synonym</strong>: <strong>Periodic</strong> (adjective) – Appearing or occurring at intervals. आवधिक"}, {"id": "147923", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Despite the storm's severity, the structure's <ins><strong>robust</strong> </ins>construction ensured it remained intact and secure.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Fictitious", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Endurance", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Fragile", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Productive"], "correct_answer": 2, "solution": "<strong>Antonym</strong>: <strong>Fragile</strong> (adjective) – Easily broken or damaged, delicate, flimsy. नाजुक"}, {"id": "147924", "question": "<strong>Select the best express synonym of the given underlined word.</strong></p> <p>The company decided to <ins><strong>incentivise</strong> </ins>employee performance with bonuses and additional vacation days to spur higher productivity.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Motivate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Scrap", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Prison", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Gale"], "correct_answer": 0, "solution": "<strong>Synonym</strong>: <strong>Motivate</strong> (verb) – Provide (someone) with a motive for doing something; stimulate (someone's) interest in or enthusiasm for doing something. प्रेरित करना"}, {"id": "147925", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Climbing Mount Everest is a <ins><strong>formidable</strong> </ins>challenge, demanding exceptional physical and mental preparation to overcome its daunting peaks.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Manageable", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Legitimate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Genuine", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Falsified"], "correct_answer": 0, "solution": "<strong>Antonym</strong>: <strong>Manageable</strong> (adjective) – Easily managed or handled, controllable, feasible. संभालने योग्य"}, {"id": "147926", "question": "<strong>Select the best express synonym of the given underlined word.</strong></p> <p>Ignoring the safety protocols could <ins><strong>jeopardise</strong> </ins>the entire operation, putting both the workers and the project at significant risk.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Decency", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Deception", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Endanger", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Courtesy"], "correct_answer": 2, "solution": "<strong>Synonym</strong>: <strong>Endanger</strong> (verb) – Put (someone or something) at risk or in danger. खतरे में डालना"}, {"id": "147927", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The plan for the solar-powered car seemed <ins><strong>unviable</strong> </ins>due to the unpredictable weather in the region, rendering it impractical for consistent use.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Affiliated", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Allied", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Unalike", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Feasible"], "correct_answer": 3, "solution": "<strong>Antonym</strong>: <strong>Feasible</strong> (adjective) – Possible to do easily or conveniently, practical, workable. संभव"}, {"id": "147875", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>His <ins><strong>apprehension</strong></ins> about the exam kept him awake all night.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Excitement", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Confidence", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Joy", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Fear"], "correct_answer": 3, "solution": "<strong>Synonym: Fear </strong>(noun) – Dread, anxiety, worry (डर)"}, {"id": "147868", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The <ins><strong>barbaric</strong> </ins>acts of violence during the war shocked the entire world.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Civilized", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Cruel", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Violent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Brutal"], "correct_answer": 0, "solution": "<strong>Antonym: Civilized </strong>(adjective) – Cultured, refined, polite, advanced. (सभ्य)"}, {"id": "147874", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The diplomat worked hard to <ins><strong>defuse</strong> </ins>the tension between the two countries.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Escalate", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Calm", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Intensify", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignite"], "correct_answer": 1, "solution": "<strong>Synonym: Calm</strong> (verb) – Soothe, relax, pacify (शांत करना)"}, {"id": "147869", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>She presented a <ins><strong>reasoned</strong> </ins>argument that convinced everyone in the room.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Analytical", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Rational", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Thoughtful", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Illogical"], "correct_answer": 3, "solution": "<strong>Antonym: Illogical</strong> (adjective) – Irrational, unreasonable, absurd. (अतर्कसंगत)"}, {"id": "147876", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The two nations decided to <ins><strong>forge</strong> </ins>a stronger alliance for mutual benefit.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Break", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Destroy", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Create", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Weaken"], "correct_answer": 2, "solution": "<strong>Synonym: Create</strong> (verb) – Form, establish, produce (रचना करना)"}, {"id": "147871", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>One major <ins><strong>pitfall</strong> </ins>of investing without research is losing money unnecessarily.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Danger", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Advantage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Risk", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hazard"], "correct_answer": 1, "solution": "<strong>Antonym: Advantage</strong> (noun) – Benefit, gain, upside. (फायदा)"}, {"id": "147873", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>Quick thinking helped the driver <ins><strong>avert</strong> </ins>a major accident on the highway.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignore", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Encourage", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Prevent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Delay"], "correct_answer": 2, "solution": "<strong>Synonym: Prevent</strong> (verb) – Stop, avoid, hinder (रोकना)"}, {"id": "147872", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The CEO gave an <ins><strong>unequivocal</strong> </ins>statement that there would be no layoffs this year.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Ambiguous", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Clear", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Definite", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Certain"], "correct_answer": 0, "solution": "<strong>Antonym: Ambiguous</strong> (adjective) – Vague, unclear, uncertain. (अस्पष्ट)"}, {"id": "147877", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>Corruption is a <ins><strong>scourge</strong> </ins>that hinders the progress of many developing nations.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Curse", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Blessing", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Advantage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Benefit"], "correct_answer": 0, "solution": "<strong>Synonym: Curse</strong> (noun) – Misfortune, bane, evil (शाप)"}, {"id": "147870", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>It’s important to make <ins><strong>rational</strong> </ins>decisions rather than emotional ones in critical situations.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Sensible", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Coherent", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Irrational", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Sound"], "correct_answer": 2, "solution": "<strong>Antonym: Irrational</strong> (adjective) – Illogical, unreasonable, absurd. (तर्कहीन)"}, {"id": "147817", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>High logistics costs remain a key <ins><strong>pain point</strong></ins> for manufacturers in rural areas.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Strength", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Advantage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Benefit", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Problem area"], "correct_answer": 3, "solution": "<strong>Synonym: Problem area</strong> (noun) – Difficulty, pain point. समस्या वाला क्षेत्र"}, {"id": "147808", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The new policy on land acquisition is highly <ins><strong>contentious</strong></ins>, sparking debates across the nation.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Argumentative", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Harmonious", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Divisive", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Debatable"], "correct_answer": 1, "solution": "<strong>Antonym: Harmonious</strong> (adjective) – Peaceful, agreeable, free from conflict. सहमतिपूर्ण"}, {"id": "147816", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The state government decided to <ins><strong>levy</strong> </ins>an additional cess on luxury goods.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Abolish", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Waive", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Impose", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Remove"], "correct_answer": 2, "solution": "<strong>Synonym: Impose</strong> (verb) – Levy, enforce, apply. थोपना"}, {"id": "147809", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The <strong>l<ins>ong-awaited</ins></strong> metro extension was finally inaugurated after years of delays.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Overdue", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Delayed", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Unexpected", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Anticipated"], "correct_answer": 2, "solution": "<strong>Antonym: Unexpected</strong> (adjective) – Sudden, unanticipated, surprising. अप्रत्याशित"}, {"id": "147815", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>Bureaucratic red tape remains a major <ins><strong>impediment</strong> </ins>to swift business approvals.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Obstacle", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Advantage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Support", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Boost"], "correct_answer": 0, "solution": "<strong>Synonym: Obstacle</strong> (noun) – Barrier, impediment, hurdle. रुकावट"}, {"id": "147810", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The government plans to <ins><strong>unleash</strong> </ins>a series of reforms to boost the economy.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Trigger", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Release", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Initiate", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Restrain"], "correct_answer": 3, "solution": "<strong>Antonym: Restrain</strong> (verb) – Control, suppress, hold back. रोकना"}, {"id": "147813", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>Small businesses with annual turnovers below ₹50 lakh will be <ins><strong>exempt</strong> </ins>from the new tax.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Included", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Charged", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Excluded", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Penalized"], "correct_answer": 2, "solution": "<strong>Synonym: Excluded </strong>(verb) – Left out, exempted, excused. बाहर रखा गया"}, {"id": "147811", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Businesses must <ins><strong>embrace</strong> </ins>digital transformation to stay competitive in the market.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Reject", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Adopt", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Welcome", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Support"], "correct_answer": 0, "solution": "<strong>Antonym: Reject</strong> (verb) – Refuse, decline, dismiss. अस्वीकार करना"}, {"id": "147814", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The startup’s innovative ideas finally began to <ins><strong>fructify</strong></ins>, attracting major investors.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Failed", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Collapsed", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Stagnated", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Materialized"], "correct_answer": 3, "solution": "<strong>Synonym: Materialized</strong> (verb) – Became reality, fructified. वास्तविक रूप लेना"}, {"id": "147812", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Experts <ins><strong>project</strong> </ins>a 7% GDP growth for the next fiscal year.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Guess", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Miscalculate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Estimate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Forecast"], "correct_answer": 1, "solution": "<strong>Antonym: Miscalculate</strong> (verb) – Misjudge, err in calculation. गलत अनुमान लगाना"}, {"id": "147806", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>It is <ins><strong>imperative</strong> </ins>that we address climate change before it’s too late.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Optional", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Unimportant", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Trivial", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Essential"], "correct_answer": 3, "solution": "<strong>Synonym: Essential</strong> (adjective) – Vital, imperative, critical. अत्यावश्यक"}, {"id": "147798", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>From its <ins><strong>inception</strong></ins>, the project aimed to revolutionize renewable energy solutions.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Origin", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Launch", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Conclusion", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Commencement"], "correct_answer": 2, "solution": "<strong>Antonym: Conclusion</strong> (noun) – End, termination, finish. (समाप्ति, अंत)"}, {"id": "147807", "question": "<strong>Select the best express Synonym of the given underlined phrase.</strong></p> <p>New safety protocols are now <ins><strong>in place</strong></ins> to prevent future accidents.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Removed", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Established", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Abolished", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Disbanded"], "correct_answer": 1, "solution": "<strong>Synonym: Established</strong> (adjective) – In place, set up, implemented. लागू / मौजूद"}, {"id": "147799", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The economic <ins><strong>disparity</strong> </ins>between urban and rural areas continues to widen.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Similarity", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Inequality", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Imbalance", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Gap"], "correct_answer": 0, "solution": "<strong>Antonym: Similarity</strong> (noun) – Likeness, resemblance. (समानता, सादृश्य)"}, {"id": "147805", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>Businesses must <ins><strong>leverage</strong> </ins>technology to stay competitive in the digital age.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Utilize", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Waste", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignore", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Misuse"], "correct_answer": 0, "solution": "<strong>Synonym: Utilize</strong> (verb) – Use, leverage, employ. लाभ उठाना"}, {"id": "147800", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Scientists detected an <ins><strong>anomaly</strong> </ins>in the data that could indicate a new discovery.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Irregularity", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Deviation", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Oddity", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Normality"], "correct_answer": 3, "solution": "<strong>Antonym: Normality</strong> (noun) – Regularity, usualness. (सामान्यता, नियमितता)"}, {"id": "147803", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The patient suffered from a <ins><strong>debilitating</strong> </ins>illness that left him bedridden for months.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Strengthening", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Energizing", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Weakening", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Invigorating"], "correct_answer": 2, "solution": "<strong>Synonym: Weakening</strong> (adjective) – Debilitating, enfeebling, draining. कमजोर करने वाला"}, {"id": "147801", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>Security measures were strengthened to <ins><strong>thwart</strong> </ins>any potential cyberattacks.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Prevent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Obstruct", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Assist", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Foil"], "correct_answer": 2, "solution": "<strong>Antonym: Assist</strong> (verb) – Help, support. (सहायता करना, मदद करना)"}, {"id": "147804", "question": "<strong>Select the best express Synonym of the given underlined word.</strong></p> <p>The CEO <ins><strong>sounded</strong> </ins>a warning about the risks of unchecked corporate expansion.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Silence", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Warn", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Muffle", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Suppress"], "correct_answer": 1, "solution": "<strong>Synonym: Warn</strong> (verb) – Alert, notify, sound. सचेत करना"}, {"id": "147802", "question": "<strong>Select the best express Antonym of the given underlined word.</strong></p> <p>The <ins><strong>deceleration</strong> </ins>in economic growth has raised concerns among policymakers.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Acceleration", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Slowdown", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Decline", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Retardation"], "correct_answer": 0, "solution": "<strong>Antonym: Acceleration</strong> (noun) – Increase in speed. (त्वरण, गति वृद्धि)"}],ans={};
+const posMarks=2.0, negMarks=0.5;
+let ci=0,tl=25*60,ti,fin=0,solMode=0,totalTime=0;
+
+function ini(){
+    disQ();
+    strT();
+}
+
+function disQ(){
+    const q=qs[ci];
+    document.getElementById('qn').textContent=`Question ${ci+1} of ${qs.length}`;
+    document.getElementById('qt').innerHTML=q.question;
+    const oc=document.getElementById('opts'),sc=document.getElementById('sol');
+    oc.innerHTML='';
+    
+    if(solMode){
+        sc.style.display='block';
+        document.getElementById('sol-text').innerHTML=q.solution||'No solution provided.';
+        // Hide submit button in solution mode
+        document.getElementById('sub-btn').style.display='none';
+    }else{
+        sc.style.display='none';
+        // Show submit button in test mode
+        document.getElementById('sub-btn').style.display='block';
+    }
+    
+    q.options.forEach((o,i)=>{
+        const od=document.createElement('div');
+        od.className='opt';
+        od.innerHTML=o;
+        
+        if(solMode){
+            if(i===q.correct_answer) {
+                od.classList.add('cor');
+            } else if(ans[ci]===i) {
+                od.classList.add('inc');
+            } else if(ans[ci]===undefined) {
+                od.classList.add('unat');
+            }
+            od.style.pointerEvents='none';
+        }else{
+            od.onclick=()=>sel(i);
+            if(ans[ci]===i) od.classList.add('sel');
+        }
+        
+        oc.appendChild(od);
+    });
+    
+    upNav();
+}
+
+function sel(i){
+    // If clicking the same option, deselect it (clear response)
+    if(ans[ci]===i){
+        delete ans[ci];
+        document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    }else{
+        // Select new option
+        ans[ci]=i;
+        document.querySelectorAll('.opt').forEach((o,idx)=>o.classList.toggle('sel',idx===i));
+    }
+}
+
+function upNav(){
+    document.getElementById('pb').disabled=ci===0;
+    const nb=document.getElementById('nb');
+    
+    if(solMode){
+        // In solution mode, show same navigation as test mode
+        nb.innerHTML=ci===qs.length-1?'Finish ✓':'Next →';
+        nb.onclick=()=>{
+            if(ci<qs.length-1){
+                ci++;
+                disQ();
+            }else{
+                // Exit solution mode
+                solMode=0;
+                ci=0;
+                disQ();
+            }
+        };
+    }else{
+        // In test mode
+        nb.innerHTML=ci===qs.length-1?'Finish ✓':'Next →';
+        nb.onclick=nxt;
+    }
+}
+
+function prv(){
+    if(ci>0){
+        ci--;
+        disQ();
+    }
+}
+
+function nxt(){
+    if(ci<qs.length-1){
+        ci++;
+        disQ();
+    }else sub();
+}
+
+function strT(){
+    ti=setInterval(()=>{
+        if(tl<=0){
+            sub();
+            return;
+        }
+        tl--;
+        const m=Math.floor(tl/60),s=tl%60;
+        document.getElementById('tmr').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+}
+
+function sub(){
+    if(fin) return;
+    fin=1;
+    clearInterval(ti);
+    totalTime=25*60-tl;
+    
+    // Calculate marks with proper marking system
+    let correct=0, incorrect=0, unattempted=0;
+    let totalMarks=0;
+    
+    qs.forEach((q,i)=>{
+        if(ans[i]===undefined){
+            // Unattempted - no marks deducted
+            unattempted++;
+        }else if(ans[i]===q.correct_answer){
+            // Correct answer - add positive marks
+            correct++;
+            totalMarks += posMarks;
+        }else{
+            // Incorrect answer - deduct negative marks
+            incorrect++;
+            totalMarks -= negMarks;
+        }
+    });
+    
+    // Calculate maximum possible marks and percentage
+    const maxMarks = qs.length * posMarks;
+    const percentage = Math.max(0, Math.round((totalMarks / maxMarks) * 100));
+    
+    const timeStr=`${Math.floor(totalTime/60)}:${(totalTime%60).toString().padStart(2,'0')}`;
+    
+    // Update modal display
+    document.getElementById('fs').textContent=`${correct}/${qs.length}`;
+    document.getElementById('sp').textContent=`${totalMarks} / ${maxMarks} Marks`;
+    document.getElementById('cor').textContent=correct;
+    document.getElementById('inc').textContent=incorrect;
+    document.getElementById('unat').textContent=unattempted;
+    
+    // Update mark breakdown
+    document.getElementById('pos-marks').textContent=`+${correct * posMarks}`;
+    document.getElementById('neg-marks').textContent=`-${incorrect * negMarks}`;
+    document.getElementById('una-marks').textContent=`0`;
+    
+    // Update total score
+    document.getElementById('total-score').textContent=`${totalMarks} Marks`;
+    document.getElementById('percentage').textContent=`${percentage}%`;
+    
+    document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){
+    document.getElementById('modal').classList.remove('show');
+}
+
+function showSol(){
+    closeModal();
+    solMode=1;
+    ci=0;
+    disQ();
+}
+
+window.onload=ini;
+window.addEventListener('beforeunload',e=>{
+    if(!fin){
+        e.preventDefault();
+        e.returnValue='Test in progress';
+    }
+});
+</script></body></html>

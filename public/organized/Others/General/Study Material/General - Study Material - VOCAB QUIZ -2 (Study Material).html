@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>YATRI</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#4361ee;--s:#3f37c9;--ok:#4cc9f0;--err:#f72585;--warn:#f8961e}
+body{font-family:'Segoe UI',sans-serif;background:#f5f7fa;min-height:100vh;color:#2d3436;-webkit-tap-highlight-color:transparent}
+.hdr{position:fixed;top:0;width:100%;background:#fff;padding:16px 20px;z-index:100;box-shadow:0 2px 15px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
+.hdr-left{display:flex;align-items:center;gap:16px}
+.ttl{font-weight:700;font-size:18px;color:var(--p)}
+.tmr{font-family:monospace;font-weight:700;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:8px 16px;border-radius:20px;font-size:14px}
+.sub{background:linear-gradient(135deg,var(--err),#c1121f);border:none;color:#fff;padding:10px 20px;border-radius:25px;font-weight:700;font-size:12px;cursor:pointer;transition:all .2s ease}
+.sub:active{transform:scale(.95)}
+.main{margin:80px 0 90px;padding:0 20px}
+.qc{background:#fff;border-radius:20px;padding:24px;margin-bottom:20px;box-shadow:0 5px 20px rgba(0,0,0,.05);position:relative}
+.qc::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--p),var(--s))}
+.qn{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:8px 16px;border-radius:20px;display:inline-block;font-weight:700;font-size:12px;margin-bottom:16px}
+.qt{font-size:16px;line-height:1.6;margin-bottom:24px;color:#212529;font-weight:500}
+.qt p{margin:8px 0}
+.qt strong{font-weight:700}
+.qt em{font-style:italic}
+.qt u{text-decoration:underline}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{background:#fff;border:1px solid #e9ecef;border-radius:14px;padding:16px;cursor:pointer;transition:all .2s ease;position:relative;font-size:14px;line-height:1.4;text-align:left}
+.opt p{margin:4px 0}
+.opt strong{font-weight:700}
+.opt em{font-style:italic}
+.opt u{text-decoration:underline}
+.opt:hover{border-color:var(--p)}
+.opt:active{transform:scale(.98)}
+.opt.sel{background-color:#edf2ff;border-color:var(--p);color:var(--p)}
+.opt.cor{background-color:#ebfbee;border-color:#2b8a3e;color:#2b8a3e}
+.opt.inc{background-color:#fff5f5;border-color:#c92a2a;color:#c92a2a}
+.opt.unat{background:#f8f9fa;border-color:#dee2e6;color:#6c757d}
+.opt::after{content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;transition:all .2s ease}
+.opt.sel::after{background:var(--p);content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.cor::after{background:#2b8a3e;content:'✓';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.inc::after{background:#c92a2a;content:'✗';display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:10px}
+.opt.unat::after{background:transparent;content:'○';display:flex;align-items:center;justify-content:center;color:#6c757d;font-weight:700;font-size:14px}
+.sol{background:#f8f9fa;border-radius:14px;padding:16px;margin-top:16px;border-left:4px solid var(--warn);display:none}
+.sol h4{color:#e67700;margin-bottom:8px;font-weight:700;font-size:14px}
+.sol-content{color:#495057;font-size:14px;line-height:1.6}
+.sol-content p{margin:8px 0}
+.sol-content strong{font-weight:700}
+.sol-content em{font-style:italic}
+.sol-content u{text-decoration:underline}
+.nav{position:fixed;bottom:0;width:100%;background:#fff;padding:16px 20px;display:flex;justify-content:space-between;box-shadow:0 -2px 15px rgba(0,0,0,.08)}
+.nb{padding:12px 20px;border:none;border-radius:25px;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s ease;display:flex;align-items:center;gap:6px}
+.nb:disabled{opacity:.5;cursor:not-allowed}
+.nb:not(:disabled):active{transform:scale(.95)}
+.nb.prv{background:linear-gradient(135deg,#adb5bd,#6c757d);color:#fff}
+.nb.nxt{background:linear-gradient(135deg,var(--err),#c1121f);color:#fff}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:1000;animation:fadeIn .3s ease}
+.modal.show{display:flex;align-items:center;justify-content:center;padding:20px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-content{background:#fff;border-radius:20px;max-width:400px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{text-align:center;padding:32px 24px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border-radius:20px 20px 0 0}
+.modal-header h2{font-weight:700;font-size:28px;margin-bottom:8px}
+.modal-header p{font-size:16px;opacity:.9}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:20px}
+.stat{text-align:center;padding:16px}
+.stat h4{color:#6c757d;font-weight:600;font-size:12px;margin-bottom:8px;text-transform:uppercase}
+.stat p{color:#212529;font-weight:700;font-size:18px}
+.mark-breakdown{padding:0 20px;margin-bottom:16px}
+.mark-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f3f4}
+.mark-item:last-child{border-bottom:none}
+.mark-label{color:#6c757d;font-size:14px}
+.mark-value{font-weight:600;color:#212529}
+.mark-value.positive{color:#2b8a3e}
+.mark-value.negative{color:#c92a2a}
+.total-marks{background:#f8f9fa;border-radius:12px;padding:16px;margin:16px 20px;text-align:center}
+.total-marks h3{color:#212529;font-size:18px;font-weight:700;margin-bottom:4px}
+.total-marks p{color:#6c757d;font-size:14px}
+.modal-actions{padding:0 20px 20px;display:flex;gap:12px}
+.act-btn{flex:1;padding:12px;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:all .2s ease}
+.act-btn:active{transform:scale(.98)}
+.act-btn.blue{background:#edf2ff;color:var(--p)}
+.act-btn.green{background:#ebfbee;color:#2b8a3e}
+.close{position:absolute;top:15px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px}
+</style></head><body>
+<div class="hdr">
+<div class="hdr-left">
+<div class="ttl">YATRI</div>
+<div class="tmr" id="tmr">5:00</div>
+</div>
+<button class="sub" onclick="sub()" id="sub-btn">Submit</button>
+</div>
+<div class="main">
+<div id="qc" class="qc">
+<div class="qn" id="qn">Question 1</div>
+<div class="qt" id="qt"></div>
+<div class="opts" id="opts"></div>
+<div class="sol" id="sol">
+<h4>💡 Solution</h4>
+<div class="sol-content" id="sol-text"></div>
+</div>
+</div>
+</div>
+<div class="nav">
+<button class="nb prv" id="pb" onclick="prv()">← Previous</button>
+<button class="nb nxt" id="nb" onclick="nxt()">Next →</button>
+</div>
+<div id="modal" class="modal">
+<div class="modal-content">
+<button class="close" onclick="closeModal()">×</button>
+<div class="modal-header">
+<h2 id="fs">Your Score</h2>
+<p id="sp">Marks Obtained</p>
+</div>
+<div class="modal-stats">
+<div class="stat"><h4>Correct</h4><p id="cor">0</p></div>
+<div class="stat"><h4>Incorrect</h4><p id="inc">0</p></div>
+<div class="stat"><h4>Unattempted</h4><p id="unat">0</p></div>
+</div>
+<div class="mark-breakdown">
+<div class="mark-item">
+<span class="mark-label">Correct (2.0 each)</span>
+<span class="mark-value positive" id="pos-marks">+0</span>
+</div>
+<div class="mark-item">
+<span class="mark-label">Incorrect (0.5 each)</span>
+<span class="mark-value negative" id="neg-marks">0</span>
+</div>
+<div class="mark-item">
+<span class="mark-label">Unattempted (0 each)</span>
+<span class="mark-value" id="una-marks">0</span>
+</div>
+</div>
+<div class="total-marks">
+<h3 id="total-score">0 Marks</h3>
+<p id="percentage">0%</p>
+</div>
+<div class="modal-actions">
+<button class="act-btn blue" onclick="showSol()">View Solutions</button>
+<button class="act-btn green" onclick="location.reload()">Retry Test</button>
+</div>
+</div>
+</div>
+<script>
+const qs=[{"id": "148322", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Her laughter was so <strong><em>infectious</em></strong> that soon everyone in the room was smiling.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Boring", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Harmful", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Silent", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Contagious"], "correct_answer": 3, "solution": "<strong>Synonym: Contagious</strong> (adjective) – Transmittable, spreading. छूतदार"}, {"id": "148314", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The <strong><em>vociferous</em></strong> crowd cheered loudly, their chants echoing across the stadium.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Hushed", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Loud", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Forceful", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Vehement"], "correct_answer": 0, "solution": "<strong>Antonym: Hushed </strong>(adjective) – Quiet, noiseless (चुप, शांत)"}, {"id": "148323", "question": "<strong>Select the best express Synonym of the given italicize phrasal verb.</strong></p> <p>As the sun rose, colors <strong><em>burst forth</em></strong> across the sky in a breathtaking display.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Spring up", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hide", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Fade", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Disappear"], "correct_answer": 0, "solution": "<strong>Synonym: Spring up</strong> (phrasal verb) – emerge suddenly, erupt, break out, appear फूट पड़ना"}, {"id": "148315", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>She was an <strong><em>ardent</em></strong> supporter of the cause, dedicating all her time to it.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Passionate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Enthusiastic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Devoted", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Commonplace"], "correct_answer": 3, "solution": "<strong>Antonym: Commonplace </strong>(adjective) – Uninterested, apathetic (उदासीन)"}, {"id": "148321", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>His <strong><em>thesis</em></strong> on artificial intelligence earned him a prestigious award.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Guess", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Story", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Dissertation", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Joke"], "correct_answer": 2, "solution": "<strong>Synonym: Dissertation</strong> (noun) – Research paper, study. शोध-निबंध"}, {"id": "148316", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Despite the challenges, his <strong><em>unwavering</em></strong> determination kept him moving forward.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Steady", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Firm", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Hesitant", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Resolute"], "correct_answer": 2, "solution": "<strong>Antonym: Hesitant</strong> (adjective) – Uncertain, doubtful (संदिग्ध)"}, {"id": "148319", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The angry cat began to <strong><em>bristle</em></strong> as the dog approached too closely.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Surge", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Relax", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Calm", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Sleep"], "correct_answer": 0, "solution": "<strong>Synonym: Surge</strong> (verb) – Rise, swell. उभरना"}, {"id": "148317", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The training program was known for its <strong><em>rigour</em></strong>, pushing recruits to their limits.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Discipline", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Leniency", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hardship", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Strictness"], "correct_answer": 1, "solution": "<strong>Antonym: Leniency</strong> (noun) – Mildness, gentleness (नरमी)"}, {"id": "148320", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The palace was a sight of unmatched <strong><em>splendour</em></strong>, dazzling every visitor.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Dullness", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Grandeur", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Poverty", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Darkness"], "correct_answer": 1, "solution": "<strong>Synonym: Grandeur</strong> (noun) – Majesty, glory. शान"}, {"id": "148318", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>With tears in her eyes, she <strong><em>implored</em></strong> him to reconsider his decision.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Begged", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Demanded", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Pleaded", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Disregard"], "correct_answer": 3, "solution": "<strong>Antonym: Disregard </strong>(verb) – Disregarded, neglected (अनदेखा करना)"}, {"id": "148306", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Soil <strong><em>erosion</em></strong> has become a major concern for farmers in the region.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Strengthening", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Decline", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Growth", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Revival"], "correct_answer": 1, "solution": "<strong>Synonym: Decline</strong> (noun) – Deterioration, weakening (गिरावट)"}, {"id": "148299", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The army decided to <strong><em>retaliate</em></strong> after the enemy’s surprise attack.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Exonerate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Attack", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Surrender", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignore"], "correct_answer": 0, "solution": "<strong>Antonym: Exonerate </strong>(verb) – Pardon, let go. (माफ करना)"}, {"id": "148307", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The <strong><em>prohibitive</em></strong> cost of healthcare forces many to avoid necessary treatments.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Affordable", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Reasonable", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Moderate", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Excessive"], "correct_answer": 3, "solution": "<strong>Synonym: Excessive</strong> (adjective) – Extreme, unreasonable (अत्यधिक)"}, {"id": "148300", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Metals tend to <strong><em>contract</em></strong> when exposed to extremely cold temperatures.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Shrink", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Diminish", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Weaken", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Expand"], "correct_answer": 3, "solution": "<strong>Antonym: Expand</strong> (verb) – Grow, increase. (फैलना / बढ़ना)"}, {"id": "148308", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Some ancient civilizations <strong><em>predate</em></strong> recorded history by thousands of years.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Precede", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Follow", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Coexist", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Overlap"], "correct_answer": 0, "solution": "<strong>Synonym: Precede</strong> (verb) – Come before, lead (पूर्ववर्ती होना)"}, {"id": "148301", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The negotiations reached a <strong><em>stand-off</em></strong>, with neither side willing to compromise.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Dispute", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Conflict", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Agreement", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Tension"], "correct_answer": 2, "solution": "<strong>Antonym: Agreement</strong> (noun) – Consensus, settlement. (समझौता)"}, {"id": "148304", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Her academic performance managed to <strong><em>surpass</em></strong> everyone’s expectations.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Exceed", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Lag behind", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Equal", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Follow"], "correct_answer": 0, "solution": "<strong>Synonym: Exceed</strong> (verb) – Go beyond, outstrip (अधिक होना)"}, {"id": "148302", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The <strong><em>steep</em></strong> prices of luxury cars make them unaffordable for most people.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Extreme", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Moderate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Sharp", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> High"], "correct_answer": 1, "solution": "<strong>Antonym: Moderate</strong> (adjective) – Reasonable, mild. (संतुलित / मध्यम)"}, {"id": "148305", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The economic <strong><em>embargo</em></strong> severely impacted the country’s trade relations.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Approval", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Promotion", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Moratorium", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Encouragement"], "correct_answer": 2, "solution": "<strong>Synonym: Moratorium</strong> (noun) – Prohibition, restriction (प्रतिबंध)"}, {"id": "148303", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The government’s <strong><em>climbdown</em></strong> on the new policy disappointed many supporters.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Retreat", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Withdrawal", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Advancement", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Concession"], "correct_answer": 2, "solution": "<strong>Antonym: Advancement</strong> (noun) – Progress, forward movement. (प्रगति / आगे बढ़ना)"}, {"id": "148219", "question": "<strong>Select the most appropriate Antonym of the given word.</strong></p> <p>Her <strong>fickle</strong> nature made it hard for her friends to trust her decisions.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Steadfast", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Paucity", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Brevity", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Lacunae"], "correct_answer": 0, "solution": "<strong>Antonym:</strong> <strong>Steadfast (adjective)</strong> – Loyal, unchanging, firm, unwavering. अडिग"}, {"id": "148220", "question": "<strong>Select the most appropriate synonym of the given word.</strong></p> <p>The serene landscape filled her heart with <strong>bliss</strong>, making her forget all her worries.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Dearth", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Vile", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Abundance", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Ecstasy"], "correct_answer": 3, "solution": "<strong>Dearth</strong> (noun) – A scarcity or lack of something. कमी"}, {"id": "148221", "question": "<strong>Select the most appropriate Antonym of the given word.</strong></p> <p>After the argument, he sat in deep <strong>introspection</strong>, questioning his own actions and motives.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Equivocal", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Extroversion", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Fertile", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Explicit"], "correct_answer": 1, "solution": "<strong>Antonym:</strong> <strong>Extroversion (noun)</strong> – Outgoing nature, sociability, external focus. बहिर्मुखता"}, {"id": "148222", "question": "<strong>Select the most appropriate synonym of the given word.</strong></p> <p>Excessive use of natural resources can rapidly <strong>deplete</strong> them, leading to environmental crises.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Exhaust", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Intelligent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Exhausted", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Cute"], "correct_answer": 0, "solution": "<strong>Intelligent</strong> (adjective) – Smart, bright, clever, quick-witted. बुद्धिमान"}, {"id": "148223", "question": "<strong>Select the most appropriate Antonym of the given word.</strong></p> <p>The constant <strong>misery</strong> of living in poverty often drains one's hope for a better future.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Happiness", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Essential", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Inherent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Total"], "correct_answer": 0, "solution": "<strong>Antonym:</strong> <strong>Happiness (noun)</strong> – Joy, bliss, pleasure, contentment. खुशी"}, {"id": "148224", "question": "<strong>Select the most appropriate synonym of the given word.</strong></p> <p>She began to <strong>abhor</strong> lies after experiencing the pain they caused in her relationships.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Lethargic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Cowardice", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Detest", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Active"], "correct_answer": 2, "solution": "<strong>Lethargic</strong> (adjective) – Sluggish, lacking energy, inactive, slow. सुस्त"}, {"id": "148225", "question": "<strong>Select the most appropriate Antonym of the given word.</strong></p> <p>The thick <strong>veil</strong> of fog made it difficult to see the road ahead clearly.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Timid", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Potent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Scanty", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Expose"], "correct_answer": 3, "solution": "<strong>Antonym:</strong><strong> <strong>Expose (verb)</strong> </strong>– Reveal, uncover, disclose, display. उजागर करना"}, {"id": "148226", "question": "<strong>Select the most appropriate synonym of the given word.</strong></p> <p>He felt betrayed when his closest friend chose to <strong>betray</strong> his trust for personal gain.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Attacker", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Deceive", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Combatant", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Colleague"], "correct_answer": 1, "solution": "<strong>Attacker</strong> (noun) – A person who attacks another person, physically or verbally. आक्रमणकारी"}, {"id": "148227", "question": "<strong>Select the most appropriate Antonym of the given word.</strong></p> <p>The <strong>chilling</strong> sound of the wind howling through the forest sent shivers down her spine.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Iffy", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Conflicting", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Comforting", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Irresolute"], "correct_answer": 2, "solution": "<strong>Antonym:</strong> <strong>Comforting (adjective)</strong> – Providing relief, soothing, reassuring. दिलासा देने वाला"}, {"id": "148228", "question": "<strong>Select the most appropriate synonym of the given word.</strong></p> <p>The teacher worked hard to <strong>foster</strong> a love for reading among her students.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Expertise", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Skills", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Erudition", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Nurture"], "correct_answer": 3, "solution": "<strong>Expertise</strong> (noun) – Expert skill or knowledge in a particular field, proficiency, competence. विशेषज्ञता"}, {"id": "148164", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>His <strong><em>meticulous</em></strong> attention to detail made his work stand out from the rest.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Careless", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Sloppy", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hasty", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Precise"], "correct_answer": 3, "solution": "<strong>Synonym: Precise</strong> (adjective) – Accurate, detailed. सटीक"}, {"id": "148163", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Children often <strong><em>imitate</em></strong> the behavior of their parents or older siblings.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Ignore", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Copy", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Mimic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Follow"], "correct_answer": 0, "solution": "<strong>Antonym: Ignore</strong> (verb) – Disregard, neglect. (अनदेखा करना)"}, {"id": "148168", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Their lives were deeply <strong><em>intertwined</em></strong>, making it hard to separate their stories.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Separate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Disentangle", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Isolate", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Connect"], "correct_answer": 3, "solution": "<strong>Synonym: Connect</strong> (verb) – Join, weave together. जुड़ना"}, {"id": "148161", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The school aims to <strong><em>foster</em></strong> creativity and critical thinking among its students.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Encourage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Nurture", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Discourage", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Promote"], "correct_answer": 2, "solution": "<strong>Antonym: Discourage</strong> (verb) – Deter, hinder. (हतोत्साहित करना)"}, {"id": "148167", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The project was kept <strong><em>hush-hush</em></strong> until the official announcement was made.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Public", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Secret", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Open", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Revealed"], "correct_answer": 1, "solution": "<strong>Synonym: Secret</strong> (adjective) – Confidential, undisclosed. गुप्त"}, {"id": "148162", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The growing <strong><em>polarisation</em></strong> in society is causing tension between different groups.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Division", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Unity", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Conflict", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Split"], "correct_answer": 1, "solution": "<strong>Antonym: Unity</strong> (noun) – Harmony, agreement. (एकता)"}, {"id": "148166", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The leader’s actions <strong><em>embody</em></strong> the values of courage and integrity.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Represent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Reject", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Deny", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Neglect"], "correct_answer": 0, "solution": "<strong>Synonym: Represent</strong> (verb) – Symbolize, exemplify. प्रतिनिधित्व करना"}, {"id": "148160", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>She decided to <strong><em>embrace</em></strong> the new opportunity with enthusiasm and optimism.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Accept", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Welcome", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Adopt", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Reject"], "correct_answer": 3, "solution": "<strong>Antonym: Reject</strong> (verb) – Refuse to accept. (अस्वीकार करना)"}, {"id": "148165", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The museum will <strong><em>exhibit</em></strong> rare artifacts from ancient civilizations next month.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hide", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Conceal", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Display", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Withhold"], "correct_answer": 2, "solution": "<strong>Synonym: Display</strong> (verb) – Present, showcase. प्रदर्शित करना"}, {"id": "148159", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The change was <strong><em>inevitable</em></strong>, and everyone knew they had to adapt to it.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Avoidable", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Certain", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Unescapable", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Destined"], "correct_answer": 0, "solution": "<strong>Antonym: Avoidable</strong> (adjective) – Capable of being prevented. (टालने योग्य)"}, {"id": "148063", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Scientists continue to <strong><em>grapple </em></strong>with the mysteries of the universe, seeking answers to complex questions.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Tackle", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Ignore", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Avoid", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Surrender"], "correct_answer": 0, "solution": "<strong>Synonym: Tackle</strong> (verb) – Confront. सामना करना"}, {"id": "148055", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The <strong><em>vast</em></strong> desert stretched endlessly under the scorching sun, leaving travelers in awe of its enormity.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Bound", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Expansive", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Enormous", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Immense"], "correct_answer": 0, "solution": "<strong>Antonym: Bound</strong><strong> </strong>(adjective) – Restricted, small. (सीमित)"}, {"id": "148064", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>He loves to <strong><em>boast</em></strong> about his achievements, often reminding everyone of his successful business ventures.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hide", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Deny", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Flaunt", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Apologize"], "correct_answer": 2, "solution": "<strong>Synonym: Flaunt</strong> (verb) – Show off. दिखावा करना"}, {"id": "148056", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>To <strong><em>reinforce</em></strong> the bridge, engineers added steel beams to ensure it could withstand heavy loads.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Strengthen", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Bolster", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Support", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Incapacitate"], "correct_answer": 3, "solution": "<strong>Antonym: Incapacitate</strong><strong> </strong>(verb) – Reduce strength. (कमजोर करना)"}, {"id": "148062", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>The court <strong><em>affirm</em></strong> the decision, stating that justice had been served fairly and without bias.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Deny", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Confirm", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Reject", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Oppose"], "correct_answer": 1, "solution": "<strong>Synonym: Confirm</strong> (verb) – Validate. सत्यापित करना"}, {"id": "148057", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Heavy rains <strong><em>hamper</em></strong> rescue operations, making it difficult for teams to reach stranded villagers.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Hinder", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Obstruct", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Assist", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Impede"], "correct_answer": 2, "solution": "<strong>Antonym: Assist</strong> (verb) – Help, support. (सहायता करना)"}, {"id": "148060", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>A <strong><em>far-sighted</em></strong> leader anticipates future challenges and prepares the nation to face them effectively.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Shortsighted", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Careless", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Reckless", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Visionary"], "correct_answer": 3, "solution": "<strong>Synonym: Visionary</strong> (adjective) – Foresighted. भविष्यदृष्टा"}, {"id": "148058", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>The government plans to <strong><em>overhaul</em></strong> the education system, introducing modern teaching methods and updated curricula.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Revamp", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Neglect", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Reform", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Improve"], "correct_answer": 1, "solution": "<strong>Antonym: Neglect</strong> (verb) – Ignore, abandon. (उपेक्षा करना)"}, {"id": "148061", "question": "<strong>Select the best express Synonym of the given italicize word.</strong></p> <p>Completing this project will <strong><em>entail</em></strong> long working hours, dedication, and teamwork from everyone involved.", "options": ["<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Exclude", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Simplify", "<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Involve", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Avoid"], "correct_answer": 2, "solution": "<strong>Synonym: Involve</strong> (verb) – Require. शामिल करना"}, {"id": "148059", "question": "<strong>Select the best express Antonym of the given italicize word.</strong></p> <p>Her <strong><em>intrinsic</em></strong> kindness made her a beloved figure in the community, always helping those in need.", "options": ["<p style=\"display:none\"><img alt=\"check\" src=\"https://englishmadhyam.info/public/exam-panel/img/check.png\"/></p> Extrinsic", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Inherent", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Innate", "<p style=\"display:none\"><img alt=\"reload\" src=\"https://englishmadhyam.info/public/exam-panel/img/reload.png\"/></p> Natural"], "correct_answer": 0, "solution": "<strong>Antonym: Extrinsic</strong> (adjective) – External, outside. (बाह्य)"}],ans={};
+const posMarks=2.0, negMarks=0.5;
+let ci=0,tl=25*60,ti,fin=0,solMode=0,totalTime=0;
+
+function ini(){
+    disQ();
+    strT();
+}
+
+function disQ(){
+    const q=qs[ci];
+    document.getElementById('qn').textContent=`Question ${ci+1} of ${qs.length}`;
+    document.getElementById('qt').innerHTML=q.question;
+    const oc=document.getElementById('opts'),sc=document.getElementById('sol');
+    oc.innerHTML='';
+    
+    if(solMode){
+        sc.style.display='block';
+        document.getElementById('sol-text').innerHTML=q.solution||'No solution provided.';
+        // Hide submit button in solution mode
+        document.getElementById('sub-btn').style.display='none';
+    }else{
+        sc.style.display='none';
+        // Show submit button in test mode
+        document.getElementById('sub-btn').style.display='block';
+    }
+    
+    q.options.forEach((o,i)=>{
+        const od=document.createElement('div');
+        od.className='opt';
+        od.innerHTML=o;
+        
+        if(solMode){
+            if(i===q.correct_answer) {
+                od.classList.add('cor');
+            } else if(ans[ci]===i) {
+                od.classList.add('inc');
+            } else if(ans[ci]===undefined) {
+                od.classList.add('unat');
+            }
+            od.style.pointerEvents='none';
+        }else{
+            od.onclick=()=>sel(i);
+            if(ans[ci]===i) od.classList.add('sel');
+        }
+        
+        oc.appendChild(od);
+    });
+    
+    upNav();
+}
+
+function sel(i){
+    // If clicking the same option, deselect it (clear response)
+    if(ans[ci]===i){
+        delete ans[ci];
+        document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    }else{
+        // Select new option
+        ans[ci]=i;
+        document.querySelectorAll('.opt').forEach((o,idx)=>o.classList.toggle('sel',idx===i));
+    }
+}
+
+function upNav(){
+    document.getElementById('pb').disabled=ci===0;
+    const nb=document.getElementById('nb');
+    
+    if(solMode){
+        // In solution mode, show same navigation as test mode
+        nb.innerHTML=ci===qs.length-1?'Finish ✓':'Next →';
+        nb.onclick=()=>{
+            if(ci<qs.length-1){
+                ci++;
+                disQ();
+            }else{
+                // Exit solution mode
+                solMode=0;
+                ci=0;
+                disQ();
+            }
+        };
+    }else{
+        // In test mode
+        nb.innerHTML=ci===qs.length-1?'Finish ✓':'Next →';
+        nb.onclick=nxt;
+    }
+}
+
+function prv(){
+    if(ci>0){
+        ci--;
+        disQ();
+    }
+}
+
+function nxt(){
+    if(ci<qs.length-1){
+        ci++;
+        disQ();
+    }else sub();
+}
+
+function strT(){
+    ti=setInterval(()=>{
+        if(tl<=0){
+            sub();
+            return;
+        }
+        tl--;
+        const m=Math.floor(tl/60),s=tl%60;
+        document.getElementById('tmr').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+}
+
+function sub(){
+    if(fin) return;
+    fin=1;
+    clearInterval(ti);
+    totalTime=25*60-tl;
+    
+    // Calculate marks with proper marking system
+    let correct=0, incorrect=0, unattempted=0;
+    let totalMarks=0;
+    
+    qs.forEach((q,i)=>{
+        if(ans[i]===undefined){
+            // Unattempted - no marks deducted
+            unattempted++;
+        }else if(ans[i]===q.correct_answer){
+            // Correct answer - add positive marks
+            correct++;
+            totalMarks += posMarks;
+        }else{
+            // Incorrect answer - deduct negative marks
+            incorrect++;
+            totalMarks -= negMarks;
+        }
+    });
+    
+    // Calculate maximum possible marks and percentage
+    const maxMarks = qs.length * posMarks;
+    const percentage = Math.max(0, Math.round((totalMarks / maxMarks) * 100));
+    
+    const timeStr=`${Math.floor(totalTime/60)}:${(totalTime%60).toString().padStart(2,'0')}`;
+    
+    // Update modal display
+    document.getElementById('fs').textContent=`${correct}/${qs.length}`;
+    document.getElementById('sp').textContent=`${totalMarks} / ${maxMarks} Marks`;
+    document.getElementById('cor').textContent=correct;
+    document.getElementById('inc').textContent=incorrect;
+    document.getElementById('unat').textContent=unattempted;
+    
+    // Update mark breakdown
+    document.getElementById('pos-marks').textContent=`+${correct * posMarks}`;
+    document.getElementById('neg-marks').textContent=`-${incorrect * negMarks}`;
+    document.getElementById('una-marks').textContent=`0`;
+    
+    // Update total score
+    document.getElementById('total-score').textContent=`${totalMarks} Marks`;
+    document.getElementById('percentage').textContent=`${percentage}%`;
+    
+    document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){
+    document.getElementById('modal').classList.remove('show');
+}
+
+function showSol(){
+    closeModal();
+    solMode=1;
+    ci=0;
+    disQ();
+}
+
+window.onload=ini;
+window.addEventListener('beforeunload',e=>{
+    if(!fin){
+        e.preventDefault();
+        e.returnValue='Test in progress';
+    }
+});
+</script></body></html>

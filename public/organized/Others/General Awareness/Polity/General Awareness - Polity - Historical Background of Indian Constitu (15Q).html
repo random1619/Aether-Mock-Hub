@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27368862</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">15</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">30.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27368862</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 15</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 15</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/30.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p data-start=\"73\" data-end=\"189\">Consider the following statements regarding the evolution of the Indian Constitution and the Regulating Act of 1773:</p>\n<p data-start=\"191\" data-end=\"288\">भारतीय संविधान के विकास एवं 1773 के विनियमन अधिनियम के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"290\" data-end=\"1487\">\n<li data-start=\"290\" data-end=\"494\">\n<p data-start=\"293\" data-end=\"494\">The Indian Constitution came into force on 26 January 1950, making India a Sovereign Democratic Republic.<br data-start=\"398\" data-end=\"401\" />भारतीय संविधान 26 जनवरी 1950 को लागू हुआ, जिससे भारत एक संप्रभु लोकतांत्रिक गणराज्य बना।</p>\n</li>\n<li data-start=\"496\" data-end=\"683\">\n<p data-start=\"499\" data-end=\"683\">Dr. B.R. Ambedkar was the Chairman of the Drafting Committee of the Constituent Assembly (1946&ndash;1949).<br data-start=\"600\" data-end=\"603\" />डॉ. बी.आर. अम्बेडकर संविधान सभा (1946&ndash;1949) की प्रारूप समिति के अध्यक्ष थे।</p>\n</li>\n<li data-start=\"685\" data-end=\"957\">\n<p data-start=\"688\" data-end=\"957\">The Regulating Act of 1773 elevated the Governor of Bengal to the Governor-General of Bengal, with Warren Hastings as the first Governor-General.<br data-start=\"833\" data-end=\"836\" />1773 के विनियमन अधिनियम ने बंगाल के गवर्नर को गवर्नर-जनरल ऑफ बंगाल बनाया, तथा वॉरेन हेस्टिंग्स पहले गवर्नर-जनरल बने।</p>\n</li>\n<li data-start=\"959\" data-end=\"1263\">\n<p data-start=\"962\" data-end=\"1263\">The Supreme Court established at Fort William in 1774 had one Chief Justice and three other judges, and Sir Elijah Impey was the first Chief Justice.<br data-start=\"1111\" data-end=\"1114\" />1774 में फोर्ट विलियम में स्थापित सर्वोच्च न्यायालय में एक मुख्य न्यायाधीश और तीन अन्य न्यायाधीश थे, तथा सर एलिजा इम्पे पहले मुख्य न्यायाधीश थे।</p>\n</li>\n<li data-start=\"1265\" data-end=\"1487\">\n<p data-start=\"1268\" data-end=\"1487\">Under the Regulating Act, the Governors of Bombay and Madras were made subordinate to the Governor-General of Bengal.<br data-start=\"1385\" data-end=\"1388\" />विनियमन अधिनियम के तहत बॉम्बे और मद्रास के गवर्नर को बंगाल के गवर्नर-जनरल के अधीन कर दिया गया।</p>\n</li>\n</ol>\n<p data-start=\"1489\" data-end=\"1574\">Which of the statements given above are correct?<br data-start=\"1537\" data-end=\"1540\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1576\" data-end=\"1663\">A. 1, 2 and 3 only<br data-start=\"1594\" data-end=\"1597\" />B. 2, 3, 4 and 5 only<br data-start=\"1618\" data-end=\"1621\" />C. 1, 2, 3, 4 and 5<br data-start=\"1640\" data-end=\"1643\" />D. 1, 3 and 5 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<ul>\n<li data-start=\"41\" data-end=\"130\">\n<p data-start=\"43\" data-end=\"130\"><strong data-start=\"43\" data-end=\"87\">Constitution enforced on 26 January 1950</strong><br data-start=\"87\" data-end=\"90\" /><strong data-start=\"92\" data-end=\"130\">संविधान 26 जनवरी 1950 को लागू हुआ।</strong></p>\n</li>\n<li data-start=\"132\" data-end=\"247\">\n<p data-start=\"134\" data-end=\"247\"><strong data-start=\"134\" data-end=\"188\">Dr. B.R. Ambedkar &ndash; Chairman of Drafting Committee</strong><br data-start=\"188\" data-end=\"191\" /><strong data-start=\"193\" data-end=\"247\">डॉ. बी.आर. अम्बेडकर &ndash; प्रारूप समिति के अध्यक्ष थे।</strong></p>\n</li>\n<li data-start=\"249\" data-end=\"422\">\n<p data-start=\"251\" data-end=\"422\"><strong data-start=\"251\" data-end=\"337\">Regulating Act, 1773 &ndash; First step of Parliamentary control over East India Company</strong><br data-start=\"337\" data-end=\"340\" /><strong data-start=\"342\" data-end=\"422\">विनियमन अधिनियम, 1773 &ndash; ईस्ट इंडिया कंपनी पर संसदीय नियंत्रण का पहला कदम था।</strong></p>\n</li>\n<li data-start=\"424\" data-end=\"538\">\n<p data-start=\"426\" data-end=\"538\"><strong data-start=\"426\" data-end=\"480\">Warren Hastings &ndash; First Governor-General of Bengal</strong><br data-start=\"480\" data-end=\"483\" /><strong data-start=\"485\" data-end=\"538\">वॉरेन हेस्टिंग्स &ndash; बंगाल के प्रथम गवर्नर-जनरल थे।</strong></p>\n</li>\n<li data-start=\"540\" data-end=\"730\">\n<p data-start=\"542\" data-end=\"730\"><strong data-start=\"542\" data-end=\"631\">Supreme Court established in 1774 at Calcutta &ndash; First Chief Justice: Sir Elijah Impey</strong><br data-start=\"631\" data-end=\"634\" /><strong data-start=\"636\" data-end=\"730\">1774 में कलकत्ता में सर्वोच्च न्यायालय की स्थापना &ndash; प्रथम मुख्य न्यायाधीश: सर एलिजा इम्पे।</strong></p>\n</li>\n</ul>\n<p></p>\n<ul>\n<li data-start=\"732\" data-end=\"914\">\n<p data-start=\"734\" data-end=\"914\"><strong data-start=\"734\" data-end=\"824\">Bombay &amp; Madras made subordinate to Governor-General of Bengal (Centralization begins)</strong><br data-start=\"824\" data-end=\"827\" /><strong data-start=\"829\" data-end=\"914\">बॉम्बे और मद्रास को बंगाल के गवर्नर-जनरल के अधीन किया गया (केंद्रीकरण की शुरुआत)।</strong></p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"218\" data-end=\"335\">Consider the following statements regarding the <strong data-start=\"266\" data-end=\"334\">Amending Act of 1781 (Act of Settlement / Declaratory Act, 1781)</strong>:</p>\n<p data-start=\"337\" data-end=\"449\">1781 के संशोधन अधिनियम (एक्ट ऑफ सेटलमेंट / डिक्लेरेटरी एक्ट, 1781) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"451\" data-end=\"1197\">\n<li data-start=\"451\" data-end=\"598\">\n<p data-start=\"454\" data-end=\"598\">It was passed to remove the defects of the Regulating Act of 1773.<br data-start=\"520\" data-end=\"523\" />इसे 1773 के विनियमन अधिनियम की कमियों को दूर करने हेतु पारित किया गया।</p>\n</li>\n<li data-start=\"600\" data-end=\"840\">\n<p data-start=\"603\" data-end=\"840\">It exempted the Governor-General and his Council from the jurisdiction of the Supreme Court for their official acts.<br data-start=\"719\" data-end=\"722\" />इसने गवर्नर-जनरल और उनकी परिषद को उनके आधिकारिक कार्यों के लिए सर्वोच्च न्यायालय के अधिकार क्षेत्र से मुक्त किया।</p>\n</li>\n<li data-start=\"842\" data-end=\"988\">\n<p data-start=\"845\" data-end=\"988\">Revenue matters were kept under the jurisdiction of the Supreme Court.<br data-start=\"915\" data-end=\"918\" />राजस्व मामलों को सर्वोच्च न्यायालय के अधिकार क्षेत्र में रखा गया।</p>\n</li>\n<li data-start=\"990\" data-end=\"1197\">\n<p data-start=\"993\" data-end=\"1197\">The Supreme Court was directed to apply Hindu Law to Hindus and Mohammedan Law to Muslims.<br data-start=\"1083\" data-end=\"1086\" />सर्वोच्च न्यायालय को निर्देश दिया गया कि वह हिंदुओं पर हिंदू कानून और मुसलमानों पर मुस्लिम कानून लागू करे।</p>\n</li>\n</ol>\n<p data-start=\"1199\" data-end=\"1284\">Which of the statements given above are correct?<br data-start=\"1247\" data-end=\"1250\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1286\" data-end=\"1364\">A. 1, 2 and 4 only<br data-start=\"1304\" data-end=\"1307\" />B. 1 and 3 only<br data-start=\"1322\" data-end=\"1325\" />C. 2, 3 and 4 only<br data-start=\"1343\" data-end=\"1346\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p></p>\n<p data-start=\"1383\" data-end=\"1463\">🔎 Statement 3 is incorrect &mdash; Revenue matters were removed from SC jurisdiction.</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"1542\" data-end=\"1576\">Consider the following statements:</p>\n<p data-start=\"1578\" data-end=\"1610\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1612\" data-end=\"2393\">\n<li data-start=\"1612\" data-end=\"1855\">\n<p data-start=\"1615\" data-end=\"1855\">Pitt&rsquo;s India Act of 1784 introduced a system of Double Government through the Court of Directors and the Board of Control.<br data-start=\"1737\" data-end=\"1740\" />1784 के पिट्स इंडिया एक्ट ने कोर्ट ऑफ डायरेक्टर्स और बोर्ड ऑफ कंट्रोल के माध्यम से द्वैध शासन प्रणाली लागू की।</p>\n</li>\n<li data-start=\"1857\" data-end=\"2050\">\n<p data-start=\"1860\" data-end=\"2050\">Under this Act, Indian territories were for the first time called &ldquo;British Possessions in India.&rdquo;<br data-start=\"1957\" data-end=\"1960\" />इस अधिनियम के अंतर्गत पहली बार भारतीय क्षेत्रों को &ldquo;ब्रिटिश पजेशन इन इंडिया&rdquo; कहा गया।</p>\n</li>\n<li data-start=\"2052\" data-end=\"2189\">\n<p data-start=\"2055\" data-end=\"2189\">The Governor-General&rsquo;s Council was reduced from four to three members.<br data-start=\"2125\" data-end=\"2128\" />गवर्नर-जनरल की परिषद को चार से घटाकर तीन सदस्य किया गया।</p>\n</li>\n<li data-start=\"2191\" data-end=\"2393\">\n<p data-start=\"2194\" data-end=\"2393\">The Act of 1786 allowed the Governor-General to override his Council in special cases.<br data-start=\"2280\" data-end=\"2283\" />1786 के अधिनियम ने गवर्नर-जनरल को विशेष परिस्थितियों में अपनी परिषद के निर्णय को निरस्त करने की शक्ति दी।</p>\n</li>\n</ol>\n<p data-start=\"2395\" data-end=\"2480\">Which of the statements given above are correct?<br data-start=\"2443\" data-end=\"2446\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2482\" data-end=\"2557\">A. 1 and 2 only<br data-start=\"2497\" data-end=\"2500\" />B. 1, 2 and 3 only<br data-start=\"2518\" data-end=\"2521\" />C. 2 and 4 only<br data-start=\"2536\" data-end=\"2539\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"251\" data-end=\"285\">Consider the following statements:</p>\n<p data-start=\"287\" data-end=\"319\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"321\" data-end=\"1131\">\n<li data-start=\"321\" data-end=\"514\">\n<p data-start=\"324\" data-end=\"514\">The Charter Act of 1793 extended the Company&rsquo;s trade monopoly in India for another 20 years.<br data-start=\"416\" data-end=\"419\" />1793 के चार्टर अधिनियम ने भारत में कंपनी के व्यापारिक एकाधिकार को 20 वर्षों के लिए बढ़ाया।</p>\n</li>\n<li data-start=\"516\" data-end=\"710\">\n<p data-start=\"519\" data-end=\"710\">Under the Charter Act of 1793, the salaries of the Board of Control were to be paid from Indian revenues.<br data-start=\"624\" data-end=\"627\" />1793 के अधिनियम के तहत बोर्ड ऑफ कंट्रोल का वेतन भारतीय राजस्व से दिया जाना था।</p>\n</li>\n<li data-start=\"712\" data-end=\"936\">\n<p data-start=\"715\" data-end=\"936\">The Charter Act of 1813 completely ended the Company&rsquo;s trade monopoly, including trade with China and tea.<br data-start=\"821\" data-end=\"824\" />1813 के चार्टर अधिनियम ने चीन और चाय के व्यापार सहित कंपनी के व्यापारिक एकाधिकार को पूर्णतः समाप्त कर दिया।</p>\n</li>\n<li data-start=\"938\" data-end=\"1131\">\n<p data-start=\"941\" data-end=\"1131\">The Charter Act of 1813 provided Rs. 1 lakh annually for the promotion of Indian education.<br data-start=\"1032\" data-end=\"1035\" />1813 के चार्टर अधिनियम ने भारतीय शिक्षा के लिए प्रतिवर्ष 1 लाख रुपये देने का प्रावधान किया।</p>\n</li>\n</ol>\n<p data-start=\"1133\" data-end=\"1218\">Which of the statements given above are correct?<br data-start=\"1181\" data-end=\"1184\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1220\" data-end=\"1298\">A. 1, 2 and 4 only<br data-start=\"1238\" data-end=\"1241\" />B. 1 and 3 only<br data-start=\"1256\" data-end=\"1259\" />C. 2, 3 and 4 only<br data-start=\"1277\" data-end=\"1280\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p></p>\n<p data-start=\"1317\" data-end=\"1387\">Statement 3 is incorrect &mdash; Monopoly ended except tea &amp; China trade.</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"1454\" data-end=\"1522\">Consider the following statements regarding the Charter Act of 1833:</p>\n<p data-start=\"1524\" data-end=\"1592\">1833 के चार्टर अधिनियम के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1594\" data-end=\"2401\">\n<li data-start=\"1594\" data-end=\"1754\">\n<p data-start=\"1597\" data-end=\"1754\">It redesignated the Governor-General of Bengal as the Governor-General of India.<br data-start=\"1677\" data-end=\"1680\" />इस अधिनियम ने बंगाल के गवर्नर-जनरल को भारत का गवर्नर-जनरल घोषित किया।</p>\n</li>\n<li data-start=\"1756\" data-end=\"2019\">\n<p data-start=\"1759\" data-end=\"2019\">The legislative powers of Bombay and Madras were abolished, and only the Governor-General of India could make laws for the whole country.<br data-start=\"1896\" data-end=\"1899\" />बॉम्बे और मद्रास की विधायी शक्तियाँ समाप्त कर दी गईं और केवल भारत का गवर्नर-जनरल पूरे देश के लिए कानून बना सकता था।</p>\n</li>\n<li data-start=\"2021\" data-end=\"2205\">\n<p data-start=\"2024\" data-end=\"2205\">The East India Company ceased to be a trading company and became purely administrative.<br data-start=\"2111\" data-end=\"2114\" />ईस्ट इंडिया कंपनी का व्यापारिक स्वरूप समाप्त हो गया और वह केवल प्रशासनिक संस्था बन गई।</p>\n</li>\n<li data-start=\"2207\" data-end=\"2401\">\n<p data-start=\"2210\" data-end=\"2401\">Lord Macaulay was appointed as the first Law Member and the First Law Commission was established in 1834.<br data-start=\"2315\" data-end=\"2318\" />लॉर्ड मैकाले पहले विधि सदस्य बने और 1834 में प्रथम विधि आयोग की स्थापना की गई।</p>\n</li>\n</ol>\n<p data-start=\"2403\" data-end=\"2488\">Which of the statements given above are correct?<br data-start=\"2451\" data-end=\"2454\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"2490\" data-end=\"2568\">A. 1 and 2 only<br data-start=\"2505\" data-end=\"2508\" />B. 1, 2 and 3 only<br data-start=\"2526\" data-end=\"2529\" />C. 1, 3 and 4 only<br data-start=\"2547\" data-end=\"2550\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"59\" data-end=\"131\">Consider the following statements regarding the <strong data-start=\"107\" data-end=\"130\">Charter Act of 1853</strong>:</p>\n<p data-start=\"133\" data-end=\"201\">1853 के चार्टर अधिनियम के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"203\" data-end=\"884\">\n<li data-start=\"203\" data-end=\"408\">\n<p data-start=\"206\" data-end=\"408\">It separated the Legislative and Executive functions of the Governor-General&rsquo;s Council for the first time.<br data-start=\"312\" data-end=\"315\" />इस अधिनियम ने पहली बार गवर्नर-जनरल की परिषद की विधायी और कार्यकारी शक्तियों को अलग किया।</p>\n</li>\n<li data-start=\"410\" data-end=\"611\">\n<p data-start=\"413\" data-end=\"611\">It introduced open competitive examinations for recruitment to the Indian Civil Services (ICS).<br data-start=\"508\" data-end=\"511\" />इस अधिनियम ने भारतीय सिविल सेवा (ICS) के लिए खुली प्रतिस्पर्धात्मक परीक्षा की व्यवस्था शुरू की।</p>\n</li>\n<li data-start=\"613\" data-end=\"746\">\n<p data-start=\"616\" data-end=\"746\">It extended the Company&rsquo;s rule in India for another 20 years.<br data-start=\"677\" data-end=\"680\" />इस अधिनियम ने कंपनी के शासन को 20 वर्षों के लिए और बढ़ा दिया।</p>\n</li>\n<li data-start=\"748\" data-end=\"884\">\n<p data-start=\"751\" data-end=\"884\">It provided for a separate Lieutenant-Governor for Bengal.<br data-start=\"809\" data-end=\"812\" />इस अधिनियम ने बंगाल के लिए पृथक लेफ्टिनेंट-गवर्नर का प्रावधान किया।</p>\n</li>\n</ol>\n<p data-start=\"886\" data-end=\"971\">Which of the statements given above are correct?<br data-start=\"934\" data-end=\"937\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"973\" data-end=\"1048\">A. 1, 2 and 4 only<br data-start=\"991\" data-end=\"994\" />B. 1 and 3 only<br data-start=\"1009\" data-end=\"1012\" />C. 2 and 3 only<br data-start=\"1027\" data-end=\"1030\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>STATEMENT 3 WRONG. Did NOT extend Company rule for 20 years .</p>\n<p></p>\n<p data-start=\"1177\" data-end=\"1295\">✔ <strong data-start=\"1179\" data-end=\"1219\">Final Charter Act (1793&ndash;1853 series)</strong><br data-start=\"1219\" data-end=\"1222\" />यह 1793 से 1853 तक के चार्टर अधिनियमों की श्रृंखला का अंतिम अधिनियम था।</p>\n<p data-start=\"1297\" data-end=\"1460\">✔ <strong data-start=\"1299\" data-end=\"1323\">No 20-Year Extension</strong><br data-start=\"1323\" data-end=\"1326\" />इस अधिनियम ने कंपनी के शासन को 20 वर्षों के लिए नहीं बढ़ाया। इससे संकेत मिला कि ब्रिटिश क्राउन कभी भी सत्ता अपने हाथ में ले सकता है।</p>\n<p data-start=\"1462\" data-end=\"1609\">✔ <strong data-start=\"1464\" data-end=\"1512\">Indian Legislative Council (Mini Parliament)</strong><br data-start=\"1512\" data-end=\"1515\" />12 सदस्यीय विस्तारित विधायी परिषद बनाई गई, जो ब्रिटिश संसदीय पद्धति के अनुसार कार्य करती थी।</p>\n<p data-start=\"1611\" data-end=\"1720\">✔ <strong data-start=\"1613\" data-end=\"1642\">Provincial Representation</strong><br data-start=\"1642\" data-end=\"1645\" />पहली बार मद्रास, बॉम्बे, बंगाल और आगरा से प्रतिनिधियों को शामिल किया गया।</p>\n<p data-start=\"1722\" data-end=\"1829\">✔ <strong data-start=\"1724\" data-end=\"1753\">Macaulay Committee (1854)</strong><br data-start=\"1753\" data-end=\"1756\" />ICS में मेरिट आधारित भर्ती लागू करने हेतु मैकॉले समिति का गठन किया गया।</p>\n<p data-start=\"1831\" data-end=\"1947\">✔ <strong data-start=\"1833\" data-end=\"1869\">Full Voting Rights to Law Member</strong><br data-start=\"1869\" data-end=\"1872\" />विधि सदस्य (Law Member) को कार्यकारी परिषद में पूर्ण मतदान अधिकार दिए गए।</p>\n<p data-start=\"1949\" data-end=\"2089\">✔ <strong data-start=\"1951\" data-end=\"1979\">Weakened Company Control</strong><br data-start=\"1979\" data-end=\"1982\" />कोर्ट ऑफ डायरेक्टर्स की संख्या 24 से घटाकर 18 कर दी गई, जिनमें 6 को ब्रिटिश क्राउन द्वारा नामित किया गया।</p>\n<p></p>\n<p data-start=\"2091\" data-end=\"2202\">✔ <strong data-start=\"2093\" data-end=\"2122\">Creation of New Provinces</strong><br data-start=\"2122\" data-end=\"2125\" />नए प्रांत बनाने की शक्ति दी गई &mdash; जिसके परिणामस्वरूप पंजाब एक पृथक इकाई बना।</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"257\" data-end=\"291\">Consider the following statements:</p>\n<p data-start=\"293\" data-end=\"325\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"327\" data-end=\"1130\">\n<li data-start=\"327\" data-end=\"577\">\n<p data-start=\"330\" data-end=\"577\">The Government of India Act, 1858 abolished the East India Company and created the office of the Secretary of State for India.<br data-start=\"456\" data-end=\"459\" />1858 के भारत शासन अधिनियम ने ईस्ट इंडिया कंपनी को समाप्त किया और भारत के लिए सेक्रेटरी ऑफ स्टेट का पद सृजित किया।</p>\n</li>\n<li data-start=\"579\" data-end=\"817\">\n<p data-start=\"582\" data-end=\"817\">The Indian Councils Act, 1861 introduced the Portfolio System and restored legislative powers to Bombay and Madras.<br data-start=\"697\" data-end=\"700\" />1861 के भारतीय परिषद अधिनियम ने पोर्टफोलियो प्रणाली लागू की और बॉम्बे व मद्रास की विधायी शक्तियाँ पुनः बहाल कीं।</p>\n</li>\n<li data-start=\"819\" data-end=\"978\">\n<p data-start=\"822\" data-end=\"978\">The Indian Councils Act, 1892 introduced direct elections for legislative councils.<br data-start=\"905\" data-end=\"908\" />1892 के अधिनियम ने विधान परिषदों के लिए प्रत्यक्ष चुनाव शुरू किए।</p>\n</li>\n<li data-start=\"980\" data-end=\"1130\">\n<p data-start=\"983\" data-end=\"1130\">The Indian Councils Act, 1909 introduced separate electorate for Muslims.<br data-start=\"1056\" data-end=\"1059\" />1909 के अधिनियम ने मुसलमानों के लिए पृथक निर्वाचन प्रणाली शुरू की।</p>\n</li>\n</ol>\n<p data-start=\"1132\" data-end=\"1217\">Which of the statements given above are correct?<br data-start=\"1180\" data-end=\"1183\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"1219\" data-end=\"1297\">A. 1, 2 and 4 only<br data-start=\"1237\" data-end=\"1240\" />B. 1 and 3 only<br data-start=\"1255\" data-end=\"1258\" />C. 2, 3 and 4 only<br data-start=\"1276\" data-end=\"1279\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1353\" data-end=\"1450\">&nbsp;S<strong data-start=\"57\" data-end=\"170\">tatement 3 is incorrect &mdash; The Indian Councils Act, 1892 introduced indirect elections, not direct elections.</strong></p>\n<p data-start=\"57\" data-end=\"285\"><strong data-start=\"173\" data-end=\"285\">कथन 3 गलत है &mdash; 1892 के भारतीय परिषद अधिनियम ने प्रत्यक्ष नहीं बल्कि अप्रत्यक्ष चुनाव की व्यवस्था शुरू की थी।</strong></p>\n<hr data-start=\"287\" data-end=\"290\" />\n<h3 data-start=\"292\" data-end=\"344\">🔑 Quick One-Liner Revision</h3>\n<p data-start=\"346\" data-end=\"456\">✔ <strong data-start=\"348\" data-end=\"395\">1858 &ndash; Company abolished; Crown Rule begins</strong><br data-start=\"395\" data-end=\"398\" />✔ <strong data-start=\"400\" data-end=\"456\">1858 &ndash; ईस्ट इंडिया कंपनी समाप्त; क्राउन शासन प्रारंभ</strong></p>\n<p data-start=\"458\" data-end=\"633\">✔ <strong data-start=\"460\" data-end=\"546\">1861 &ndash; Portfolio System introduced; Legislative powers restored to Bombay &amp; Madras</strong><br data-start=\"546\" data-end=\"549\" />✔ <strong data-start=\"551\" data-end=\"633\">1861 &ndash; पोर्टफोलियो प्रणाली लागू; बॉम्बे और मद्रास की विधायी शक्तियाँ पुनः बहाल</strong></p>\n<p data-start=\"635\" data-end=\"757\">✔ <strong data-start=\"637\" data-end=\"699\">1909 &ndash; Separate Electorate introduced (Father: Lord Minto)</strong><br data-start=\"699\" data-end=\"702\" />✔ <strong data-start=\"704\" data-end=\"757\">1909 &ndash; पृथक निर्वाचन की शुरुआत (जनक: लॉर्ड मिंटो)</strong></p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"1689\" data-end=\"1767\">Consider the following statements regarding the Government of India Act, 1919:</p>\n<p data-start=\"1769\" data-end=\"1840\">1919 के भारत शासन अधिनियम के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1842\" data-end=\"2513\">\n<li data-start=\"1842\" data-end=\"2070\">\n<p data-start=\"1845\" data-end=\"2070\">It introduced Dyarchy in the provinces by dividing subjects into Reserved and Transferred categories.<br data-start=\"1946\" data-end=\"1949\" />इस अधिनियम ने प्रांतों में विषयों को आरक्षित और स्थानांतरित श्रेणियों में विभाजित कर द्वैध शासन (Dyarchy) लागू किया।</p>\n</li>\n<li data-start=\"2072\" data-end=\"2194\">\n<p data-start=\"2075\" data-end=\"2194\">It introduced a bicameral legislature at the Centre.<br data-start=\"2127\" data-end=\"2130\" />इस अधिनियम ने केंद्र में द्विसदनीय विधानमंडल की स्थापना की।</p>\n</li>\n<li data-start=\"2196\" data-end=\"2396\">\n<p data-start=\"2199\" data-end=\"2396\">It extended separate electorates to Sikhs, Anglo-Indians, Indian Christians and Europeans.<br data-start=\"2289\" data-end=\"2292\" />इस अधिनियम ने सिखों, एंग्लो-इंडियनों, भारतीय ईसाइयों और यूरोपियनों को पृथक निर्वाचन का अधिकार दिया।</p>\n</li>\n<li data-start=\"2398\" data-end=\"2513\">\n<p data-start=\"2401\" data-end=\"2513\">It introduced responsible government at the Centre.<br data-start=\"2452\" data-end=\"2455\" />इस अधिनियम ने केंद्र में उत्तरदायी शासन स्थापित किया।</p>\n</li>\n</ol>\n<p data-start=\"2515\" data-end=\"2600\">Which of the statements given above are correct?<br data-start=\"2563\" data-end=\"2566\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2602\" data-end=\"2680\">A. 1, 2 and 3 only<br data-start=\"2620\" data-end=\"2623\" />B. 1 and 4 only<br data-start=\"2638\" data-end=\"2641\" />C. 2, 3 and 4 only<br data-start=\"2659\" data-end=\"2662\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<h3 data-start=\"2687\" data-end=\"2734\">&nbsp;Correct Answer: <strong data-start=\"2709\" data-end=\"2732\">A (1, 2 and 3 only)</strong></h3>\n<p></p>\n<p data-start=\"2736\" data-end=\"2855\">&nbsp;Statement 4 is incorrect &mdash; Responsible government was introduced only in provinces (partially), not at the Centre.</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"72\" data-end=\"154\">Consider the following statements regarding the <strong data-start=\"120\" data-end=\"153\">Government of India Act, 1935</strong>:</p>\n<p data-start=\"156\" data-end=\"225\">भारत शासन अधिनियम, 1935 के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"227\" data-end=\"1096\">\n<li data-start=\"227\" data-end=\"519\">\n<p data-start=\"230\" data-end=\"519\">It proposed an All-India Federation of British Provinces and Princely States, but it never came into force due to non-participation of Princely States.<br data-start=\"381\" data-end=\"384\" />इसने ब्रिटिश प्रांतों और देशी रियासतों के संघीय ढाँचे का प्रस्ताव रखा, परंतु रियासतों के शामिल न होने के कारण यह लागू नहीं हो सका।</p>\n</li>\n<li data-start=\"521\" data-end=\"672\">\n<p data-start=\"524\" data-end=\"672\">It abolished Dyarchy in the provinces and introduced Provincial Autonomy.<br data-start=\"597\" data-end=\"600\" />इसने प्रांतों में द्वैध शासन समाप्त कर प्रांतीय स्वायत्तता लागू की।</p>\n</li>\n<li data-start=\"674\" data-end=\"783\">\n<p data-start=\"677\" data-end=\"783\">Residuary powers were given to the Federal Legislature.<br data-start=\"732\" data-end=\"735\" />अवशिष्ट शक्तियाँ संघीय विधानमंडल को दी गईं।</p>\n</li>\n<li data-start=\"785\" data-end=\"963\">\n<p data-start=\"788\" data-end=\"963\">It established the Reserve Bank of India (1935) and the Federal Court (1937).<br data-start=\"865\" data-end=\"868\" />इस अधिनियम के अंतर्गत भारतीय रिज़र्व बैंक (1935) तथा संघीय न्यायालय (1937) की स्थापना हुई।</p>\n</li>\n<li data-start=\"965\" data-end=\"1096\">\n<p data-start=\"968\" data-end=\"1096\">Only the British Parliament had the authority to amend this Act.<br data-start=\"1032\" data-end=\"1035\" />इस अधिनियम में संशोधन का अधिकार केवल ब्रिटिश संसद को था।</p>\n</li>\n</ol>\n<p data-start=\"1098\" data-end=\"1183\">Which of the statements given above are correct?<br data-start=\"1146\" data-end=\"1149\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"1185\" data-end=\"1272\">A. 1, 2, 4 and 5 only<br data-start=\"1206\" data-end=\"1209\" />B. 1, 2 and 3 only<br data-start=\"1227\" data-end=\"1230\" />C. 2, 3 and 4 only<br data-start=\"1248\" data-end=\"1251\" />D. 1, 2, 3, 4 and 5</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"80\" data-end=\"380\">✔ <strong data-start=\"82\" data-end=\"124\">All-India Federation (Not Implemented)</strong><br data-start=\"124\" data-end=\"127\" />Proposed a federation of British Provinces and Princely States, but it was never implemented due to refusal of Princely States.<br data-start=\"254\" data-end=\"257\" />ब्रिटिश प्रांतों और देशी रियासतों के संघीय ढाँचे का प्रस्ताव रखा गया, परंतु रियासतों के शामिल न होने से लागू नहीं हो सका।</p>\n<hr data-start=\"382\" data-end=\"385\" />\n<p data-start=\"387\" data-end=\"574\">✔ <strong data-start=\"389\" data-end=\"412\">Provincial Autonomy</strong><br data-start=\"412\" data-end=\"415\" />Dyarchy was abolished in provinces and autonomous provincial governments were introduced.<br data-start=\"504\" data-end=\"507\" />प्रांतों में द्वैध शासन समाप्त कर प्रांतीय स्वायत्तता लागू की गई।</p>\n<hr data-start=\"576\" data-end=\"579\" />\n<p data-start=\"581\" data-end=\"763\">✖ <strong data-start=\"583\" data-end=\"608\">Statement 3 Incorrect</strong><br data-start=\"608\" data-end=\"611\" />Residuary powers were not given to the Federal Legislature but to the Viceroy.<br data-start=\"689\" data-end=\"692\" />अवशिष्ट शक्तियाँ संघीय विधानमंडल को नहीं, बल्कि वायसराय को दी गई थीं।</p>\n<hr data-start=\"765\" data-end=\"768\" />\n<p data-start=\"770\" data-end=\"831\">✔ <strong data-start=\"772\" data-end=\"804\">New Institutions Established</strong><br data-start=\"804\" data-end=\"807\" />नए संस्थानों की स्थापना:</p>\n<ul data-start=\"833\" data-end=\"1048\">\n<li data-start=\"833\" data-end=\"882\">\n<p data-start=\"835\" data-end=\"882\"><strong data-start=\"835\" data-end=\"849\">RBI &ndash; 1935</strong><br data-start=\"849\" data-end=\"852\" />भारतीय रिज़र्व बैंक &ndash; 1935</p>\n</li>\n<li data-start=\"884\" data-end=\"938\">\n<p data-start=\"886\" data-end=\"938\"><strong data-start=\"886\" data-end=\"910\">Federal Court &ndash; 1937</strong><br data-start=\"910\" data-end=\"913\" />संघीय न्यायालय &ndash; 1937</p>\n</li>\n<li data-start=\"940\" data-end=\"1048\">\n<p data-start=\"942\" data-end=\"1048\"><strong data-start=\"942\" data-end=\"1000\">Federal, Provincial &amp; Joint Public Service Commissions</strong><br data-start=\"1000\" data-end=\"1003\" />संघीय, प्रांतीय एवं संयुक्त लोक सेवा आयोग</p>\n</li>\n</ul>\n<hr data-start=\"1050\" data-end=\"1053\" />\n<p data-start=\"1055\" data-end=\"1139\">✔ <strong data-start=\"1057\" data-end=\"1108\">Other Important Features (Exam Priority Points)</strong><br data-start=\"1108\" data-end=\"1111\" />✔ <strong data-start=\"1113\" data-end=\"1137\">3 Lists of Subjects:</strong></p>\n<ul data-start=\"1140\" data-end=\"1267\">\n<li data-start=\"1140\" data-end=\"1161\">\n<p data-start=\"1142\" data-end=\"1161\">Federal List &ndash; 59</p>\n</li>\n<li data-start=\"1162\" data-end=\"1186\">\n<p data-start=\"1164\" data-end=\"1186\">Provincial List &ndash; 54</p>\n</li>\n<li data-start=\"1187\" data-end=\"1267\">\n<p data-start=\"1189\" data-end=\"1267\">Concurrent List &ndash; 36<br data-start=\"1209\" data-end=\"1212\" />तीन सूचियाँ &ndash; संघ (59), प्रांतीय (54), समवर्ती (36)</p>\n</li>\n</ul>\n<p data-start=\"1269\" data-end=\"1350\">✔ <strong data-start=\"1271\" data-end=\"1307\">Dyarchy introduced at the Centre</strong><br data-start=\"1307\" data-end=\"1310\" />केंद्र में द्वैध शासन लागू किया गया।</p>\n<p data-start=\"1352\" data-end=\"1437\">✔ <strong data-start=\"1354\" data-end=\"1385\">Bicameralism in 6 Provinces</strong><br data-start=\"1385\" data-end=\"1388\" />6 प्रांतों में द्विसदनीय व्यवस्था लागू की गई।</p>\n<p data-start=\"1439\" data-end=\"1543\">✔ <strong data-start=\"1441\" data-end=\"1474\">Separate Electorates Extended</strong><br data-start=\"1474\" data-end=\"1477\" />पृथक निर्वाचन का विस्तार (अनुसूचित जाति, महिलाएँ, श्रमिक आदि)।</p>\n<p data-start=\"1545\" data-end=\"1694\">✔ <strong data-start=\"1547\" data-end=\"1565\">Reorganization</strong><br data-start=\"1565\" data-end=\"1568\" />Burma separated (1937); Sindh &amp; Orissa created as new provinces.<br data-start=\"1634\" data-end=\"1637\" />1937 में बर्मा अलग हुआ; सिंध और उड़ीसा नए प्रांत बने।</p>\n<p data-start=\"1696\" data-end=\"1821\">✔ <strong data-start=\"1698\" data-end=\"1720\">Franchise Extended</strong><br data-start=\"1720\" data-end=\"1723\" />Voting rights extended to about 14% of the population.<br data-start=\"1779\" data-end=\"1782\" />लगभग 14% जनसंख्या को मताधिकार मिला।</p>\n<p></p>\n<p data-start=\"1823\" data-end=\"1962\">✔ <strong data-start=\"1825\" data-end=\"1846\">British Supremacy</strong><br data-start=\"1846\" data-end=\"1849\" />Only the British Parliament could amend the Act.<br data-start=\"1899\" data-end=\"1902\" />इस अधिनियम में संशोधन का अधिकार केवल ब्रिटिश संसद को था।</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"72\" data-end=\"154\">Consider the following statements regarding the <strong data-start=\"120\" data-end=\"153\">Indian Independence Act, 1947</strong>:</p>\n<p data-start=\"156\" data-end=\"233\">भारतीय स्वतंत्रता अधिनियम, 1947 के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"235\" data-end=\"1304\">\n<li data-start=\"235\" data-end=\"527\">\n<p data-start=\"238\" data-end=\"527\">It declared India as an independent and sovereign nation from 15 August 1947 and provided for the creation of two dominions &mdash; India and Pakistan.<br data-start=\"383\" data-end=\"386\" />इसने 15 अगस्त 1947 से भारत को स्वतंत्र एवं संप्रभु राष्ट्र घोषित किया और दो डोमिनियन &mdash; भारत एवं पाकिस्तान &mdash; के निर्माण का प्रावधान किया।</p>\n</li>\n<li data-start=\"529\" data-end=\"784\">\n<p data-start=\"532\" data-end=\"784\">The office of the Viceroy was abolished, and each dominion was to have a Governor-General appointed by the British King.<br data-start=\"652\" data-end=\"655\" />वायसराय का पद समाप्त कर दिया गया और प्रत्येक डोमिनियन के लिए ब्रिटिश सम्राट द्वारा नियुक्त गवर्नर-जनरल का प्रावधान किया गया।</p>\n</li>\n<li data-start=\"786\" data-end=\"1054\">\n<p data-start=\"789\" data-end=\"1054\">The Act abolished British suzerainty over princely states and allowed them to join India or Pakistan or remain independent.<br data-start=\"912\" data-end=\"915\" />इस अधिनियम ने रियासतों पर ब्रिटिश अधिपत्य समाप्त कर दिया और उन्हें भारत या पाकिस्तान में शामिल होने या स्वतंत्र रहने की स्वतंत्रता दी।</p>\n</li>\n<li data-start=\"1056\" data-end=\"1304\">\n<p data-start=\"1059\" data-end=\"1304\">The Government of India Act, 1919 was to continue as the interim constitutional framework until new constitutions were framed.<br data-start=\"1185\" data-end=\"1188\" />नए संविधान बनने तक भारत शासन अधिनियम, 1919 को अंतरिम संवैधानिक ढाँचे के रूप में लागू रखने का प्रावधान किया गया।</p>\n</li>\n</ol>\n<p data-start=\"1306\" data-end=\"1391\">Which of the statements given above are correct?<br data-start=\"1354\" data-end=\"1357\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1393\" data-end=\"1471\">A. 1, 2 and 3 only<br data-start=\"1411\" data-end=\"1414\" />B. 1 and 4 only<br data-start=\"1429\" data-end=\"1432\" />C. 2, 3 and 4 only<br data-start=\"1450\" data-end=\"1453\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1560\" data-end=\"1675\">✔&nbsp;<strong data-start=\"1562\" data-end=\"1607\">Independence &amp; Partition (15 August 1947)</strong><br data-start=\"1607\" data-end=\"1610\" />15 अगस्त 1947 से स्वतंत्रता; भारत और पाकिस्तान दो डोमिनियन बने।</p>\n<p data-start=\"1677\" data-end=\"1757\">✔&nbsp;<strong data-start=\"1679\" data-end=\"1703\">Abolition of Viceroy</strong><br data-start=\"1703\" data-end=\"1706\" />वायसराय का पद समाप्त; गवर्नर-जनरल नियुक्त किए गए।</p>\n<p data-start=\"1759\" data-end=\"1876\">✔&nbsp;<strong data-start=\"1761\" data-end=\"1803\">End of Suzerainty over Princely States</strong><br data-start=\"1803\" data-end=\"1806\" />रियासतों को भारत/पाकिस्तान में विलय या स्वतंत्र रहने का विकल्प मिला।</p>\n<p data-start=\"1878\" data-end=\"1997\">✖&nbsp;<strong data-start=\"1880\" data-end=\"1905\">Statement 4 Incorrect</strong><br data-start=\"1905\" data-end=\"1908\" />अंतरिम शासन के लिए 1919 अधिनियम नहीं, बल्कि&nbsp;<strong data-start=\"1952\" data-end=\"1985\">Government of India Act, 1935</strong>&nbsp;लागू रहा।</p>\n<p data-start=\"1999\" data-end=\"2046\"></p>\n<p data-start=\"1999\" data-end=\"2046\">✔&nbsp;<strong data-start=\"2001\" data-end=\"2044\">Other Important Points (Exam Priority):</strong></p>\n<p></p>\n<ul data-start=\"2047\" data-end=\"2357\">\n<li data-start=\"2047\" data-end=\"2089\">\n<p data-start=\"2049\" data-end=\"2089\">Secretary of State for India abolished</p>\n</li>\n<li data-start=\"2090\" data-end=\"2141\">\n<p data-start=\"2092\" data-end=\"2141\">Radcliffe Boundary Commission (Punjab &amp; Bengal)</p>\n</li>\n<li data-start=\"2142\" data-end=\"2208\">\n<p data-start=\"2144\" data-end=\"2208\">Lord Mountbatten &rarr; First Governor-General of Independent India</p>\n</li>\n<li data-start=\"2209\" data-end=\"2252\">\n<p data-start=\"2211\" data-end=\"2252\">Jawaharlal Nehru &rarr; First Prime Minister</p>\n</li>\n<li data-start=\"2253\" data-end=\"2304\">\n<p data-start=\"2255\" data-end=\"2304\">Constituent Assembly became Dominion Parliament</p>\n</li>\n<li data-start=\"2305\" data-end=\"2357\">\n<p data-start=\"2307\" data-end=\"2357\">British Monarch dropped title &ldquo;Emperor of India&rdquo;</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"77\" data-end=\"111\">Consider the following statements:</p>\n<p data-start=\"113\" data-end=\"145\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"147\" data-end=\"1013\">\n<li data-start=\"147\" data-end=\"393\">\n<p data-start=\"150\" data-end=\"393\">The Simon Commission (1927) was composed entirely of British members and recommended the abolition of Dyarchy in provinces.<br data-start=\"273\" data-end=\"276\" />साइमन कमीशन (1927) पूरी तरह ब्रिटिश सदस्यों से बना था और इसने प्रांतों में द्वैध शासन समाप्त करने की सिफारिश की।</p>\n</li>\n<li data-start=\"395\" data-end=\"595\">\n<p data-start=\"398\" data-end=\"595\">The Communal Award (1932) granted separate electorates to Muslims, Sikhs, and Depressed Classes.<br data-start=\"494\" data-end=\"497\" />साम्प्रदायिक पुरस्कार (1932) ने मुसलमानों, सिखों और दलित वर्गों को पृथक निर्वाचन प्रदान किया।</p>\n</li>\n<li data-start=\"597\" data-end=\"826\">\n<p data-start=\"600\" data-end=\"826\">The Poona Pact replaced separate electorates for Depressed Classes with reserved seats in a joint electorate.<br data-start=\"709\" data-end=\"712\" />पूना पैक्ट ने दलित वर्गों के लिए पृथक निर्वाचन के स्थान पर संयुक्त निर्वाचन में आरक्षित सीटों की व्यवस्था की।</p>\n</li>\n<li data-start=\"828\" data-end=\"1013\">\n<p data-start=\"831\" data-end=\"1013\">In independent India&rsquo;s first cabinet (1947), Dr. B.R. Ambedkar held the portfolio of Finance.<br data-start=\"924\" data-end=\"927\" />स्वतंत्र भारत की पहली मंत्रिपरिषद (1947) में डॉ. बी.आर. अम्बेडकर वित्त मंत्री थे।</p>\n</li>\n</ol>\n<p data-start=\"1015\" data-end=\"1100\">Which of the statements given above are correct?<br data-start=\"1063\" data-end=\"1066\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"1102\" data-end=\"1180\">A. 1, 2 and 3 only<br data-start=\"1120\" data-end=\"1123\" />B. 1 and 4 only<br data-start=\"1138\" data-end=\"1141\" />C. 2, 3 and 4 only<br data-start=\"1159\" data-end=\"1162\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1269\" data-end=\"1383\">✔ <strong data-start=\"1271\" data-end=\"1298\">Simon Commission (1927)</strong><br data-start=\"1298\" data-end=\"1301\" />पूरी तरह ब्रिटिश सदस्यों से बना; प्रांतों में द्वैध शासन समाप्त करने की सिफारिश।</p>\n<p data-start=\"1385\" data-end=\"1491\">✔ <strong data-start=\"1387\" data-end=\"1412\">Communal Award (1932)</strong><br data-start=\"1412\" data-end=\"1415\" />रैम्ज़े मैकडोनाल्ड द्वारा; मुसलमान, सिख, तथा दलित वर्गों को पृथक निर्वाचन।</p>\n<p data-start=\"1493\" data-end=\"1593\">✔ <strong data-start=\"1495\" data-end=\"1516\">Poona Pact (1932)</strong><br data-start=\"1516\" data-end=\"1519\" />गांधी और डॉ. अम्बेडकर के बीच समझौता; संयुक्त निर्वाचन में आरक्षित सीटें।</p>\n<p></p>\n<p data-start=\"1595\" data-end=\"1709\">✖ <strong data-start=\"1597\" data-end=\"1622\">Statement 4 Incorrect</strong><br data-start=\"1622\" data-end=\"1625\" />डॉ. बी.आर. अम्बेडकर कानून मंत्री थे;<br data-start=\"1661\" data-end=\"1664\" />वित्त मंत्री थे <strong data-start=\"1680\" data-end=\"1706\">R.K. Shanmugham Chetty</strong>।</p>",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"224\" data-end=\"349\">The Regulating Act of 1773 made Warren Hastings the first:<br data-start=\"282\" data-end=\"285\" />1773 के विनियमन अधिनियम ने वॉरेन हेस्टिंग्स को प्रथम क्या बनाया?</p>\n<p data-start=\"351\" data-end=\"459\">A. Governor of Bengal<br data-start=\"372\" data-end=\"375\" />B. Governor-General of Bengal<br data-start=\"404\" data-end=\"407\" />C. Viceroy of India<br data-start=\"426\" data-end=\"429\" />D. Governor-General of India</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"533\" data-end=\"660\">Separate electorate for Muslims was introduced by which Act?<br data-start=\"593\" data-end=\"596\" />मुसलमानों के लिए पृथक निर्वाचन किस अधिनियम द्वारा शुरू किया गया?</p>\n<p data-start=\"662\" data-end=\"793\">A. Indian Councils Act, 1892<br data-start=\"690\" data-end=\"693\" />B. Government of India Act, 1919<br data-start=\"725\" data-end=\"728\" />C. Indian Councils Act, 1909<br data-start=\"756\" data-end=\"759\" />D. Government of India Act, 1935</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"866\" data-end=\"1053\">Provincial Autonomy and three lists (Federal, Provincial, Concurrent) were introduced under:<br data-start=\"958\" data-end=\"961\" />प्रांतीय स्वायत्तता तथा तीन सूचियाँ (संघ, प्रांतीय, समवर्ती) किस अधिनियम द्वारा लागू की गईं?</p>\n<p data-start=\"1055\" data-end=\"1182\">A. Government of India Act, 1919<br data-start=\"1087\" data-end=\"1090\" />B. Government of India Act, 1935<br data-start=\"1122\" data-end=\"1125\" />C. Indian Independence Act, 1947<br data-start=\"1157\" data-end=\"1160\" />D. Charter Act, 1833</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  },
+  {
+    "question": "<p data-start=\"1259\" data-end=\"1427\">Under the Indian Independence Act, 1947, India and Pakistan were created as:<br data-start=\"1335\" data-end=\"1338\" />भारतीय स्वतंत्रता अधिनियम, 1947 के तहत भारत और पाकिस्तान को किस रूप में स्थापित किया गया?</p>\n<p></p>\n<p data-start=\"1429\" data-end=\"1492\">A. Federal States<br data-start=\"1446\" data-end=\"1449\" />B. Republics<br data-start=\"1461\" data-end=\"1464\" />C. Dominions<br data-start=\"1476\" data-end=\"1479\" />D. Colonies</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Historical Background of Indian Constitution"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

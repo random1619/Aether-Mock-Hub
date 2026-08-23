@@ -3,8 +3,9 @@
 import { create } from 'zustand';
 import { getDb, onExternalChange, setTheme as persistTheme } from '@/services/attemptStore';
 import { onProfileChange } from '@/services/profileStore';
+import { updateNativeStatusBar, haptic } from '@/services/nativeMobile';
 
-type Theme = 'dark' | 'light' | 'netflix';
+type Theme = 'dark' | 'light' | 'netflix' | 'onepiece';
 
 interface SettingsState {
   theme: Theme;
@@ -14,11 +15,12 @@ interface SettingsState {
 
 function applyDom(theme: Theme) {
   document.documentElement.setAttribute('data-theme', theme);
+  updateNativeStatusBar(theme);
 }
 
 function readTheme(): Theme {
   const t = getDb().settings.theme;
-  return t === 'dark' || t === 'netflix' ? t : 'light';
+  return t === 'dark' || t === 'netflix' || t === 'onepiece' ? t : 'light';
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -30,6 +32,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   setTheme: (theme) => {
     persistTheme(theme); // mutates aether-db AND saves to localStorage
     applyDom(theme);
+    haptic.selection();
     set({ theme });
   },
   toggleTheme: () => {

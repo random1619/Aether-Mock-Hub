@@ -58,7 +58,7 @@ export default function ProviderPage({ provider }: { provider: string }) {
   const handleToggle = useCompletionToggle(() => setTick((t) => t + 1));
 
   return (
-    <div className="min-h-screen page-surface">
+    <div className="min-h-screen page-surface pb-[84px] md:pb-0" style={{ paddingBottom: 'calc(84px + env(safe-area-inset-bottom, 0px))' } as any}>
       {/* Frosted nav — shared shell */}
       <AppChrome
         title={brand.title}
@@ -74,17 +74,17 @@ export default function ProviderPage({ provider }: { provider: string }) {
       />
 
       {/* Hero — apple.com product-page typography */}
-      <header className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
+      <header className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-12 pb-4 sm:pb-8 text-center">
         {/* Gate hero metrics on catalog load — otherwise they flash "0 mocks". */}
-        <Badge tone={brand.tone} className="mb-4">{mocks ? `${own.length} mocks` : '…'}</Badge>
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-[-0.025em] text-text leading-[1.05]">
+        <Badge tone={brand.tone} className="mb-2 sm:mb-4">{mocks ? `${own.length} mocks` : '…'}</Badge>
+        <h1 className="text-2xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.025em] text-text leading-[1.05] px-2">
           {brand.title}
         </h1>
-        <p className="text-muted mt-3 text-base sm:text-lg font-medium tracking-[-0.01em] max-w-2xl mx-auto">{brand.tagline}</p>
+        <p className="text-muted mt-2 sm:mt-3 text-xs sm:text-base lg:text-lg font-medium tracking-[-0.01em] max-w-2xl mx-auto px-2 leading-relaxed">{brand.tagline}</p>
 
         {mocks && (
-          <div className="mt-8 max-w-md mx-auto">
-            <div className="flex items-center justify-between text-xs font-medium text-muted mb-2">
+          <div className="mt-4 sm:mt-8 max-w-md mx-auto">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-muted mb-1.5 sm:mb-2">
               <span>Progress</span>
               <span className="tabular-nums">{completedCount}/{own.length} · {progressPct}%</span>
             </div>
@@ -107,8 +107,8 @@ export default function ProviderPage({ provider }: { provider: string }) {
       </header>
 
       {/* Filters + grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="bg-surface rounded-2xl p-5 flex flex-col gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
+        <div className="bg-surface rounded-xl sm:rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3 sm:gap-4">
           <SearchPill
             value={search}
             onChange={setSearch}
@@ -117,22 +117,22 @@ export default function ProviderPage({ provider }: { provider: string }) {
             size="md"
           />
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             {subjects.length > 1 && (
-              <div className="flex flex-wrap gap-1.5" role="group" aria-label="Subject">
+              <div className="-mx-3.5 sm:mx-0 px-3.5 sm:px-0 overflow-x-auto scrollbar-none flex gap-1.5 min-w-0" role="group" aria-label="Subject">
                 {['all', ...subjects].map((s) => (
                   <button
                     key={s}
                     onClick={() => setSubject(s)}
                     aria-pressed={subject === s}
                     className={clsx(
-                      'text-xs font-medium px-3.5 py-1.5 rounded-full transition-colors capitalize',
+                      'text-[11px] sm:text-xs font-medium px-3 py-1.5 rounded-full transition-colors capitalize shrink-0 select-none cursor-pointer',
                       subject === s
                         ? 'bg-primary text-white shadow-sm'
                         : 'bg-surface-2 text-text-2 hover:bg-surface-3 hover:text-text',
                     )}
                   >
-                    {s === 'all' ? 'All subjects' : s}
+                    {s === 'all' ? 'All' : s}
                   </button>
                 ))}
               </div>
@@ -144,7 +144,7 @@ export default function ProviderPage({ provider }: { provider: string }) {
               value={status}
               onChange={setStatus}
               ariaLabel="Completion status"
-              className="ml-auto"
+              className="self-start sm:self-auto sm:ml-auto"
             />
           </div>
         </div>

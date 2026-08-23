@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, Target, CheckCircle2, XCircle, MinusCircle, RotateCcw, LayoutDashboard, MonitorOff, AppWindow, FileDown, Brain, Flame, Clock3, TrendingUp, TrendingDown } from 'lucide-react';
+import { Trophy, Target, CheckCircle2, XCircle, MinusCircle, RotateCcw, LayoutDashboard, MonitorOff, AppWindow, FileDown, Brain, Flame, Clock3, TrendingUp, TrendingDown, BookmarkCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { clsx } from 'clsx';
 import { toast } from 'sonner';
 import { useExamStore } from '@/stores/examStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { getAllAttempts, getStats, getTodayProgress } from '@/services/attemptStore';
 import { isRevisionPath, revisionPathFor } from '@/services/smartRevision';
+import { isBookmarkMockPath } from '@/services/bookmarkMock';
 import { examPath } from '@/lib/examLink';
 import type { ScoreResult } from '@/lib/scoring';
 import { Modal, Button, ConfettiBurst } from '@/components/ui';
@@ -20,6 +23,8 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
   const questionTimes = useExamStore((s) => s.questionTimes);
   const persistFailed = useExamStore((s) => s.persistFailed);
   const [savingPdf, setSavingPdf] = useState(false);
+  const { theme } = useSettingsStore();
+  const isOnePiece = theme === 'onepiece';
   // Desktop-only: the PDF is rendered + written by the Electron main process.
   const canExportPdf = typeof window !== 'undefined' && !!(window as any).aetherDesktop?.exportScorecard;
   if (!result) return null;
@@ -31,10 +36,11 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
   const totalAllowedSec = (meta?.durationMinutes ?? 0) * 60;
 
   // Score delta vs the previous attempt on THIS mock (latest entry in the
-  // store is the attempt that was just saved). Revision exams are skipped —
+  // store is the attempt that was just saved). Revision/Bookmark exams are skipped —
   // their pseudo-paths don't carry comparable history.
   const isRevision = isRevisionPath(meta?.path);
-  const prevAttempt = !isRevision && meta ? (() => {
+  const isBookmark = isBookmarkMockPath(meta?.path);
+  const prevAttempt = !isRevision && !isBookmark && meta ? (() => {
     const arr = getAllAttempts(meta.path);
     return arr.length >= 2 ? arr[arr.length - 2] : null;
   })() : null;
@@ -51,7 +57,7 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
   };
 
   const savePdf = async () => {
-    if (savingPdf) return;
+    if (!canExportPdf || savingPdf) return;
     setSavingPdf(true);
     try {
       const res = await (window as any).aetherDesktop.exportScorecard({
@@ -70,10 +76,10 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
   const pct = result.maxScore > 0 ? Math.max(0, Math.round((result.score / result.maxScore) * 100)) : 0;
 
   const stats = [
-    { label: 'Correct', value: result.correct, icon: CheckCircle2, cls: 'text-answered', bg: 'bg-answered/15' },
-    { label: 'Incorrect', value: result.incorrect, icon: XCircle, cls: 'text-notanswered', bg: 'bg-notanswered/15' },
-    { label: 'Skipped', value: result.unattempted, icon: MinusCircle, cls: 'text-muted', bg: 'bg-notvisited-soft' },
-    { label: 'Accuracy', value: `${result.accuracy}%`, icon: Target, cls: 'text-info', bg: 'bg-info-soft' },
+    { label: isOnePiece ? 'Ryuo Hits' : 'Correct', value: result.correct, icon: CheckCircle2, cls: 'text-answered', bg: 'bg-answered/15' },
+    { label: isOnePiece ? 'Countered' : 'Incorrect', value: result.incorrect, icon: XCircle, cls: 'text-notanswered', bg: 'bg-notanswered/15' },
+    { label: isOnePiece ? 'Dodged' : 'Skipped', value: result.unattempted, icon: MinusCircle, cls: 'text-muted', bg: 'bg-notvisited-soft' },
+    { label: isOnePiece ? 'Observation Haki' : 'Accuracy', value: `${result.accuracy}%`, icon: Target, cls: 'text-info', bg: 'bg-info-soft' },
   ];
 
   return (
@@ -84,11 +90,18 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
-          className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-info grid place-items-center shadow-[var(--shadow-glow)] ring-4 ring-primary-soft"
+          className={clsx(
+            'w-16 h-16 mx-auto mb-4 rounded-full grid place-items-center shadow-[var(--shadow-glow)]',
+            isOnePiece
+              ? 'bg-gradient-to-br from-[#FFB703] to-[#FF334B] ring-4 ring-[#FFB703]/30 text-2xl shadow-[0_4px_25px_rgba(255,183,3,0.4)]'
+              : 'bg-gradient-to-br from-primary to-info ring-4 ring-primary-soft',
+          )}
         >
-          <Trophy className="text-white" size={28} />
+          {isOnePiece ? '☠️' : <Trophy className="text-white" size={28} />}
         </motion.div>
-        <h2 className="text-2xl font-extrabold text-text mb-1">Test Completed!</h2>
+        <h2 className="text-2xl font-extrabold text-text mb-1">
+          {isOnePiece ? 'Battle Concluded — Bounty Issued!' : 'Test Completed!'}
+        </h2>
         <p className="text-sm text-muted mb-6 truncate">{meta?.name}</p>
 
         {/* Score hero — ring gauge with score centered */}
@@ -99,23 +112,25 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
               {result.score.toFixed(1)}
               <span className="text-xl text-muted font-bold"> / {result.maxScore.toFixed(0)}</span>
             </div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted mt-2">{pct}% scored</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted mt-2">
+              {pct}% {isOnePiece ? 'bounty secured' : 'scored'}
+            </div>
           </div>
         </div>
 
         {/* Stat grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 + i * 0.06 }}
-              className={`${s.bg} rounded-lg p-3.5 border border-border shadow-sm`}
+              className={`${s.bg} rounded-xl sm:rounded-lg p-2.5 sm:p-3.5 border border-border shadow-xs`}
             >
-              <s.icon size={18} className={`${s.cls} mx-auto mb-1.5`} />
-              <div className={`text-xl font-extrabold tabular-nums ${s.cls}`}>{s.value}</div>
-              <div className="text-xs text-muted font-medium">{s.label}</div>
+              <s.icon size={16} className={`${s.cls} mx-auto mb-1`} />
+              <div className={`text-lg sm:text-xl font-extrabold tabular-nums ${s.cls}`}>{s.value}</div>
+              <div className="text-[11px] sm:text-xs text-muted font-medium mt-0.5">{s.label}</div>
             </motion.div>
           ))}
         </div>
@@ -124,7 +139,7 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 py-3 px-4 rounded-lg bg-warning-soft border border-warning/30 text-warning-fg text-sm font-medium text-center"
+            className="mb-4 sm:mb-6 py-2.5 px-3 rounded-lg bg-warning-soft border border-warning/30 text-warning-fg text-xs sm:text-sm font-medium text-center"
           >
             Your score could not be saved — it will be lost on reload.
             Check your browser storage (quota / private mode).
@@ -132,53 +147,53 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
         )}
 
         {/* Insights row: pacing + improvement vs previous attempt */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
           <InsightCell
-            icon={<Clock3 size={15} />}
+            icon={<Clock3 size={14} />}
             label="Time Used"
             value={fmtDuration(totalUsedSec)}
             sub={totalAllowedSec > 0 ? `of ${fmtDuration(totalAllowedSec)}` : undefined}
           />
           <InsightCell
-            icon={<Target size={15} />}
-            label="Avg / Question"
+            icon={<Target size={14} />}
+            label="Avg / Q"
             value={answeredCount > 0 ? `${avgSecPerQ}s` : '—'}
           />
           {scoreDelta !== null ? (
             <InsightCell
-              icon={scoreDelta >= 0 ? <TrendingUp size={15} /> : <TrendingDown size={15} />}
-              label="vs Last Attempt"
+              icon={scoreDelta >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+              label="vs Previous"
               value={`${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toFixed(1)}`}
               tone={scoreDelta > 0 ? 'up' : scoreDelta < 0 ? 'down' : 'flat'}
             />
           ) : (
-            <InsightCell icon={<Trophy size={15} />} label="Attempt" value="First" sub="no baseline yet" />
+            <InsightCell icon={<Trophy size={14} />} label="Attempt" value="First" sub="no baseline" />
           )}
         </div>
 
         {/* Sectional breakdown */}
         {result.sections.length > 1 && (
-          <div className="mb-6 text-left">
-            <h3 className="text-sm font-bold text-text mb-2.5">Sectional Performance</h3>
-            <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
+          <div className="mb-4 sm:mb-6 text-left">
+            <h3 className="text-xs sm:text-sm font-bold text-text mb-2">Sectional Performance</h3>
+            <div className="border border-border rounded-xl sm:rounded-lg overflow-hidden">
+              <table className="w-full text-xs sm:text-sm">
                 <thead>
-                  <tr className="bg-surface-2 text-muted text-xs uppercase tracking-wide">
-                    <th className="text-left px-3 py-2 font-semibold">Section</th>
-                    <th className="text-center px-2 py-2 font-semibold">✓</th>
-                    <th className="text-center px-2 py-2 font-semibold">✗</th>
-                    <th className="text-center px-2 py-2 font-semibold">—</th>
-                    <th className="text-right px-3 py-2 font-semibold">Score</th>
+                  <tr className="bg-surface-2 text-muted text-[10px] sm:text-xs uppercase tracking-wide">
+                    <th className="text-left px-2.5 sm:px-3 py-2 font-semibold">Section</th>
+                    <th className="text-center px-1.5 sm:px-2 py-2 font-semibold">✓</th>
+                    <th className="text-center px-1.5 sm:px-2 py-2 font-semibold">✗</th>
+                    <th className="text-center px-1.5 sm:px-2 py-2 font-semibold">—</th>
+                    <th className="text-right px-2.5 sm:px-3 py-2 font-semibold">Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.sections.map((sec) => (
                     <tr key={sec.name} className="border-t border-border">
-                      <td className="px-3 py-2.5 font-medium text-text">{sec.name}</td>
-                      <td className="px-2 py-2.5 text-center text-answered font-bold">{sec.correct}</td>
-                      <td className="px-2 py-2.5 text-center text-notanswered font-bold">{sec.incorrect}</td>
-                      <td className="px-2 py-2.5 text-center text-muted">{sec.unattempted}</td>
-                      <td className="px-3 py-2.5 text-right font-bold text-primary tabular-nums">
+                      <td className="px-2.5 sm:px-3 py-2 font-medium text-text">{sec.name}</td>
+                      <td className="px-1.5 sm:px-2 py-2 text-center text-answered font-bold">{sec.correct}</td>
+                      <td className="px-1.5 sm:px-2 py-2 text-center text-notanswered font-bold">{sec.incorrect}</td>
+                      <td className="px-1.5 sm:px-2 py-2 text-center text-muted">{sec.unattempted}</td>
+                      <td className="px-2.5 sm:px-3 py-2 text-right font-bold text-primary tabular-nums">
                         {sec.score.toFixed(2)}
                       </td>
                     </tr>
@@ -190,21 +205,21 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
         )}
 
         {/* Study planner strip: today's goal + streak after this attempt */}
-        <div className={`mb-5 flex items-center gap-3 rounded-lg border px-3.5 py-2.5 text-left ${
+        <div className={`mb-4 sm:mb-5 flex items-center gap-2.5 sm:gap-3 rounded-xl sm:rounded-lg border px-3 sm:px-3.5 py-2 sm:py-2.5 text-left ${
           today.met ? 'border-success/40 bg-success-soft' : 'border-border bg-surface-2'
         }`}>
-          <Flame size={16} className={streakDays > 0 ? 'text-warning shrink-0' : 'text-muted shrink-0'} />
+          <Flame size={15} className={streakDays > 0 ? 'text-warning shrink-0' : 'text-muted shrink-0'} />
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-bold text-text">
+            <div className="text-[11px] sm:text-xs font-bold text-text truncate">
               {streakDays} day{streakDays === 1 ? '' : 's'} streak
-              {today.met && <span className="ml-2 text-success">· Goal met today</span>}
+              {today.met && <span className="ml-1 text-success">· Goal met</span>}
             </div>
-            <div className="text-[11px] text-muted">
-              Today: {today.done}/{today.goal} questions answered
+            <div className="text-[10px] sm:text-[11px] text-muted truncate">
+              Today: {today.done}/{today.goal} Qs answered
             </div>
           </div>
           {/* Mini progress bar */}
-          <div className="w-20 h-1.5 rounded-full bg-surface-3 overflow-hidden shrink-0">
+          <div className="w-16 sm:w-20 h-1.5 rounded-full bg-surface-3 overflow-hidden shrink-0">
             <div
               className={`h-full rounded-full transition-all ${today.met ? 'bg-success' : 'bg-primary'}`}
               style={{ width: `${Math.min(100, Math.round((today.done / today.goal) * 100))}%` }}
@@ -212,23 +227,36 @@ export function ResultModal({ open, onClose }: { open: boolean; onClose: () => v
           </div>
         </div>
 
+        {/* Bookmark mock actions */}
+        {isBookmark && (
+          <Button
+            variant="secondary"
+            fullWidth
+            leftIcon={<BookmarkCheck size={15} />}
+            onClick={() => navigate('/saved')}
+            className="mb-2 sm:mb-3 font-semibold text-xs sm:text-sm"
+          >
+            Back to Saved Questions
+          </Button>
+        )}
+
         {/* Smart Revision: retry this attempt's wrong questions */}
-        {result.incorrect > 0 && !isRevision && (
-          <Button variant="warning" fullWidth leftIcon={<Brain size={16} />} onClick={reviseWrong} className="mb-3">
+        {result.incorrect > 0 && !isRevision && !isBookmark && (
+          <Button variant="warning" fullWidth leftIcon={<Brain size={15} />} onClick={reviseWrong} className="mb-2 sm:mb-3 font-semibold text-xs sm:text-sm">
             Revise {result.incorrect} Wrong Question{result.incorrect === 1 ? '' : 's'}
           </Button>
         )}
 
-        <div className="flex gap-3">
-          <Button variant="secondary" fullWidth leftIcon={<LayoutDashboard size={16} />} onClick={() => navigate('/')}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <Button variant="secondary" fullWidth leftIcon={<LayoutDashboard size={15} />} onClick={() => navigate('/')} className="text-xs sm:text-sm h-10 sm:h-9">
             Dashboard
           </Button>
           {canExportPdf && (
-            <Button variant="secondary" fullWidth leftIcon={<FileDown size={16} />} disabled={savingPdf} onClick={savePdf}>
+            <Button variant="secondary" fullWidth leftIcon={<FileDown size={15} />} disabled={savingPdf} onClick={savePdf} className="text-xs sm:text-sm h-10 sm:h-9">
               {savingPdf ? 'Saving…' : 'Save PDF'}
             </Button>
           )}
-          <Button variant="primary" fullWidth leftIcon={<RotateCcw size={16} />} onClick={onClose}>
+          <Button variant="primary" fullWidth leftIcon={<RotateCcw size={15} />} onClick={onClose} className="font-bold text-xs sm:text-sm h-10 sm:h-9">
             Review Answers
           </Button>
         </div>

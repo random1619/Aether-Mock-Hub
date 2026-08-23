@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:16px;
+    background:#29a9eb;
+    color:#fff;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #tgBtn svg{flex-shrink:0;}
+  #topicLine{
+    margin-top:14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--accent);
+    background:var(--card);
+    display:inline-block;
+    padding:6px 18px;
+    border:1px solid var(--rule);
+    border-radius:20px;
+  }
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+    <a href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: B Words — Previous Years Synonyms</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">39</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Beseech",
+"tag": "SSC CGL 19/09/2024 (Shift-III)",
+"opts": [
+"Pamper",
+"Implore",
+"Impart",
+"Bequeath"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Beseech' का अर्थ है <b>प्रार्थना करना/गिड़गिड़ाना</b>। Synonym 'Implore' (<b>प्रार्थना करना</b>) है।</span><br>Pamper – लाड़ करना, Impart – प्रदान करना, Bequeath – वसीयत करना।"
+},
+{
+"q": "Select the most appropriate synonym of the word in brackets to fill in the blank. Listening to the same lecture everyday appeared very ___________ to him. (boring)",
+"tag": "SSC CGL 12/09/2024 (Shift-II)",
+"opts": [
+"monotonous",
+"furious",
+"nervous",
+"monolithic"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Boring' का अर्थ है <b>उबाऊ</b>। Synonym 'Monotonous' (<b>नीरस/एकसुरा</b>) है।</span><br>Furious – क्रोधित, Nervous – घबराया हुआ, Monolithic – एकाश्म/विशाल।"
+},
+{
+"q": "Identify the words nearest in meaning to the given word. BREVITY",
+"tag": "KVS PRT 26-02-2023 (Shift-II)",
+"opts": [
+"abbreviation",
+"conciseness",
+"summary",
+"reduction"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Brevity' का अर्थ है <b>संक्षिप्तता</b>। Synonym 'Conciseness' (<b>संक्षिप्तता</b>) है।</span><br>Abbreviation – संक्षेपण, Summary – सारांश, Reduction – कमी।"
+},
+{
+"q": "BREACH (Noun) Choose the word similar in meaning to the one given above.",
+"tag": "KVS PRT 26-02-2023 (Shift-II) Synonyms 8",
+"opts": [
+"Lack",
+"Violation",
+"Virtue",
+"Blame"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Breach (noun)' का अर्थ है <b>उल्लंघन</b>। Synonym 'Violation' (<b>उल्लंघन</b>) है।</span><br>Lack – अभाव, Virtue – सद्गुण, Blame – दोष।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Blunt",
+"tag": "SSC GD 31/01/2023 (Shift-II)",
+"opts": [
+"Cheerful",
+"Dull",
+"Valiant",
+"Sharp"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Blunt' का अर्थ है <b>कुंद/स्पष्टवादी</b>। Synonym 'Dull' (<b>कुंद/मंद</b>) है।</span><br>Cheerful – प्रसन्न, Valiant – बहादुर, Sharp – तेज़।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Baffle",
+"tag": "SSC GD 13/02/2023 (Shift-I)",
+"opts": [
+"Amaze",
+"Enlighten",
+"Clear",
+"Comprehend"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Baffle' का अर्थ है <b>चकित करना/उलझाना</b>। Synonym 'Amaze' (<b>चकित करना</b>) है।</span><br>Enlighten – ज्ञान देना, Clear – स्पष्ट करना, Comprehend – समझना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Blast",
+"tag": "SSC GD 10/01/2023 (Shift-I)",
+"opts": [
+"Blow up",
+"Recall",
+"Plead",
+"Share"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Blast' का अर्थ है <b>विस्फोट</b>। Synonym 'Blow up' (<b>उड़ा देना</b>) है।</span><br>Recall – वापस बुलाना, Plead – विनती करना, Share – साझा करना।"
+},
+{
+"q": "Select the most appropriate synonym of the word ‘Bleak’ from the given sentence. He looked gloomy, frail, broken and slow after the sudden demise of his brother.",
+"tag": "SSC CHSL (Tier-I) 17/08/2023 (Shift-II)",
+"opts": [
+"slow",
+"sudden",
+"gloomy",
+"frail"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Bleak' का अर्थ है <b>उदास/निराशाजनक</b>। Synonym 'Gloomy' (<b>उदास/निराशाजनक</b>) है।</span><br>Slow – धीमा, Sudden – अचानक, Frail – कमजोर।"
+},
+{
+"q": "Select the most appropriate synonym for the underlined word in the following sentence. She’s so benevolent that she can’t even harm a fly, let alone hurting someone.",
+"tag": "SSC CHSL (Tier-I) 10/08/2023 (Shift-I) SSC MTS 6/08/2019 (Shift-II)",
+"opts": [
+"Gloomy",
+"Unfortunate",
+"Compassionate",
+"Grudging"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Benevolent' का अर्थ है <b>दयालु/परोपकारी</b>। Synonym 'Compassionate' (<b>दयालु</b>) है।</span><br>Gloomy – उदास, Unfortunate – दुर्भाग्यपूर्ण, Grudging – अनिच्छुक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Bafflement",
+"tag": "SSC CHSL 24.05.2022 Shift-III SSC CHSL (Tier-I) 08/08/2023 (Shift-II)",
+"opts": [
+"Clarity",
+"Confusion",
+"Pleasure",
+"Cleanliness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bafflement' का अर्थ है <b>असमंजस/उलझन</b>। Synonym 'Confusion' (<b>उलझन</b>) है।</span><br>Clarity – स्पष्टता, Pleasure – आनंद, Cleanliness – स्वच्छता।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below Bibulous",
+"tag": "DSSSB Junior Assistant 31/8/2021 Shift-II",
+"opts": [
+"Cantankerous",
+"Godly",
+"Sober",
+"Inebriated"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bibulous' का अर्थ है <b>शराब पीने का शौकीन</b>। Synonym 'Inebriated' (<b>नशे में धुत्त</b>) है।</span><br>Cantankerous – चिड़चिड़ा, Godly – धार्मिक, Sober – संयमी/होश में।"
+},
+{
+"q": "Choose the correct synonym for the following: “Bashful”.",
+"tag": "High Court RO 06/01/2022",
+"opts": [
+"Aggressive",
+"Gregarious",
+"Dashing",
+"Shy"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bashful' का अर्थ है <b>शर्मीला</b>। Synonym 'Shy' (<b>शर्मीला</b>) है।</span><br>Aggressive – आक्रामक, Gregarious – मिलनसार, Dashing – आकर्षक/फुर्तीला।"
+},
+{
+"q": "Identify the synonym for the word \\'Benign\\'.",
+"tag": "UPSSSC JE Exam 16/04/2022 / UPSSSC PET 16/04/2022 / SSC CPO 25/11/2020 (Shift-I)",
+"opts": [
+"favorable",
+"antagonistic",
+"indifferent",
+"Relaxed"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Benign' का अर्थ है <b>सौम्य/अनुकूल</b>। Synonym 'Favorable' (<b>अनुकूल</b>) है।</span><br>Antagonistic – विरोधी, Indifferent – उदासीन, Relaxed – शांत।"
+},
+{
+"q": "Choose the correct meaning of the given word from the options that follow: Bellicose",
+"tag": "Bihar Police Fireman Constable Exam 27/03/2022 (Shift-I)",
+"opts": [
+"comfortable",
+"aggressive",
+"calm",
+"Sad"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bellicose' का अर्थ है <b>युद्धप्रिय/आक्रामक</b>। Synonym 'Aggressive' (<b>आक्रामक</b>) है।</span><br>Comfortable – आरामदायक, Calm – शांत, Sad – दुखी।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Banish",
+"tag": "ACIO (Tier-II) 19/02/2021 (Shift-III)",
+"opts": [
+"Deport",
+"Persist",
+"Perish",
+"Accept"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Banish' का अर्थ है <b>निर्वासित करना</b>। Synonym 'Deport' (<b>निर्वासित करना</b>) है।</span><br>Persist – डटे रहना, Perish – नष्ट होना, Accept – स्वीकार करना।"
+},
+{
+"q": "His bounty is limitless.",
+"tag": "UPSC NDA & NA 05/09/2021 (Shift-II)",
+"opts": [
+"benevolence",
+"gallantry",
+"nepotism",
+"chivalry"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bounty' का अर्थ है <b>उदारता/दान</b>। Synonym 'Benevolence' (<b>उदारता</b>) है।</span><br>Gallantry – वीरता, Nepotism – भाई-भतीजावाद, Chivalry – शिष्टता।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Bowdlerize",
+"tag": "DSSSB Junior Assistant 25/8/2021 Shift-II 90 YCT",
+"opts": [
+"Adulterate",
+"Censor",
+"Crumble",
+"Abuse"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bowdlerize' का अर्थ है <b>अश्लील अंश हटाकर संशोधित करना</b>। Synonym 'Censor' (<b>संशोधित/सेंसर करना</b>) है।</span><br>Adulterate – मिलावट करना, Crumble – टूटना/चूर होना, Abuse – दुरुपयोग करना।"
+},
+{
+"q": "The harder we kick, the better the ball bounces back.",
+"tag": "UPSC NDA & NA 19/04/2020",
+"opts": [
+"recoils",
+"deflates",
+"inflates",
+"ascends"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bounces back' का अर्थ है <b>वापस उछलना</b>। Synonym 'Recoils' (<b>वापस उछलना</b>) है।</span><br>Deflates – पिचकना, Inflates – फुलाना, Ascends – ऊपर चढ़ना।"
+},
+{
+"q": "The Managing Director of the company declared that he is broke and there is a need to seek support from the government.",
+"tag": "UPSC NDA & NA 17/11/2019 (Shift-II)",
+"opts": [
+"bankrupt",
+"rich",
+"making profit",
+"having liabilities"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Broke' का अर्थ है <b>दिवालिया</b>। Synonym 'Bankrupt' (<b>दिवालिया</b>) है।</span><br>Rich – अमीर, Making profit – मुनाफा कमाना, Having liabilities – देनदारी होना।"
+},
+{
+"q": "Trees that BLOCK the view of oncoming traffic should be cut down.",
+"tag": "UPSC NDA & NA 11/08/2013 (Shift-II)",
+"opts": [
+"Alter",
+"Obstruct",
+"Improve",
+"Spoil"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Block' का अर्थ है <b>अवरुद्ध करना</b>। Synonym 'Obstruct' (<b>बाधा डालना</b>) है।</span><br>Alter – बदलना, Improve – सुधारना, Spoil – बिगाड़ना।"
+},
+{
+"q": "The youth was BEFOGGED when he was interrogated loudly by the police inspector.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II)",
+"opts": [
+"terrified",
+"panicky",
+"surprised",
+"puzzled"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Befogged' का अर्थ है <b>भ्रमित/चकराया हुआ</b>। Synonym 'Puzzled' (<b>हैरान/उलझन में</b>) है।</span><br>Terrified – भयभीत, Panicky – घबराया हुआ, Surprised – आश्चर्यचकित।"
+},
+{
+"q": "The priest pronounced BENEDICTION.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II) Synonyms 9",
+"opts": [
+"good wishes",
+"blessings",
+"punishment",
+"appreciation"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Benediction' का अर्थ है <b>आशीर्वाद</b>। Synonym 'Blessings' (<b>आशीर्वाद</b>) है।</span><br>Good wishes – शुभकामनाएं, Punishment – दंड, Appreciation – प्रशंसा।"
+},
+{
+"q": "BEWITCHING",
+"tag": "UPSC NDA & NA 17/08/2008 (Shift-II)",
+"opts": [
+"Enchanting",
+"Magical",
+"Affected",
+"Ensnaring"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bewitching' का अर्थ है <b>मोहक/जादुई</b>। Synonym 'Enchanting' (<b>मोहक</b>) है।</span><br>Magical – जादुई, Affected – प्रभावित, Ensnaring – फंसाने वाला।"
+},
+{
+"q": "Choose the one which best expesses the meaning of BEHOLD?",
+"tag": "DSSSB- hewjecesef[keâue DeefOekeâejer hejer#ee (25-05-2014)",
+"opts": [
+"take",
+"bring",
+"see",
+"bend"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Behold' का अर्थ है <b>देखना</b>। Synonym 'See' (<b>देखना</b>) है।</span><br>Take – लेना, Bring – लाना, Bend – झुकना।"
+},
+{
+"q": "Bonus",
+"tag": "DSSSB- ueesJej ef[Jeerpeve keäueke&â (16-11-2014)",
+"opts": [
+"terror",
+"reward",
+"bony",
+"punishment"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bonus' का अर्थ है <b>अतिरिक्त लाभ/इनाम</b>। Synonym 'Reward' (<b>इनाम</b>) है।</span><br>Terror – आतंक, Bony – हड्डीदार, Punishment – दंड।"
+},
+{
+"q": "Bitter",
+"tag": "DSSSB - uewye meneÙekeâ hejer#ee (26-04-2015)",
+"opts": [
+"harsh",
+"sweet",
+"pleasant",
+"mellow"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bitter' का अर्थ है <b>कड़वा/कटु</b>। Synonym 'Harsh' (<b>कठोर/कटु</b>) है।</span><br>Sweet – मीठा, Pleasant – सुखद, Mellow – मधुर/नरम।"
+},
+{
+"q": "They describe the act as a blatant betrayal of faith.",
+"tag": "CDS 2019 (Shift-II) 91 YCT",
+"opts": [
+"Loyal",
+"Faithfulness",
+"Treachery",
+"Honesty"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Blatant' का अर्थ है <b>खुली/स्पष्ट (बुरे अर्थ में)</b>। Synonym 'Treachery' (<b>विश्वासघात</b>) है।</span><br>Loyal – वफादार, Faithfulness – निष्ठा, Honesty – ईमानदारी।"
+},
+{
+"q": "Valiant Vicky used to boast of his bravery to his beloved wife.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"cry",
+"abuse",
+"hate",
+"brag"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Boast' का अर्थ है <b>डींग हांकना</b>। Synonym 'Brag' (<b>डींग मारना</b>) है।</span><br>Cry – रोना, Abuse – गाली देना, Hate – नफरत करना।"
+},
+{
+"q": "BROACHED",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Admonished",
+"Advised",
+"Discussed",
+"Raised"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Broached' का अर्थ है <b>विषय छेड़ना/उठाना</b>। Synonym 'Raised' (<b>उठाया गया</b>) है।</span><br>Admonished – डांटा गया, Advised – सलाह दी गई, Discussed – चर्चा की गई।"
+},
+{
+"q": "BECKONED",
+"tag": "Patna (District Court) Steno Exam 17.07.2016",
+"opts": [
+"Sent",
+"acquitted",
+"Called",
+"Accused"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Beckoned' का अर्थ है <b>इशारे से बुलाया</b>। Synonym 'Called' (<b>बुलाया</b>) है।</span><br>Sent – भेजा गया, Acquitted – बरी किया गया, Accused – आरोपित किया गया।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Bull-Headed",
+"tag": "SSC CHSL (Tier-I) –16/04/2021 (Shift-I)",
+"opts": [
+"Headstrong",
+"Clear-headed",
+"Muddle-headed",
+"Weak-minded"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Bull-Headed' का अर्थ है <b>जिद्दी</b>। Synonym 'Headstrong' (<b>जिद्दी/हठी</b>) है।</span><br>Clear-headed – स्पष्ट सोच वाला, Muddle-headed – उलझन भरा दिमाग, Weak-minded – कमज़ोर मन वाला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Banner",
+"tag": "SSC CGL (Tier-I) –23/08/2021 (Shift-I) Synonyms 9",
+"opts": [
+"March",
+"Protest",
+"Poster",
+"Rally"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Banner' का अर्थ है <b>बैनर/झंडा</b>। Synonym 'Poster' (<b>पोस्टर</b>) है।</span><br>March – मार्च, Protest – विरोध प्रदर्शन, Rally – रैली।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BEGUILE",
+"tag": "SSC CPO-SI – 13/12/2019 (Shift-I)",
+"opts": [
+"Disenchant",
+"Hasten",
+"Repulse",
+"Deceive"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Beguile' का अर्थ है <b>धोखा देना/छलना</b>। Synonym 'Deceive' (<b>धोखा देना</b>) है।</span><br>Disenchant – मोहभंग करना, Hasten – जल्दी करना, Repulse – विकर्षित करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BARREN",
+"tag": "SSC CHSL (Tier-I) 16/10/2020 (Shift-II)",
+"opts": [
+"Fertile",
+"Bountiful",
+"Desolate",
+"Fruitful"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Barren' का अर्थ है <b>बंजर/निष्फल</b>। Synonym 'Desolate' (<b>उजाड़/बंजर</b>) है।</span><br>Fertile – उपजाऊ, Bountiful – उदार/भरपूर, Fruitful – फलदायक।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word: Bewitched",
+"tag": "SSC MTS 11-10-2017 (Shift-II) UPSC NDA & NA 17/08/2008 (Shif-II)",
+"opts": [
+"Disgusting",
+"Captivated",
+"Turn of",
+"Prevent"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Bewitched' का अर्थ है <b>मोहित/मंत्रमुग्ध</b>। Synonym 'Captivated' (<b>मंत्रमुग्ध</b>) है।</span><br>Disgusting – घृणित, Turn of – मोड़ना, Prevent – रोकना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Benevolent",
+"tag": "SSC MTS – 06/08/2019 (Shift-II)",
+"opts": [
+"Miser",
+"Cruel",
+"Malevolent",
+"Generous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Benevolent' का अर्थ है <b>दयालु/परोपकारी</b>। Synonym 'Generous' (<b>उदार</b>) है।</span><br>Miser – कंजूस, Cruel – क्रूर, Malevolent – द्वेषपूर्ण।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. BENEFICIAL",
+"tag": "SSC MTS – 16/08/2019 (Shift-III)",
+"opts": [
+"Worthless",
+"Harmful",
+"Advantageous",
+"Adverse"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Beneficial' का अर्थ है <b>लाभदायक</b>। Synonym 'Advantageous' (<b>लाभदायक</b>) है।</span><br>Worthless – बेकार, Harmful – हानिकारक, Adverse – प्रतिकूल।"
+},
+{
+"q": "Select the synonym of the given word. BOUNTIFUL",
+"tag": "SSC GD – 02/03/2019 (Shift-I)",
+"opts": [
+"Pretty",
+"Religious",
+"Spiritual",
+"Generous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Bountiful' का अर्थ है <b>उदार/भरपूर</b>। Synonym 'Generous' (<b>उदार</b>) है।</span><br>Pretty – सुंदर, Religious – धार्मिक, Spiritual – आध्यात्मिक।"
+},
+{
+"q": "Select the synonym of the given word. BRITTLE",
+"tag": "SSC GD – 02/03/2019 (Shift-II)",
+"opts": [
+"Coarse",
+"Enduring",
+"Delicate",
+"Durable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Brittle' का अर्थ है <b>भंगुर/नाजुक</b>। Synonym 'Delicate' (<b>नाजुक</b>) है।</span><br>Coarse – खुरदरा, Enduring – टिकाऊ, Durable – टिकाऊ।"
+}
+];
+
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLenisScroll } from '@/hooks/useLenisScroll';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import type Lenis from 'lenis';
@@ -17,7 +18,7 @@ const SmoothScrollContext = createContext<SmoothScrollContextValue | null>(null)
 /**
  * Consume the SmoothScroll context. Must be called inside a
  * `<SmoothScrollProvider>`. Returns scrollTo, update, and the
- * raw LS instance.
+ * raw Lenis instance.
  */
 export function useSmoothScroll(): SmoothScrollContextValue {
   const ctx = useContext(SmoothScrollContext);
@@ -42,7 +43,9 @@ interface SmoothScrollProviderProps {
  * window scroll, so that div is only a mount anchor.
  */
 export function SmoothScrollProvider({ children, lerp = 0.08 }: SmoothScrollProviderProps) {
-  const { containerRef, scrollTo, update, instance } = useLenisScroll({ lerp });
+  const location = useLocation();
+  const isExam = location.pathname.startsWith('/exam');
+  const { containerRef, scrollTo, update, instance } = useLenisScroll({ lerp, disabled: isExam });
   // Drive the `.apple-reveal` / `.apple-fade-up` / `.apple-scale-in` lifecycle
   // (`is-inview`) — Lenis has no scroll-spy, so an IntersectionObserver does it.
   useScrollReveal(containerRef);

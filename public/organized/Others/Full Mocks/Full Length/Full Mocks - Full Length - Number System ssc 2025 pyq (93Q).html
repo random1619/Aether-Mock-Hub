@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YATRI Mock Hub - Number System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf3e6; --paper2:#f3e8d4; --ink:#3a2f22; --muted:#8a7a5a;
+    --brown:#8a5a2b; --brown-d:#6e4620; --green:#2e7d4f; --green-d:#245f3d;
+    --red:#b23a3a; --tan:#cbb996; --line:#e4d4b3;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    width:100%;
+  }
+  .hindi{font-family:'Noto Sans Devanagari',sans-serif;}
+  h1,h2,h3,.brand{font-family:'Fraunces',serif;}
+  #app{max-width:760px;margin:0 auto;padding:14px 14px 34px;width:100%;}
+
+  /* ---------- Header ---------- */
+  .site-header{display:none;text-align:center;margin-bottom:18px;}
+  .site-header.show{display:block;}
+  .site-header h1{font-size:2rem;color:var(--brown-d);margin:0 0 10px;}
+  .eyebrow{display:block;font-size:1.15rem;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:8px;}
+  .telegram-btn{
+    display:inline-flex;align-items:center;gap:8px;background:#2481cc;color:#fff;
+    padding:9px 18px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .topic-pill{
+    display:inline-block;margin-top:12px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);padding:6px 16px;border-radius:999px;font-size:.85rem;font-weight:600;
+  }
+
+  /* ---------- Start Screen ---------- */
+  .start-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 20px;text-align:center;box-shadow:0 4px 18px rgba(90,60,20,.08);}
+  .start-card h2{font-size:1.5rem;color:var(--ink);margin:0 0 20px;}
+  .info-boxes{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+  .info-box{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:14px 22px;min-width:130px;}
+  .info-box .num{font-size:1.6rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .info-box .lbl{font-size:.8rem;color:#7a6a54;margin-top:2px;}
+  .start-btn{
+    background:var(--green);color:#fff;border:none;padding:14px 38px;border-radius:999px;
+    font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(46,125,79,.3);
+    transition:transform .15s, background .15s;
+  }
+  .start-btn:hover{background:var(--green-d);transform:translateY(-1px);}
+
+  /* ---------- Test top bar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:10px 12px;margin-bottom:14px;position:relative;z-index:20;
+  }
+  .topbar .brand{font-weight:700;color:var(--brown-d);font-size:1.05rem;white-space:nowrap;flex-shrink:0;}
+  .topbar .mid{display:flex;align-items:center;gap:10px;flex:1;justify-content:center;min-width:0;overflow:hidden;}
+  .timer{font-weight:700;color:var(--red);font-size:.95rem;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .progress-text{font-size:.85rem;color:#7a6a54;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .palette-wrap{position:relative;flex-shrink:0;}
+  .palette-btn{
+    background:var(--brown);color:#fff;border:none;padding:8px 12px;border-radius:10px;
+    font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .palette-dd{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);
+    width:250px;max-height:300px;overflow-y:auto;z-index:30;
+  }
+  .palette-dd.open{display:block;}
+  .palette-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .palette-num{
+    display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;
+    font-size:.78rem;font-weight:700;cursor:pointer;color:#fff;border:none;
+  }
+  .pn-green{background:var(--green);} .pn-red{background:var(--red);} .pn-grey{background:#b7a98a;}
+  .palette-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:.72rem;color:#6a5c46;}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+
+  /* ---------- Question card ---------- */
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;position:relative;margin-bottom:14px;}
+  .source-tag{
+    position:absolute;top:14px;right:14px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:999px;max-width:150px;text-align:right;
+  }
+  .qmeta{font-size:.85rem;color:#7a6a54;margin-bottom:6px;padding-right:100px;}
+  .marks-note{font-size:.75rem;color:#9a8a6a;margin-bottom:14px;}
+  .qtext{font-size:1.05rem;line-height:1.55;margin-bottom:6px;}
+  .qtext-hi{font-size:1rem;line-height:1.7;color:#4a3d2c;margin-bottom:16px;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{
+    display:flex;align-items:center;gap:10px;background:var(--paper2);border:2px solid var(--line);
+    border-radius:12px;padding:12px 14px;cursor:pointer;font-size:.98rem;transition:all .12s;
+  }
+  .option:hover{border-color:var(--brown);}
+  .option.selected{background:#fbeecb;border-color:var(--brown);}
+  .opt-letter{
+    display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:#fff;border:1px solid var(--line);font-weight:700;font-size:.8rem;flex-shrink:0;
+  }
+  .option.selected .opt-letter{background:var(--brown);color:#fff;border-color:var(--brown);}
+  .option.correct{background:#e2f3e7;border-color:var(--green);}
+  .option.correct .opt-letter{background:var(--green);color:#fff;border-color:var(--green);}
+  .option.wrong{background:#fbe4e4;border-color:var(--red);}
+  .option.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red);}
+  .mark-icon{margin-left:auto;font-weight:700;}
+
+  /* ---------- Nav rows ---------- */
+  .nav-row{display:flex;gap:8px;margin-bottom:8px;}
+  .nav-row button{
+    flex:1;padding:11px 6px;border-radius:12px;border:none;font-weight:700;cursor:pointer;
+    font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .btn-prev,.btn-next{background:var(--brown);color:#fff;}
+  .btn-clear{background:var(--paper2);color:var(--brown-d);border:1px solid var(--line) !important;}
+  .btn-prev:disabled,.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+  .submit-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--red);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+  .back-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--brown);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--card);border-radius:16px;padding:24px 20px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .modal-box h3{margin:0 0 10px;color:var(--brown-d);}
+  .modal-box p{margin:0 0 18px;font-size:.92rem;color:#5a4c38;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{flex:1;padding:11px;border-radius:10px;border:none;font-weight:700;cursor:pointer;}
+  .modal-yes{background:var(--red);color:#fff;}
+  .modal-cancel{background:var(--paper2);color:var(--brown-d);}
+
+  /* ---------- Result screen ---------- */
+  .result-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 20px;text-align:center;}
+  .result-card h2{color:var(--brown-d);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .stat-box{background:var(--paper2);border-radius:12px;padding:14px;border:1px solid var(--line);}
+  .stat-box .num{font-size:1.4rem;font-weight:700;font-family:'Fraunces',serif;}
+  .stat-box .lbl{font-size:.78rem;color:#7a6a54;}
+  .score-box{background:#fbeecb;border:2px solid var(--brown);border-radius:14px;padding:16px;margin-bottom:20px;}
+  .score-box .num{font-size:2rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .result-btns{display:flex;flex-direction:column;gap:10px;}
+  .result-btns button{padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;}
+  .btn-review{background:var(--brown);color:#fff;}
+  .btn-retake{background:var(--green);color:#fff;}
+
+  /* Review status tag */
+  .status-tag{font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .status-correct{background:#e2f3e7;color:var(--green-d);}
+  .status-wrong{background:#fbe4e4;color:var(--red);}
+  .status-unattempted{background:#eee6d4;color:#7a6a54;}
+  .ans-line{font-size:.9rem;margin:10px 0;padding:10px;background:var(--paper2);border-radius:10px;}
+  .explain{font-size:.92rem;line-height:1.6;background:#fff8ea;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;}
+  .explain-title{font-weight:700;color:var(--brown-d);margin-bottom:6px;font-size:.85rem;}
+
+  @media (max-width:400px){
+    .topbar .brand{font-size:.92rem;}
+    .timer{font-size:.82rem;}
+    .progress-text{font-size:.72rem;}
+    .palette-btn{padding:7px 9px;font-size:.72rem;}
+    .qtext,.qtext-hi{font-size:.92rem;}
+    .nav-row button{font-size:.72rem;padding:10px 4px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="site-header show" id="siteHeader">
+    <span class="eyebrow">SSC 2025 PYQs</span>
+    <h1>YATRI Mock Hub</h1>
+    <a class="telegram-btn" href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21.5 4.5L2.7 11.9c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.8-.4l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.7-.8L23.9 5.7c.3-1.2-.5-1.7-1.4-1.2z"/></svg>
+      Join Telegram
+    </a>
+    <div><span class="topic-pill">Topic: Number System</span></div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Maths PYQs Topicwise Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="num">93</div><div class="lbl">Total Questions</div></div>
+        <div class="info-box"><div class="num">93 min</div><div class="lbl">Total Time</div></div>
+      </div>
+      <button class="start-btn" onclick="startTest()">▶️ Start Test</button>
+    </div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen" style="display:none;">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="mid">
+        <div class="timer" id="timerText">60:00</div>
+        <div class="progress-text" id="progressText">Question 1 / 93</div>
+      </div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('test')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_test">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Answered</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Not Answered</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Not Visited</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_test"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="sourceTag"></div>
+      <div class="qmeta" id="qMeta"></div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="qtext-hi hindi" id="qTextHi"></div>
+      <div class="options" id="optionsBox"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="btnPrev" onclick="prevQ()">⬅️ Previous</button>
+      <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()">Next ➡️</button>
+    </div>
+    <div class="submit-row">
+      <button onclick="askSubmit()">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" style="display:none;">
+    <div class="result-card">
+      <h2>Test Result</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="rTotal"></div><div class="lbl">Total Questions</div></div>
+        <div class="stat-box"><div class="num" id="rAttempted"></div><div class="lbl">Attempted</div></div>
+        <div class="stat-box"><div class="num" id="rUnattempted"></div><div class="lbl">Unattempted</div></div>
+        <div class="stat-box"><div class="num" id="rCorrect" style="color:var(--green-d)"></div><div class="lbl">Correct</div></div>
+        <div class="stat-box"><div class="num" id="rWrong" style="color:var(--red)"></div><div class="lbl">Wrong</div></div>
+        <div class="stat-box"><div class="num" id="rBlank"></div><div class="lbl">-</div></div>
+      </div>
+      <div class="score-box"><div class="num" id="rScore"></div><div class="lbl">Final Score</div></div>
+      <div class="result-btns">
+        <button class="btn-review" onclick="openReview()">🔍 Review Solutions</button>
+        <button class="btn-retake" onclick="retakeTest()">🔁 Retake Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen" style="display:none;">
+    <div class="topbar" style="z-index:20;">
+      <div id="reviewStatusTag"></div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('review')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_review">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Correct</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Wrong</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Unattempted</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_review"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="revSourceTag"></div>
+      <div class="qmeta" id="revQMeta"></div>
+      <div class="qtext" id="revQText"></div>
+      <div class="qtext-hi hindi" id="revQTextHi"></div>
+      <div class="options" id="revOptionsBox"></div>
+      <div class="ans-line" id="revAnsLine"></div>
+      <div class="explain">
+        <div class="explain-title">Explanation / व्याख्या</div>
+        <div id="revExplain"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="revBtnPrev" onclick="revPrev()">⬅️ Previous</button>
+      <button class="btn-next" id="revBtnNext" onclick="revNext()">Next ➡️</button>
+    </div>
+    <div class="back-row">
+      <button onclick="backToResult()">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Submit confirmation modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <h3>Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-yes" onclick="confirmSubmit()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [{"tag": "SSC CGL 12/09/2025 (Shift-03)", "qEn": "Two individuals, A and B, have rented a field. A places 21 horses in the field for 6 months and 15 cows for 2 months. B adds 15 cows for 6 months and 40 sheep for 7.5 months. If 3 horses consume the same amount of food as 5 cows, and 6 cows eat as much as 10 sheep, what portion of the rent should A cover?", "qHi": "दो व्यक्तियों, A और B ने एक खेत किराए पर लिया है। A, 21 घोड़ों को 6 महीने के लिए और 15 गायों को 2 महीने के लिए मैदान में रखता है। B, 6 महीने के लिए 15 गायें और 7.5 महीने के लिए 40 भेड़ें जोड़ता है। यदि 3 घोड़े 5 गायों के बराबर भोजन खाते हैं, और 6 गायें 10 भेड़ों के बराबर भोजन खाती हैं, तो किराए का कितना भाग A को देना चाहिए?", "opts": ["8/17", "19/17", "16/17", "20/17"], "ans": 0, "exp": "From 3H=5C, H:C=5:3=25:15. From 6C=10S, C:S=5:3=15:9. So H:C:S=25:15:9. A's units = 21x25x6 + 15x15x2 = 3150+450 = 3600. B's units = 15x15x6 + 40x9x7.5 = 1350+2700 = 4050. Total = 7650. A's share = 3600/7650 = 8/17."}, {"tag": "SSC CGL 12/09/2025 (Shift-03)", "qEn": "Two individuals, A and B rent a pasture. A uses 16 cows for a duration of 3 months and 20 sheep for 4 months and B uses 30 sheep for 6 months. If 4 cows are equivalent to 8 sheep, determine A's portion of the rent.", "qHi": "दो व्यक्ति, A और B एक चारागाह किराए पर लेते हैं। A, 3 महीने की अवधि के लिए 16 गायों और 4 महीने के लिए 20 भेड़ों का उपयोग करता है और B, 6 महीने के लिए 30 भेड़ों का उपयोग करता है। यदि 4 गायें 8 भेड़ों के बराबर हैं, तो किराए का A का हिस्सा निर्धारित करें।", "opts": ["44/89", "54/89", "64/89", "74/89"], "ans": 0, "exp": "From 4C=8S, C:S=2:1. Using C=2, S=1: A's units = 16x2x3 + 20x1x4 = 96+80 = 176. B's units = 30x1x6 = 180. Total = 356. A's share = 176/356 = 44/89."}, {"tag": "SSC CGL 13/09/2025 (Shift-03)", "qEn": "A and B share a rented field. A utilizes 20 horses for 5 months, while B uses 30 cows for 4 months and 45 sheep for 5 months. If 2 horses are equivalent to 5 cows, and 3 cows are equal to 9 sheep. What portion of the rent is A pay?", "qHi": "A और B एक किराए के खेत को साझा करते हैं। A, 5 महीने के लिए 20 घोड़ों का उपयोग करता है, जबकि B, 4 महीने के लिए 30 गायों और 5 महीने के लिए 45 भेड़ों का उपयोग करता है। यदि 2 घोड़े, 5 गायों के बराबर हैं, और 3 गायें, 9 भेड़ों के बराबर हैं। किराए का कितना हिस्सा A को देना होगा?", "opts": ["20/89", "30/89", "40/89", "50/89"], "ans": 3, "exp": "From 2H=5C, H:C=5:2=15:6. From 3C=9S, C:S=3:1=6:2. So H:C:S=15:6:2. A's units = 20x15x5 = 1500. B's units = 30x6x4 + 45x2x5 = 720+450 = 1170. Total = 2670. A's share = 1500/2670 = 50/89."}, {"tag": "SSC CGL 14/09/2025 (Shift-02)", "qEn": "Two individuals, A and B, rent a pasture together. A has 18 horses that he grazes for 4 months. B grazes 24 cows for 6 months and 36 sheep for 4 months. The following relationships are given: 3 horses are equivalent to 6 cows, 4 cows are equivalent to 8 sheep. What amount of rent should A pay?", "qHi": "दो व्यक्ति, A और B, एक साथ एक चरागाह किराए पर लेते हैं। A के पास 18 घोड़े हैं जिन्हें वे 4 महीने तक चराते हैं। B, 6 महीने तक 24 गायों को और 4 महीने तक 36 भेड़ों को चराता है। निम्नलिखित संबंध दिए गए हैं: 3 घोड़े 6 गायों के बराबर हैं, 4 गायें 8 भेड़ों के बराबर हैं। A को कितना किराया देना चाहिए?", "opts": ["2/5", "3/5", "4/5", "1/5"], "ans": 0, "exp": "From 3H=6C, H:C=2:1. From 4C=8S, C:S=2:1. So H:C:S=4:2:1. A's units = 18x4x4 = 288. B's units = 24x2x6 + 36x1x4 = 288+144 = 432. Total = 720. A's share = 288/720 = 2/5."}, {"tag": "SSC CGL 17/09/2025 (Shift-03)", "qEn": "A gardener organizes plants into rows to create a square formation but discovers that 15 plants are not included. If the total number of plants is 3984, then what is the number of plants in each row?", "qHi": "एक माली वर्गाकार संरचना बनाने के लिए पौधों को पंक्तियों में व्यवस्थित करता है लेकिन उसे पता चलता है कि 15 पौधे शामिल नहीं हैं। यदि पौधों की कुल संख्या 3984 है, तो प्रत्येक पंक्ति में पौधों की संख्या क्या है?", "opts": ["43", "45", "63", "65"], "ans": 2, "exp": "Plants used to form the square = 3984-15 = 3969. Number of plants in each row = square root of 3969 = 63."}, {"tag": "SSC CGL 19/09/2025 (Shift-02)", "qEn": "Which of the following is the least 6-digit number, which is a perfect square?", "qHi": "निम्नलिखित में से कौन सी 6 अंकों की सबसे छोटी संख्या है, जो पूर्ण वर्ग है?", "opts": ["100489", "100588", "100688", "100788"], "ans": 0, "exp": "A perfect square always ends in 0,1,4,5,6, or 9. Only 100489 satisfies this among the options; checking, 317x317 = 100489, confirming it's a perfect square."}, {"tag": "SSC CGL 19/09/2025 (Shift-03)", "qEn": "If you subtract the square of a number from 4052 and then multiply the result by 15, you get 41340. What is that number?", "qHi": "यदि आप किसी संख्या के वर्ग को 4052 से घटाते हैं और फिर परिणाम को 15 से गुणा करते हैं, तो आपको 41340 प्राप्त होता है। वह संख्या क्या है?", "opts": ["46", "36", "26", "86"], "ans": 1, "exp": "Let the number be x. (4052-x^2)x15 = 41340. So 4052-x^2 = 2756, x^2 = 4052-2756 = 1296, x = 36."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "What type of number is the result of multiplying a Rational Number with an Irrational Number?", "qHi": "एक परिमेय संख्या को एक अपरिमेय संख्या से गुणा करने पर किस प्रकार की संख्या प्राप्त होती है?", "opts": ["Always rational", "Always irrational", "Always integer", "Sometimes rational, Sometimes irrational"], "ans": 3, "exp": "If the rational number is non-zero, rational x irrational is always irrational (e.g. 2xroot3). But if the rational number is 0, the product is 0, which is rational. So the result is sometimes rational, sometimes irrational."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "Multiply 12.345 by 0.067 and round your answer to 4 decimal places.", "qHi": "12.345 को 0.067 से गुणा करें और अपने उत्तर को 4 दशमलव स्थानों तक पूर्णांकित करें।", "opts": ["0.8271", "0.8764", "0.5687", "0.8765"], "ans": 0, "exp": "12.345 x 0.067 = 0.827115, which rounds to 0.8271 at 4 decimal places."}, {"tag": "SSC CGL 20/09/2025 (Shift-02)", "qEn": "Which of these is both an Integer and a Whole number?", "qHi": "इनमें से कौन-सी संख्या पूर्णांक और पूर्ण दोनों है?", "opts": ["-4", "0", "3.5", "1/2"], "ans": 1, "exp": "Whole numbers are 0,1,2,3,... and integers include ...,-2,-1,0,1,2,.... The number 0 belongs to both sets."}, {"tag": "SSC CGL 20/09/2025 (Shift-03)", "qEn": "A number that is both an integer and a whole number is:", "qHi": "वह संख्या जो पूर्णांक और पूर्ण संख्या दोनों हो, वह है:", "opts": ["-5", "1", "3/5", "root2"], "ans": 1, "exp": "Whole numbers are 0,1,2,3,... and integers include negative numbers too. Among the options, only 1 is both a whole number and an integer."}, {"tag": "SSC CGL 21/09/2025 (Shift-01)", "qEn": "What is the smallest number that must be added to 2378 to make it a perfect square?", "qHi": "2378 को पूर्ण वर्ग बनाने के लिए उसमें कौन सी छोटी से छोटी संख्या जोड़नी होगी?", "opts": ["23", "24", "25", "26"], "ans": 0, "exp": "The square root of 2378 is approximately 48.76. The next whole number is 49, and 49^2 = 2401. The number to be added = 2401-2378 = 23."}, {"tag": "SSC CGL 21/09/2025 (Shift-02)", "qEn": "Which of the following is a non-zero number that belongs to every set: Whole, Integer, Rational, and Real?", "qHi": "निम्नलिखित में से कौन सी गैर-शून्य संख्या प्रत्येक समूह से संबंधित है: पूर्ण, पूर्णांक, परिमेय और वास्तविक?", "opts": ["1", "0", "-1", "root2"], "ans": 0, "exp": "Whole numbers are 0,1,2,3,.... So a non-zero number common to Whole, Integer, Rational, and Real must be a positive whole number; 1 satisfies all four categories."}, {"tag": "SSC CGL 21/09/2025 (Shift-03)", "qEn": "Which of these is a number that is real but NOT rational?", "qHi": "इनमें से कौन सी संख्या वास्तविक है लेकिन परिमेय नहीं है?", "opts": ["3/4", "5", "root7", "-2"], "ans": 2, "exp": "root7 cannot be expressed as a ratio of two integers, so it is irrational, but it is still a real number (it can be placed on the number line). Hence it is real but not rational."}, {"tag": "SSC CGL 22/09/2025 (Shift-03)", "qEn": "Which of the following numbers is both a Rational Number and a Terminating Decimal?", "qHi": "निम्नलिखित में से कौन सी संख्या एक परिमेय संख्या और एक सांत दशमलव दोनों है?", "opts": ["1/3", "4/5", "root3", "pi"], "ans": 1, "exp": "1/3 = 0.333... is a rational number but a non-terminating repeating decimal. 4/5 = 0.8, which is both rational and terminating. root3 and pi are irrational."}, {"tag": "SSC CGL 22/09/2025 (Shift-03)", "qEn": "A number is such that if you square it and then subtract twice the number, the result is 80. What is the number?", "qHi": "एक संख्या ऐसी है कि यदि आप इसका वर्ग करें और फिर संख्या का दोगुना घटा दें, तो परिणाम 80 आता है। वह संख्या क्या है?", "opts": ["10", "15", "20", "25"], "ans": 0, "exp": "Let the number = x. x^2-2x = 80, so x^2-2x-80 = 0, which factors as (x-10)(x+8) = 0. Since we need a positive answer among the options, x = 10."}, {"tag": "SSC CGL 23/09/2025 (Shift-01)", "qEn": "The set of real numbers includes which of the following?", "qHi": "वास्तविक संख्याओं के समूह में निम्नलिखित में से कौन शामिल है?", "opts": ["Only Rational Numbers", "Only Irrational Numbers", "Both Rational and Irrational Numbers", "Only Whole Numbers"], "ans": 2, "exp": "Real numbers are the union of rational and irrational numbers, so the set of real numbers includes both types."}, {"tag": "SSC CGL 23/09/2025 (Shift-03)", "qEn": "Which of these numbers is neither Rational nor Integer?", "qHi": "इनमें से कौन सी संख्या न तो परिमेय है और न ही पूर्णांक है?", "opts": ["-4", "1.5", "root2", "7"], "ans": 2, "exp": "root2 = 1.414213... is non-terminating and non-repeating, so it is irrational (not rational), and it is clearly not a whole/integer value either."}, {"tag": "SSC CGL 24/09/2025 (Shift-02)", "qEn": "Which of the following statement is TRUE for Whole Numbers?", "qHi": "पूर्ण संख्याओं के लिए निम्नलिखित में से कौन सा कथन सत्य है?", "opts": ["They include fractions.", "They include negative numbers.", "They include zero and positive integers.", "They start from 1."], "ans": 2, "exp": "Whole numbers are 0,1,2,3,... — they include zero and all positive integers, but not fractions or negative numbers, and they start from 0 (not 1)."}, {"tag": "SSC CGL 24/09/2025 (Shift-03)", "qEn": "If the interior angle of a regular polygon is k times its exterior angle, express the number of sides (n) of the polygon in terms of k.", "qHi": "यदि किसी नियमित बहुभुज का आंतरिक कोण उसके बाह्य कोण का k गुना है, तो बहुभुज की भुजाओं की संख्या (n) को k के रूप में व्यक्त करें।", "opts": ["2k + 4", "2k - 4", "2k + 2", "4k - 3"], "ans": 2, "exp": "Interior angle : Exterior angle = k:1. Interior angle = ((n-2)/2) x Exterior angle (in terms of the standard polygon angle relation), giving k/1 = (n-2)/2, so 2k = n-2, meaning n = 2k+2."}, {"tag": "SSC CGL 25/09/2025 (Shift-01)", "qEn": "Which set includes numbers like -5, 0 and 6?", "qHi": "किस समुच्चय में -5, 0 और 6 जैसी संख्याएँ शामिल हैं?", "opts": ["Natural Numbers", "Integers", "Irrational Numbers", "Whole Numbers"], "ans": 1, "exp": "Integers include all negative whole numbers, zero, and positive whole numbers: ...,-2,-1,0,1,2,.... This set contains -5, 0 and 6."}, {"tag": "SSC CGL 25/09/25 (Shift-03)", "qEn": "Which set does NOT contain negative numbers?", "qHi": "किस समुच्चय में ऋणात्मक संख्याएँ नहीं हैं?", "opts": ["Integers", "Natural Numbers", "Rational Numbers", "Real Numbers"], "ans": 1, "exp": "Natural numbers are 1,2,3,4,... — they never include negative values. Integers, rational numbers, and real numbers all include negatives."}, {"tag": "SSC CGL 14/10/2025 (Shift-02)", "qEn": "A number is increased by 120, and the result becomes a perfect square. The original number lies between two consecutive square numbers, 625 and 676. Find the original number.", "qHi": "एक संख्या में 120 जोड़ने पर परिणाम एक पूर्ण वर्ग संख्या बन जाता है। मूल संख्या दो क्रमागत वर्ग संख्याओं 625 और 676 के बीच स्थित है। मूल संख्या ज्ञात कीजिए।", "opts": ["626", "656", "664", "672"], "ans": 2, "exp": "Testing the options: 626+120=746 (not a perfect square); 656+120=776 (not a perfect square); 664+120=784=28^2 (a perfect square). So the original number is 664."}, {"tag": "SSC CGL Tier-II (19/01/2026)", "qEn": "How many integers in the set {1, 2, 3......, 100} have exactly 3 divisors?", "qHi": "समुच्चय {1, 2, 3......, 100} में ऐसे कितने पूर्णांक हैं जिनके ठीक 3 भाजक हैं?", "opts": ["2", "8", "6", "4"], "ans": 3, "exp": "An integer has exactly 3 divisors only if it is the square of a prime number. Checking primes p with p^2<=100: 2^2=4, 3^2=9, 5^2=25, 7^2=49 (11^2=121 exceeds 100). So there are 4 such integers."}, {"tag": "SSC CHSL 12/11/2025 (Shift-03)", "qEn": "A tank is 3/5 full of water. If 20 liters of water is added, it becomes 7/10 full. What is the full capacity of the tank?", "qHi": "एक टंकी का 3/5 भाग पानी से भरा है। यदि 20 लीटर पानी डाल दिया जाए, तो इसका 7/10 भाग भर जाता है। टंकी की पूर्ण धारिता क्या है?", "opts": ["250 L", "200 L", "150 L", "100 L"], "ans": 1, "exp": "Difference in fraction filled = 7/10-3/5 = 7/10-6/10 = 1/10. This 1/10 of capacity equals 20 liters, so full capacity = 20x10 = 200 liters."}, {"tag": "SSC CHSL 14/11/2025 (Shift-01)", "qEn": "A number when divided by 45 leaves remainder 27, and when divided by 27 leaves remainder 9. Find the smallest such number.", "qHi": "एक संख्या को 45 से भाग देने पर शेष 27 बचता है, तथा 27 से भाग देने पर शेष 9 बचता है। ऐसी सबसे छोटी संख्या ज्ञात कीजिए।", "opts": ["189", "117", "369", "459"], "ans": 1, "exp": "LCM of 45 and 27 = 135. Notice the pattern: 45-27=18 and 27-9=18 (constant difference). So the smallest such number = 135-18 = 117."}, {"tag": "SSC CHSL 15/11/2025 (Shift-01)", "qEn": "Which one of the following statements is FALSE?", "qHi": "निम्नलिखित में से कौन सा कथन गलत है?", "opts": ["Every integer is a real number", "Every natural number is an integer", "Every irrational number is rational", "Rational and irrational numbers are real number"], "ans": 2, "exp": "By definition, irrational numbers CANNOT be expressed as a ratio of integers, so they are never rational. The statement 'every irrational number is rational' is false, while the other three statements are all true."}, {"tag": "SSC CHSL 15/11/2025 (Shift-01)", "qEn": "The decimal expansion of a rational number is:", "qHi": "परिमेय संख्या का दशमलव विस्तार है:", "opts": ["Non-terminating and non-repeating", "Terminating or repeating", "Terminating only", "Repeating only"], "ans": 1, "exp": "A rational number's decimal expansion is either terminating (e.g. 0.5=1/2) or non-terminating but repeating (e.g. 0.333...=1/3). It is never non-terminating and non-repeating (that describes irrational numbers)."}, {"tag": "SSC CHSL 15/11/2025 (Shift-02)", "qEn": "Which number is not part of natural numbers?", "qHi": "कौन सी संख्या प्राकृतिक संख्याओं का हिस्सा नहीं है?", "opts": ["0", "1", "2", "9"], "ans": 0, "exp": "Natural numbers start from 1, 2, 3, 4, .... Zero is not included in the set of natural numbers."}, {"tag": "SSC CHSL 15/11/2025 (Shift-02)", "qEn": "Which number is in both natural and integer sets?", "qHi": "कौन सी संख्या प्राकृतिक और पूर्णांक दोनों समूहों में है?", "opts": ["0", "5", "-5", "None"], "ans": 1, "exp": "Natural numbers are 1,2,3,4,5,.... Integers include ...,-2,-1,0,1,2,.... The number 5 belongs to both sets (0 is an integer but not natural, and -5 is an integer but not natural)."}, {"tag": "SSC CHSL 15/11/2025 (Shift-03)", "qEn": "Which one of the following is TRUE?", "qHi": "निम्नलिखित में से कौन सा सत्य है?", "opts": ["All irrational numbers are real", "All real numbers are irrational", "Rational numbers are not real", "Integers are not rational"], "ans": 0, "exp": "Real numbers consist of the union of rational and irrational numbers, so every irrational number is indeed a real number. The other statements contradict basic number-set definitions."}, {"tag": "SSC CHSL 17/11/2025 (Shift-01)", "qEn": "How many perfect squares lie between 10,000 and 20,000 (Inclusive).", "qHi": "10,000 और 20,000 (सहित) के बीच कितने पूर्ण वर्ग आते हैं?", "opts": ["32", "42", "52", "62"], "ans": 1, "exp": "10000 = 100^2 and the largest square not exceeding 20000 is 141^2=19881 (142^2=20164 exceeds 20000). So perfect squares run from 100^2 to 141^2, giving 141-100+1 = 42 perfect squares."}, {"tag": "SSC CHSL 17/11/2025 (Shift-02)", "qEn": "A perfect square between 50 and 70 is:", "qHi": "50 और 70 के बीच एक पूर्ण वर्ग है:", "opts": ["62", "63", "64", "65"], "ans": 2, "exp": "Checking the options, 64 = 8^2 is a perfect square lying between 50 and 70; none of the others (62,63,65) are perfect squares."}, {"tag": "SSC CHSL 17/11/2025 (Shift-02)", "qEn": "A recipe for a cake calls for 2 cups of milk and 3 cups of flour. With this recipe, a cake was baked using 12 cups of flour. How many cups of milk were required?", "qHi": "एक केक बनाने की विधि में 2 कप दूध और 3 कप मैदा चाहिए। इस विधि से, 12 कप मैदा से केक बनाया गया। कितने कप दूध की आवश्यकता होगी?", "opts": ["7 cup", "9 cup", "8 cup", "10 cup"], "ans": 2, "exp": "The ratio of milk to flour is 2:3. Since flour used is 12 cups (a scale factor of 4 from 3), milk required = 2x4 = 8 cups."}, {"tag": "SSC CHSL 17/11/2025 (Shift-03)", "qEn": "A number has 2 in its unit place; then its square can be:", "qHi": "किसी संख्या के इकाई स्थान पर 2 है; तो उसका वर्ग हो सकता है:", "opts": ["124", "144", "134", "154"], "ans": 1, "exp": "If a number ends in 2, its square always ends in 4 (since 2^2=4). Among the options, only 144 is actually a perfect square (144=12^2, and 12 ends in 2), confirming the answer."}, {"tag": "SSC CHSL 18/11/2025 (Shift-01)", "qEn": "The intersection of rational and irrational numbers is:", "qHi": "परिमेय और अपरिमेय संख्याओं का प्रतिच्छेदन है:", "opts": ["Rational", "Irrational", "Real", "Empty"], "ans": 3, "exp": "A number cannot be both rational and irrational at the same time (they are defined as mutually exclusive), so their intersection is the empty set."}, {"tag": "SSC CHSL 18/11/2025 (Shift-01)", "qEn": "Which number is NOT real?", "qHi": "कौन सी संख्या वास्तविक नहीं है?", "opts": ["root7", "root(-7)", "1/root7", "-root7"], "ans": 1, "exp": "root(-7) involves taking the square root of a negative number, which produces an imaginary number, not a real number. The other options are all valid real numbers."}, {"tag": "SSC CHSL 18/11/2025 (Shift-01)", "qEn": "The number of rational numbers between any two rational numbers is:", "qHi": "किन्हीं दो परिमेय संख्याओं के बीच परिमेय संख्याओं की संख्या है:", "opts": ["0", "1", "Finite", "Infinite"], "ans": 3, "exp": "Between any two distinct rational numbers, however close, one can always find another rational number (e.g. their average), and this process can be repeated endlessly, giving infinitely many rational numbers between them."}, {"tag": "SSC CHSL 18/11/2025 (Shift-02)", "qEn": "Which of the following is the largest three-digit number that is a perfect square?", "qHi": "निम्नलिखित में से कौन सी तीन अंकों वाली सबसे बड़ी संख्या पूर्ण वर्ग है?", "opts": ["951", "961", "971", "981"], "ans": 1, "exp": "Checking near the top of the three-digit range: 31^2=961 is a perfect square, and 32^2=1024 is a four-digit number, so 961 is the largest three-digit perfect square among the options."}, {"tag": "SSC CHSL 18/11/2025 (Shift-03)", "qEn": "If x is irrational and y is irrational, then x + y is:", "qHi": "अगर x अपरिमेय और y अपरिमेय है, तो x + y है:", "opts": ["Always irrational", "Always rational", "Rational if x = -y", "Never rational"], "ans": 2, "exp": "Generally x+y is irrational (e.g. root2+root3), but there are special cases: if y is chosen to be the negative of x (or otherwise designed to cancel the irrational part), the sum becomes rational. For example, x=root2 and y=2-root2 are both irrational, but x+y=2, which is rational. So the sum is rational precisely when x=-y in the cancelling sense described."}, {"tag": "SSC CHSL 19/11/2025 (Shift-01)", "qEn": "Which is a mixed recurring decimal?", "qHi": "मिश्र आवर्ती दशमलव कौन सा है?", "opts": ["0.25", "0.6666", "0.123123...", "1.436363..."], "ans": 3, "exp": "A mixed recurring decimal has some non-repeating digits right after the decimal point, followed by a block of digits that repeats forever. In 1.436363..., '4' does not repeat but '36' repeats endlessly afterward, making it a mixed recurring decimal."}, {"tag": "SSC CHSL 20/11/2025 (Shift-01)", "qEn": "440 candies are to be distributed among 'N' number of students such that each student gets (N + 2) candies. Find the value of 'N' if all the candies are distributed.", "qHi": "440 कैंडीज को N छात्रों के बीच इस प्रकार वितरित किया जाना है कि प्रत्येक छात्र को (N + 2) कैंडीज मिलें। यदि सभी कैंडीज वितरित हो जाएं, तो N का मान ज्ञात कीजिए।", "opts": ["20", "45", "49", "72"], "ans": 0, "exp": "N(N+2) = 440. Trying N=20: 20x22=440, which matches exactly. So N=20."}, {"tag": "SSC CHSL 20/11/2025 (Shift-02)", "qEn": "The number of perfect square number between 50 and 1000 is?", "qHi": "50 और 1000 के बीच कितने पूर्ण वर्ग संख्याएँ हैं?", "opts": ["21", "22", "23", "24"], "ans": 3, "exp": "The smallest perfect square greater than 50 is 8^2=64, and the largest less than 1000 is 31^2=961. So the count of perfect squares strictly between 50 and 1000 = 31-8+1 = 24."}, {"tag": "SSC CHSL 20/11/2025 (Shift-03)", "qEn": "A rope is cut into two pieces. The first piece is 3/5 of the total length. The second piece is 12 meters long. What was the original length of the rope?", "qHi": "एक रस्सी को दो टुकड़ों में काटा गया। पहला टुकड़ा कुल लंबाई का 3/5 है। दूसरा टुकड़ा 12 मीटर लंबा है। तो रस्सी की मूल लंबाई कितनी थी?", "opts": ["40 m", "20 m", "50 m", "30 m"], "ans": 3, "exp": "If the first piece is 3/5 of total length, the second piece is the remaining 2/5, which equals 12 meters. So total length = 12 x (5/2) = 30 meters."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "Which of these fractions result in a non-terminating repeating decimal?", "qHi": "इनमें से कौन सी भिन्न का परिणाम असांत आवर्ती दशमलव होता है?", "opts": ["1/4", "1/17", "1/10", "1/8"], "ans": 1, "exp": "A fraction gives a terminating decimal only if its denominator (in lowest terms) has no prime factors other than 2 and 5. 1/4, 1/10, and 1/8 all terminate, but 1/17 (denominator 17, a prime other than 2 or 5) results in a non-terminating repeating decimal."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "A factory produces cylindrical cans and each day, it slightly increases the size of the label printed on the cans to match a design upgrade. On the first day, the label height is 1.2 cm and each day, the height increases by 0.3 cm to improve visibility. What will be the height of the label on the 10th day?", "qHi": "एक फैक्ट्री बेलनाकार डिब्बे बनाती है और प्रत्येक दिन डिब्बों पर छपे लेबल के आकार को डिजाइन में सुधार के अनुसार थोड़ा-थोड़ा बढ़ाती है। पहले दिन, लेबल की ऊँचाई 1.2 सेमी है और दृश्यता बढ़ाने के लिए प्रत्येक दिन ऊँचाई 0.3 सेमी बढ़ जाती है। 10वें दिन लेबल की ऊँचाई कितनी होगी?", "opts": ["3 cm", "3.6 cm", "3.9 cm", "4.2 cm"], "ans": 2, "exp": "This is an arithmetic progression with first term a=1.2 and common difference d=0.3. Height on 10th day = a+(n-1)d = 1.2+9x0.3 = 1.2+2.7 = 3.9 cm."}, {"tag": "SSC CHSL 21/11/2025 (Shift-02)", "qEn": "A logistics company charges Rs.15 per km for the first 80 km and Rs.12.5 per km there after. A consignment was transported for a total of 132.5 km and the total cost was split in the ratio 2 : 3 between the sender and receiver. What amount did the receiver pay?", "qHi": "एक लॉजिस्टिक्स कंपनी पहले 80 किलोमीटर के लिए 15 रुपये प्रति किलोमीटर और उसके बाद 12.5 रुपये प्रति किलोमीटर शुल्क लेती है। एक माल को कुल 132.5 किलोमीटर तक पहुँचाया गया और कुल लागत को प्रेषक और प्राप्तकर्ता के बीच 2 : 3 के अनुपात में विभाजित किया गया। प्राप्तकर्ता ने कितनी राशि का भुगतान किया?", "opts": ["Rs.1200", "Rs.1350", "Rs.1444.2", "Rs.1113.75"], "ans": 3, "exp": "Total cost = 15x80 + 12.5x(132.5-80) = 1200+12.5x52.5 = 1200+656.25 = Rs.1856.25. Receiver's share (3 parts of 2:3, total 5) = 1856.25x3/5 = Rs.1113.75."}, {"tag": "SSC CHSL 22/11/2025 (Shift-01)", "qEn": "The decimal expansion of an irrational number is:", "qHi": "एक अपरिमेय संख्या का दशमलव विस्तार है:", "opts": ["Terminating decimal", "Repeating decimal", "Non-terminating, non-repeating decimal", "Can be either terminating or repeating decimal"], "ans": 2, "exp": "An irrational number's decimal expansion never terminates and never settles into a repeating pattern; it goes on forever without repetition, e.g. pi=3.14159...."}, {"tag": "SSC CHSL 22/11/2025 (Shift-01)", "qEn": "Find the remainder on dividing (5x^3 + 4x^2 - 10x + 1) by (2x - 4).", "qHi": "(5x^3 + 4x^2 - 10x + 1) को (2x - 4) से भाग देने पर शेषफल ज्ञात कीजिए।", "opts": ["45", "37", "11", "78"], "ans": 1, "exp": "By the remainder theorem, set 2x-4=0, so x=2. Substituting: 5(2)^3+4(2)^2-10(2)+1 = 40+16-20+1 = 37. The remainder is 37."}, {"tag": "SSC CHSL 22/11/2025 (Shift-02)", "qEn": "The digit in the unit's place in the square root of 15876 is?", "qHi": "15876 के वर्गमूल में इकाई का अंक क्या है?", "opts": ["2", "4", "6", "8"], "ans": 2, "exp": "The square root of 15876 is 126 (126x126=15876). The unit digit of 126 is 6."}, {"tag": "SSC CHSL 22/11/2025 (Shift-03)", "qEn": "What is the smallest number that should be added to 1235 to make it a perfect square?", "qHi": "1235 को पूर्ण वर्ग बनाने के लिए सबसे छोटी कौन सी संख्या जोड़ी जाए?", "opts": ["61", "71", "81", "9"], "ans": 0, "exp": "The perfect square nearest to and above 1235 is 36^2=1296. The number to add = 1296-1235 = 61."}, {"tag": "SSC CHSL 24/11/2025 (Shift-1)", "qEn": "The product of two rational numbers is always:", "qHi": "दो परिमेय संख्याओं का गुणनफल हमेशा होता है:", "opts": ["Rational", "Irrational", "Natural", "Integer"], "ans": 0, "exp": "The set of rational numbers is closed under multiplication — multiplying any two rational numbers (expressible as p/q) always yields another rational number. For example, (3/4)x(5/7)=15/28, which is rational."}, {"tag": "SSC CHSL 24/11/2025 (Shift-2)", "qEn": "Which one of the following statements is FALSE?", "qHi": "निम्नलिखित में से कौन सा कथन गलत है?", "opts": ["Every irrational number is real", "Rational and irrational numbers are real", "Every integer is rational", "Every integer is irrational"], "ans": 3, "exp": "Every integer (like 5, -3, 0) can be expressed as a fraction over 1 (e.g. 5/1), which makes it rational by definition. So 'every integer is irrational' is the false statement."}, {"tag": "SSC CHSL 24/11/2025 (Shift-2)", "qEn": "If the number 900 is squared, how many zeros are in the square of the number?", "qHi": "अगर संख्या 900 का वर्ग किया जाए, तो संख्या के वर्ग में कितने शून्य होंगे?", "opts": ["2", "3", "4", "5"], "ans": 2, "exp": "900^2 = 810000, which contains four zeros."}, {"tag": "SSC CHSL 24/11/2025 (Shift-3)", "qEn": "The number of irrational numbers between 1 and 2 is:", "qHi": "1 और 2 के बीच अपरिमेय संख्याओं की संख्या है:", "opts": ["0", "1", "Finite", "Infinite"], "ans": 3, "exp": "Just like rational numbers, irrational numbers are dense on the number line — between any two real numbers, including 1 and 2, there are infinitely many irrational numbers (e.g. root2, root(2.001), etc.)."}, {"tag": "SSC CHSL 25/11/2025 (Shift-02)", "qEn": "In a quiz, a student was asked to find a number that is: (i) Irrational, (ii) Greater than 2 but less than 3, (iii) Whose square is also irrational. Which of the following could be the number?", "qHi": "एक क्विज़ में, एक छात्र से एक ऐसी संख्या ज्ञात करने को कहा गया जो: (i) अपरिमेय हो, (ii) 2 से बड़ी लेकिन 3 से छोटी हो, (iii) जिसका वर्ग भी अपरिमेय हो। निम्नलिखित में से यह संख्या कौन सी हो सकती है?", "opts": ["root5", "root3 + 1", "2.5", "root(4.5)"], "ans": 1, "exp": "root3+1 is irrational, and numerically root3+1 = 1.732+1 = 2.732, which lies between 2 and 3. Its square = (root3+1)^2 = 3+1+2root3 = 4+2root3, which is also irrational. All three conditions are satisfied."}, {"tag": "SSC CHSL 25/11/2025 (Shift-02)", "qEn": "A man bought 4(3/5) kg of rice and used 2(7/8) kg for cooking. He sold the remaining rice equally in 3 bags. How much rice did he put in each bag?", "qHi": "एक व्यक्ति ने 4(3/5) किग्रा चावल खरीदा और 2(7/8) किग्रा चावल पकाने में इस्तेमाल किया। उसने बचे हुए चावल को तीन थैलियों में बराबर-बराबर बाँट दिया। उसने प्रत्येक थैले में कितना चावल डाला?", "opts": ["9/20 kg", "18/57 kg", "23/40 kg", "11/25 kg"], "ans": 2, "exp": "4(3/5) = 23/5 kg, 2(7/8) = 23/8 kg. Remaining rice = 23/5 - 23/8 = 23(8-5)/40 = 69/40 kg. Divided equally among 3 bags: (69/40)/3 = 69/120 = 23/40 kg per bag."}, {"tag": "SSC CHSL 28/11/2025 (Shift-02)", "qEn": "Which one of the following is TRUE about repeating decimals?", "qHi": "आवर्ती दशमलव के बारे में निम्नलिखित में से कौन सा सत्य है?", "opts": ["Always irrational", "Never rational", "Always rational", "Always whole numbers"], "ans": 2, "exp": "A repeating (recurring) decimal can always be converted back into a fraction p/q, which makes it a rational number by definition. For example, 0.565656... = 56/99, a rational number."}, {"tag": "SSC CHSL 29/11/2025 (Shift-02)", "qEn": "Anita bought a square plot to build a house for his family. Each dimension of the plot is in whole numbers of yards. Which of the following can be an area (in square yards) of the plot?", "qHi": "अनीता ने अपने परिवार के लिए घर बनाने हेतु एक वर्गाकार प्लॉट खरीदा। प्लॉट का प्रत्येक आयाम पूर्ण गज में है। निम्नलिखित में से कौन सा प्लॉट का क्षेत्रफल (वर्ग गज में) हो सकता है?", "opts": ["861", "841", "881", "891"], "ans": 1, "exp": "Since the plot is square with whole-number sides, its area must be a perfect square. Among the options, only 841 = 29^2 is a perfect square."}, {"tag": "SSC CHSL 30/11/2025 (Shift-01)", "qEn": "Which of these number sets is not a subset of the Real Numbers?", "qHi": "इनमें से कौन सा संख्या समूह वास्तविक संख्याओं का उपसमूह नहीं है?", "opts": ["Rational", "Irrational", "Integers", "Complex"], "ans": 3, "exp": "Rational numbers, irrational numbers, and integers are all subsets of the real numbers. Complex numbers, however, include an imaginary component and are not entirely contained within the real numbers."}, {"tag": "SSC CHSL 30/11/2025 (Shift-01)", "qEn": "A number is said to be pure recurring if:", "qHi": "किसी संख्या को शुद्ध आवर्ती कहा जाता है यदि:", "opts": ["Only one digit repeats", "Decimal terminates", "Repeating digits start immediately after decimal", "Has non-repeating part then repeating part"], "ans": 2, "exp": "A pure recurring decimal is one where the repeating block of digits begins right after the decimal point with no non-repeating digits before it, e.g. 0.333... or 0.090909...."}, {"tag": "SSC CHSL 30/11/2025 (Shift-03)", "qEn": "A person earns 60,000 per month. He spends 3/5 on essentials, 1/4 on rent, and saves the rest. What is his saving?", "qHi": "एक व्यक्ति प्रति माह 60,000 रुपये कमाता है। वह आवश्यकताओं पर 3/5, किराए पर 1/4 खर्च करता है और शेष बचाता है। उसकी बचत कितनी है?", "opts": ["9,000", "10,000", "10,500", "9,500"], "ans": 0, "exp": "Total spent fraction = 3/5+1/4 = 12/20+5/20 = 17/20. Savings fraction = 1-17/20 = 3/20. Savings = 60000x3/20 = Rs.9,000."}, {"tag": "SSC CHSL 30/11/2025 (Shift-03)", "qEn": "Rational number + Irrational number = ?", "qHi": "परिमेय संख्या + अपरिमेय संख्या = ?", "opts": ["Rational number", "Irrational number", "Either Rational number or Irrational number", "Integer"], "ans": 1, "exp": "Adding a rational number to an irrational number always produces an irrational number — the rational part cannot cancel out the non-repeating, non-terminating nature of the irrational part. For example, 5+root2 remains irrational."}, {"tag": "SSC CHSL 30/11/2025 (Shift-03)", "qEn": "Which of the following is correct? Statement I: The sum of two mixed fractions can always be expressed as a mixed fraction. Statement II: Subtracting a smaller mixed fraction from a larger mixed fraction always results in a proper fraction.", "qHi": "निम्नलिखित में से कौन सा/से सही है/हैं? कथन I: दो मिश्रित भिन्नों का योग हमेशा एक मिश्रित भिन्न के रूप में व्यक्त किया जा सकता है। कथन II: एक बड़ी मिश्रित भिन्न में से एक छोटी मिश्रित भिन्न को घटाने पर हमेशा एक उचित भिन्न प्राप्त होती है।", "opts": ["Statement I is true, Statement II is false", "Both statements are true", "Statement I is false, Statement II is true", "Both statements are false"], "ans": 3, "exp": "Statement I is false: e.g. 1(1/2)+2(1/2)=4, a whole number, not a mixed fraction. Statement II is also false: e.g. 3(3/4)-1(1/4)=2(1/2), which is a mixed fraction, not a proper fraction. So both statements are false."}, {"tag": "SSC CHSL 30/11/2025 (Shift-03)", "qEn": "What is the smallest positive number that must be added to the product of any two consecutive even numbers to make the result a perfect square?", "qHi": "वह सबसे छोटी धनात्मक संख्या क्या है जिसे किसी भी दो क्रमागत सम संख्याओं के गुणनफल में जोड़ने पर परिणाम पूर्ण वर्ग बन जाएगा?", "opts": ["3", "1", "2", "4"], "ans": 1, "exp": "Testing: 2x4=8, +1=9=3^2. 4x6=24, +1=25=5^2. 6x8=48, +1=49=7^2. In each case, adding 1 to the product of two consecutive even numbers gives a perfect square. So the smallest positive number is 1."}, {"tag": "SSC CPO 09/12/2025 (Shift-01)", "qEn": "The square root of any prime number is:", "qHi": "किसी भी अभाज्य संख्या का वर्गमूल है:", "opts": ["Rational", "Whole", "Irrational", "Integer"], "ans": 2, "exp": "For prime numbers like 2, 3, 5, 7, their square roots (root2, root3, root5, root7) are all non-terminating, non-repeating decimals, meaning the square root of any prime number is always irrational."}, {"tag": "SSC CPO 09/12/2025 (Shift-01)", "qEn": "Which of the following numbers is not a perfect square?", "qHi": "निम्नलिखित में से कौन सी संख्या पूर्ण वर्ग नहीं है?", "opts": ["121", "144", "169", "185"], "ans": 3, "exp": "121=11^2, 144=12^2, 169=13^2 are all perfect squares. 185 lies between 13^2=169 and 14^2=196, so it is not a perfect square."}, {"tag": "SSC CPO 09/12/2025 (Shift-01)", "qEn": "If the square root of a number is subtracted from the number, the result is 272. What is the number?", "qHi": "यदि किसी संख्या का वर्गमूल उस संख्या से घटाया जाए, तो परिणाम 272 प्राप्त होता है। वह संख्या क्या है?", "opts": ["289", "324", "361", "400"], "ans": 0, "exp": "Testing x=289: square root of 289 is 17, and 289-17=272, which matches. So the number is 289."}, {"tag": "SSC CPO 09/12/2025 (Shift-02)", "qEn": "A machine processes 2.4 items per second. How many items does it process in 2(1/2) minutes?", "qHi": "एक मशीन प्रति सेकंड 2.4 वस्तुओं का निर्माण करती है। 2(1/2) मिनट में वह कितनी वस्तुओं का निर्माण करेगी?", "opts": ["360", "380", "300", "420"], "ans": 0, "exp": "2(1/2) minutes = 150 seconds. At 2.4 items per second, total items = 2.4x150 = 360."}, {"tag": "SSC CPO 09/12/2025 (Shift-02)", "qEn": "A water pipe supplies water at a constant rate. In 4.5 minutes, it fills 2(1/4) litres. At this rate, how much time will it take to fill 5.625 litres?", "qHi": "एक पानी का पाइप एक निश्चित दर से पानी की आपूर्ति करता है। 4.5 मिनट में, यह 2(1/4) लीटर पानी भरता है। इस दर से, 5.625 लीटर पानी भरने में कितना समय लगेगा?", "opts": ["10 minutes", "11.25 minutes", "12 minutes", "12.5 minutes"], "ans": 1, "exp": "2(1/4) = 2.25 litres in 4.5 minutes means 1 litre takes 4.5/2.25 = 2 minutes. So 5.625 litres will take 5.625x2 = 11.25 minutes."}, {"tag": "SSC CPO 09/12/2025 (Shift-02)", "qEn": "A farmer uses 2/3 of his land for wheat and 0.125 for rice. What fraction remains unused?", "qHi": "एक किसान अपनी जमीन का 2/3 भाग गेहूँ के लिए और 0.125 भाग चावल के लिए उपयोग करता है। कितना भाग अप्रयुक्त रहता है?", "opts": ["1/6", "1/8", "3/16", "5/24"], "ans": 3, "exp": "0.125 = 1/8. Unused fraction = 1-2/3-1/8. Using a common denominator of 24: 1=24/24, 2/3=16/24, 1/8=3/24. Unused = 24/24-16/24-3/24 = 5/24."}, {"tag": "SSC CPO 10/12/2025 (Shift-01)", "qEn": "What is the smallest number that, when multiplied by 1.5, gives a whole number?", "qHi": "वह सबसे छोटी संख्या क्या है जिसे 1.5 से गुणा करने पर पूर्ण संख्या प्राप्त होती है?", "opts": ["1", "2", "3", "4"], "ans": 1, "exp": "1.5x1=1.5 (not whole). 1.5x2=3 (a whole number). So the smallest such number is 2."}, {"tag": "SSC CPO 10/12/2025 (Shift-01)", "qEn": "If 3/4 of a number is 0.6 more than 1/2 of it, find the number?", "qHi": "यदि किसी संख्या का 3/4 उसके 1/2 से 0.6 ज्यादा है, तो वह संख्या ज्ञात कीजिए?", "opts": ["2.4", "2", "3", "1.8"], "ans": 0, "exp": "Let the number = x. (3/4)x = 0.6+(1/2)x. So (3/4-1/2)x = 0.6, meaning (1/4)x = 0.6, so x = 2.4."}, {"tag": "SSC CPO 10/12/2025 (Shift-01)", "qEn": "A car runs 18.4 km using 2.5 liters of petrol. What is the mileage in km per liter (rounded to 2 decimals)?", "qHi": "एक कार 2.5 लीटर पेट्रोल का उपयोग करके 18.4 किमी चलती है। किमी प्रति लीटर में माइलेज क्या है (2 दशमलव तक पूर्णांकित)?", "opts": ["7.28", "7.36", "7.44", "7.52"], "ans": 1, "exp": "Mileage = 18.4/2.5 = 7.36 km per liter."}, {"tag": "SSC CPO 10/12/2025 (Shift-02)", "qEn": "The union of rational and irrational numbers is equal to:", "qHi": "परिमेय और अपरिमेय संख्याओं का सम्मिलन किसके बराबर है?", "opts": ["Real numbers", "Natural numbers", "Complex numbers", "Whole numbers"], "ans": 0, "exp": "By definition, the set of real numbers is exactly the union of all rational numbers and all irrational numbers."}, {"tag": "SSC CPO 10/12/2025 (Shift-02)", "qEn": "A jar is 3/5 full with a solution. After adding 3.2 litres, it becomes 7/8 full. What is the total capacity of the jar?", "qHi": "एक जार 3/5 घोल से भरा है। 3.2 लीटर घोल डालने पर यह 7/8 भर जाता है। जार की कुल क्षमता क्या है?", "opts": ["24 litres", "20.5 litres", "11.64 litres", "18.28 litres"], "ans": 2, "exp": "Difference in fraction filled = 7/8-3/5 = 35/40-24/40 = 11/40. This 11/40 of capacity equals 3.2 litres, so total capacity = 3.2x40/11 = 11.64 litres (approx)."}, {"tag": "SSC CPO 11/12/2025 (Shift-01)", "qEn": "Which of the following is a terminating decimal?", "qHi": "निम्नलिखित में से कौन सा एक सांत दशमलव है?", "opts": ["7/20", "11/30", "13/45", "8/33"], "ans": 0, "exp": "A fraction gives a terminating decimal only if, in lowest terms, its denominator has only 2 and/or 5 as prime factors. 20=2^2x5, so 7/20=0.35 terminates. The other denominators (30, 45, 33) all contain other prime factors like 3 or 11."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "Which of these number sets is not a subset of real numbers?", "qHi": "इनमें से कौन सा संख्या समूह वास्तविक संख्याओं का उपसमूह नहीं है?", "opts": ["Integers", "Natural Numbers", "Whole Numbers", "Complex Numbers"], "ans": 3, "exp": "Integers, natural numbers, and whole numbers are all subsets of the real numbers. Complex numbers include an imaginary part and extend beyond the real number line, so they are not a subset of real numbers."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "A piece of ribbon is 5.4 m long. It is cut into pieces of 0.9 m each. How many pieces?", "qHi": "रिबन का एक टुकड़ा 5.4 मीटर लंबा है। इसे 0.9 मीटर के टुकड़ों में बाँटा जाता है। कितने टुकड़े होंगे?", "opts": ["6", "5", "8", "9"], "ans": 0, "exp": "Number of pieces = 5.4/0.9 = 6."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "A person walks 0.75 km in one round. How many rounds to cover 6(3/4) km?", "qHi": "एक व्यक्ति एक चक्कर में 0.75 किमी चलता है। 6(3/4) किमी की दूरी तय करने के लिए उसे कितने चक्कर लगाने होंगे?", "opts": ["7", "8", "9", "10"], "ans": 2, "exp": "0.75 km = 3/4 km per round. Total distance = 6(3/4) = 27/4 km. Number of rounds = (27/4)/(3/4) = 27/3 = 9."}, {"tag": "SSC CPO 11/12/2025 (Shift-02)", "qEn": "The difference between the square of a number and the square of its half is 432. What is the number?", "qHi": "किसी संख्या के वर्ग और उसके आधे के वर्ग का अंतर 432 है। वह संख्या क्या है?", "opts": ["18", "24", "36", "48"], "ans": 1, "exp": "Let the number = x. x^2-(x/2)^2 = 432, so (3/4)x^2 = 432, x^2 = 576, x = 24."}, {"tag": "SSC CPO 12/12/2025 (Shift-01)", "qEn": "A water tank is filled 3/8th in 15 minutes. How long to fill the full tank?", "qHi": "एक पानी की टंकी 15 मिनट में 3/8वाँ भाग भर जाती है। पूरी टंकी को भरने में कितना समय लगेगा?", "opts": ["30 minutes", "35 minutes", "40 minutes", "45 minutes"], "ans": 2, "exp": "If 3/8 of the tank fills in 15 minutes, the full tank takes 15x(8/3) = 40 minutes."}, {"tag": "SSC CPO 12/12/2025 (Shift-02)", "qEn": "A cylindrical rod is 1.6 metres long. It is cut into pieces each 3/5 metre long. How many such full pieces can be made, and what length remains?", "qHi": "एक बेलनाकार छड़ 1.6 मीटर लंबी है। इसे 3/5 मीटर लंबे टुकड़ों में काटा जाता है। ऐसे कितने पूरे टुकड़े बनाए जा सकते हैं, और कितनी लंबाई बचती है?", "opts": ["2 pieces, 2/5 m left", "3 pieces, 3/5 m left", "3 pieces, 1/5 m left", "3 pieces, 2/5 m left"], "ans": 0, "exp": "3/5 metre = 0.6 metre. From a 1.6 m rod, 2 full pieces of 0.6 m can be cut (2x0.6=1.2m), leaving 1.6-1.2 = 0.4 m = 2/5 m remaining."}, {"tag": "SSC CPO 13/12/2025 (Shift-01)", "qEn": "A packet contains 6.4 kg of flour. A shopkeeper packs it into bags of 4/5 kg each. How many such bags can be filled completely?", "qHi": "एक पैकेट में 6.4 किग्रा आटा है। एक दुकानदार इसे 4/5 किग्रा के बैग में भरता है। ऐसे कितने बैग पूरी तरह भरे जा सकते हैं?", "opts": ["7", "8", "9", "10"], "ans": 1, "exp": "4/5 kg = 0.8 kg. Number of bags = 6.4/0.8 = 8."}, {"tag": "SSC PHASE XIII 24/07/2025 (Shift-03)", "qEn": "A machine stacks boxes. In the first minute, it stacks 15 boxes, but in the next minute, 5 boxes fall down. If the machine stacks in alternate minutes, how many minutes will it take to stack a total of 95 boxes?", "qHi": "एक मशीन बक्सों को एक के ऊपर एक रखती है। पहले मिनट में, यह 15 बक्सों को एक के ऊपर एक रखती है, लेकिन अगले मिनट में, 5 बक्से नीचे गिर जाते हैं। यदि मशीन वैकल्पिक मिनटों में एक के ऊपर एक रखती है, तो कुल 95 बक्सों को एक के ऊपर एक रखने में कितने मिनट लगेंगे?", "opts": ["16 minutes", "17 minutes", "18 minutes", "19 minutes"], "ans": 1, "exp": "Net gain every 2 minutes = 15-5 = 10 boxes. After 16 minutes (8 such cycles), 80 boxes are stacked. In the 17th minute (a 'stacking' minute), 15 more boxes are added: 80+15 = 95 boxes. So it takes 17 minutes."}, {"tag": "SSC PHASE XIII 25/07/2025 (Shift-03)", "qEn": "The unit digit of 7^103 is:", "qHi": "7^103 का इकाई अंक है:", "opts": ["4", "3", "1", "0"], "ans": 1, "exp": "The unit digits of powers of 7 cycle every 4 terms: 7,9,3,1,7,9,3,1,.... Since 103 = 4x25+3, the unit digit matches the 3rd term in the cycle, which is 3."}, {"tag": "SSC PHASE XIII 25/07/2025 (Shift-03)", "qEn": "A large ship consumes 0.2 litres of fuel per km, and a smaller ship consumes 0.15 litres per km. If the large ship travels 500 km and the small ship travels 400 km, what is the total fuel cost at a rate of Rs.110 per litre?", "qHi": "एक बड़ा जहाज प्रति किमी 0.2 लीटर ईंधन की खपत करता है, और एक छोटा जहाज प्रति किमी 0.15 लीटर ईंधन की खपत करता है। यदि बड़ा जहाज 500 किमी और छोटा जहाज 400 किमी की यात्रा करता है, तो 110 रुपये प्रति लीटर की दर से कुल ईंधन लागत क्या है?", "opts": ["Rs.16,500", "Rs.17,600", "Rs.18,000", "Rs.19,200"], "ans": 1, "exp": "Total fuel used = 0.2x500 + 0.15x400 = 100+60 = 160 litres. Total cost = 160x110 = Rs.17,600."}, {"tag": "SSC PHASE XIII 26/07/2025 (Shift-03)", "qEn": "A large ship consumes 0.2 liters of fuel per km, and a smaller ship consumes 0.15 liters per km. If the large ship travels 500 km and the small ship travels 400 km, what is the total fuel cost at a rate of Rs.110 per liter?", "qHi": "एक बड़ा जहाज प्रति किमी 0.2 लीटर ईंधन की खपत करता है, और एक छोटा जहाज प्रति किमी 0.15 लीटर ईंधन की खपत करता है। यदि बड़ा जहाज 500 किमी और छोटा जहाज 400 किमी की यात्रा करता है, तो 110 रुपये प्रति लीटर की दर से कुल ईंधन लागत क्या है?", "opts": ["Rs.16,500", "Rs.17,600", "Rs.18,000", "Rs.19,200"], "ans": 1, "exp": "Total fuel used = 0.2x500 + 0.15x400 = 100+60 = 160 litres. Total cost = 160x110 = Rs.17,600."}, {"tag": "SSC PHASE XIII 28/07/2025 (Shift-03)", "qEn": "The difference between the two numbers is 1365. On dividing the larger by the smaller, the quotient is 6 and the remainder is 15. Find the smaller number.", "qHi": "दो संख्याओं के बीच का अंतर 1365 है। बड़ी संख्या को छोटी संख्या से भाग देने पर भागफल 6 प्राप्त होता है और शेष 15 प्राप्त होता है। छोटी संख्या ज्ञात कीजिए।", "opts": ["240", "270", "285", "295"], "ans": 1, "exp": "Let numbers be x (larger) and y (smaller). x-y=1365, and x=6y+15. Substituting: (6y+15)-y=1365, so 5y=1350, y=270."}, {"tag": "SSC PHASE XIII 30/07/2025 (Shift-03)", "qEn": "What is the total number of factors of 3600?", "qHi": "3600 के गुणनखंडों की कुल संख्या क्या है?", "opts": ["45", "30", "35", "20"], "ans": 0, "exp": "3600 = 2^4 x 3^2 x 5^2. Number of factors = (4+1)(2+1)(2+1) = 5x3x3 = 45."}, {"tag": "SSC PHASE XIII 31/07/2025 (Shift-03)", "qEn": "What is the sum of all three-digit numbers divisible by 7?", "qHi": "7 से विभाज्य सभी तीन अंकों की संख्याओं का योग क्या है?", "opts": ["70336", "70707", "72000", "71407"], "ans": 0, "exp": "The three-digit numbers divisible by 7 form an AP: 105, 112, ..., 994. Number of terms n = (994-105)/7+1 = 128. Sum = (n/2)x(first+last) = (128/2)x(105+994) = 64x1099 = 70336."}, {"tag": "DP CONSTABLE 03/01/2026 (Shift-02)", "qEn": "Find the number formed by the digits 6, 0, 3, 5, 9 that results in the greatest difference between its largest digit's place value and its smallest digit's place value.", "qHi": "अंकों 6, 0, 3, 5, 9 का उपयोग करके बनी वह संख्या ज्ञात कीजिए जिसमें उसके सबसे बड़े अंक के स्थानीय मान और सबसे छोटे अंक के स्थानीय मान के बीच का अंतर सबसे अधिक हो।", "opts": ["90,356", "69,530", "96,530", "30,569"], "ans": 2, "exp": "To maximize the difference between place values, the largest digit (9) should occupy the highest place (ten-thousands) and the smallest digit (0) should occupy the lowest place (units). Arranging accordingly gives 96,530."}, {"tag": "SSC MTS 10/02/2026 (Shift-01)", "qEn": "Find the least number that must be added to 10724 to make it a perfect square. Also, find the square root of the resulting perfect square number.", "qHi": "10724 को पूर्ण वर्ग बनाने के लिए इसमें जो सबसे छोटी संख्या जोड़नी होगी, उसे ज्ञात कीजिए। इसके अलावा, परिणामी पूर्ण वर्ग संख्या का वर्गमूल भी ज्ञात कीजिए।", "opts": ["56, 88", "92, 104", "102, 124", "122, 144"], "ans": 1, "exp": "The square root of 10724 is approximately 103.55. The next perfect square is 104^2=10816. Number to be added = 10816-10724 = 92, and the square root of the resulting number is 104."}];
+const TOTAL = QUESTIONS.length;
+const TEST_SECONDS = TOTAL * 60;
+
+let current = 0;
+let answers = new Array(TOTAL).fill(null);
+let visited = new Array(TOTAL).fill(false);
+let timeLeft = TEST_SECONDS;
+let timerInterval = null;
+let reviewIndex = 0;
+
+function startTest(){
+  document.getElementById('siteHeader').classList.remove('show');
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  buildPalette('test');
+  startTimer();
+}
+
+function startTimer(){
+  updateTimerText();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerText();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest();
+    }
+  },1000);
+}
+function updateTimerText(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  document.getElementById('timerText').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  document.getElementById('sourceTag').textContent = q.tag;
+  document.getElementById('qMeta').textContent = 'Question '+(current+1)+' of '+TOTAL;
+  document.getElementById('qText').textContent = q.qEn;
+  document.getElementById('qTextHi').textContent = q.qHi;
+  document.getElementById('progressText').textContent = 'Question '+(current+1)+' / '+TOTAL;
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[current]===i ? ' selected' : '');
+    div.onclick = ()=>selectOption(i);
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>';
+    box.appendChild(div);
+  });
+
+  document.getElementById('btnPrev').disabled = (current===0);
+  document.getElementById('btnNext').disabled = (current===TOTAL-1);
+  visited[current] = true;
+  buildPalette('test');
+}
+
+function selectOption(i){
+  answers[current] = i;
+  renderQuestion();
+}
+function clearResponse(){
+  answers[current] = null;
+  renderQuestion();
+}
+function prevQ(){ if(current>0){ current--; renderQuestion(); } }
+function nextQ(){ if(current<TOTAL-1){ current++; renderQuestion(); } }
+
+function buildPalette(which){
+  const grid = document.getElementById('paletteGrid_'+which);
+  if(!grid) return;
+  grid.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const btn = document.createElement('button');
+    let cls = 'pn-grey';
+    if(which==='test'){
+      if(answers[i]!==null) cls='pn-green';
+      else if(visited[i]) cls='pn-red';
+    } else {
+      if(answers[i]===null) cls='pn-grey';
+      else if(answers[i]===QUESTIONS[i].ans) cls='pn-green';
+      else cls='pn-red';
+    }
+    btn.className = 'palette-num ' + cls;
+    btn.textContent = i+1;
+    btn.onclick = ()=>{
+      if(which==='test'){ current = i; visited[i]=true; renderQuestion(); }
+      else { reviewIndex = i; renderReview(); }
+      togglePalette(which,true);
+    };
+    grid.appendChild(btn);
+  }
+}
+
+function togglePalette(which, forceClose){
+  const dd = document.getElementById('paletteDD_'+which);
+  if(forceClose){ dd.classList.remove('open'); return; }
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  ['test','review'].forEach(w=>{
+    const dd = document.getElementById('paletteDD_'+w);
+    const btn = e.target.closest('.palette-wrap');
+    if(dd && dd.classList.contains('open') && !btn){
+      dd.classList.remove('open');
+    }
+  });
+});
+
+function askSubmit(){
+  const unattempted = answers.filter(a=>a===null).length;
+  document.getElementById('modalMsg').textContent = 'You have '+unattempted+' unattempted question(s). Are you sure you want to submit the test?';
+  document.getElementById('submitModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('submitModal').classList.remove('open'); }
+document.getElementById('submitModal').addEventListener('click',function(e){
+  if(e.target === this) closeModal();
+});
+function confirmSubmit(){ closeModal(); submitTest(); }
+
+function submitTest(){
+  clearInterval(timerInterval);
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+
+  let correct=0, wrong=0, attempted=0;
+  answers.forEach((a,i)=>{
+    if(a!==null){
+      attempted++;
+      if(a===QUESTIONS[i].ans) correct++; else wrong++;
+    }
+  });
+  const unattempted = TOTAL - attempted;
+  const score = (correct*1 - wrong*0.25);
+
+  document.getElementById('rTotal').textContent = TOTAL;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rBlank').textContent = '';
+  document.getElementById('rScore').textContent = score.toFixed(2);
+}
+
+function retakeTest(){
+  answers = new Array(TOTAL).fill(null);
+  visited = new Array(TOTAL).fill(false);
+  current = 0;
+  timeLeft = TEST_SECONDS;
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('siteHeader').classList.add('show');
+  document.getElementById('startScreen').style.display = 'block';
+}
+
+function openReview(){
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  reviewIndex = 0;
+  renderReview();
+  buildPalette('review');
+}
+
+function renderReview(){
+  const q = QUESTIONS[reviewIndex];
+  const userAns = answers[reviewIndex];
+  const letters = ['A','B','C','D'];
+
+  document.getElementById('revSourceTag').textContent = q.tag;
+  document.getElementById('revQMeta').textContent = 'Question '+(reviewIndex+1)+' of '+TOTAL;
+  document.getElementById('revQText').textContent = q.qEn;
+  document.getElementById('revQTextHi').textContent = q.qHi;
+
+  let statusHtml = '';
+  if(userAns === null){
+    statusHtml = '<span class="status-tag status-unattempted">Unattempted</span>';
+  } else if(userAns === q.ans){
+    statusHtml = '<span class="status-tag status-correct">Correct</span>';
+  } else {
+    statusHtml = '<span class="status-tag status-wrong">Wrong</span>';
+  }
+  document.getElementById('reviewStatusTag').innerHTML = statusHtml;
+
+  const box = document.getElementById('revOptionsBox');
+  box.innerHTML = '';
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    let cls = 'option';
+    let markIcon = '';
+    if(i===q.ans){ cls+=' correct'; markIcon='<span class="mark-icon">✓</span>'; }
+    else if(i===userAns){ cls+=' wrong'; markIcon='<span class="mark-icon">✗</span>'; }
+    div.className = cls;
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>'+markIcon;
+    box.appendChild(div);
+  });
+
+  const userAnsText = userAns===null ? 'Not Attempted' : letters[userAns]+'. '+q.opts[userAns];
+  const correctAnsText = letters[q.ans]+'. '+q.opts[q.ans];
+  document.getElementById('revAnsLine').innerHTML =
+    '<b>Your Answer:</b> '+userAnsText+'<br><b>Correct Answer:</b> '+correctAnsText;
+
+  document.getElementById('revExplain').textContent = q.exp;
+
+  document.getElementById('revBtnPrev').disabled = (reviewIndex===0);
+  document.getElementById('revBtnNext').disabled = (reviewIndex===TOTAL-1);
+  buildPalette('review');
+}
+
+function revPrev(){ if(reviewIndex>0){ reviewIndex--; renderReview(); } }
+function revNext(){ if(reviewIndex<TOTAL-1){ reviewIndex++; renderReview(); } }
+function backToResult(){
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+}
+</script>
+</body>
+</html>

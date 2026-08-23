@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CT 1: CA (Government Policies and Scheme)</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    CT 1: CA (Government Policies and Scheme) 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">In June 2022, Reserve Bank of India (RBI) has released a report titled _________.</div>
+  <div class="question lang-hi">जून 2022 में, भारतीय रिजर्व बैंक (RBI) ने _________ शीर्षक से एक रिपोर्ट जारी की है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Digital Currency Vision 2030</div><div class="option correct">Payments Vision 2025</div><div class="option">Digital Currency Vision 2025</div><div class="option">Payments Vision 2030</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">डिजिटल मुद्रा विज़न 2030</div><div class="option correct">भुगतान विज़न 2025</div><div class="option">डिजिटल मुद्रा विज़न 2025</div><div class="option">भुगतान विज़न 2030</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Payments Vision 2025</strong></u>.<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul data-darkreader-inline-color="" style=" --darkreader-inline-color: #d1cdc7;"> <li data-darkreader-inline-color="" style=" --darkreader-inline-color: #d1cdc7;"><span style="font-weight: bolder;">Payment Vision 2025 document.</span> <ul> <li>On July 17, 2022, the Reserve Bank of India published its <span data-darkreader-inline-color="" style=" --darkreader-inline-color: #d1cdc7;">vision</span> for &#39;Architecture of Digital Finance&#39; in a document for Payment Systems.&nbsp;</li> <li><span style="font-weight: bolder;">This is known as the Payment Vision 2025 document.&nbsp;</span></li> <li>The core theme of the Payments Vision 2025 is &#39;<strong>E-Payments for Everyone, Everywhere, Everytime&#39; (4Es)</strong>.</li> <li>It aims to provide every user with safe, secure, fast, convenient, accessible, and affordable e-payment options.</li> </ul> </li> <li>Payments Vision 2025 has been prepared by considering the guidance from the<strong> Board for Regulation and Supervision of Payment and Settlement Systems</strong> of the RBI.</li> <li>It builds on the initiatives of Payments<strong> Vision 2019-21</strong>.</li> <li>The Payments Vision 2025 document is presented across the five anchor goalposts of I<strong>ntegrity, Inclusion, Innovation, Institutionalisation and Internationalisation</strong>.</li> <li><strong>Promoting digital payments:</strong> The RBI is promoting the use of digital payments through a number of initiatives, such as the Unified Payments Interface (UPI) and the National Payments Corporation of India (NPCI).</li> <li><strong>Regulating the payments ecosystem:</strong> The RBI is also working to regulate the payments ecosystem to ensure that it is safe and secure.</li> <li><strong>Building capacity:</strong> The RBI is working to build capacity in the payments ecosystem by training financial institutions and businesses on how to use digital payments.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong><u><span style="">भुगतान विज़न 2025</span></u></strong> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>भुगतान विज़न 2025 दस्तावेज़।</strong> <ul> <li>17 जुलाई, 2022 को, भारतीय रिज़र्व बैंक ने भुगतान प्रणालियों के लिए एक दस्तावेज़ में &#39;डिजिटल वित्त की वास्तुकला&#39; के लिए अपना दृष्टिकोण प्रकाशित किया।</li> <li><strong>इसे <span style="">भुगतान&nbsp;</span>विज़न 2025 दस्तावेज़ के रूप में जाना जाता है।</strong></li> <li><span style="">भुगतान&nbsp;</span>विजन 2025 का मुख्य विषय<strong> &#39;हर किसी के लिए, हर जगह, हर समय ई-भुगतान&#39; (4Es) </strong>है।</li> <li>इसका उद्देश्य प्रत्येक उपयोगकर्ता को सुरक्षित, सुरक्षित, तेज़, सुविधाजनक, सुलभ और किफायती ई-भुगतान विकल्प प्रदान करना है।</li> </ul> </li> <li>भुगतान विजन 2025 RBI के<strong> भुगतान एवं निपटान प्रणालियों के विनियमन और पर्यवेक्षण बोर्ड </strong>के मार्गदर्शन पर विचार करके तैयार किया गया है।</li> <li>यह <span style="">भुगतान&nbsp;</span><strong>विजन 2019-21</strong> की पहल पर आधारित है।</li> <li><span style="">भुगतान&nbsp;</span>विज़न 2025 दस्तावेज़ को <strong>अखंडता, समावेशन, नवाचार, संस्थागतकरण और अंतर्राष्ट्रीयकरण </strong>के पांच प्रमुख लक्ष्यपोस्टों में प्रस्तुत किया गया है।</li> <li><strong>डिजिटल भुगतान को बढ़ावा देना: </strong>RBI कई पहलों, जैसे कि यूनिफाइड पेमेंट्स इंटरफेस (UPI) और नेशनल पेमेंट्स कॉरपोरेशन ऑफ इंडिया (NPCI) के माध्यम से डिजिटल भुगतान के उपयोग को बढ़ावा दे रहा है।</li> <li><strong>भुगतान पारिस्थितिकी तंत्र को विनियमित करना:</strong> RBI यह सुनिश्चित करने के लिए भुगतान पारिस्थितिकी तंत्र को विनियमित करने के लिए भी काम कर रहा है कि यह सुरक्षित और संरक्षित है।</li> <li><strong>क्षमता निर्माण: </strong>RBI वित्तीय संस्थानों और व्यवसायों को डिजिटल भुगतान का उपयोग करने का प्रशिक्षण देकर भुगतान पारिस्थितिकी तंत्र में क्षमता निर्माण के लिए कार्य कर रहा है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which ministry has announced the commencement of Phase-V of the Sagar Parikrama initiative?</div>
+  <div class="question lang-hi">किस मंत्रालय ने सागर परिक्रमा पहल के चरण-V की शुरुआत की घोषणा की है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Ministry of Agriculture</div><div class="option">Ministry of Earth Sciences</div><div class="option">Ministry of Defence</div><div class="option correct">Ministry of Fisheries, Animal Husbandry, and Dairying</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">कृषि मंत्रालय</div><div class="option">पृथ्वी विज्ञान मंत्रालय</div><div class="option">रक्षा मंत्रालय</div><div class="option correct">मत्स्य पालन, पशुपालन और डेयरी मंत्रालय</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Ministry of Fisheries, Animal Husbandry, and Dairying.</strong></u></p> <p><u><span style="display: flex;gap: 6px;align-items: center;"><strong><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></u></p> <ul> <li>Phase V of Sagar Parikrama to be held from 17th-19th May 2023 from Raigad to Canacona</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The Union Ministry of Fisheries, Animal Husbandry and Dairying has announced the commencement of Phase-V of the Sagar Parikrama initiative.</li> <li>Starting from <strong>Raigad, Maharashtra on 17th May 2023 and ending in Canacona</strong>.</li> <li>The journey aims to address the challenges faced by fishers and stakeholders while uplifting their economic prospects through various fisheries schemes and programs, such as Pradhan Mantri Matsya Sampada Yojana (PMMSY) &amp; Kisan Credit Cards (KCC).</li> <li><strong>Sagar Parikrama</strong>, symbolizes solidarity with <strong>fisherfolk, fish farmers, and concerned stakeholders</strong>, commemorating the spirit of the <strong>75th Azadi Ka Amrit Mahotsav </strong>and honoring our <strong>freedom fighters, sailors, and fishers.</strong></li> <li>Having successfully completed four phases, covering 19 locations in Gujarat, Daman &amp; Diu, Maharashtra, and Karnataka, this unprecedented initiative continues to garner support from all stakeholders.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>मत्स्य पालन, पशुपालन और डेयरी मंत्रालय</strong></u> है।</p> <p><u><span style="display: flex;gap: 6px;align-items: center;"><strong><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></u></p> <ul> <li>17-19 मई 2023 तक रायगढ़ से कानाकोना तक सागर परिक्रमा का चरण V आयोजित किया जाएगा।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>केंद्रीय मत्स्य पालन, पशुपालन और डेयरी मंत्रालय ने सागर परिक्रमा पहल के चरण-V की शुरुआत की घोषणा की है।</li> <li><strong>17 मई 2023 को रायगढ़, महाराष्ट्र से</strong> शुरू होकर <strong>कानाकोना में समाप्त हुई।</strong></li> <li>इस यात्रा का उद्देश्य विभिन्न मत्स्य योजनाओं और कार्यक्रमों, जैसे प्रधानमंत्री मत्स्य सम्पदा योजना (PMMSY) और किसान क्रेडिट कार्ड (KCC) के माध्यम से मछुआरों और हितधारकों के सामने आने वाली चुनौतियों का समाधान करना है।</li> <li><strong>सागर परिक्रमा,</strong> <strong>75वें आज़ादी का अमृत महोत्सव </strong>की भावना को याद करते हुए और हमारे <strong>स्वतंत्रता सेनानियों, नाविकों और मछुआरों</strong> को सम्मानित करते हुए,<strong> मछुआरों, मछली किसानों और संबंधित हितधारकों</strong> के साथ एकजुटता का प्रतीक है।</li> <li>गुजरात, दमन और दीव, महाराष्ट्र और कर्नाटक में 19 स्थानों को कवर करते हुए चार चरणों को सफलतापूर्वक पूरा करने के बाद, इस अभूतपूर्व पहल को सभी हितधारकों से समर्थन प्राप्त करना जारी है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the objective of the &#39;Sangathan-se-Samriddhi&#39; scheme?</div>
+  <div class="question lang-hi">&#39;संगठन-से-समृद्धि&#39; योजना का उद्देश्य क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">To provide better education facilities to rural children</span></div><div class="option"><span style="">To provide employment opportunities to rural youth</span></div><div class="option correct"><span style="">To empower rural women through Self Help Groups (SHGs)</span></div><div class="option">None of these</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ग्रामीण बच्चों को बेहतर शिक्षा सुविधा उपलब्ध कराना</div><div class="option">ग्रामीण युवाओं को रोजगार के अवसर प्रदान करना</div><div class="option correct">स्वयं सहायता समूहों (SHG) के माध्यम से ग्रामीण महिलाओं को सशक्त बनाना</div><div class="option">इनमें से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style=""><u><strong>To empower rural women through Self Help Groups (SHGs)</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></span></p> <ul> <li><strong><span style="">&nbsp;</span>Government launches &#39;Sangathan-se-Samriddhi&#39; scheme.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>The Government of India has launched a new scheme called &#39;Sangathan-se-Samriddhi&#39; aimed at bringing marginalised rural women into the fold of Self Help Groups (SHGs).</strong></li> <li>The scheme will provide support to around 75,000 SHGs across 11 states in India, with a focus on empowering women and promoting entrepreneurship.</li> <li>It will give financial assistance to help them start and expand their businesses.</li> <li>The objective of the scheme is to empower rural women through SHGs.</li> <li>Under this scheme, the government will provide training and capacity building support to women who are members of SHGs.</li> <li>This training will be aimed at enhancing the entrepreneurial and financial management skills of the women. The scheme will also provide interest-free loans to SHGs, which can be used for income-generating activities.</li> <li>The loans will be provided through the National Rural Livelihoods Mission (NRLM).</li> <li>The scheme is expected to benefit around 7 lakh women in the country.</li> <li>The government has allocated a budget of Rs 17.87 crore for the scheme.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>स्वयं सहायता समूहों (SHG) के माध्यम से ग्रामीण महिलाओं को सशक्त बनाना</strong></u> है।</p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></span></p> <ul> <li><strong>सरकार ने &#39;संगठन-से-समृद्धि&#39; योजना शुरू की।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>भारत सरकार ने &#39;संगठन-से-समृद्धि&#39; नामक एक नई योजना शुरू की है जिसका उद्देश्य सीमांत ग्रामीण महिलाओं को स्वयं सहायता समूहों (SHG) की तह में लाना है।</strong></li> <li>यह योजना भारत के 11 राज्यों में लगभग 75,000 SHG को सहायता प्रदान करेगी, जिसमें महिलाओं को सशक्त बनाने और उद्यमिता को बढ़ावा देने पर ध्यान दिया जाएगा।</li> <li>यह उन्हें अपना व्यवसाय शुरू करने और विस्तार करने में मदद करने के लिए वित्तीय सहायता देगा।</li> <li>योजना का उद्देश्य SHG के माध्यम से ग्रामीण महिलाओं को सशक्त बनाना है।</li> <li>इस योजना के तहत, सरकार SHG की सदस्य महिलाओं को प्रशिक्षण और क्षमता निर्माण सहायता प्रदान करेगी।</li> <li>इस प्रशिक्षण का उद्देश्य महिलाओं के उद्यमशीलता और वित्तीय प्रबंधन कौशल को बढ़ाना होगा। यह योजना स्वयं सहायता समूहों को ब्याज मुक्त ऋण भी प्रदान करेगी, जिसका उपयोग आय-सृजन गतिविधियों के लिए किया जा सकता है।</li> <li>ऋण राष्ट्रीय ग्रामीण आजीविका मिशन (NRLM) के माध्यम से प्रदान किया जाएगा।</li> <li>इस योजना से देश में लगभग 7 लाख महिलाओं को लाभ होने की उम्मीद है।</li> <li>सरकार ने योजना के लिए 17.87 करोड़ रुपये का बजट आवंटित किया है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The Ministry of Civil Aviation has launched which round of UDAN scheme in April 2023?</div>
+  <div class="question lang-hi">नागरिक उड्डयन मंत्रालय ने अप्रैल 2023 में उड़ान योजना के किस दौर की शुरुआत की है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">4th</div><div class="option correct">5th</div><div class="option">6th</div><div class="option">3rd</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">4</div><div class="option correct">5</div><div class="option">6</div><div class="option">3</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>5th</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li><strong>&nbsp;Ministry of Civil Aviation launches UDAN 5.0.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>The Ministry of Civil Aviation has launched the 5th&nbsp;round of the Regional Connectivity Scheme (RCS) &ndash; Ude Desh Ka Aam Nagrik (UDAN).</strong></li> <li>It will further enhance the connectivity to remote and regional areas of the country and achieve last mile connectivity.</li> <li>This round of UDAN focuses on Category-2 (20-80 seats) and Category-3 (&gt;80 seats).</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>&nbsp;<strong>About UDAN</strong>: <ul> <li><strong>Ude Desh ka Aam Naagrik,</strong> known by its acronym UDAN is a regional airport development program of the Government of India and part of the Regional Connectivity Scheme of upgrading under-serviced air routes.</li> <li>Its goal is to make air travel affordable and improve economic development in India.&nbsp;</li> <li>It was <strong>launched on 21 October 2016.</strong></li> <li>In the first phase only 36 new airports were commissioned as part of it.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>5<span style="font-weight: bolder;">वें</span></strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li><strong>नागरिक उड्डयन मंत्रालय ने उड़ान 5.0 लॉन्च किया।</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>नागरिक उड्डयन मंत्रालय ने क्षेत्रीय कनेक्टिविटी योजना (RCS) - उड़े देश का आम नागरिक (उड़ान) के 5वें दौर की शुरुआत की है।</strong></li> <li>यह देश के दूरस्थ और क्षेत्रीय क्षेत्रों में कनेक्टिविटी को और बढ़ाएगा और लास्ट माइल कनेक्टिविटी हासिल करेगा।</li> <li>उड़ान का यह दौर श्रेणी-2 (20-80 सीटों) और श्रेणी-3 (&gt;80 सीटों) पर केंद्रित है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>उड़ान के बारे में:</strong> <ul> <li><strong>उड़े देश का आम नागरिक</strong>, जिसे इसके संक्षिप्त रूप UDAN के नाम से जाना जाता है, भारत सरकार का एक क्षेत्रीय हवाई अड्डा विकास कार्यक्रम है और अंडर-सर्विस्ड हवाई मार्गों को अपग्रेड करने की क्षेत्रीय कनेक्टिविटी योजना का हिस्सा है।</li> <li>इसका लक्ष्य हवाई यात्रा को किफायती बनाना और भारत में आर्थिक विकास में सुधार करना है।</li> <li>इसे<strong> 21 अक्टूबर 2016 को लॉन्च</strong> किया गया था।</li> <li>पहले चरण में इसके हिस्से के रूप में केवल 36 नए हवाई अड्डे चालू किए गए थे।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which among the following is the correct expansion of &#39;NAMASTE&#39; scheme?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सा &#39;नमस्ते (NAMASTE)&#39; योजना का सही विस्तार है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">National Action for Mechanized Sanitation Ecosystem</div><div class="option">National Action for Maintaining Sanitation Ecosystem</div><div class="option">National Action for Manual Sanitation Ecosystem</div><div class="option">National Action for Maintaining Sanitation Environment</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">नेशनल एक्शन फॉर मैकेनाइज्ड सेनिटेशन इकोसिस्टम</div><div class="option">नेशनल एक्शन फॉर मेंटेनिंग&nbsp;सेनिटेशन इकोसिस्टम</div><div class="option">नेशनल एक्शन फॉर मैनुअल&nbsp;सेनिटेशन इकोसिस्टम</div><div class="option">नेशनल एक्शन फॉर मेंटेनिंग&nbsp;सेनिटेशन एनवायरनमेंट&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>option 1.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>NAMASTE</strong> is<strong> National Action for Mechanized Sanitation Ecosystem.</strong></li> <li>It was jointly launched by<strong> Ministry of Housing and Urban Affairs</strong> and <strong>Ministry of Social Justice and Empowerment in 2022.</strong></li> <li>It aims to eradicate unsafe sewer and septic tank cleaning practices.</li> <li><strong>Union budget 2023-24 </strong>has allocated <strong>Rs 100 crore</strong> for<strong> NAMASTE scheme.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Objectives of Namaste scheme:</strong>&nbsp; <ul> <li>All sanitation works performed by skilled workers.</li> <li>Zero deaths in sanitation work.</li> <li>No sanitation worker come in contact with human faecal matters.</li> <li>Strengthening Urban local bodies in protecting the santitation workers.</li> <li>Increase awareness in sanitation workers to seek services from skilled and registered sanitation workers.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>विकल्प 1</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>नमस्ते यंत्रीकृत स्वच्छता पारिस्थितिकी तंत्र के लिए राष्ट्रीय कार्रवाई (NAMASTE-&nbsp;</strong><strong><span style="">नेशनल एक्शन फॉर मैकेनाइज्ड सेनिटेशन इकोसिस्टम</span>) </strong>है।</li> <li>इसे <strong>2022 में आवास और शहरी मामलों के मंत्रालय</strong> और<strong> सामाजिक न्याय और अधिकारिता मंत्रालय </strong>द्वारा संयुक्त रूप से शुरू किया गया था।</li> <li>इसका उद्देश्य असुरक्षित सीवर और सेप्टिक टैंक सफाई प्रथाओं को खत्म करना है।</li> <li><strong>केंद्रीय बजट 2023-24</strong> ने <strong>नमस्ते योजना </strong>के लिए <strong>100 करोड़ रुपये </strong>आवंटित किए हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>नमस्ते योजना के उद्देश्य:</strong> <ul> <li>कुशल श्रमिकों द्वारा किए गए सभी स्वच्छता कार्य</li> <li>स्वच्छता कार्य में शून्य मृत्यु</li> <li>कोई भी सफाई कर्मचारी मानव मल के संपर्क में न आए।</li> <li>स्वच्छता कार्यकर्ताओं की सुरक्षा में शहरी स्थानीय निकायों को मजबूत करना।</li> <li>कुशल और पंजीकृत सफाई कर्मचारियों से सेवाएं लेने के लिए सफाई कर्मचारियों में जागरूकता बढ़ाना।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which state government&nbsp;launched &#39;Ladli Bahna scheme&#39; for women?</div>
+  <div class="question lang-hi">किस राज्य सरकार ने महिलाओं के लिए &#39;लाडली बहना&#39; योजना शुरू की है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Rajasthan&nbsp;</div><div class="option">Uttar Pradesh</div><div class="option">Chhatisgarh</div><div class="option correct"><span style="">Madhya Pradesh</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">राजस्थान</div><div class="option">उत्तर प्रदेश</div><div class="option">छत्तीसगढ़</div><div class="option correct">मध्य प्रदेश</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style=""><u><strong>Madhya Pradesh</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></span></p> <ul> <li>Madhya Pradesh government launched Ladli Bahna scheme for women.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style="margin-bottom: 10px; "> <li>Madhya Pradesh Government on 5 March 2023, launched the &#39;Ladli Bahna Scheme&#39;&nbsp;to make women financially independent.</li> <li>The scheme aims to increase&nbsp;the economic independence of women in the state, improving their health and nutritional status.</li> <li>Under the scheme, Rs 1250 per month will be deposited in the accounts of the native women of the state in the age group of 23 to 60 years.</li> <li>The benefit of this scheme will be given only to women whose annual family income is less than Rs 2.5 lakh or who have less than five acres of land.</li> <li>The Mukhyamantri Ladli Bahna Yojana is launched in the state with the goals of enhancing women&rsquo;s economic independence, improving their health and nutrition status and expanding their influence over family decisions.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>मध्य प्रदेश</strong></u> है।<span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></span></p> <ul> <li>मध्य प्रदेश सरकार ने महिलाओं के लिए लाडली बहना योजना शुरू की।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style="margin-bottom: 10px; "> <li>मध्य प्रदेश सरकार ने 5 मार्च 2023 को महिलाओं को आर्थिक रूप से स्वतंत्र बनाने के लिए &#39;लाडली बहना योजना&#39; शुरू की।</li> <li>इस योजना का उद्देश्य राज्य में महिलाओं की आर्थिक स्वतंत्रता को बढ़ाना, उनके स्वास्थ्य और पोषण की स्थिति में सुधार करना है।</li> <li>योजनान्तर्गत 23 से 60 वर्ष आयु वर्ग की राज्य की मूलनिवासी महिलाओं के खातों में प्रतिमाह 1250&nbsp;रुपये जमा किये जायेंगे।</li> <li>इस योजना का लाभ केवल उन्हीं महिलाओं को मिलेगा जिनके परिवार की वार्षिक आय 2.5 लाख रुपये से कम है या जिनके पास पांच एकड़ से कम जमीन है।</li> <li>महिलाओं की आर्थिक स्वतंत्रता बढ़ाने, उनके स्वास्थ्य और पोषण की स्थिति में सुधार लाने और परिवार के फैसलों पर उनके प्रभाव का विस्तार करने के लक्ष्यों के साथ राज्य में मुख्यमंत्री लाडली बहना योजना शुरू की गई है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Recently&nbsp;Yuva Sangam Portal&nbsp;was launched, it is related to which of the following?</div>
+  <div class="question lang-hi">हाल ही में युवा संगम पोर्टल लॉन्च किया गया है, यह निम्नलिखित में से किससे संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Portal for Khelo India Games</div><div class="option correct">Build close ties between the youth of North East Region and rest of India</div><div class="option">Portal for International Student Exchange Program</div><div class="option">Skill Development</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">खेलो इंडिया गेम्स के लिए एक पोर्टल</div><div class="option correct">पूर्वोत्तर क्षेत्र और शेष भारत के युवाओ के मध्य घनिष्ठ संबंध स्थापित करने की एक पहल&nbsp;</div><div class="option">अंतर्राष्ट्रीय छात्र विनिमय कार्यक्रम के लिए एक पोर्टल</div><div class="option">कौशल विकास</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<u><strong> option 2.</strong></u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li><strong>PIB NEWS:</strong>&nbsp;The &ldquo;Yuva Sangam&rdquo; registration portal launched at IGNCA New Delhi.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><br /> <strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span><strong>Yuva Sangam Portal:</strong></p> <ul> <li>It is a Prime Ministerial initiative to<strong> strengthen ties between the youth of the North East Region and the rest of India </strong>in the spirit of Ek Bharat Shreshtha Bharat.<strong> <em>Hence, Option 2 is correct.</em></strong></li> <li><strong>Yuva Sangam embodies</strong> the <strong>philosophy of our ancient heritage, our glorious history, and our rich culture.</strong></li> <li><strong>The youth of 18 years to 30 years </strong>will get an opportunity to see different states of the country, to understand their art, culture and languages.</li> <li>Over <strong>20000 young people</strong> will travel <strong>across India</strong>, taking advantage of a <strong>once-in-a-lifetime opportunity for cross-cultural learning.</strong></li> <li>Students will interact with one another in the <strong>areas of language, literature, cuisine, festivals, cultural events, and tourism</strong> throughout the programme.</li> <li>They will gain firsthand knowledge of life in a completely different geographical and cultural setting.</li> <li>The program will give an<strong> opportunity to see, know, and understand India and do something for the country.</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>विकल्प 2</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li><strong>PIB न्यूज: </strong><span style="">IGNCA</span>, नई दिल्ली में &quot;युवा संगम&quot; पंजीकरण पोर्टल लॉन्च किया गया।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span><strong>युवा संगम पोर्टल:</strong></p> <ul> <li><strong><span style="font-weight: 700; ">युवा संगम,&nbsp;</span>एक भारत श्रेष्ठ भारत की भावना में </strong><span style="">पूर्वोत्तर क्षेत्र और शेष भारत के युवाओ के मध्य घनिष्ठ संबंध मजबूत करने हेतु&nbsp;</span>प्रधान मंत्री की एक पहल है। <em><strong>इसलिए, विकल्प 2 सही है।</strong></em></li> <li><strong>युवा संगम हमारी प्राचीन विरासत, हमारे गौरवशाली इतिहास और हमारी समृद्ध संस्कृति के दर्शन का प्रतीक है।</strong></li> <li>यह कार्यक्रम <strong>18 से 30 वर्ष की आयु के युवाओं के लिए</strong> खुला रहेगा।</li> <li><strong>अंतर-सांस्कृतिक</strong><strong> शिक्षा के लिए जीवन में एक बार मिलने वाले अवसर</strong> का लाभ उठाते हुए <strong>20000 से अधिक युवा पूरे भारत </strong>की यात्रा करेंगे।</li> <li>छात्र पूरे कार्यक्रम के दौरान <strong>भाषा, साहित्य, व्यंजन, त्योहारों, सांस्कृतिक कार्यक्रमों और पर्यटन के क्षेत्रों</strong> में एक दूसरे के साथ बातचीत करेंगे।</li> <li>वे पूरी तरह से अलग भौगोलिक और सांस्कृतिक सेटिंग में जीवन का प्रत्यक्ष ज्ञान प्राप्त करेंगे।</li> <li>यह कार्यक्रम <strong>भारत को देखने, जानने और समझने और देश के लिए कुछ करने का अवसर</strong> देगा।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">RE-HAB Project, sometimes seen in the news is related to which of the following issues?</div>
+  <div class="question lang-hi">RE-HAB परियोजना, जो कभी-कभी समाचारों में देखी जाती है, निम्नलिखित में से किस मुद्दे से संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">Reducing the level of pollution from coal plants</span></div><div class="option"><span style="">Service to people struggling with drug addiction and alcoholism.</span></div><div class="option correct">Reducing human-wildlife conflicts</div><div class="option"><span style="">Project to achieve net zero emission target.</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">कोयला संयंत्रों से प्रदूषण के स्तर को कम करना</div><div class="option">नशाखोरी और शराब की लत से जूझ रहे लोगों की सेवा</div><div class="option correct">मानव-वन्यजीव संघर्ष को कम करना</div><div class="option">शुद्ध शून्य उत्सर्जन लक्ष्य प्राप्त करने के लिए परियोजना</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<em><u><strong> option 3.</strong></u></em></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li>Recently, the Chairman of Khadi and Village Industries Commission (KVIC) distributed live Bee Colonies, Bee-keeping equipment and 200 Bee-Boxes to the trained beneficiaries at Sulia at Dakshina Kannada, Karnataka under the RE-HAB Project.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p style=""><span style="font-weight: 700;">Project Re-Hab</span></p> <ul style=""> <li>It is an&nbsp;<span style="font-weight: 700;">initiative under the Khadi &amp; Village Industries Commission (KVIC).&nbsp;</span></li> <li>It is a&nbsp;<span style="font-weight: 700;">cost-effective way of reducing human-wild conflicts</span>&nbsp;without causing any harm to the animals.&nbsp;<em><span style="font-weight: 700;">Hence, option 3&nbsp;is correct.</span></em></li> <li>It is<span style="font-weight: 700;">&nbsp;running this project in 7 states of the country,</span>&nbsp;namely in Karnataka, Maharashtra, West Bengal, Assam, Uttarakhand and Odisha.</li> <li>Under this project<span style="font-weight: 700;">&nbsp;fencing of bee boxes is installed in such areas where elephants move towards the human settlements and farmers&#39; agriculture.</span></li> <li><span style="font-weight: 700;">Fencing of Bee-boxes</span>&nbsp;on the routes of movement of elephants&nbsp;<span style="font-weight: 700;">blocks the path of wild elephants.</span></li> <li>In this way,&nbsp;<span style="font-weight: 700;">through honeybees, elephants can be prevented from attacking humans and destroying farmers&#39; crops.</span></li> <li><span style="font-weight: 700;">National Honey Mission:</span> <ul> <li><span style="font-weight: 700;">Project RE-HAB is a sub-mission of KVIC&rsquo;s National Honey Mission.</span></li> <li>The Honey Mission is a&nbsp;<span style="font-weight: 700;">programme to increase the bee population,</span>&nbsp;honey production and beekeepers&rsquo;<span style="font-weight: 700;">&nbsp;income by setting up apiaries.</span></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <em><u><strong>विकल्प 3</strong></u></em> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/in_news.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>In News</u></span></strong></span></p> <ul> <li>हाल ही में, खादी और ग्रामोद्योग आयोग (KVIC) के अध्यक्ष ने RE-HAB परियोजना के तहत दक्षिण कन्नड़, कर्नाटक के सुलिया में प्रशिक्षित लाभार्थियों को लाइव मधुमक्खी कालोनियों, मधुमक्खी पालन उपकरण और 200 मधुमक्खी-बक्से वितरित किए।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>प्रोजेक्ट <span style="">RE-HAB</span></strong></p> <ul> <li>यह <strong>खादी और ग्रामोद्योग आयोग (KVIC) के तहत एक पहल है।</strong></li> <li>यह <strong>जानवरों को कोई नुकसान पहुंचाए बिना मानव-जंगली संघर्ष </strong>को कम करने का एक किफायती तरीका है।<em><strong> अतः विकल्प 3 सही है।</strong></em></li> <li>यह <strong>परियोजना देश के 7 राज्यों </strong>कर्नाटक, महाराष्ट्र, पश्चिम बंगाल, असम और उड़ीसा <strong>में चल रही है।</strong></li> <li>इस <strong>परियोजना के तहत मधुमक्खी बक्सों की बाड़ ऐसे क्षेत्रों में लगाई जाती है जहां हाथी मानव बस्तियों और किसानों की खेती की ओर</strong> बढ़ते हैं।</li> <li>हाथियों के आने-जाने के रास्तों पर<strong> मधुमक्खी बक्सों की बाड़</strong> <strong>जंगली हाथियों के रास्ते को अवरूद्ध कर देती है।</strong></li> <li>इस तरह<strong> मधुमक्खियों के जरिए हाथियों को इंसानों पर हमला करने और किसानों की फसलों को नष्ट करने से रोका जा सकता है।</strong></li> <li><strong>राष्ट्रीय शहद मिशन:</strong> <ul> <li><strong>प्रोजेक्ट RE-HAB KVIC के राष्ट्रीय हनी मिशन का एक उप-मिशन है।</strong></li> <li>हनी मिशन <strong>मधुमक्खियों की आबादी, </strong>शहद उत्पादन और मधुमक्खी पालकों की आमदनी बढ़ाने के लि<strong>ए मधुमक्खी पालने का कार्यक्रम है।</strong></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following has launched the &lsquo;SMART&rsquo; program in January 2023?</div>
+  <div class="question lang-hi">निम्नलिखित में से किसने जनवरी 2023 में &#39;SMART&#39; कार्यक्रम शुरू किया है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Ministry of Home Affairs</div><div class="option">Ministry of Defence</div><div class="option">Ministry of Women and Child Development</div><div class="option correct">Ministry of Ayush</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">गृह मंत्रालय</div><div class="option">रक्षा मंत्रालय</div><div class="option">महिला एवं बाल विकास मंत्रालय</div><div class="option correct">आयुष मंत्रालय</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Ministry of Ayush.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>Ministry of Ayush</strong> has&nbsp;launched &lsquo;<strong>SMART&rsquo; (Scope for Mainstreaming Ayurveda Research in Teaching Professionals) program.</strong></li> <li>It aims to boost scientific research in <strong>priority healthcare research areas through Ayurveda colleges and hospitals.</strong></li> <li>The proposed initiative is conceptualised with the objective to<strong> identify, support and promote innovative research ideas in healthcare research areas.&nbsp;</strong></li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></strong></p> <ul> <li>The <strong>National Commission for Indian System of Medicine (NCISM) and the Central Council for Research in Ayurvedic Sciences (CCRAS) </strong>launched the program.</li> <li>The program was launched by <strong>Vaidya Jayant Deopujari</strong>, Chairman, NCISM and<strong> Prof. Rabinarayan Acharya</strong>, Director General, CCRAS in the presence of <strong>Prof. B. S. Prasad</strong>, President of Board of Ayurveda, NCISM and other senior officials.</li> <li>The proposed initiative is conceptualised with an objective to identify, support and promote innovative research ideas in healthcare research areas including <strong>Osteoarthritis, Iron Deficiency Anaemia, Chronic Bronchitis, Dyslipidemia, Rheumatoid Arthritis, Obesity, Diabetes Mellitus, Non-alcoholic fatty liver disease (NAFLD)</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>आयुष मंत्रालय</strong></u> है।</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>आयुष मंत्रालय ने &#39;SMART&#39; (स्कोप फॉर मेनस्ट्रीमिंग आयुर्वेद रिसर्च इन टीचिंग प्रोफेशनल्स) कार्यक्रम</strong> शुरू किया है।</li> <li>इसका उद्देश्य <strong>आयुर्वेद कॉलेजों और अस्पतालों के माध्यम से प्राथमिकता वाले स्वास्थ्य अनुसंधान क्षेत्रों</strong> में वैज्ञानिक अनुसंधान को बढ़ावा देना है।</li> <li>प्रस्तावित पहल की परिकल्पना <strong>स्वास्थ्य सेवा अनुसंधान क्षेत्रों में नवीन अनुसंधान विचारों की पहचान, समर्थन और प्रचार करने</strong> के उद्देश्य से की गई है।</li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></strong></p> <ul> <li><strong>नेशनल कमीशन फॉर इंडियन सिस्टम ऑफ मेडिसिन (NCISM) और सेंट्रल काउंसिल फॉर रिसर्च इन आयुर्वेदिक साइंसेज (CCRAS)</strong> ने कार्यक्रम का शुभारंभ किया।</li> <li>कार्यक्रम का शुभारंभ NCISM के अध्यक्ष <strong>वैद्य जयंत देवपुजारी</strong> और CCRAS के महानिदेशक <strong>प्रो. रबिनारायण आचार्य</strong> ने आयुर्वेद बोर्ड, NCISM के अध्यक्ष <strong>प्रो. बी.एस. प्रसाद</strong> और अन्य वरिष्ठ अधिकारियों की उपस्थिति में किया।</li> <li>प्रस्तावित पहल&nbsp;<span style="font-weight: 700;">ऑस्टियोआर्थराइटिस, आयरन की कमी वाले एनीमिया, क्रोनिक ब्रोंकाइटिस, डिस्लिपिडेमिया, रुमेटीइड गठिया, मोटापा, मधुमेह मेलेटस, नॉन-एल्कोहोलिक&nbsp;फैटी लीवर डिजीज&nbsp;(NAFLD)</span>&nbsp;सहित स्वास्थ्य अनुसंधान क्षेत्रों में नवीन अनुसंधान विचारों की पहचान, समर्थन और बढ़ावा देने के उद्देश्य से की गई है।&nbsp;</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What should be the monthly income to be eligible under the Pradhan Mantri Shram Yogi Maandhan?</div>
+  <div class="question lang-hi"><span style="">प्रधानमंत्री श्रम योगी मानधन के तहत पात्र होने के लिए मासिक आय कितनी होनी चाहिए?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">below Rs 15000</div><div class="option">above Rs 15000</div><div class="option">below Rs 10000</div><div class="option">above Rs 10000</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct"><span style="">15000 रुपये से कम</span></div><div class="option"><span style="">15000 रुपये से ऊपर</span></div><div class="option"><span style="">10000 रुपये से कम</span></div><div class="option"><span style="">10000 रुपये से ऊपर</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> </strong><u><strong>below Rs 15000</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong><span style="color: rgb(29, 39, 78); ">Pradhan Mantri Shram Yogi Maandhan is a voluntary and contributory Pension Scheme for Unorganized Workers aged 18 to 40 years with a monthly income of Rs.15000 or less.</span></strong></li> <li><span style="color: rgb(29, 39, 78); ">The worker should not be covered under any statutory social security schemes such as National Pension Scheme (NPS), Employees&rsquo; State Insurance Corporation scheme, or Employees&rsquo; Provident Fund Organization Scheme and is not an income tax payee.</span></li> <li><strong><span style="color: rgb(29, 39, 78); ">If any unorganized worker subscribes to the scheme and has paid regular contributions up to the age of 60 years, he will get a minimum monthly pension of Rs. 3000/-.</span></strong></li> <li><span style="color: rgb(29, 39, 78); ">After his/ her death, the spouse will receive a monthly family pension of 50 % of the pension.</span></li> </ul> <p><span style="color: rgb(29, 39, 78); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li><span style="color: rgb(29, 39, 78); ">Once the beneficiary joins the scheme at the entry age between 18-40 years, he has to contribute till he attains the age of 60 years.</span></li> <li><span style="color: rgb(29, 39, 78); ">Primarily, the mode of contribution is on monthly basis by auto-debit. However, it will also have provisions for quarterly, half-yearly and yearly contributions. The first contribution is to be paid in cash at Common Service Centre.</span></li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर&nbsp;<u style=""><span style="font-weight: 700;">15000 रुपये से कम</span></u>&nbsp;है।</p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><u style="font-size: 20px; font-weight: 700;">Key Points</u></span></p> <ul style=""> <li><span style="font-weight: 700;"><span style="color: rgb(29, 39, 78);">प्रधान मंत्री श्रम योगी मानधन 18 से 40 वर्ष की आयु के असंगठित श्रमिकों के लिए एक स्वैच्छिक और अंशदायी पेंशन योजना है, जिनकी मासिक आय 15000 रुपये या उससे कम है।</span></span></li> <li><span style="color: rgb(29, 39, 78);">कर्मचारी को राष्ट्रीय पेंशन योजना (NPS), कर्मचारी राज्य बीमा निगम योजना, या कर्मचारी भविष्य निधि संगठन योजना जैसी किसी भी वैधानिक सामाजिक सुरक्षा योजना के तहत कवर नहीं किया जाना चाहिए और वह आयकर दाता नहीं है।</span></li> <li><strong>यदि कोई असंगठित श्रमिक इस योजना में सदस्यता लेता है और 60 वर्ष की आयु तक नियमित योगदान का भुगतान करता है, तो उसे न्यूनतम मासिक पेंशन 3000/- रुपये मिलेगी।</strong></li> <li><span style="color: rgb(29, 39, 78);">उसकी मृत्यु के बाद, पति या पत्नी को पेंशन का 50% मासिक पारिवारिक पेंशन प्राप्त होगा।</span></li> </ul> <p style=""><span style="color: rgb(29, 39, 78);"><span style="display: flex; gap: 6px; align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><u style="font-size: 20px; font-weight: 700;">Additional Information</u></span></span></p> <ul style=""> <li><span style="color: rgb(29, 39, 78);">एक बार जब लाभार्थी 18-40 वर्ष के बीच की प्रवेश आयु में योजना में शामिल हो जाता है, तो उसे 60 वर्ष की आयु प्राप्त करने तक योगदान देना होता है।</span></li> <li><span style="color: rgb(29, 39, 78);">मुख्य रूप से, योगदान का तरीका ऑटो-डेबिट द्वारा मासिक आधार पर होता है। हालांकि, इसमें तिमाही, अर्ध-वार्षिक और वार्षिक योगदान के प्रावधान भी होंगे। कॉमन सर्विस सेंटर में पहला योगदान नकद में भुगतान किया जाना है।</span></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

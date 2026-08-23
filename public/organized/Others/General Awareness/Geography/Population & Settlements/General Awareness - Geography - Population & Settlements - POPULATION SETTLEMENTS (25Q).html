@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27769945</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">25</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">50.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27769945</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 25</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 25</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/50.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p data-start=\"152\" data-end=\"296\"><strong data-start=\"152\" data-end=\"227\">Consider the following statements regarding the population of India:</strong><br data-start=\"227\" data-end=\"230\" /><strong data-start=\"230\" data-end=\"296\">भारत की जनसंख्या के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"298\" data-end=\"1170\">\n<li data-section-id=\"k9rrfv\" data-start=\"298\" data-end=\"508\">\n<p data-start=\"301\" data-end=\"508\">India has about <strong data-start=\"317\" data-end=\"396\">18% of the world&rsquo;s population but only about 2.4% of the world&rsquo;s land area.</strong><br data-start=\"396\" data-end=\"399\" />भारत विश्व की लगभग <strong data-start=\"421\" data-end=\"437\">18% जनसंख्या</strong> का निवास स्थान है, जबकि विश्व के कुल <strong data-start=\"475\" data-end=\"490\">2.4% भू-भाग</strong> पर ही स्थित है।</p>\n</li>\n<li data-section-id=\"13o4431\" data-start=\"510\" data-end=\"704\">\n<p data-start=\"513\" data-end=\"704\">According to the <strong data-start=\"530\" data-end=\"545\">2011 Census</strong>, the <strong data-start=\"551\" data-end=\"609\">population density of India was 382 persons per sq km.</strong><br data-start=\"609\" data-end=\"612\" /><strong data-start=\"615\" data-end=\"633\">2011 की जनगणना</strong> के अनुसार भारत का <strong data-start=\"652\" data-end=\"698\">जनसंख्या घनत्व 382 व्यक्ति प्रति वर्ग किमी</strong> था।</p>\n</li>\n<li data-section-id=\"kn2891\" data-start=\"706\" data-end=\"923\">\n<p data-start=\"709\" data-end=\"923\">The <strong data-start=\"713\" data-end=\"759\">decadal population growth rate (2001&ndash;2011)</strong> was <strong data-start=\"764\" data-end=\"774\">17.64%</strong>, which was lower than <strong data-start=\"797\" data-end=\"825\">21.54% during 1991&ndash;2001.</strong><br data-start=\"825\" data-end=\"828\" /><strong data-start=\"831\" data-end=\"870\">2001&ndash;2011 की दशकीय वृद्धि दर 17.64%</strong> थी, जो <strong data-start=\"878\" data-end=\"901\">1991&ndash;2001 की 21.54%</strong> वृद्धि दर से कम थी।</p>\n</li>\n<li data-section-id=\"mvxtlk\" data-start=\"925\" data-end=\"1170\">\n<p data-start=\"928\" data-end=\"1170\">According to <strong data-start=\"941\" data-end=\"951\">NFHS-5</strong>, the <strong data-start=\"957\" data-end=\"1009\">Total Fertility Rate (TFR) of India is about 2.0</strong>, which is <strong data-start=\"1020\" data-end=\"1059\">below the replacement level of 2.1.</strong><br data-start=\"1059\" data-end=\"1062\" /><strong data-start=\"1065\" data-end=\"1075\">NFHS-5</strong> के अनुसार भारत की <strong data-start=\"1094\" data-end=\"1126\">कुल प्रजनन दर (TFR) लगभग 2.0</strong> है, जो <strong data-start=\"1134\" data-end=\"1158\">प्रतिस्थापन स्तर 2.1</strong> से कम है।</p>\n</li>\n</ol>\n<hr data-start=\"1172\" data-end=\"1175\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1177\" data-end=\"1225\">Which of the above statements are correct?</h3>\n<p data-start=\"1226\" data-end=\"1264\"><strong data-start=\"1226\" data-end=\"1264\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p data-start=\"1266\" data-end=\"1392\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1296\" data-end=\"1299\" />(2) 2 and 3 only / केवल 2 और 3<br data-start=\"1329\" data-end=\"1332\" />(3) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1368\" data-end=\"1371\" />(4) 1, 2, 3 and 4</p>\n<p></p>\n<p data-start=\"1394\" data-end=\"1419\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>&nbsp;<strong data-start=\"1396\" data-end=\"1419\">Correct Answer: (4)</strong></p>",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"234\" data-end=\"412\"><strong data-start=\"234\" data-end=\"326\">Consider the following statements regarding the phases of population growth in India:</strong><br data-start=\"326\" data-end=\"329\" /><strong data-start=\"329\" data-end=\"412\">भारत में जनसंख्या वृद्धि के चरणों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"414\" data-end=\"1725\">\n<li data-section-id=\"6hyugx\" data-start=\"414\" data-end=\"762\">\n<p data-start=\"417\" data-end=\"762\">The period <strong data-start=\"428\" data-end=\"441\">1901&ndash;1921</strong> is known as the <strong data-start=\"458\" data-end=\"490\">phase of stagnant population</strong>, when growth was extremely low and even negative during <strong data-start=\"547\" data-end=\"560\">1911&ndash;1921</strong> due to high birth and death rates.<br data-start=\"595\" data-end=\"598\" /><strong data-start=\"601\" data-end=\"614\">1901&ndash;1921</strong> की अवधि को <strong data-start=\"626\" data-end=\"668\">स्थिर जनसंख्या का चरण (Stagnant Phase)</strong> कहा जाता है, जिसमें वृद्धि बहुत कम थी और <strong data-start=\"710\" data-end=\"723\">1911&ndash;1921</strong> के दौरान नकारात्मक वृद्धि भी दर्ज हुई।</p>\n</li>\n<li data-section-id=\"1nkvjqy\" data-start=\"764\" data-end=\"1082\">\n<p data-start=\"767\" data-end=\"1082\">The period <strong data-start=\"778\" data-end=\"791\">1921&ndash;1951</strong> is known as the <strong data-start=\"808\" data-end=\"845\">phase of steady population growth</strong>, mainly due to decline in mortality caused by improvements in sanitation and transport.<br data-start=\"933\" data-end=\"936\" /><strong data-start=\"939\" data-end=\"952\">1921&ndash;1951</strong> की अवधि को <strong data-start=\"964\" data-end=\"1003\">स्थिर वृद्धि का चरण (Steady Growth)</strong> कहा जाता है, जिसमें स्वच्छता और परिवहन में सुधार के कारण मृत्यु दर में कमी आई।</p>\n</li>\n<li data-section-id=\"1v14ccv\" data-start=\"1084\" data-end=\"1389\">\n<p data-start=\"1087\" data-end=\"1389\">The period <strong data-start=\"1098\" data-end=\"1111\">1951&ndash;1981</strong> is known as the <strong data-start=\"1128\" data-end=\"1161\">phase of population explosion</strong>, characterized by rapid decline in death rate but continued high birth rate.<br data-start=\"1238\" data-end=\"1241\" /><strong data-start=\"1244\" data-end=\"1257\">1951&ndash;1981</strong> की अवधि को <strong data-start=\"1269\" data-end=\"1319\">जनसंख्या विस्फोट का चरण (Population Explosion)</strong> कहा जाता है, जिसमें मृत्यु दर तेजी से घटी लेकिन जन्म दर उच्च बनी रही।</p>\n</li>\n<li data-section-id=\"1gsn5wp\" data-start=\"1391\" data-end=\"1725\">\n<p data-start=\"1394\" data-end=\"1725\">The period <strong data-start=\"1405\" data-end=\"1419\">after 1981</strong> is known as the <strong data-start=\"1436\" data-end=\"1481\">phase of declining or decelerating growth</strong>, where the population growth rate started slowing down due to declining birth rates.<br data-start=\"1566\" data-end=\"1569\" /><strong data-start=\"1572\" data-end=\"1587\">1981 के बाद</strong> की अवधि को <strong data-start=\"1599\" data-end=\"1656\">जनसंख्या वृद्धि में मंदी का चरण (Decelerating Growth)</strong> कहा जाता है, जिसमें जन्म दर में कमी के कारण वृद्धि दर धीमी होने लगी।</p>\n</li>\n</ol>\n<hr data-start=\"1727\" data-end=\"1730\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1732\" data-end=\"1780\">Which of the above statements are correct?</h3>\n<p data-start=\"1781\" data-end=\"1819\"><strong data-start=\"1781\" data-end=\"1819\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1821\" data-end=\"1947\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1851\" data-end=\"1854\" />(2) 2 and 3 only / केवल 2 और 3<br data-start=\"1884\" data-end=\"1887\" />(3) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1923\" data-end=\"1926\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"247\" data-end=\"407\"><strong data-start=\"247\" data-end=\"330\">Consider the following statements regarding population composition in India:</strong><br data-start=\"330\" data-end=\"333\" /><strong data-start=\"333\" data-end=\"407\">भारत में जनसंख्या संरचना के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"409\" data-end=\"1264\">\n<li data-section-id=\"s00tn3\" data-start=\"409\" data-end=\"690\">\n<p data-start=\"412\" data-end=\"690\">A <strong data-start=\"414\" data-end=\"469\">population pyramid with a broad base and narrow top</strong> indicates high birth and death rates and is typical of developing countries.<br data-start=\"546\" data-end=\"549\" /><strong data-start=\"552\" data-end=\"603\">चौड़े आधार और संकरे शीर्ष वाला जनसंख्या पिरामिड</strong> उच्च जन्म दर और मृत्यु दर को दर्शाता है, जो सामान्यतः विकासशील देशों में पाया जाता है।</p>\n</li>\n<li data-section-id=\"vjh1r2\" data-start=\"692\" data-end=\"895\">\n<p data-start=\"695\" data-end=\"895\">According to <strong data-start=\"708\" data-end=\"723\">Census 2011</strong>, about <strong data-start=\"731\" data-end=\"800\">60.7% of India&rsquo;s population belongs to the 15&ndash;59 years age group.</strong><br data-start=\"800\" data-end=\"803\" /><strong data-start=\"806\" data-end=\"821\">जनगणना 2011</strong> के अनुसार भारत की लगभग <strong data-start=\"845\" data-end=\"883\">60.7% जनसंख्या 15&ndash;59 वर्ष आयु वर्ग</strong> में आती है।</p>\n</li>\n<li data-section-id=\"xl7bxx\" data-start=\"897\" data-end=\"1084\">\n<p data-start=\"900\" data-end=\"1084\">According to <strong data-start=\"913\" data-end=\"928\">Census 2011</strong>, around <strong data-start=\"937\" data-end=\"990\">68.8% of India&rsquo;s population lives in rural areas.</strong><br data-start=\"990\" data-end=\"993\" /><strong data-start=\"996\" data-end=\"1011\">जनगणना 2011</strong> के अनुसार भारत की लगभग <strong data-start=\"1035\" data-end=\"1084\">68.8% जनसंख्या ग्रामीण क्षेत्रों में रहती है।</strong></p>\n</li>\n<li data-section-id=\"jwk297\" data-start=\"1086\" data-end=\"1264\">\n<p data-start=\"1089\" data-end=\"1264\">According to <strong data-start=\"1102\" data-end=\"1117\">Census 2011</strong>, the <strong data-start=\"1123\" data-end=\"1177\">sex ratio in India was 943 females per 1000 males.</strong><br data-start=\"1177\" data-end=\"1180\" /><strong data-start=\"1183\" data-end=\"1198\">जनगणना 2011</strong> के अनुसार भारत का <strong data-start=\"1217\" data-end=\"1260\">लिंगानुपात 943 महिलाएँ प्रति 1000 पुरुष</strong> था।</p>\n</li>\n</ol>\n<hr data-start=\"1266\" data-end=\"1269\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1271\" data-end=\"1319\">Which of the above statements are correct?</h3>\n<p data-start=\"1320\" data-end=\"1358\"><strong data-start=\"1320\" data-end=\"1358\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1360\" data-end=\"1492\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1390\" data-end=\"1393\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1429\" data-end=\"1432\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"1468\" data-end=\"1471\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1585\" data-end=\"1779\"><strong data-start=\"1689\" data-end=\"1779\">भारत की जनसंख्या विशेषताओं (जनगणना 2011) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"1781\" data-end=\"2467\">\n<li data-section-id=\"12yn3qv\" data-start=\"1781\" data-end=\"1959\">\n<p data-start=\"1784\" data-end=\"1959\"><strong data-start=\"1784\" data-end=\"1869\">Hindi is the most widely spoken scheduled language in India, followed by Bengali.</strong><br data-start=\"1869\" data-end=\"1872\" /><strong data-start=\"1875\" data-end=\"1959\">हिंदी भारत की सबसे अधिक बोली जाने वाली अनुसूचित भाषा है, इसके बाद बंगाली आती है।</strong></p>\n</li>\n<li data-section-id=\"16vkkpy\" data-start=\"1961\" data-end=\"2118\">\n<p data-start=\"1964\" data-end=\"2118\">According to <strong data-start=\"1977\" data-end=\"1992\">Census 2011</strong>, the <strong data-start=\"1998\" data-end=\"2046\">overall literacy rate of India is about 74%.</strong><br data-start=\"2046\" data-end=\"2049\" /><strong data-start=\"2052\" data-end=\"2067\">जनगणना 2011</strong> के अनुसार भारत की <strong data-start=\"2086\" data-end=\"2114\">कुल साक्षरता दर लगभग 74%</strong> है।</p>\n</li>\n<li data-section-id=\"15y8e4x\" data-start=\"2120\" data-end=\"2301\">\n<p data-start=\"2123\" data-end=\"2301\"><strong data-start=\"2123\" data-end=\"2218\">Hindus constitute nearly 79.8% of India&rsquo;s population, while Muslims constitute about 14.2%.</strong><br data-start=\"2218\" data-end=\"2221\" /><strong data-start=\"2224\" data-end=\"2301\">हिंदू भारत की लगभग 79.8% जनसंख्या बनाते हैं, जबकि मुसलमान लगभग 14.2% हैं।</strong></p>\n</li>\n<li data-section-id=\"mconlx\" data-start=\"2303\" data-end=\"2467\">\n<p data-start=\"2306\" data-end=\"2467\"><strong data-start=\"2306\" data-end=\"2383\">Sikhs form the largest religious group in India after Hindus and Muslims.</strong><br data-start=\"2383\" data-end=\"2386\" /><strong data-start=\"2389\" data-end=\"2467\">हिंदुओं और मुसलमानों के बाद भारत में सिख तीसरा सबसे बड़ा धार्मिक समूह हैं।</strong></p>\n</li>\n</ol>\n<hr data-start=\"2469\" data-end=\"2472\" />\n<h3 data-section-id=\"8kendh\" data-start=\"2474\" data-end=\"2522\">Which of the above statements are correct?</h3>\n<p data-start=\"2523\" data-end=\"2561\"><strong data-start=\"2523\" data-end=\"2561\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"2563\" data-end=\"2691\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"2593\" data-end=\"2596\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"2632\" data-end=\"2635\" />(3) 1, 2, 3 and 4<br data-start=\"2656\" data-end=\"2659\" />(4) 2 and 3 only / केवल 2 और 3</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"237\" data-end=\"446\"><strong data-start=\"237\" data-end=\"336\">Consider the following statements regarding population characteristics of Indian States/UTs:</strong><br data-start=\"336\" data-end=\"339\" /><strong data-start=\"339\" data-end=\"446\">भारतीय राज्यों/केंद्रशासित प्रदेशों की जनसंख्या विशेषताओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"448\" data-end=\"1272\">\n<li data-section-id=\"9a3c\" data-start=\"448\" data-end=\"681\">\n<p data-start=\"451\" data-end=\"681\"><strong data-start=\"451\" data-end=\"468\">Uttar Pradesh</strong> has the highest total population among Indian states, while <strong data-start=\"529\" data-end=\"539\">Sikkim</strong> has the lowest among states.<br data-start=\"568\" data-end=\"571\" /><strong data-start=\"574\" data-end=\"590\">उत्तर प्रदेश</strong> भारत का सबसे अधिक जनसंख्या वाला राज्य है, जबकि <strong data-start=\"638\" data-end=\"649\">सिक्किम</strong> सबसे कम जनसंख्या वाला राज्य है।</p>\n</li>\n<li data-section-id=\"bdzbco\" data-start=\"683\" data-end=\"821\">\n<p data-start=\"686\" data-end=\"821\">Among Union Territories, <strong data-start=\"711\" data-end=\"726\">Lakshadweep</strong> has the lowest population.<br data-start=\"753\" data-end=\"756\" />केंद्रशासित प्रदेशों में <strong data-start=\"784\" data-end=\"797\">लक्षद्वीप</strong> की जनसंख्या सबसे कम है।</p>\n</li>\n<li data-section-id=\"16g5y2v\" data-start=\"823\" data-end=\"1051\">\n<p data-start=\"826\" data-end=\"1051\"><strong data-start=\"826\" data-end=\"835\">Bihar</strong> has the highest population density among Indian states, while <strong data-start=\"898\" data-end=\"919\">Arunachal Pradesh</strong> has the lowest.<br data-start=\"935\" data-end=\"938\" /><strong data-start=\"941\" data-end=\"950\">बिहार</strong> भारत का सबसे अधिक जनसंख्या घनत्व वाला राज्य है, जबकि <strong data-start=\"1004\" data-end=\"1022\">अरुणाचल प्रदेश</strong> सबसे कम घनत्व वाला राज्य है।</p>\n</li>\n<li data-section-id=\"1vosj2v\" data-start=\"1053\" data-end=\"1272\">\n<p data-start=\"1056\" data-end=\"1272\">According to <strong data-start=\"1069\" data-end=\"1084\">Census 2011</strong>, <strong data-start=\"1086\" data-end=\"1096\">Kerala</strong> has the highest sex ratio among states, while <strong data-start=\"1143\" data-end=\"1154\">Haryana</strong> has the lowest.<br data-start=\"1170\" data-end=\"1173\" /><strong data-start=\"1176\" data-end=\"1191\">जनगणना 2011</strong> के अनुसार <strong data-start=\"1202\" data-end=\"1210\">केरल</strong> में सबसे अधिक लिंगानुपात है, जबकि <strong data-start=\"1245\" data-end=\"1256\">हरियाणा</strong> में सबसे कम है।</p>\n</li>\n</ol>\n<hr data-start=\"1274\" data-end=\"1277\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1279\" data-end=\"1327\">Which of the above statements are correct?</h3>\n<p data-start=\"1328\" data-end=\"1366\"><strong data-start=\"1328\" data-end=\"1366\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1368\" data-end=\"1496\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1398\" data-end=\"1401\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1437\" data-end=\"1440\" />(3) 1, 2, 3 and 4<br data-start=\"1461\" data-end=\"1464\" />(4) 2 and 4 only / केवल 2 और 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1595\" data-end=\"1729\"><strong data-start=\"1595\" data-end=\"1666\">&nbsp;Consider the following statements regarding population concepts:</strong><br data-start=\"1666\" data-end=\"1669\" /><strong data-start=\"1669\" data-end=\"1729\">जनसंख्या से संबंधित निम्नलिखित अवधारणाओं पर विचार कीजिए:</strong></p>\n<ol data-start=\"1731\" data-end=\"2540\">\n<li data-section-id=\"1ctq4iz\" data-start=\"1731\" data-end=\"1964\">\n<p data-start=\"1734\" data-end=\"1964\">According to <strong data-start=\"1747\" data-end=\"1762\">Census 2011</strong>, <strong data-start=\"1764\" data-end=\"1804\">Kerala has the highest literacy rate</strong>, while <strong data-start=\"1812\" data-end=\"1864\">Bihar has the lowest literacy rate among states.</strong><br data-start=\"1864\" data-end=\"1867\" /><strong data-start=\"1870\" data-end=\"1885\">जनगणना 2011</strong> के अनुसार <strong data-start=\"1896\" data-end=\"1929\">केरल की साक्षरता दर सबसे अधिक</strong> है, जबकि <strong data-start=\"1939\" data-end=\"1960\">बिहार में सबसे कम</strong> है।</p>\n</li>\n<li data-section-id=\"1af9b3f\" data-start=\"1966\" data-end=\"2157\">\n<p data-start=\"1969\" data-end=\"2157\"><strong data-start=\"1969\" data-end=\"1994\">Physiological density</strong> is defined as the ratio of <strong data-start=\"2022\" data-end=\"2066\">total population to net cultivated area.</strong><br data-start=\"2066\" data-end=\"2069\" /><strong data-start=\"2072\" data-end=\"2113\">शारीरिक घनत्व (Physiological Density)</strong> = <strong data-start=\"2116\" data-end=\"2156\">कुल जनसंख्या / शुद्ध कृषि योग्य भूमि</strong>।</p>\n</li>\n<li data-section-id=\"33kc0r\" data-start=\"2159\" data-end=\"2353\">\n<p data-start=\"2162\" data-end=\"2353\"><strong data-start=\"2162\" data-end=\"2186\">Agricultural density</strong> is defined as the ratio of <strong data-start=\"2214\" data-end=\"2265\">agricultural population to net cultivable land.</strong><br data-start=\"2265\" data-end=\"2268\" /><strong data-start=\"2271\" data-end=\"2308\">कृषि घनत्व (Agricultural Density)</strong> = <strong data-start=\"2311\" data-end=\"2352\">कृषि जनसंख्या / शुद्ध कृषि योग्य भूमि</strong>।</p>\n</li>\n<li data-section-id=\"1pvz30s\" data-start=\"2355\" data-end=\"2540\">\n<p data-start=\"2358\" data-end=\"2540\"><strong data-start=\"2358\" data-end=\"2386\">Actual population growth</strong> is calculated as:<br data-start=\"2404\" data-end=\"2407\" />(Births &minus; Deaths) + (In-Migration &minus; Out-Migration).<br data-start=\"2461\" data-end=\"2464\" /><strong data-start=\"2467\" data-end=\"2495\">वास्तविक जनसंख्या वृद्धि</strong> =<br data-start=\"2497\" data-end=\"2500\" />(जन्म &minus; मृत्यु) + (आव्रजन &minus; निर्गमन)।</p>\n</li>\n</ol>\n<hr data-start=\"2542\" data-end=\"2545\" />\n<h3 data-section-id=\"8kendh\" data-start=\"2547\" data-end=\"2595\">Which of the above statements are correct?</h3>\n<p data-start=\"2596\" data-end=\"2634\"><strong data-start=\"2596\" data-end=\"2634\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"2636\" data-end=\"2768\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"2666\" data-end=\"2669\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"2705\" data-end=\"2708\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"2744\" data-end=\"2747\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"200\" data-end=\"348\"><strong data-start=\"200\" data-end=\"274\">Consider the following statements regarding demographic indicators:</strong><br data-start=\"274\" data-end=\"277\" /><strong data-start=\"277\" data-end=\"348\">जनसांख्यिकीय संकेतकों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"350\" data-end=\"1188\">\n<li data-section-id=\"boicoq\" data-start=\"350\" data-end=\"538\">\n<p data-start=\"353\" data-end=\"538\"><strong data-start=\"353\" data-end=\"379\">Crude Birth Rate (CBR)</strong> is the number of live births in a year per <strong data-start=\"423\" data-end=\"444\">1,000 population.</strong><br data-start=\"444\" data-end=\"447\" /><strong data-start=\"450\" data-end=\"473\">क्रूड जन्म दर (CBR)</strong> = एक वर्ष में प्रति <strong data-start=\"494\" data-end=\"537\">1000 जनसंख्या पर जीवित जन्मों की संख्या</strong>।</p>\n</li>\n<li data-section-id=\"g0cnr4\" data-start=\"540\" data-end=\"726\">\n<p data-start=\"543\" data-end=\"726\"><strong data-start=\"543\" data-end=\"569\">Crude Death Rate (CDR)</strong> refers to the number of deaths in a year per <strong data-start=\"615\" data-end=\"636\">1,000 population.</strong><br data-start=\"636\" data-end=\"639\" /><strong data-start=\"642\" data-end=\"667\">क्रूड मृत्यु दर (CDR)</strong> = एक वर्ष में प्रति <strong data-start=\"688\" data-end=\"725\">1000 जनसंख्या पर मृत्यु की संख्या</strong>।</p>\n</li>\n<li data-section-id=\"9qc0j3\" data-start=\"728\" data-end=\"972\">\n<p data-start=\"731\" data-end=\"972\"><strong data-start=\"731\" data-end=\"763\">General Fertility Rate (GFR)</strong> is the number of live births per <strong data-start=\"797\" data-end=\"857\">1,000 women in the reproductive age group (15&ndash;49 years).</strong><br data-start=\"857\" data-end=\"860\" /><strong data-start=\"863\" data-end=\"890\">सामान्य प्रजनन दर (GFR)</strong> = <strong data-start=\"893\" data-end=\"918\">15&ndash;49 वर्ष की महिलाओं</strong> में प्रति <strong data-start=\"929\" data-end=\"971\">1000 महिलाओं पर जीवित जन्मों की संख्या</strong>।</p>\n</li>\n<li data-section-id=\"n26q6g\" data-start=\"974\" data-end=\"1188\">\n<p data-start=\"977\" data-end=\"1188\"><strong data-start=\"977\" data-end=\"1008\">Infant Mortality Rate (IMR)</strong> is the number of deaths of infants below <strong data-start=\"1050\" data-end=\"1083\">1 year per 1,000 live births.</strong><br data-start=\"1083\" data-end=\"1086\" /><strong data-start=\"1089\" data-end=\"1113\">शिशु मृत्यु दर (IMR)</strong> = <strong data-start=\"1116\" data-end=\"1156\">1 वर्ष से कम आयु के बच्चों की मृत्यु</strong> प्रति <strong data-start=\"1163\" data-end=\"1187\">1000 जीवित जन्मों पर</strong>।</p>\n</li>\n</ol>\n<hr data-start=\"1190\" data-end=\"1193\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1195\" data-end=\"1243\">Which of the above statements are correct?</h3>\n<p data-start=\"1244\" data-end=\"1282\"><strong data-start=\"1244\" data-end=\"1282\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1284\" data-end=\"1416\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1314\" data-end=\"1317\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1353\" data-end=\"1356\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"1392\" data-end=\"1395\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1509\" data-end=\"1656\"><strong data-start=\"1509\" data-end=\"1581\">Consider the following statements regarding demographic concepts:</strong><br data-start=\"1581\" data-end=\"1584\" /><strong data-start=\"1584\" data-end=\"1656\">जनसांख्यिकीय अवधारणाओं के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"1658\" data-end=\"2550\">\n<li data-section-id=\"1qtn40p\" data-start=\"1658\" data-end=\"1883\">\n<p data-start=\"1661\" data-end=\"1883\"><strong data-start=\"1661\" data-end=\"1691\">Total Fertility Rate (TFR)</strong> is the average number of children a woman is expected to have during her reproductive life.<br data-start=\"1783\" data-end=\"1786\" /><strong data-start=\"1789\" data-end=\"1812\">कुल प्रजनन दर (TFR)</strong> = एक महिला के अपने प्रजनन जीवनकाल में औसतन होने वाले बच्चों की संख्या।</p>\n</li>\n<li data-section-id=\"cu0zd2\" data-start=\"1885\" data-end=\"2078\">\n<p data-start=\"1888\" data-end=\"2078\"><strong data-start=\"1888\" data-end=\"1922\">Maternal Mortality Ratio (MMR)</strong> is the number of maternal deaths per <strong data-start=\"1960\" data-end=\"1984\">100,000 live births.</strong><br data-start=\"1984\" data-end=\"1987\" /><strong data-start=\"1990\" data-end=\"2018\">मातृ मृत्यु अनुपात (MMR)</strong> = प्रति <strong data-start=\"2027\" data-end=\"2077\">1,00,000 जीवित जन्मों पर मातृ मृत्यु की संख्या</strong>।</p>\n</li>\n<li data-section-id=\"n8xkeh\" data-start=\"2080\" data-end=\"2269\">\n<p data-start=\"2083\" data-end=\"2269\"><strong data-start=\"2083\" data-end=\"2102\">Child Sex Ratio</strong> refers to the number of females per <strong data-start=\"2139\" data-end=\"2176\">1,000 males in the 0&ndash;6 age group.</strong><br data-start=\"2176\" data-end=\"2179\" /><strong data-start=\"2182\" data-end=\"2200\">बाल लिंगानुपात</strong> = <strong data-start=\"2203\" data-end=\"2268\">0&ndash;6 वर्ष आयु वर्ग में प्रति 1000 पुरुषों पर महिलाओं की संख्या</strong>।</p>\n</li>\n<li data-section-id=\"1qgwfoo\" data-start=\"2271\" data-end=\"2550\">\n<p data-start=\"2274\" data-end=\"2550\"><strong data-start=\"2274\" data-end=\"2298\">Demographic dividend</strong> refers to the economic growth potential when the <strong data-start=\"2348\" data-end=\"2388\">working-age population (15&ndash;64 years)</strong> becomes larger than the dependent population.<br data-start=\"2434\" data-end=\"2437\" /><strong data-start=\"2440\" data-end=\"2463\">जनसांख्यिकीय लाभांश</strong> वह स्थिति है जब <strong data-start=\"2480\" data-end=\"2514\">कार्यशील आयु वर्ग (15&ndash;64 वर्ष)</strong> आश्रित जनसंख्या से अधिक हो जाता है।</p>\n</li>\n</ol>\n<hr data-start=\"2552\" data-end=\"2555\" />\n<h3 data-section-id=\"8kendh\" data-start=\"2557\" data-end=\"2605\">Which of the above statements are correct?</h3>\n<p data-start=\"2606\" data-end=\"2644\"><strong data-start=\"2606\" data-end=\"2644\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"2646\" data-end=\"2774\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"2676\" data-end=\"2679\" />(2) 2 and 3 only / केवल 2 और 3<br data-start=\"2709\" data-end=\"2712\" />(3) 1, 2, 3 and 4<br data-start=\"2733\" data-end=\"2736\" />(4) 1, 3 and 4 only / केवल 1, 3 और 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"254\" data-end=\"410\"><strong data-start=\"254\" data-end=\"332\">Consider the following statements regarding rural settlements in India:</strong><br data-start=\"332\" data-end=\"335\" /><strong data-start=\"335\" data-end=\"410\">भारत में ग्रामीण बस्तियों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"412\" data-end=\"1612\">\n<li data-section-id=\"ovft1p\" data-start=\"412\" data-end=\"736\">\n<p data-start=\"415\" data-end=\"736\"><strong data-start=\"415\" data-end=\"452\">Clustered (Nucleated) settlements</strong> consist of houses that are closely packed together and are commonly found in fertile plains such as the <strong data-start=\"557\" data-end=\"574\">Ganga plains.</strong><br data-start=\"574\" data-end=\"577\" /><strong data-start=\"580\" data-end=\"621\">समूहित (Clustered/Nucleated) बस्तियों</strong> में घर एक-दूसरे के बहुत पास स्थित होते हैं और ये प्रायः <strong data-start=\"678\" data-end=\"697\">गंगा के मैदानों</strong> जैसे उपजाऊ क्षेत्रों में पाई जाती हैं।</p>\n</li>\n<li data-section-id=\"9066os\" data-start=\"738\" data-end=\"1044\">\n<p data-start=\"741\" data-end=\"1044\"><strong data-start=\"741\" data-end=\"784\">Semi-clustered (Fragmented) settlements</strong> develop when a large village begins to break into smaller groups due to social separation or overcrowding.<br data-start=\"891\" data-end=\"894\" /><strong data-start=\"897\" data-end=\"938\">अर्ध-समूहित (Semi-clustered) बस्तियाँ</strong> तब बनती हैं जब एक बड़ा गाँव सामाजिक विभाजन या अधिक जनसंख्या के कारण छोटे समूहों में विभाजित होने लगता है।</p>\n</li>\n<li data-section-id=\"1wvqngw\" data-start=\"1046\" data-end=\"1269\">\n<p data-start=\"1049\" data-end=\"1269\"><strong data-start=\"1049\" data-end=\"1073\">Hamleted settlements</strong> consist of a village divided into several small units having their own local names.<br data-start=\"1157\" data-end=\"1160\" /><strong data-start=\"1163\" data-end=\"1184\">हैमलेटेड बस्तियों</strong> में एक गाँव कई छोटे-छोटे भागों में विभाजित होता है, जिनके अपने स्थानीय नाम होते हैं।</p>\n</li>\n<li data-section-id=\"1v7bcy1\" data-start=\"1271\" data-end=\"1612\">\n<p data-start=\"1274\" data-end=\"1612\"><strong data-start=\"1274\" data-end=\"1310\">Dispersed (Isolated) settlements</strong> consist of scattered houses and are generally found in mountainous or forested regions such as <strong data-start=\"1406\" data-end=\"1441\">Himachal Pradesh and Meghalaya.</strong><br data-start=\"1441\" data-end=\"1444\" /><strong data-start=\"1447\" data-end=\"1489\">प्रकीर्ण (Dispersed/Isolated) बस्तियाँ</strong> बिखरे हुए घरों से बनी होती हैं और सामान्यतः <strong data-start=\"1534\" data-end=\"1561\">पर्वतीय या वन क्षेत्रों</strong> जैसे <strong data-start=\"1567\" data-end=\"1594\">हिमाचल प्रदेश और मेघालय</strong> में पाई जाती हैं।</p>\n</li>\n</ol>\n<hr data-start=\"1614\" data-end=\"1617\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1619\" data-end=\"1667\">Which of the above statements are correct?</h3>\n<p data-start=\"1668\" data-end=\"1706\"><strong data-start=\"1668\" data-end=\"1706\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1708\" data-end=\"1840\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1738\" data-end=\"1741\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1777\" data-end=\"1780\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"1816\" data-end=\"1819\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"277\" data-end=\"449\"><strong data-start=\"277\" data-end=\"361\">&nbsp;Consider the following factors influencing the location of rural settlements:</strong><br data-start=\"361\" data-end=\"364\" /><strong data-start=\"364\" data-end=\"449\">ग्रामीण बस्तियों के स्थान को प्रभावित करने वाले निम्नलिखित कारकों पर विचार कीजिए:</strong></p>\n<ol data-start=\"451\" data-end=\"1332\">\n<li data-section-id=\"5t8n7s\" data-start=\"451\" data-end=\"696\">\n<p data-start=\"454\" data-end=\"696\">Availability of <strong data-start=\"470\" data-end=\"529\">water sources such as rivers, lakes, wells, and springs</strong> is the most important factor for rural settlements.<br data-start=\"581\" data-end=\"584\" /><strong data-start=\"587\" data-end=\"619\">नदियाँ, झीलें, कुएँ और झरनों</strong> जैसे जल स्रोतों की उपलब्धता ग्रामीण बस्तियों के लिए सबसे महत्वपूर्ण कारक है।</p>\n</li>\n<li data-section-id=\"8nrmp4\" data-start=\"698\" data-end=\"880\">\n<p data-start=\"701\" data-end=\"880\"><strong data-start=\"701\" data-end=\"717\">Fertile soil</strong> encourages settlement because it supports agricultural activities.<br data-start=\"784\" data-end=\"787\" /><strong data-start=\"790\" data-end=\"806\">उपजाऊ मिट्टी</strong> कृषि गतिविधियों को समर्थन देती है, इसलिए यह बसावट को प्रोत्साहित करती है।</p>\n</li>\n<li data-section-id=\"n9nntm\" data-start=\"882\" data-end=\"1047\">\n<p data-start=\"885\" data-end=\"1047\">Slightly <strong data-start=\"894\" data-end=\"920\">elevated land (relief)</strong> is often preferred to avoid floods.<br data-start=\"956\" data-end=\"959\" />बाढ़ से बचने के लिए प्रायः <strong data-start=\"989\" data-end=\"1017\">थोड़ी ऊँची भूमि (Relief)</strong> को बसावट के लिए चुना जाता है।</p>\n</li>\n<li data-section-id=\"erh6gv\" data-start=\"1049\" data-end=\"1332\">\n<p data-start=\"1052\" data-end=\"1332\">Availability of <strong data-start=\"1068\" data-end=\"1120\">building materials such as wood, stone, and clay</strong> and the need for <strong data-start=\"1138\" data-end=\"1149\">defence</strong> historically influenced settlement locations.<br data-start=\"1195\" data-end=\"1198\" /><strong data-start=\"1201\" data-end=\"1227\">लकड़ी, पत्थर और मिट्टी</strong> जैसे निर्माण सामग्री की उपलब्धता तथा <strong data-start=\"1265\" data-end=\"1286\">रक्षा की आवश्यकता</strong> भी ऐतिहासिक रूप से बसावट को प्रभावित करती थी।</p>\n</li>\n</ol>\n<hr data-start=\"1334\" data-end=\"1337\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1339\" data-end=\"1387\">Which of the above statements are correct?</h3>\n<p data-start=\"1388\" data-end=\"1426\"><strong data-start=\"1388\" data-end=\"1426\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1428\" data-end=\"1560\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1458\" data-end=\"1461\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1497\" data-end=\"1500\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"1536\" data-end=\"1539\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1637\" data-end=\"1790\"><strong data-start=\"1637\" data-end=\"1715\">Consider the following statements regarding urban settlements in India:</strong><br data-start=\"1715\" data-end=\"1718\" /><strong data-start=\"1718\" data-end=\"1790\">भारत में शहरी बस्तियों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"1792\" data-end=\"2786\">\n<li data-section-id=\"1g417z0\" data-start=\"1792\" data-end=\"2100\">\n<p data-start=\"1795\" data-end=\"2100\"><strong data-start=\"1795\" data-end=\"1814\">Statutory towns</strong> are urban areas that are legally declared by the government such as Municipal Corporations, Municipalities, or Cantonment Boards.<br data-start=\"1944\" data-end=\"1947\" /><strong data-start=\"1950\" data-end=\"1984\">सांविधिक नगर (Statutory Towns)</strong> वे शहरी क्षेत्र हैं जिन्हें सरकार द्वारा कानूनी रूप से घोषित किया जाता है, जैसे नगर निगम, नगरपालिका या छावनी बोर्ड।</p>\n</li>\n<li data-section-id=\"pqxh94\" data-start=\"2102\" data-end=\"2447\">\n<p data-start=\"2105\" data-end=\"2447\">A <strong data-start=\"2107\" data-end=\"2122\">Census town</strong> must have a population of at least <strong data-start=\"2158\" data-end=\"2167\">5,000</strong>, density of <strong data-start=\"2180\" data-end=\"2205\">400 persons per sq km</strong>, and <strong data-start=\"2211\" data-end=\"2274\">75% of male workers engaged in non-agricultural activities.</strong><br data-start=\"2274\" data-end=\"2277\" /><strong data-start=\"2280\" data-end=\"2308\">जनगणना नगर (Census Town)</strong> के लिए जनसंख्या कम से कम <strong data-start=\"2334\" data-end=\"2342\">5000</strong>, घनत्व <strong data-start=\"2350\" data-end=\"2381\">400 व्यक्ति प्रति वर्ग किमी</strong>, तथा <strong data-start=\"2387\" data-end=\"2435\">75% पुरुष कार्यकर्ता गैर-कृषि गतिविधियों में</strong> होने चाहिए।</p>\n</li>\n<li data-section-id=\"zdmvsw\" data-start=\"2449\" data-end=\"2626\">\n<p data-start=\"2452\" data-end=\"2626\"><strong data-start=\"2452\" data-end=\"2475\">Metropolitan cities</strong> are cities having a population of <strong data-start=\"2510\" data-end=\"2534\">more than 1 million.</strong><br data-start=\"2534\" data-end=\"2537\" /><strong data-start=\"2540\" data-end=\"2572\">महानगर (Metropolitan Cities)</strong> वे शहर हैं जिनकी जनसंख्या <strong data-start=\"2599\" data-end=\"2617\">10 लाख से अधिक</strong> होती है।</p>\n</li>\n<li data-section-id=\"1miftnc\" data-start=\"2628\" data-end=\"2786\">\n<p data-start=\"2631\" data-end=\"2786\"><strong data-start=\"2631\" data-end=\"2645\">Megacities</strong> are cities with a population exceeding <strong data-start=\"2685\" data-end=\"2700\">10 million.</strong><br data-start=\"2700\" data-end=\"2703\" /><strong data-start=\"2706\" data-end=\"2731\">मेगासिटी (Megacities)</strong> वे शहर हैं जिनकी जनसंख्या <strong data-start=\"2758\" data-end=\"2777\">1 करोड़ से अधिक</strong> होती है।</p>\n</li>\n</ol>\n<hr data-start=\"2788\" data-end=\"2791\" />\n<h3 data-section-id=\"8kendh\" data-start=\"2793\" data-end=\"2841\">Which of the above statements are correct?</h3>\n<p data-start=\"2842\" data-end=\"2880\"><strong data-start=\"2842\" data-end=\"2880\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"2882\" data-end=\"3010\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"2912\" data-end=\"2915\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"2951\" data-end=\"2954\" />(3) 1, 2, 3 and 4<br data-start=\"2975\" data-end=\"2978\" />(4) 2 and 4 only / केवल 2 और 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"3097\" data-end=\"3239\"><strong data-start=\"3097\" data-end=\"3170\">&nbsp;Consider the following statements regarding urbanisation in India:</strong><br data-start=\"3170\" data-end=\"3173\" /><strong data-start=\"3173\" data-end=\"3239\">भारत में नगरीकरण के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"3241\" data-end=\"4086\">\n<li data-section-id=\"c510q5\" data-start=\"3241\" data-end=\"3424\">\n<p data-start=\"3244\" data-end=\"3424\">According to <strong data-start=\"3257\" data-end=\"3272\">Census 2011</strong>, about <strong data-start=\"3280\" data-end=\"3333\">31.2% of India&rsquo;s population lives in urban areas.</strong><br data-start=\"3333\" data-end=\"3336\" /><strong data-start=\"3339\" data-end=\"3354\">जनगणना 2011</strong> के अनुसार भारत की लगभग <strong data-start=\"3378\" data-end=\"3424\">31.2% जनसंख्या शहरी क्षेत्रों में रहती है।</strong></p>\n</li>\n<li data-section-id=\"i8c5yn\" data-start=\"3426\" data-end=\"3629\">\n<p data-start=\"3429\" data-end=\"3629\">According to <strong data-start=\"3442\" data-end=\"3468\">UN-Habitat projections</strong>, India&rsquo;s urban population may reach nearly <strong data-start=\"3512\" data-end=\"3528\">40% by 2035.</strong><br data-start=\"3528\" data-end=\"3531\" /><strong data-start=\"3534\" data-end=\"3558\">UN-Habitat के अनुमान</strong> के अनुसार 2035 तक भारत की शहरी जनसंख्या लगभग <strong data-start=\"3604\" data-end=\"3611\">40%</strong> तक पहुँच सकती है।</p>\n</li>\n<li data-section-id=\"108w68w\" data-start=\"3631\" data-end=\"3838\">\n<p data-start=\"3634\" data-end=\"3838\">The <strong data-start=\"3638\" data-end=\"3681\">Pradhan Mantri Awas Yojana (PMAY-Urban)</strong> aims to provide affordable housing to the urban poor.<br data-start=\"3735\" data-end=\"3738\" /><strong data-start=\"3741\" data-end=\"3781\">प्रधानमंत्री आवास योजना (PMAY-Urban)</strong> का उद्देश्य शहरी गरीबों को किफायती आवास उपलब्ध कराना है।</p>\n</li>\n<li data-section-id=\"1evp06o\" data-start=\"3840\" data-end=\"4086\">\n<p data-start=\"3843\" data-end=\"4086\">The <strong data-start=\"3847\" data-end=\"3871\">Smart Cities Mission</strong> aims to promote sustainable and technology-driven development in <strong data-start=\"3937\" data-end=\"3970\">100 selected cities of India.</strong><br data-start=\"3970\" data-end=\"3973\" /><strong data-start=\"3976\" data-end=\"3997\">स्मार्ट सिटी मिशन</strong> का उद्देश्य भारत के <strong data-start=\"4018\" data-end=\"4037\">100 चयनित शहरों</strong> में सतत और तकनीक आधारित विकास को बढ़ावा देना है।</p>\n</li>\n</ol>\n<hr data-start=\"4088\" data-end=\"4091\" />\n<h3 data-section-id=\"8kendh\" data-start=\"4093\" data-end=\"4141\">Which of the above statements are correct?</h3>\n<p data-start=\"4142\" data-end=\"4180\"><strong data-start=\"4142\" data-end=\"4180\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"4182\" data-end=\"4308\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"4212\" data-end=\"4215\" />(2) 2 and 3 only / केवल 2 और 3<br data-start=\"4245\" data-end=\"4248\" />(3) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"4284\" data-end=\"4287\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"228\" data-end=\"415\"><strong data-start=\"228\" data-end=\"319\">Consider the following statements regarding population control initiatives in India:</strong><br data-start=\"319\" data-end=\"322\" /><strong data-start=\"322\" data-end=\"415\">भारत में जनसंख्या नियंत्रण से संबंधित पहलों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"417\" data-end=\"1557\">\n<li data-section-id=\"1er9ec1\" data-start=\"417\" data-end=\"726\">\n<p data-start=\"420\" data-end=\"726\">The <strong data-start=\"424\" data-end=\"461\">National Population Policy (2000)</strong> aims to achieve replacement-level fertility and improve family planning and reproductive health services.<br data-start=\"567\" data-end=\"570\" /><strong data-start=\"573\" data-end=\"607\">राष्ट्रीय जनसंख्या नीति (2000)</strong> का उद्देश्य प्रतिस्थापन स्तर की प्रजनन दर प्राप्त करना तथा परिवार नियोजन और प्रजनन स्वास्थ्य सेवाओं में सुधार करना है।</p>\n</li>\n<li data-section-id=\"1qnitrw\" data-start=\"728\" data-end=\"960\">\n<p data-start=\"731\" data-end=\"960\"><strong data-start=\"731\" data-end=\"763\">Mission Parivar Vikas (2016)</strong> targets high-fertility districts to improve access to family planning services.<br data-start=\"843\" data-end=\"846\" /><strong data-start=\"849\" data-end=\"877\">मिशन परिवार विकास (2016)</strong> का उद्देश्य उच्च प्रजनन दर वाले जिलों में परिवार नियोजन सेवाओं की पहुँच बढ़ाना है।</p>\n</li>\n<li data-section-id=\"qq15nc\" data-start=\"962\" data-end=\"1272\">\n<p data-start=\"965\" data-end=\"1272\"><strong data-start=\"965\" data-end=\"975\">Antara</strong> (injectable contraceptive) and <strong data-start=\"1007\" data-end=\"1017\">Chhaya</strong> (Centchroman pill) are contraceptive methods introduced under the national family planning programme.<br data-start=\"1119\" data-end=\"1122\" /><strong data-start=\"1125\" data-end=\"1161\">अंतरा (Injectable contraceptive)</strong> और <strong data-start=\"1165\" data-end=\"1192\">छाया (Centchroman pill)</strong> राष्ट्रीय परिवार नियोजन कार्यक्रम के अंतर्गत शुरू की गई गर्भनिरोधक विधियाँ हैं।</p>\n</li>\n<li data-section-id=\"1hy2st3\" data-start=\"1274\" data-end=\"1557\">\n<p data-start=\"1277\" data-end=\"1557\">The <strong data-start=\"1281\" data-end=\"1317\">Sample Registration System (SRS)</strong> is the main system used in India to collect reliable statistics on birth rate, death rate, and fertility.<br data-start=\"1423\" data-end=\"1426\" /><strong data-start=\"1429\" data-end=\"1463\">सैंपल रजिस्ट्रेशन सिस्टम (SRS)</strong> भारत में जन्म दर, मृत्यु दर और प्रजनन दर के विश्वसनीय आँकड़े एकत्र करने की प्रमुख प्रणाली है।</p>\n</li>\n</ol>\n<hr data-start=\"1559\" data-end=\"1562\" />\n<h3 data-section-id=\"8kendh\" data-start=\"1564\" data-end=\"1612\">Which of the above statements are correct?</h3>\n<p data-start=\"1613\" data-end=\"1651\"><strong data-start=\"1613\" data-end=\"1651\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1653\" data-end=\"1785\">(1) 1 and 2 only / केवल 1 और 2<br data-start=\"1683\" data-end=\"1686\" />(2) 1, 2 and 3 only / केवल 1, 2 और 3<br data-start=\"1722\" data-end=\"1725\" />(3) 2, 3 and 4 only / केवल 2, 3 और 4<br data-start=\"1761\" data-end=\"1764\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"231\" data-end=\"422\"><strong data-start=\"231\" data-end=\"331\">Match the following population indicators with their correct values according to Census 2011:</strong><br data-start=\"331\" data-end=\"334\" /><strong data-start=\"334\" data-end=\"422\">जनगणना 2011 के अनुसार निम्नलिखित जनसंख्या संकेतकों का उनके सही मानों से मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"424\" data-end=\"662\">\n<thead data-start=\"424\" data-end=\"464\">\n<tr data-start=\"424\" data-end=\"464\">\n<th class=\"\" data-start=\"424\" data-end=\"445\" data-col-size=\"sm\">List I (Indicator)&nbsp;</th>\n<th class=\"\" data-start=\"445\" data-end=\"464\" data-col-size=\"sm\">&nbsp;List II (Value)</th>\n</tr>\n</thead>\n<tbody data-start=\"475\" data-end=\"662\">\n<tr data-start=\"475\" data-end=\"512\">\n<td data-start=\"475\" data-end=\"499\" data-col-size=\"sm\">A. Population Density</td>\n<td data-col-size=\"sm\" data-start=\"499\" data-end=\"512\">1. 17.64%</td>\n</tr>\n<tr data-start=\"513\" data-end=\"578\">\n<td data-start=\"513\" data-end=\"550\" data-col-size=\"sm\">B. Decadal Growth Rate (2001&ndash;2011)</td>\n<td data-col-size=\"sm\" data-start=\"550\" data-end=\"578\">2. 382 persons per sq km</td>\n</tr>\n<tr data-start=\"579\" data-end=\"627\">\n<td data-start=\"579\" data-end=\"615\" data-col-size=\"sm\">C. Annual Exponential Growth Rate</td>\n<td data-col-size=\"sm\" data-start=\"615\" data-end=\"627\">3. 1.64%</td>\n</tr>\n<tr data-start=\"628\" data-end=\"662\">\n<td data-start=\"628\" data-end=\"650\" data-col-size=\"sm\">D. Rural Population</td>\n<td data-col-size=\"sm\" data-start=\"650\" data-end=\"662\">4. 68.8%</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"664\" data-end=\"717\"><strong data-start=\"664\" data-end=\"694\">Select the correct answer:</strong><br data-start=\"694\" data-end=\"697\" /><strong data-start=\"697\" data-end=\"717\">सही उत्तर चुनिए:</strong></p>\n<p></p>\n<p data-start=\"719\" data-end=\"818\">(1) A-2, B-1, C-3, D-4<br data-start=\"741\" data-end=\"744\" />(2) A-1, B-2, C-3, D-4<br data-start=\"766\" data-end=\"769\" />(3) A-2, B-3, C-1, D-4<br data-start=\"791\" data-end=\"794\" />(4) A-3, B-1, C-2, D-4</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"889\" data-end=\"1059\"><strong data-start=\"889\" data-end=\"982\">Match the following demographic indicators with their values according to Census 2011:</strong><br data-start=\"982\" data-end=\"985\" /><strong data-start=\"985\" data-end=\"1059\">जनगणना 2011 के अनुसार निम्नलिखित जनसांख्यिकीय संकेतकों का मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"1061\" data-end=\"1272\">\n<thead data-start=\"1061\" data-end=\"1081\">\n<tr data-start=\"1061\" data-end=\"1081\">\n<th class=\"\" data-start=\"1061\" data-end=\"1070\" data-col-size=\"sm\">List I</th>\n<th class=\"\" data-start=\"1070\" data-end=\"1081\" data-col-size=\"sm\">List II</th>\n</tr>\n</thead>\n<tbody data-start=\"1092\" data-end=\"1272\">\n<tr data-start=\"1092\" data-end=\"1128\">\n<td data-start=\"1092\" data-end=\"1115\" data-col-size=\"sm\">A. Overall Sex Ratio</td>\n<td data-col-size=\"sm\" data-start=\"1115\" data-end=\"1128\">1. 74.04%</td>\n</tr>\n<tr data-start=\"1129\" data-end=\"1195\">\n<td data-start=\"1129\" data-end=\"1162\" data-col-size=\"sm\">B. Child Sex Ratio (0&ndash;6 years)</td>\n<td data-col-size=\"sm\" data-start=\"1162\" data-end=\"1195\">2. 943 females per 1000 males</td>\n</tr>\n<tr data-start=\"1196\" data-end=\"1233\">\n<td data-start=\"1196\" data-end=\"1223\" data-col-size=\"sm\">C. Overall Literacy Rate</td>\n<td data-col-size=\"sm\" data-start=\"1223\" data-end=\"1233\">3. 919</td>\n</tr>\n<tr data-start=\"1234\" data-end=\"1272\">\n<td data-start=\"1234\" data-end=\"1259\" data-col-size=\"sm\">D. Literacy Gender Gap</td>\n<td data-col-size=\"sm\" data-start=\"1259\" data-end=\"1272\">4. 16.68%</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"1274\" data-end=\"1327\"><strong data-start=\"1274\" data-end=\"1304\">Select the correct answer:</strong><br data-start=\"1304\" data-end=\"1307\" /><strong data-start=\"1307\" data-end=\"1327\">सही उत्तर चुनिए:</strong></p>\n<p data-start=\"1329\" data-end=\"1428\">(1) A-2, B-3, C-1, D-4<br data-start=\"1351\" data-end=\"1354\" />(2) A-1, B-2, C-3, D-4<br data-start=\"1376\" data-end=\"1379\" />(3) A-2, B-1, C-4, D-3<br data-start=\"1401\" data-end=\"1404\" />(4) A-3, B-2, C-1, D-4</p>\n<p data-start=\"1430\" data-end=\"1455\"></p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1498\" data-end=\"1662\"><strong data-start=\"1498\" data-end=\"1578\">Match the following population characteristics with the correct State/UT:</strong><br data-start=\"1578\" data-end=\"1581\" /><strong data-start=\"1581\" data-end=\"1662\">निम्नलिखित जनसंख्या विशेषताओं का सही राज्य/केंद्रशासित प्रदेश से मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"1664\" data-end=\"1887\">\n<thead data-start=\"1664\" data-end=\"1684\">\n<tr data-start=\"1664\" data-end=\"1684\">\n<th class=\"\" data-start=\"1664\" data-end=\"1673\" data-col-size=\"sm\">List I</th>\n<th class=\"\" data-start=\"1673\" data-end=\"1684\" data-col-size=\"sm\">List II</th>\n</tr>\n</thead>\n<tbody data-start=\"1695\" data-end=\"1887\">\n<tr data-start=\"1695\" data-end=\"1739\">\n<td data-start=\"1695\" data-end=\"1727\" data-col-size=\"sm\">A. Highest Population (State)</td>\n<td data-col-size=\"sm\" data-start=\"1727\" data-end=\"1739\">1. Bihar</td>\n</tr>\n<tr data-start=\"1740\" data-end=\"1789\">\n<td data-start=\"1740\" data-end=\"1769\" data-col-size=\"sm\">B. Highest Density (State)</td>\n<td data-col-size=\"sm\" data-start=\"1769\" data-end=\"1789\">2. Uttar Pradesh</td>\n</tr>\n<tr data-start=\"1790\" data-end=\"1842\">\n<td data-start=\"1790\" data-end=\"1818\" data-col-size=\"sm\">C. Lowest Density (State)</td>\n<td data-col-size=\"sm\" data-start=\"1818\" data-end=\"1842\">3. Arunachal Pradesh</td>\n</tr>\n<tr data-start=\"1843\" data-end=\"1887\">\n<td data-start=\"1843\" data-end=\"1874\" data-col-size=\"sm\">D. Highest Sex Ratio (State)</td>\n<td data-col-size=\"sm\" data-start=\"1874\" data-end=\"1887\">4. Kerala</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"1889\" data-end=\"1942\"><strong data-start=\"1889\" data-end=\"1919\">Select the correct answer:</strong><br data-start=\"1919\" data-end=\"1922\" /><strong data-start=\"1922\" data-end=\"1942\">सही उत्तर चुनिए:</strong></p>\n<p></p>\n<p data-start=\"1944\" data-end=\"2043\">(1) A-2, B-1, C-3, D-4<br data-start=\"1966\" data-end=\"1969\" />(2) A-1, B-2, C-3, D-4<br data-start=\"1991\" data-end=\"1994\" />(3) A-2, B-3, C-1, D-4<br data-start=\"2016\" data-end=\"2019\" />(4) A-4, B-1, C-2, D-3</p>",
+    "comp": "",
+    "options": [
+      "<p>2</p>",
+      "<p>1</p>",
+      "<p>4</p>",
+      "<p>3</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"2126\" data-end=\"2312\"><strong data-start=\"2126\" data-end=\"2222\">Consider the following statements regarding population and workforce statistics in India:</strong><br data-start=\"2222\" data-end=\"2225\" /><strong data-start=\"2225\" data-end=\"2312\">भारत में जनसंख्या एवं कार्यबल आँकड़ों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"2314\" data-end=\"3004\">\n<li data-section-id=\"9y0yb8\" data-start=\"2314\" data-end=\"2484\">\n<p data-start=\"2317\" data-end=\"2484\">A <strong data-start=\"2319\" data-end=\"2334\">Main Worker</strong> is a person who works for <strong data-start=\"2361\" data-end=\"2392\">183 days or more in a year.</strong><br data-start=\"2392\" data-end=\"2395\" /><strong data-start=\"2398\" data-end=\"2418\">मुख्य कार्यकर्ता</strong> वह व्यक्ति है जो वर्ष में <strong data-start=\"2445\" data-end=\"2469\">183 दिन या उससे अधिक</strong> कार्य करता है।</p>\n</li>\n<li data-section-id=\"9i7bon\" data-start=\"2486\" data-end=\"2638\">\n<p data-start=\"2489\" data-end=\"2638\">According to Census data, <strong data-start=\"2515\" data-end=\"2569\">about 54.6% of workers are engaged in agriculture.</strong><br data-start=\"2569\" data-end=\"2572\" />जनगणना के अनुसार लगभग <strong data-start=\"2597\" data-end=\"2638\">54.6% कार्यकर्ता कृषि में संलग्न हैं।</strong></p>\n</li>\n<li data-section-id=\"yd893\" data-start=\"2640\" data-end=\"2850\">\n<p data-start=\"2643\" data-end=\"2850\"><strong data-start=\"2643\" data-end=\"2650\">Goa</strong> is the most urbanized state in India, while <strong data-start=\"2695\" data-end=\"2704\">Delhi</strong> is the most urbanized Union Territory.<br data-start=\"2743\" data-end=\"2746\" /><strong data-start=\"2749\" data-end=\"2757\">गोवा</strong> भारत का सबसे अधिक नगरीकृत राज्य है, जबकि <strong data-start=\"2799\" data-end=\"2809\">दिल्ली</strong> सबसे अधिक नगरीकृत केंद्रशासित प्रदेश है।</p>\n</li>\n<li data-section-id=\"hk196n\" data-start=\"2852\" data-end=\"3004\">\n<p data-start=\"2855\" data-end=\"3004\"><strong data-start=\"2855\" data-end=\"2865\">Mumbai</strong> is the most populated city in India, followed by <strong data-start=\"2915\" data-end=\"2925\">Delhi.</strong><br data-start=\"2925\" data-end=\"2928\" /><strong data-start=\"2931\" data-end=\"2940\">मुंबई</strong> भारत का सबसे अधिक जनसंख्या वाला शहर है, इसके बाद <strong data-start=\"2990\" data-end=\"3000\">दिल्ली</strong> है।</p>\n</li>\n</ol>\n<p data-start=\"3006\" data-end=\"3093\"><strong data-start=\"3006\" data-end=\"3052\">Which of the above statements are correct?</strong><br data-start=\"3052\" data-end=\"3055\" /><strong data-start=\"3055\" data-end=\"3093\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"3095\" data-end=\"3179\">(1) 1 and 2 only<br data-start=\"3111\" data-end=\"3114\" />(2) 1, 2 and 3 only<br data-start=\"3133\" data-end=\"3136\" />(3) 2, 3 and 4 only<br data-start=\"3155\" data-end=\"3158\" />(4) 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"239\" data-end=\"439\"><strong data-start=\"239\" data-end=\"352\">Match the following religions with their approximate share in India&rsquo;s population according to Census 2011:</strong><br data-start=\"352\" data-end=\"355\" /><strong data-start=\"355\" data-end=\"439\">जनगणना 2011 के अनुसार निम्नलिखित धर्मों का उनकी जनसंख्या प्रतिशत से मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"441\" data-end=\"597\">\n<thead data-start=\"441\" data-end=\"485\">\n<tr data-start=\"441\" data-end=\"485\">\n<th class=\"\" data-start=\"441\" data-end=\"461\" data-col-size=\"sm\">List I (Religion)</th>\n<th class=\"\" data-start=\"461\" data-end=\"485\" data-col-size=\"sm\">List II (Percentage)</th>\n</tr>\n</thead>\n<tbody data-start=\"496\" data-end=\"597\">\n<tr data-start=\"496\" data-end=\"519\">\n<td data-start=\"496\" data-end=\"508\" data-col-size=\"sm\">A. Hindus</td>\n<td data-start=\"508\" data-end=\"519\" data-col-size=\"sm\">1. 1.7%</td>\n</tr>\n<tr data-start=\"520\" data-end=\"545\">\n<td data-start=\"520\" data-end=\"533\" data-col-size=\"sm\">B. Muslims</td>\n<td data-start=\"533\" data-end=\"545\" data-col-size=\"sm\">2. 79.8%</td>\n</tr>\n<tr data-start=\"546\" data-end=\"574\">\n<td data-start=\"546\" data-end=\"562\" data-col-size=\"sm\">C. Christians</td>\n<td data-col-size=\"sm\" data-start=\"562\" data-end=\"574\">3. 14.2%</td>\n</tr>\n<tr data-start=\"575\" data-end=\"597\">\n<td data-start=\"575\" data-end=\"586\" data-col-size=\"sm\">D. Sikhs</td>\n<td data-col-size=\"sm\" data-start=\"586\" data-end=\"597\">4. 2.3%</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"599\" data-end=\"652\"><strong data-start=\"599\" data-end=\"629\">Select the correct answer:</strong><br data-start=\"629\" data-end=\"632\" /><strong data-start=\"632\" data-end=\"652\">सही उत्तर चुनिए:</strong></p>\n<p></p>\n<p data-start=\"654\" data-end=\"753\">(1) A-2, B-3, C-4, D-1<br data-start=\"676\" data-end=\"679\" />(2) A-3, B-2, C-4, D-1<br data-start=\"701\" data-end=\"704\" />(3) A-2, B-4, C-3, D-1<br data-start=\"726\" data-end=\"729\" />(4) A-1, B-3, C-2, D-4</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"839\" data-end=\"1051\"><strong data-start=\"839\" data-end=\"947\">Consider the following statements regarding Scheduled Castes (SC) and Scheduled Tribes (ST) in India:</strong><br data-start=\"947\" data-end=\"950\" /><strong data-start=\"950\" data-end=\"1051\">भारत में अनुसूचित जाति (SC) और अनुसूचित जनजाति (ST) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"1053\" data-end=\"1672\">\n<li data-section-id=\"16zdvvg\" data-start=\"1053\" data-end=\"1187\">\n<p data-start=\"1056\" data-end=\"1187\">Scheduled Tribes constitute about <strong data-start=\"1090\" data-end=\"1121\">8.6% of India&rsquo;s population.</strong><br data-start=\"1121\" data-end=\"1124\" />अनुसूचित जनजातियाँ भारत की लगभग <strong data-start=\"1159\" data-end=\"1176\">8.6% जनसंख्या</strong> बनाती हैं।</p>\n</li>\n<li data-section-id=\"19xh5qw\" data-start=\"1189\" data-end=\"1346\">\n<p data-start=\"1192\" data-end=\"1346\"><strong data-start=\"1192\" data-end=\"1210\">Madhya Pradesh</strong> has the highest Scheduled Tribe population in absolute numbers.<br data-start=\"1274\" data-end=\"1277\" /><strong data-start=\"1280\" data-end=\"1295\">मध्य प्रदेश</strong> में अनुसूचित जनजातियों की कुल संख्या सबसे अधिक है।</p>\n</li>\n<li data-section-id=\"1dle44j\" data-start=\"1348\" data-end=\"1484\">\n<p data-start=\"1351\" data-end=\"1484\"><strong data-start=\"1351\" data-end=\"1362\">Mizoram</strong> has the highest percentage of Scheduled Tribe population.<br data-start=\"1420\" data-end=\"1423\" /><strong data-start=\"1426\" data-end=\"1436\">मिजोरम</strong> में अनुसूचित जनजातियों का प्रतिशत सबसे अधिक है।</p>\n</li>\n<li data-section-id=\"1e5wsy2\" data-start=\"1486\" data-end=\"1672\">\n<p data-start=\"1489\" data-end=\"1672\"><strong data-start=\"1489\" data-end=\"1542\">Punjab, Haryana, Delhi, Chandigarh and Puducherry</strong> have no notified Scheduled Tribes.<br data-start=\"1577\" data-end=\"1580\" /><strong data-start=\"1583\" data-end=\"1630\">पंजाब, हरियाणा, दिल्ली, चंडीगढ़ और पुडुचेरी</strong> में कोई अधिसूचित अनुसूचित जनजाति नहीं है।</p>\n</li>\n</ol>\n<p data-start=\"1674\" data-end=\"1761\"><strong data-start=\"1674\" data-end=\"1720\">Which of the above statements are correct?</strong><br data-start=\"1720\" data-end=\"1723\" /><strong data-start=\"1723\" data-end=\"1761\">उपरोक्त में से कौन-से कथन सही हैं?</strong></p>\n<p></p>\n<p data-start=\"1763\" data-end=\"1846\">(1) 1 and 2 only<br data-start=\"1779\" data-end=\"1782\" />(2) 1, 2 and 3 only<br data-start=\"1801\" data-end=\"1804\" />(3) 1, 2, 3 and 4<br data-start=\"1825\" data-end=\"1828\" />(4) 2 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1924\" data-end=\"2089\"><strong data-start=\"1924\" data-end=\"2015\">Match the following phases of population growth in India with their characteristics:</strong><br data-start=\"2015\" data-end=\"2018\" /><strong data-start=\"2018\" data-end=\"2089\">भारत में जनसंख्या वृद्धि के चरणों का उनकी विशेषताओं से मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"2091\" data-end=\"2346\">\n<thead data-start=\"2091\" data-end=\"2136\">\n<tr data-start=\"2091\" data-end=\"2136\">\n<th class=\"\" data-start=\"2091\" data-end=\"2108\" data-col-size=\"sm\">List I (Phase)</th>\n<th class=\"\" data-start=\"2108\" data-end=\"2136\" data-col-size=\"sm\">List II (Characteristic)</th>\n</tr>\n</thead>\n<tbody data-start=\"2147\" data-end=\"2346\">\n<tr data-start=\"2147\" data-end=\"2199\">\n<td data-start=\"2147\" data-end=\"2172\" data-col-size=\"sm\">A. Phase I (1901&ndash;1921)</td>\n<td data-start=\"2172\" data-end=\"2199\" data-col-size=\"sm\">1. Population explosion</td>\n</tr>\n<tr data-start=\"2200\" data-end=\"2248\">\n<td data-start=\"2200\" data-end=\"2226\" data-col-size=\"sm\">B. Phase II (1921&ndash;1951)</td>\n<td data-start=\"2226\" data-end=\"2248\" data-col-size=\"sm\">2. Stagnant growth</td>\n</tr>\n<tr data-start=\"2249\" data-end=\"2299\">\n<td data-start=\"2249\" data-end=\"2276\" data-col-size=\"sm\">C. Phase III (1951&ndash;1981)</td>\n<td data-col-size=\"sm\" data-start=\"2276\" data-end=\"2299\">3. Declining growth</td>\n</tr>\n<tr data-start=\"2300\" data-end=\"2346\">\n<td data-start=\"2300\" data-end=\"2326\" data-col-size=\"sm\">D. Phase IV (Post-1981)</td>\n<td data-col-size=\"sm\" data-start=\"2326\" data-end=\"2346\">4. Steady growth</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"2348\" data-end=\"2401\"><strong data-start=\"2348\" data-end=\"2378\">Select the correct answer:</strong><br data-start=\"2378\" data-end=\"2381\" /><strong data-start=\"2381\" data-end=\"2401\">सही उत्तर चुनिए:</strong></p>\n<p></p>\n<p data-start=\"2403\" data-end=\"2502\">(1) A-2, B-4, C-1, D-3<br data-start=\"2425\" data-end=\"2428\" />(2) A-1, B-2, C-3, D-4<br data-start=\"2450\" data-end=\"2453\" />(3) A-2, B-1, C-4, D-3<br data-start=\"2475\" data-end=\"2478\" />(4) A-3, B-4, C-1, D-2</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"2579\" data-end=\"2739\"><strong data-start=\"2579\" data-end=\"2660\">Consider the following statements regarding Census and migration in India:</strong><br data-start=\"2660\" data-end=\"2663\" /><strong data-start=\"2663\" data-end=\"2739\">भारत में जनगणना और प्रवासन के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"2741\" data-end=\"3528\">\n<li data-section-id=\"r7b10m\" data-start=\"2741\" data-end=\"2899\">\n<p data-start=\"2744\" data-end=\"2899\">The <strong data-start=\"2748\" data-end=\"2773\">first Census of India</strong> was conducted in <strong data-start=\"2791\" data-end=\"2831\">1872 during the tenure of Lord Mayo.</strong><br data-start=\"2831\" data-end=\"2834\" />भारत की <strong data-start=\"2845\" data-end=\"2887\">पहली जनगणना 1872 में लॉर्ड मेयो के समय</strong> कराई गई थी।</p>\n</li>\n<li data-section-id=\"10pirws\" data-start=\"2901\" data-end=\"3048\">\n<p data-start=\"2904\" data-end=\"3048\">The <strong data-start=\"2908\" data-end=\"2936\">first synchronous Census</strong> was conducted in <strong data-start=\"2954\" data-end=\"2983\">1881 under W. C. Plowden.</strong><br data-start=\"2983\" data-end=\"2986\" /><strong data-start=\"2989\" data-end=\"3043\">पहली समकालिक जनगणना 1881 में W. C. Plowden के अधीन</strong> हुई।</p>\n</li>\n<li data-section-id=\"1cbf36r\" data-start=\"3050\" data-end=\"3324\">\n<p data-start=\"3053\" data-end=\"3324\"><strong data-start=\"3053\" data-end=\"3080\">Uttar Pradesh and Bihar</strong> are among the states with the highest <strong data-start=\"3119\" data-end=\"3136\">out-migration</strong>, while <strong data-start=\"3144\" data-end=\"3159\">Maharashtra</strong> has the highest <strong data-start=\"3176\" data-end=\"3193\">in-migration.</strong><br data-start=\"3193\" data-end=\"3196\" /><strong data-start=\"3199\" data-end=\"3224\">उत्तर प्रदेश और बिहार</strong> से सबसे अधिक <strong data-start=\"3238\" data-end=\"3255\">आउट-माइग्रेशन</strong> होता है, जबकि <strong data-start=\"3270\" data-end=\"3284\">महाराष्ट्र</strong> में सबसे अधिक <strong data-start=\"3299\" data-end=\"3315\">इन-माइग्रेशन</strong> होता है।</p>\n</li>\n<li data-section-id=\"19qlkwi\" data-start=\"3326\" data-end=\"3528\">\n<p data-start=\"3329\" data-end=\"3528\">A person entering a country is called an <strong data-start=\"3370\" data-end=\"3382\">emigrant</strong>, while a person leaving is called an <strong data-start=\"3420\" data-end=\"3434\">immigrant.</strong><br data-start=\"3434\" data-end=\"3437\" />किसी देश में आने वाले व्यक्ति को <strong data-start=\"3473\" data-end=\"3485\">Emigrant</strong> और जाने वाले को <strong data-start=\"3502\" data-end=\"3515\">Immigrant</strong> कहा जाता है।</p>\n</li>\n</ol>\n<p data-start=\"3530\" data-end=\"3576\"><strong data-start=\"3530\" data-end=\"3576\">Which of the above statements are correct?</strong></p>\n<p data-start=\"3578\" data-end=\"3683\">(1) 1 and 2 only<br data-start=\"3594\" data-end=\"3597\" />(2) 1, 2 and 3 only<br data-start=\"3616\" data-end=\"3619\" />(3) 1, 2 and 3 only (4 is incorrect)<br data-start=\"3659\" data-end=\"3662\" />(4) 2, 3 and 4 only</p>\n<p data-start=\"3685\" data-end=\"3710\"></p>",
+    "comp": "",
+    "options": [
+      "<p>3</p>",
+      "<p>1</p>",
+      "<p>4</p>",
+      "<p>2</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"3842\" data-end=\"3997\"><strong data-start=\"3842\" data-end=\"3921\">Match the following demographic concepts with their correct definitions:</strong><br data-start=\"3921\" data-end=\"3924\" /><strong data-start=\"3924\" data-end=\"3997\">निम्नलिखित जनसांख्यिकीय अवधारणाओं का उनकी सही परिभाषा से मिलान कीजिए:</strong></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"3999\" data-end=\"4332\">\n<thead data-start=\"3999\" data-end=\"4019\">\n<tr data-start=\"3999\" data-end=\"4019\">\n<th class=\"\" data-start=\"3999\" data-end=\"4008\" data-col-size=\"sm\">List I</th>\n<th class=\"\" data-start=\"4008\" data-end=\"4019\" data-col-size=\"md\">List II</th>\n</tr>\n</thead>\n<tbody data-start=\"4030\" data-end=\"4332\">\n<tr data-start=\"4030\" data-end=\"4099\">\n<td data-start=\"4030\" data-end=\"4054\" data-col-size=\"sm\">A. Arithmetic Density</td>\n<td data-start=\"4054\" data-end=\"4099\" data-col-size=\"md\">1. Total population / Net cultivated area</td>\n</tr>\n<tr data-start=\"4100\" data-end=\"4168\">\n<td data-start=\"4100\" data-end=\"4127\" data-col-size=\"sm\">B. Physiological Density</td>\n<td data-start=\"4127\" data-end=\"4168\" data-col-size=\"md\">2. Total population / Total land area</td>\n</tr>\n<tr data-start=\"4169\" data-end=\"4239\">\n<td data-start=\"4169\" data-end=\"4195\" data-col-size=\"sm\">C. Agricultural Density</td>\n<td data-start=\"4195\" data-end=\"4239\" data-col-size=\"md\">3. Agricultural population / Arable land</td>\n</tr>\n<tr data-start=\"4240\" data-end=\"4332\">\n<td data-start=\"4240\" data-end=\"4266\" data-col-size=\"sm\">D. Demographic Dividend</td>\n<td data-start=\"4266\" data-end=\"4332\" data-col-size=\"md\">4. Economic benefit when working population exceeds dependents</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"4334\" data-end=\"4364\"><strong data-start=\"4334\" data-end=\"4364\">Select the correct answer:</strong></p>\n<p></p>\n<p data-start=\"4366\" data-end=\"4465\">(1) A-2, B-1, C-3, D-4<br data-start=\"4388\" data-end=\"4391\" />(2) A-1, B-2, C-3, D-4<br data-start=\"4413\" data-end=\"4416\" />(3) A-2, B-3, C-1, D-4<br data-start=\"4438\" data-end=\"4441\" />(4) A-3, B-1, C-2, D-4</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"364\" data-end=\"549\"><strong data-start=\"364\" data-end=\"382\">Assertion (A):</strong><br data-start=\"382\" data-end=\"385\" />The year <strong data-start=\"394\" data-end=\"473\">1921 is called the &ldquo;Year of the Great Divide&rdquo; in Indian population history.</strong><br data-start=\"473\" data-end=\"476\" /><strong data-start=\"476\" data-end=\"549\">1921 को भारतीय जनसंख्या इतिहास में &ldquo;महान विभाजन का वर्ष&rdquo; कहा जाता है।</strong></p>\n<p data-start=\"551\" data-end=\"883\"><strong data-start=\"551\" data-end=\"566\">Reason (R):</strong><br data-start=\"566\" data-end=\"569\" />Before 1921, India experienced stagnant or negative population growth due to high birth and death rates, whereas after 1921 the population began to grow steadily.<br data-start=\"731\" data-end=\"734\" />1921 से पहले भारत में उच्च जन्म दर और मृत्यु दर के कारण जनसंख्या वृद्धि बहुत कम या नकारात्मक थी, जबकि 1921 के बाद जनसंख्या में स्थिर वृद्धि शुरू हुई।</p>\n<p data-start=\"885\" data-end=\"1121\"><strong data-start=\"885\" data-end=\"915\">Select the correct answer:</strong><br data-start=\"915\" data-end=\"918\" />(1) Both A and R are true, and R is the correct explanation of A.<br data-start=\"983\" data-end=\"986\" />(2) Both A and R are true, but R is not the correct explanation of A.<br data-start=\"1055\" data-end=\"1058\" />(3) A is true, but R is false.<br data-start=\"1088\" data-end=\"1091\" />(4) A is false, but R is true.</p>\n<p data-start=\"1123\" data-end=\"1148\"></p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"1197\" data-end=\"1429\"><strong data-start=\"1197\" data-end=\"1215\">Assertion (A):</strong><br data-start=\"1215\" data-end=\"1218\" />Most rural settlements in India are located near sources of water such as rivers, lakes, wells, or springs.<br data-start=\"1325\" data-end=\"1328\" />भारत में अधिकांश ग्रामीण बस्तियाँ नदियों, झीलों, कुओं या झरनों जैसे जल स्रोतों के पास स्थित होती हैं।</p>\n<p data-start=\"1431\" data-end=\"1693\"><strong data-start=\"1431\" data-end=\"1446\">Reason (R):</strong><br data-start=\"1446\" data-end=\"1449\" />Water is essential for drinking, irrigation, domestic use, and agricultural activities, which are the main livelihood in rural areas.<br data-start=\"1582\" data-end=\"1585\" />जल पीने, सिंचाई, घरेलू उपयोग तथा कृषि गतिविधियों के लिए आवश्यक है, जो ग्रामीण क्षेत्रों की मुख्य आजीविका है।</p>\n<p data-start=\"1695\" data-end=\"1725\"><strong data-start=\"1695\" data-end=\"1725\">Select the correct answer:</strong></p>\n<p></p>\n<p data-start=\"1727\" data-end=\"1930\">(1) Both A and R are true, and R is the correct explanation of A.<br data-start=\"1792\" data-end=\"1795\" />(2) Both A and R are true, but R is not the correct explanation of A.<br data-start=\"1864\" data-end=\"1867\" />(3) A is true, but R is false.<br data-start=\"1897\" data-end=\"1900\" />(4) A is false, but R is true.</p>",
+    "comp": "",
+    "options": [
+      "<p>2</p>",
+      "<p>1</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  },
+  {
+    "question": "<p data-start=\"2001\" data-end=\"2209\">India is expected to benefit from a <strong data-start=\"2058\" data-end=\"2082\">demographic dividend</strong> in the coming decades.<br data-start=\"2105\" data-end=\"2108\" />आने वाले दशकों में भारत को <strong data-start=\"2135\" data-end=\"2181\">जनसांख्यिकीय लाभांश (Demographic Dividend)</strong> का लाभ मिलने की संभावना है।</p>\n<p data-start=\"2211\" data-end=\"2471\"><strong data-start=\"2211\" data-end=\"2226\">Reason (R):</strong><br data-start=\"2226\" data-end=\"2229\" />Demographic dividend occurs when the <strong data-start=\"2266\" data-end=\"2306\">working-age population (15&ndash;59 years)</strong> becomes larger than the dependent population.<br data-start=\"2352\" data-end=\"2355\" />जनसांख्यिकीय लाभांश तब होता है जब <strong data-start=\"2389\" data-end=\"2423\">कार्यशील आयु वर्ग (15&ndash;59 वर्ष)</strong> की जनसंख्या आश्रित जनसंख्या से अधिक हो जाती है।</p>\n<p data-start=\"2473\" data-end=\"2503\"><strong data-start=\"2473\" data-end=\"2503\">Select the correct answer:</strong></p>\n<p></p>\n<p data-start=\"2505\" data-end=\"2708\">(1) Both A and R are true, and R is the correct explanation of A.<br data-start=\"2570\" data-end=\"2573\" />(2) Both A and R are true, but R is not the correct explanation of A.<br data-start=\"2642\" data-end=\"2645\" />(3) A is true, but R is false.<br data-start=\"2675\" data-end=\"2678\" />(4) A is false, but R is true.</p>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>3</p>",
+      "<p>4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "POPULATION & SETTLEMENTS"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

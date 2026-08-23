@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { 
   Search, Command, FileText, Layers, BarChart3, Bookmark, 
-  Settings, Sun, Moon, Sparkles, CornerDownLeft, X 
+  Settings, Sun, Moon, Sparkles, CornerDownLeft, X, CalendarDays, Play
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { loadMockCatalog } from '@/services/mockCatalog';
+import { getAllSavedQuestions } from '@/services/attemptStore';
+import { encodeBookmarkMockPath } from '@/services/bookmarkMock';
 import { PROVIDERS } from '@/lib/providers';
 import { examPath } from '@/lib/examLink';
 import { useSettingsStore } from '@/stores/settingsStore';
@@ -41,19 +43,23 @@ export function CommandPalette() {
       .catch(() => setMocks([]));
   }, []);
 
-  // Keyboard shortcut listener for ⌘K / Ctrl+K and Esc
+  // Keyboard shortcut listener for ⌘K / Ctrl+K and Esc, plus aether:open-palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setOpen((prev) => !prev);
       } else if (e.key === 'Escape' && open) {
         setOpen(false);
       }
     };
-
+    const handleCustom = () => setOpen(true);
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('aether:open-palette' as any, handleCustom);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('aether:open-palette' as any, handleCustom);
+    };
   }, [open]);
 
   // Focus input when opened
@@ -86,6 +92,22 @@ export function CommandPalette() {
         action: () => { navigate('/'); setOpen(false); },
       },
       {
+        id: 'nav-showcase',
+        type: 'nav',
+        title: 'Showcase — Apple Fluid Interfaces',
+        subtitle: 'Principles, bento grid, motion spec & glass demo',
+        icon: <Sparkles className="text-warning-fg" size={16} />,
+        action: () => { navigate('/showcase'); setOpen(false); },
+      },
+      {
+        id: 'nav-activity',
+        type: 'nav',
+        title: 'Activity Timeline',
+        subtitle: 'Streak, weekly heatmap & attempt timeline',
+        icon: <CalendarDays className="text-success-fg" size={16} /> as any,
+        action: () => { navigate('/activity'); setOpen(false); },
+      },
+      {
         id: 'nav-analytics',
         type: 'nav',
         title: 'Analytics & Insights',
@@ -100,6 +122,22 @@ export function CommandPalette() {
         subtitle: 'Review bookmarked questions and notes',
         icon: <Bookmark className="text-info-fg" size={16} />,
         action: () => { navigate('/saved'); setOpen(false); },
+      },
+      {
+        id: 'nav-bookmark-mock',
+        type: 'nav',
+        title: 'Take Bookmark Mock Test',
+        subtitle: 'Practice all your bookmarked questions in a timed simulation',
+        icon: <Play className="text-primary" size={16} />,
+        action: () => {
+          const count = getAllSavedQuestions().length;
+          if (count > 0) {
+            navigate(examPath(encodeBookmarkMockPath({ scope: 'all' })));
+          } else {
+            navigate('/saved');
+          }
+          setOpen(false);
+        },
       },
       {
         id: 'nav-settings',
@@ -227,8 +265,8 @@ export function CommandPalette() {
       {/* Search trigger listener bound to global window events */}
       <AnimatePresence>
         {open && (
-          <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-16 sm:pt-24 px-4">
-            {/* Backdrop overlay */}
+          <div className="fixed inset-0 z-[10000] overflow-y-auto grid place-items-center p-2.5 sm:p-6">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -244,17 +282,17 @@ export function CommandPalette() {
               exit={{ opacity: 0, scale: 0.96, y: -12 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               onKeyDown={handleKeyDownInList}
-              className="relative w-full max-w-2xl rounded-3xl bg-bg-raised/95 backdrop-blur-2xl border border-[var(--glass-border)] shadow-2xl overflow-hidden flex flex-col z-10"
+              className="relative w-full max-w-2xl rounded-2xl sm:rounded-3xl bg-bg-raised/95 backdrop-blur-2xl border border-[var(--glass-border)] shadow-2xl overflow-hidden flex flex-col z-10"
             >
               {/* Search Header Input */}
-              <div className="flex items-center px-4 sm:px-6 h-14 border-b border-[var(--glass-border)] gap-3">
-                <Search size={18} className="text-muted shrink-0" />
+              <div className="flex items-center px-3.5 sm:px-6 h-12 sm:h-14 border-b border-[var(--glass-border)] gap-2.5 sm:gap-3">
+                <Search size={16} className="text-muted shrink-0" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search mocks, providers, settings, or jump to page…"
-                  className="flex-1 bg-transparent text-text placeholder:text-muted text-base focus:outline-none"
+                  className="flex-1 bg-transparent text-text placeholder:text-muted text-sm sm:text-base focus:outline-none"
                 />
                 {query && (
                   <button
@@ -270,11 +308,11 @@ export function CommandPalette() {
               </div>
 
               {/* Results List */}
-              <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2 space-y-1">
+              <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-1.5 sm:p-2 space-y-1">
                 {results.length === 0 ? (
-                  <div className="p-8 text-center text-muted">
-                    <p className="text-sm font-semibold text-text">No results found</p>
-                    <p className="text-xs mt-1">Try searching for provider names like "Oliveboard" or test names.</p>
+                  <div className="p-6 sm:p-8 text-center text-muted">
+                    <p className="text-xs sm:text-sm font-semibold text-text">No results found</p>
+                    <p className="text-[11px] sm:text-xs mt-1">Try searching for provider names like "Oliveboard" or test names.</p>
                   </div>
                 ) : (
                   results.map((item, idx) => {
@@ -285,35 +323,35 @@ export function CommandPalette() {
                         onClick={item.action}
                         onMouseEnter={() => setSelectedIndex(idx)}
                         className={clsx(
-                          'flex items-center justify-between gap-3 p-3 rounded-2xl transition-all cursor-pointer select-none',
+                          'flex items-center justify-between gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition-all cursor-pointer select-none',
                           isSelected
                             ? 'bg-primary-soft/50 text-text ring-1 ring-primary/40'
                             : 'hover:bg-surface-2 text-text-2'
                         )}
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={clsx('w-9 h-9 rounded-xl grid place-items-center shrink-0 bg-surface-2', isSelected && 'bg-primary text-white')}>
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                          <div className={clsx('w-8 h-8 sm:w-9 sm:h-9 rounded-xl grid place-items-center shrink-0 bg-surface-2', isSelected && 'bg-primary text-white')}>
                             {item.icon}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-sm font-semibold text-text truncate flex items-center gap-2">
+                            <div className="text-xs sm:text-sm font-semibold text-text truncate flex items-center gap-1.5 sm:gap-2">
                               {item.title}
                               {item.badge && (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-3 text-muted">
+                                <span className="px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold bg-surface-3 text-muted">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
                             {item.subtitle && (
-                              <div className="text-xs text-muted truncate mt-0.5">{item.subtitle}</div>
+                              <div className="text-[10px] sm:text-xs text-muted truncate mt-0.5">{item.subtitle}</div>
                             )}
                           </div>
                         </div>
 
                         {isSelected && (
-                          <span className="flex items-center gap-1 text-xs font-semibold text-primary shrink-0">
-                            <span>Open</span>
-                            <CornerDownLeft size={13} />
+                          <span className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-primary shrink-0">
+                            <span className="hidden sm:inline">Open</span>
+                            <CornerDownLeft size={12} />
                           </span>
                         )}
                       </div>
@@ -323,7 +361,7 @@ export function CommandPalette() {
               </div>
 
               {/* Command Palette Footer */}
-              <div className="px-4 py-2.5 border-t border-[var(--glass-border)] bg-surface/50 text-[11px] text-muted flex items-center justify-between">
+              <div className="hidden sm:flex px-4 py-2.5 border-t border-[var(--glass-border)] bg-surface/50 text-[11px] text-muted items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
                     <span className="px-1.5 py-0.5 rounded bg-surface-2 font-mono font-bold text-text">↑</span>

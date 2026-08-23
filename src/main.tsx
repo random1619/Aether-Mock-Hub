@@ -53,7 +53,7 @@ function ThemedToaster() {
   const theme = useSettingsStore((s) => s.theme);
   return (
     <Toaster
-      theme={theme === 'netflix' ? 'dark' : theme}
+      theme={theme === 'dark' || theme === 'netflix' ? 'dark' : 'light'}
       position="bottom-right"
       closeButton
       gap={10}

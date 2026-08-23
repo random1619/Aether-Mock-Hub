@@ -29,6 +29,8 @@ export const DEFAULT_DAILY_GOAL = 20;
     daily goal/streak but are excluded from score/provider stats — the same
     questions would otherwise be double-counted under a fake provider. */
 export const SMART_REVISION_PATH_PREFIX = 'smart-revision/';
+/** Synthetic exam paths (Bookmark Mocks generated from saved questions). */
+export const BOOKMARK_MOCK_PATH_PREFIX = 'bookmark-mock/';
 
 function defaultDb(): AetherDB {
   return {
@@ -258,9 +260,9 @@ function recomputeStats(db: AetherDB): void {
   Object.keys(db.attempts).forEach((path) => {
     const arr = db.attempts[path];
     if (!arr || !arr.length) return;
-    // Smart Revision attempts feed the streak/daily goal (via computeDayActivity)
+    // Smart Revision and Bookmark Mock attempts feed the streak/daily goal (via computeDayActivity)
     // but not scoring stats — their questions already counted under the real mock.
-    if (path.startsWith(SMART_REVISION_PATH_PREFIX)) return;
+    if (path.startsWith(SMART_REVISION_PATH_PREFIX) || path.startsWith(BOOKMARK_MOCK_PATH_PREFIX)) return;
     const latest = arr[arr.length - 1];
     totalAcc += latest.accuracy || 0;
     totalCount++;
@@ -486,15 +488,30 @@ function safeRemove(key: string): void {
 }
 
 /** Strip re-renderable review detail from attempts older than each path's
-    latest, to shrink the blob under storage pressure. perQuestion and
-    questionTimes can always be re-derived by re-opening the mock; the score
-    history (which drives stats/streaks) is untouched. */
+    latest, to shrink the blob under storage pressure. The most recent attempt
+    keeps full perQuestion data; older attempts keep minimal perQuestion (just
+    the chosen answer) so review mode can still display user responses.
+    questionTimes are removed from older attempts as they can be re-derived.
+    The score history (which drives stats/streaks) is untouched. */
 function trimForQuota(db: AetherDB): void {
   Object.values(db.attempts).forEach((arr) => {
     if (!arr) return;
     arr.forEach((a, i) => {
       if (i < arr.length - 1) {
-        delete a.perQuestion;
+        // For older attempts: trim perQuestion to minimal data (just chosen answer)
+        // and remove questionTimes to save space
+        if (Array.isArray(a.perQuestion)) {
+          a.perQuestion = a.perQuestion.map((pq) => ({
+            idx: pq.idx,
+            chosen: pq.chosen,
+            correctOption: pq.correctOption,
+            isCorrect: pq.isCorrect,
+            isIncorrect: pq.isIncorrect,
+            isSkipped: pq.isSkipped,
+            flagged: pq.flagged,
+            timeSec: pq.timeSec || 0,
+          }));
+        }
         delete a.questionTimes;
       }
     });
@@ -780,9 +797,18 @@ export function getDb(): AetherDB {
 }
 
 /** Persist the theme atomically: mutate + save in one step so the preference
-    survives reload and isn't wiped by a cross-tab storage sync. */
-export function setTheme(theme: 'dark' | 'light' | 'netflix'): void {
+     survives reload and isn't wiped by a cross-tab storage sync. */
+export function setTheme(theme: 'dark' | 'light' | 'netflix' | 'onepiece'): void {
   _db.settings.theme = theme;
+  save();
+}
+
+export function getSectionalTimerPreference(): string {
+  return _db.settings.sectionalTimer || 'auto';
+}
+
+export function setSectionalTimerPreference(val: 'auto' | 'always' | 'never' | string): void {
+  _db.settings.sectionalTimer = val;
   save();
 }
 
@@ -965,6 +991,40 @@ export function attachAttemptToSaved(
   }>,
 ): void {
   const path = canonicalizePath(examPath);
+
+  // For bookmark mocks, decode question IDs and update records across all source mocks
+  if (path.startsWith(BOOKMARK_MOCK_PATH_PREFIX)) {
+    let dirty = false;
+    const prefix = `${BOOKMARK_MOCK_PATH_PREFIX}cfg:`;
+    if (path.startsWith(prefix)) {
+      try {
+        const b64 = path.slice(prefix.length).replace(/-/g, '+').replace(/_/g, '/');
+        const cfg = JSON.parse(decodeURIComponent(atob(b64)));
+        if (Array.isArray(cfg.questionIds)) {
+          perQuestion.forEach((p) => {
+            const targetId = cfg.questionIds[p.idx];
+            if (!targetId) return;
+            for (const list of Object.values(_db.savedQuestions)) {
+              const rec = list.find((r) => r.id === targetId);
+              if (rec) {
+                rec.lastChosen = p.chosen;
+                rec.lastOutcome = p.isCorrect ? 'correct' : p.isIncorrect ? 'incorrect' : 'skipped';
+                rec.lastFlagged = p.flagged;
+                rec.timesReviewed = (rec.timesReviewed || 0) + 1;
+                dirty = true;
+                break;
+              }
+            }
+          });
+        }
+      } catch {
+        /* fallback */
+      }
+    }
+    if (dirty) save();
+    return;
+  }
+
   const list = _db.savedQuestions[path];
   if (!list || !list.length) return;
   let dirty = false;

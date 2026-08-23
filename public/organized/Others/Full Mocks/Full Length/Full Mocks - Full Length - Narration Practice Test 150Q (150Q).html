@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Narration Mock Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+    --skip:#7a6f52;
+    --skip-bg:#efe9d6;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:0;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px;}
+
+  header{
+    text-align:center;
+    margin-bottom:20px;
+    padding-bottom:18px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:clamp(30px,6vw,48px);margin:0 0 6px;letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;margin-top:14px;
+    background:#29a9eb;color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 20px;border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #topicLine{
+    margin-top:14px;font-family:'Fraunces',serif;font-weight:600;font-size:15px;
+    color:var(--accent);background:var(--card);display:inline-block;
+    padding:6px 18px;border:1px solid var(--rule);border-radius:20px;
+  }
+
+  /* ===== START SCREEN ===== */
+  #startScreen{
+    background:var(--card);border:1px solid var(--rule);border-radius:14px;
+    padding:34px 28px;text-align:center;
+  }
+  #startScreen h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 14px;}
+  .info-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:14px;margin:22px 0;text-align:left;
+  }
+  .info-box{
+    background:var(--paper);border:1px solid var(--rule);border-radius:10px;
+    padding:14px 16px;
+  }
+  .info-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+  .info-box .val{font-family:'Fraunces',serif;font-weight:700;font-size:20px;color:var(--accent);}
+  .instructions{
+    text-align:left;background:var(--paper);border:1px solid var(--rule);
+    border-radius:10px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.8;color:var(--ink);
+  }
+  .instructions li{margin-bottom:4px;}
+  .instructions b{color:var(--accent);}
+  #startBtn,#retakeBtn,#submitBtn,#reviewBtn,#backToResultBtn{
+    background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:14px 36px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;
+    cursor:pointer;transition:transform .15s, box-shadow .15s;
+    box-shadow:0 4px 12px rgba(138,90,43,0.3);
+  }
+  #startBtn:hover,#retakeBtn:hover,#submitBtn:hover,#reviewBtn:hover,#backToResultBtn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(138,90,43,0.4);}
+
+  /* ===== TOP BAR (during test) ===== */
+  #testTopBar{
+    position:sticky;top:0;z-index:20;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:12px 18px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  }
+  .topBarLeft{flex:0 0 auto;}
+  .brandMark{
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--accent);
+  }
+  .topBarCenter{display:flex;align-items:center;gap:12px;flex:1 1 auto;justify-content:center;}
+  .topBarRight{flex:0 0 auto;position:relative;}
+  #testTopBar .title{font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--accent);}
+  #timerBox{
+    display:flex;align-items:center;gap:8px;
+    background:#fdf2ec;border:1.5px solid var(--wrong);color:var(--wrong);
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+    padding:6px 16px;border-radius:8px;
+  }
+  #timerBox.low{animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{background:#fdf2ec;}50%{background:#f8d5c9;}}
+  #progressText{font-size:13px;color:var(--muted);white-space:nowrap;}
+
+  #paletteToggleBtn, #reviewPaletteToggleBtn{
+    background:var(--paper);color:var(--accent);border:1.5px solid var(--rule);border-radius:8px;
+    padding:8px 14px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;
+  }
+  #paletteToggleBtn:hover, #reviewPaletteToggleBtn:hover{border-color:var(--accent);}
+  #paletteDropdown, #reviewPaletteDropdown{
+    display:none;position:absolute;top:calc(100% + 8px);right:0;z-index:30;
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:14px;width:260px;box-shadow:0 10px 30px rgba(0,0,0,0.18);
+  }
+  #paletteDropdown.show, #reviewPaletteDropdown.show{display:block;}
+  .legend{display:flex;flex-direction:column;gap:6px;font-size:11.5px;margin-bottom:10px;color:var(--muted);}
+  .legend span{display:flex;align-items:center;gap:6px;}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block;flex-shrink:0;}
+  .dot.d-answered{background:var(--correct);}
+  .dot.d-notanswered{background:var(--wrong);}
+  .dot.d-notvisited{background:#cfc6ac;}
+  #paletteGrid, #reviewPaletteGrid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:280px;overflow-y:auto;padding-right:2px;
+  }
+  .pbtn{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;
+    border:1.5px solid var(--rule);background:#cfc6ac;color:#4a4433;
+    font-family:'Inter',sans-serif;
+  }
+  .pbtn.answered{background:var(--correct);color:#fff;border-color:var(--correct);}
+  .pbtn.notanswered{background:var(--wrong);color:#fff;border-color:var(--wrong);}
+  .pbtn.current{outline:3px solid var(--accent);outline-offset:1px;}
+
+  @media (max-width:560px){
+    .topBarCenter{gap:6px;}
+    #progressText{display:none;}
+    .paletteBtnLabel{display:none;}
+    #paletteDropdown, #reviewPaletteDropdown{width:220px;right:-8px;}
+  }
+  @media (max-width:560px){
+    #reviewProgress{display:none;}
+  }
+
+  /* ===== MAIN TEST LAYOUT ===== */
+  #testLayout{display:none;max-width:680px;margin:0 auto;}
+
+  .qcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:22px 22px 18px;margin-bottom:0;position:relative;
+  }
+  .qnum{font-family:'Fraunces',serif;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:4px;}
+  .qtag{
+    float:right;font-size:10.5px;color:var(--muted);background:var(--paper);
+    border:1px solid var(--rule);padding:2px 8px;border-radius:20px;
+  }
+  .qmarks{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .qtext{font-size:17px;line-height:1.5;margin:6px 0 14px;}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;
+    padding:11px 14px;font-size:15px;cursor:pointer;
+    transition:border-color .15s, background .15s;font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{font-weight:700;color:var(--accent);min-width:18px;}
+  .opt.selected{background:#eee1cf;border-color:var(--accent);}
+  .opt.selected .lab{color:var(--accent);}
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .navRow{
+    display:flex;flex-direction:row;justify-content:flex-start;gap:8px;margin-top:20px;
+  }
+  .navRow .navBtn{flex:1 1 0;min-width:0;}
+  .submitRow{margin-top:10px;}
+  .navBtnGroup{display:flex;gap:10px;}
+  .navBtn{
+    background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:8px;
+    padding:12px 8px;font-size:13.5px;font-weight:600;font-family:'Inter',sans-serif;
+    cursor:pointer;transition:.15s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .navBtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .navBtn:disabled{opacity:.4;cursor:not-allowed;}
+  .navBtn.clear{color:var(--wrong);border-color:var(--wrong-bg);}
+  .navBtn.clear:hover{border-color:var(--wrong);}
+  #submitTestBtn{
+    width:100%;background:var(--wrong);color:#fff;border:none;border-radius:8px;
+    padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 3px 10px rgba(161,61,46,0.3);
+  }
+  #submitTestBtn:hover{transform:translateY(-1px);}
+
+  @media (max-width:480px){
+    .navRow{gap:6px;}
+    .navRow .navBtn{padding:10px 4px;font-size:11.5px;}
+  }
+  .reviewNavRow{display:flex;flex-direction:row;gap:8px;margin-top:18px;}
+  .reviewNavRow .navBtn{flex:1 1 0;min-width:0;}
+  #backToResultBtn{
+    width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 3px 10px rgba(138,90,43,0.3);
+  }
+  #backToResultBtn:hover{transform:translateY(-1px);}
+  @media (max-width:480px){
+    .reviewNavRow{gap:6px;}
+    .reviewNavRow .navBtn{padding:10px 4px;font-size:11.5px;}
+  }
+
+  /* ===== RESULT SCREEN ===== */
+  #resultScreen{display:none;}
+  .result-hero{
+    background:var(--card);border:1px solid var(--rule);border-radius:14px;
+    padding:30px 26px;text-align:center;margin-bottom:20px;
+  }
+  .result-hero h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 4px;color:var(--accent);}
+  .score-big{font-family:'Fraunces',serif;font-size:56px;font-weight:700;margin:10px 0;}
+  .score-big span{font-size:24px;color:var(--muted);font-weight:500;}
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:22px;
+  }
+  .stat-box{
+    background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:14px 10px;
+  }
+  .stat-box .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+  .stat-box .val{font-family:'Fraunces',serif;font-weight:700;font-size:24px;}
+  .stat-box.total .val{color:var(--ink);}
+  .stat-box.attempted .val{color:var(--accent);}
+  .stat-box.unattempted .val{color:var(--skip);}
+  .stat-box.correct .val{color:var(--correct);}
+  .stat-box.wrong .val{color:var(--wrong);}
+  .result-actions{display:flex;justify-content:center;gap:14px;margin-top:24px;flex-wrap:wrap;}
+  #reviewBtn{background:var(--accent);}
+
+  /* ===== REVIEW SCREEN ===== */
+  #reviewScreen{display:none;}
+  #reviewTopBar{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;gap:10px;
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:12px 18px;margin-bottom:18px;
+  }
+  #reviewTopBar > div:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #reviewTopBar .title{font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--accent);}
+  .review-status{
+    display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;
+  }
+  .review-status.correct{background:var(--correct-bg);color:var(--correct);}
+  .review-status.wrong{background:var(--wrong-bg);color:var(--wrong);}
+  .review-status.skip{background:var(--skip-bg);color:var(--skip);}
+  .solution{
+    margin-top:14px;padding:14px 16px;background:#fbf7ee;border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;font-size:14.5px;line-height:1.65;
+  }
+  .solution .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .solution b{color:var(--accent);}
+  .solution .lbl{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .your-ans-note{font-size:13px;margin-top:10px;color:var(--muted);}
+  .your-ans-note b{color:var(--ink);}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:30px;}
+
+  #alertBanner{
+    display:none;background:#fdf2ec;border:1.5px solid var(--wrong);color:var(--wrong);
+    border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;margin-bottom:14px;text-align:center;
+  }
+
+  /* ===== CUSTOM CONFIRM MODAL ===== */
+  #modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(27,26,23,0.55);
+    z-index:100;align-items:center;justify-content:center;padding:20px;
+  }
+  #modalOverlay.show{display:flex;}
+  #modalBox{
+    background:var(--card);border-radius:14px;max-width:400px;width:100%;
+    padding:26px 24px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  }
+  #modalBox h3{font-family:'Fraunces',serif;font-size:20px;margin:0 0 12px;color:var(--accent);}
+  #modalBox p{font-size:14.5px;line-height:1.6;color:var(--ink);margin:0 0 22px;}
+  #modalBox .modalBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  #modalBox button{
+    border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:'Inter',sans-serif;transition:transform .15s;
+  }
+  #modalBox button:hover{transform:translateY(-1px);}
+  #modalConfirmBtn{background:var(--wrong);color:#fff;box-shadow:0 3px 10px rgba(161,61,46,0.3);}
+  #modalCancelBtn{background:var(--paper);color:var(--ink);border:1.5px solid var(--rule) !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="mainHeader">
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <a href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: Narration (Direct &amp; Indirect Speech)</div>
+  </header>
+
+  <!-- ===== START SCREEN ===== -->
+  <div id="startScreen">
+    <h2>Narration (Direct &amp; Indirect Speech) Mock Test</h2>
+    <div class="info-grid">
+      <div class="info-box"><div class="lbl">Total Questions</div><div class="val" id="infoTotalQ">0</div></div>
+      <div class="info-box"><div class="lbl">Total Time</div><div class="val">150 Min</div></div>
+    </div>
+    <button id="startBtn" onclick="startTest()">▶️ Start Test</button>
+  </div>
+
+  <!-- ===== TEST SCREEN ===== -->
+  <div id="testTopBar" style="display:none;">
+    <div class="topBarLeft">
+      <span class="brandMark">YATRI</span>
+    </div>
+    <div class="topBarCenter">
+      <div id="progressText">Question 1 / 0</div>
+      <div id="timerBox">⏱️ <span id="timerVal">60:00</span></div>
+    </div>
+    <div class="topBarRight">
+      <button id="paletteToggleBtn" onclick="togglePalette()">📋 <span class="paletteBtnLabel">Palette</span></button>
+      <div id="paletteDropdown">
+        <div class="legend">
+          <span><span class="dot d-answered"></span> Answered</span>
+          <span><span class="dot d-notanswered"></span> Not Answered</span>
+          <span><span class="dot d-notvisited"></span> Not Visited</span>
+        </div>
+        <div id="paletteGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="alertBanner"></div>
+
+  <div id="testLayout">
+    <div id="qCol">
+      <div class="qcard">
+        <span class="qtag" id="qTag"></span>
+        <div class="qnum" id="qNumLabel"></div>
+        <div class="qmarks">+1 for correct, −0.25 for wrong</div>
+        <div class="qtext" id="qText"></div>
+        <div class="options" id="qOpts"></div>
+
+        <div class="navRow">
+          <button class="navBtn" id="prevBtn" onclick="goPrev()">⬅️ Previous</button>
+          <button class="navBtn clear" id="clearBtn" onclick="clearResponse()">Clear Response</button>
+          <button class="navBtn" id="nextBtn" onclick="goNext()">Next ➡️</button>
+        </div>
+        <div class="submitRow">
+          <button id="submitTestBtn" onclick="confirmSubmit()">📤 Submit Test</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="resultScreen">
+    <div class="result-hero">
+      <h2>Test Completed</h2>
+      <div class="sub" id="submitReasonText">Aapne test submit kar diya hai.</div>
+      <div class="score-big"><span id="finalScore">0</span><span> / <span id="finalMax">0</span></span></div>
+      <div class="stat-grid">
+        <div class="stat-box total"><div class="lbl">Total Questions</div><div class="val" id="statTotal">0</div></div>
+        <div class="stat-box attempted"><div class="lbl">Attempted</div><div class="val" id="statAttempted">0</div></div>
+        <div class="stat-box unattempted"><div class="lbl">Unattempted</div><div class="val" id="statUnattempted">0</div></div>
+        <div class="stat-box correct"><div class="lbl">Correct</div><div class="val" id="statCorrect">0</div></div>
+        <div class="stat-box wrong"><div class="lbl">Wrong</div><div class="val" id="statWrong">0</div></div>
+      </div>
+      <div class="result-actions">
+        <button id="reviewBtn" onclick="openReview(0)">🔍 Review Solutions</button>
+        <button id="retakeBtn" onclick="location.reload()">🔁 Retake Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REVIEW SCREEN ===== -->
+  <div id="reviewScreen">
+    <div id="reviewTopBar">
+      <div><span class="title">🔍 Review Solutions</span><span id="reviewStatusTag"></span></div>
+      <div id="reviewProgress">Question 1 / 0</div>
+      <div class="topBarRight">
+        <button id="reviewPaletteToggleBtn" onclick="toggleReviewPalette()">📋 <span class="paletteBtnLabel">Palette</span></button>
+        <div id="reviewPaletteDropdown">
+          <div class="legend">
+            <span><span class="dot d-answered"></span> Correct</span>
+            <span><span class="dot d-notanswered"></span> Wrong</span>
+            <span><span class="dot d-notvisited"></span> Unattempted</span>
+          </div>
+          <div id="reviewPaletteGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="qcard">
+      <span class="qtag" id="rQTag"></span>
+      <div class="qnum" id="rQNumLabel"></div>
+      <div class="qtext" id="rQText"></div>
+      <div class="options" id="rQOpts"></div>
+      <div class="your-ans-note" id="rYourAns"></div>
+      <div class="solution show" id="rSolution">
+        <div class="lbl">Solution</div>
+        <div id="rSolBody"></div>
+      </div>
+      <div class="reviewNavRow">
+        <button class="navBtn" id="rPrevBtn" onclick="reviewPrev()">⬅️ Previous</button>
+        <button class="navBtn" id="rNextBtn" onclick="reviewNext()">Next ➡️</button>
+      </div>
+      <div class="submitRow">
+        <button id="backToResultBtn" onclick="backToResult()">📊 Back to Result</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Submit ke baad hi answers, score aur explanation dikhenge — pura test pehle imandari se attempt karein.</footer>
+</div>
+
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h3>Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modalBtns">
+      <button id="modalCancelBtn" onclick="closeModal()">Cancel</button>
+      <button id="modalConfirmBtn" onclick="modalConfirmYes()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+"q": "He said, \"I am reading a book.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he is reading a book.",
+"He said that he was reading a book.",
+"He told that he was reading a book.",
+"He said that I was reading a book."
+],
+"ans": 1,
+"sol": "<b>He said that he was reading a book.</b> is correct.<br>Present continuous → Past continuous; \"I\" → \"he\""
+},
+{
+"q": "She said to me, \"I have finished my work.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told me that she has finished her work.",
+"She said to me that she had finished her work.",
+"She told me that she had finished her work.",
+"She asked me that she had finished her work."
+],
+"ans": 2,
+"sol": "<b>She told me that she had finished her work.</b> is correct.<br>\"said to me\" → \"told me\"; Present Perfect → Past Perfect; \"my\" → \"her\""
+},
+{
+"q": "They said, \"We will go to Delhi tomorrow.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"They said that they will go to Delhi the next day.",
+"They told that they would go to Delhi tomorrow.",
+"They said that they would go to Delhi the next day.",
+"They said that we would go to Delhi tomorrow."
+],
+"ans": 2,
+"sol": "<b>They said that they would go to Delhi the next day.</b> is correct.<br>\"will\" → \"would\"; \"tomorrow\" → \"the next day\""
+},
+{
+"q": "He said to her, \"You are very intelligent.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that she was very intelligent.",
+"He said to her that she is very intelligent.",
+"He told her that you were very intelligent.",
+"He asked her that she was very intelligent."
+],
+"ans": 0,
+"sol": "<b>He told her that she was very intelligent.</b> is correct.<br>\"said to her\" → \"told her\"; \"you\" → \"she\"; Present → Past"
+},
+{
+"q": "My mother said, \"I cooked dinner last night.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"My mother said that she cooks dinner the previous night.",
+"My mother said that she had cooked dinner the night before.",
+"My mother told that I cooked dinner last night.",
+"My mother said that she cooked dinner last night."
+],
+"ans": 1,
+"sol": "<b>My mother said that she had cooked dinner the night before.</b> is correct.<br>Simple past → Past perfect; \"last night\" → \"the night before\""
+},
+{
+"q": "The teacher said to the students, \"The earth revolves around the sun.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The teacher told the students that the earth revolved around the sun.",
+"The teacher said to the students that the earth had revolved around the sun.",
+"The teacher told the students that the earth revolves around the sun.",
+"The teacher asked the students that the earth revolves around the sun."
+],
+"ans": 2,
+"sol": "<b>The teacher told the students that the earth revolves around the sun.</b> is correct.<br>Universal truth — tense does NOT change; \"said to\" → \"told\""
+},
+{
+"q": "She said, \"I was watching TV when he called.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she had been watching TV when he had called.",
+"She said that she was watching TV when he called.",
+"She said that she had been watching TV when he called.",
+"She said that she watched TV when he had called."
+],
+"ans": 0,
+"sol": "<b>She said that she had been watching TV when he had called.</b> is correct.<br>Past continuous → Past perfect continuous; Simple past → Past perfect"
+},
+{
+"q": "He said, \"I can speak three languages.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he could speak three languages.",
+"He said that he can speak three languages.",
+"He told that he could speaks three languages.",
+"He said that he is able to speak three languages."
+],
+"ans": 0,
+"sol": "<b>He said that he could speak three languages.</b> is correct.<br>\"can\" → \"could\" in reported speech"
+},
+{
+"q": "She said to me, \"I shall be waiting for you.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told me that she will be waiting for me.",
+"She told me that she would be waiting for me.",
+"She said me that I shall be waiting for you.",
+"She asked me that she would be waiting for me."
+],
+"ans": 1,
+"sol": "<b>She told me that she would be waiting for me.</b> is correct.<br>\"shall\" → \"would\"; future continuous stays as would + be + V-ing; \"you\" → \"me\""
+},
+{
+"q": "He said, \"I must leave now.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he must leave then.",
+"He said that he should leave then.",
+"He said that he had to leave then.",
+"He said that he must leave now."
+],
+"ans": 2,
+"sol": "<b>He said that he had to leave then.</b> is correct.<br>\"must\" (obligation) → \"had to\"; \"now\" → \"then\""
+},
+{
+"q": "She said, \"I may come to your party.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she might come to my party.",
+"She said that she may come to my party.",
+"She told that she might come to their party.",
+"She said that she could come to my party."
+],
+"ans": 0,
+"sol": "<b>She said that she might come to my party.</b> is correct.<br>\"may\" → \"might\" in reported speech"
+},
+{
+"q": "He said to us, \"I have been working here for five years.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told us that he had been working there for five years.",
+"He told us that he has been working here for five years.",
+"He said us that he had been working there for five years.",
+"He told us that I had been working there for five years."
+],
+"ans": 0,
+"sol": "<b>He told us that he had been working there for five years.</b> is correct.<br>\"said to us\" → \"told us\"; Present Perfect Continuous → Past Perfect Continuous; \"here\" → \"there\""
+},
+{
+"q": "The doctor said, \"This medicine should be taken twice a day.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The doctor said that this medicine should have been taken twice a day.",
+"The doctor said that that medicine should be taken twice a day.",
+"The doctor told that this medicine would be taken twice a day.",
+"The doctor said that that medicine was to be taken twice a day."
+],
+"ans": 1,
+"sol": "<b>The doctor said that that medicine should be taken twice a day.</b> is correct.<br>\"should\" does not change; \"this\" → \"that\""
+},
+{
+"q": "She said, \"I had never visited Shimla before last month.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she never visited Shimla before the previous month.",
+"She said that she had never visited Shimla before the month before.",
+"She said that she hadn't never visited Shimla before the previous month.",
+"She said that she has never visited Shimla before the previous month."
+],
+"ans": 1,
+"sol": "<b>She said that she had never visited Shimla before the month before.</b> is correct.<br>Past Perfect stays Past Perfect; \"last month\" → \"the month before\""
+},
+{
+"q": "He said to me, \"I will have completed the project by Friday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told me that he will have completed the project by Friday.",
+"He told me that he would have completed the project by Friday.",
+"He told me that he would complete the project by Friday.",
+"He said me that he had completed the project by Friday."
+],
+"ans": 1,
+"sol": "<b>He told me that he would have completed the project by Friday.</b> is correct.<br>Future Perfect \"will have\" → \"would have\"; \"Friday\" is specific — no change needed"
+},
+{
+"q": "My friend said, \"I bought this pen yesterday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"My friend said that he had bought that pen the day before.",
+"My friend said that he bought that pen yesterday.",
+"My friend told that I had bought that pen the previous day.",
+"My friend said that he had bought this pen the day before."
+],
+"ans": 0,
+"sol": "<b>My friend said that he had bought that pen the day before.</b> is correct.<br>Simple past → Past perfect; \"this\" → \"that\"; \"yesterday\" → \"the day before\""
+},
+{
+"q": "She said, \"I was not feeling well when I missed the class.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she had not been feeling well when she had missed the class.",
+"She said that she was not feeling well when she missed the class.",
+"She said that she had not been feeling well when she missed the class.",
+"She said that I was not feeling well when she missed the class."
+],
+"ans": 0,
+"sol": "<b>She said that she had not been feeling well when she had missed the class.</b> is correct.<br>Both clauses shift: past continuous → past perfect continuous; past → past perfect"
+},
+{
+"q": "He said to her, \"You need not worry about me.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that she needn't worry about him.",
+"He told her that she did not need to worry about him.",
+"He told her that you need not worry about me.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>\"need not\" → \"needn't\" or \"did not need to\"; both are acceptable in formal grammar"
+},
+{
+"q": "She said, \"I've been waiting since morning.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she had been waiting since morning.",
+"She said that she has been waiting since morning.",
+"She told that she has been waiting from morning.",
+"She said that she had been waiting from morning."
+],
+"ans": 0,
+"sol": "<b>She said that she had been waiting since morning.</b> is correct.<br>Present Perfect Continuous → Past Perfect Continuous; \"since morning\" keeps \"since\""
+},
+{
+"q": "He said, \"I used to play cricket when I was young.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he used to play cricket when he had been young.",
+"He said that he had used to play cricket when he was young.",
+"He said that he used to play cricket when he was young.",
+"He said that he would play cricket when he was young."
+],
+"ans": 2,
+"sol": "<b>He said that he used to play cricket when he was young.</b> is correct.<br>\"used to\" is a past habit — stays unchanged in reported speech"
+},
+{
+"q": "The principal said to the staff, \"You should submit your reports by Monday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The principal told the staff that they should submit their reports by the following Monday.",
+"The principal said to the staff that they should submit your reports by Monday.",
+"The principal told the staff that you should submit their reports by Monday.",
+"The principal asked the staff that they should submit their reports by Monday."
+],
+"ans": 0,
+"sol": "<b>The principal told the staff that they should submit their reports by the following Monday.</b> is correct.<br>\"said to\" → \"told\"; \"you\" → \"they\"; \"your\" → \"their\"; \"Monday\" → \"the following Monday\""
+},
+{
+"q": "She said, \"Neither of them is coming today.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that neither of them was coming that day.",
+"She said that neither of them were coming today.",
+"She told that neither of them is coming that day.",
+"She said that neither of them had come that day."
+],
+"ans": 0,
+"sol": "<b>She said that neither of them was coming that day.</b> is correct.<br>Present continuous → Past continuous; \"today\" → \"that day\"; \"is\" → \"was\" (singular subject)"
+},
+{
+"q": "He said, \"I had already eaten dinner when she arrived.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he had already eaten dinner when she had arrived.",
+"He said that he had already eaten dinner when she arrived.",
+"He said that he had already ate dinner when she arrived.",
+"He said that he already ate dinner when she arrived."
+],
+"ans": 1,
+"sol": "<b>He said that he had already eaten dinner when she arrived.</b> is correct.<br>Past Perfect stays; Past simple stays if it follows past perfect — both clauses already in the past"
+},
+{
+"q": "She said to me, \"I cannot help you this time.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told me that she could not help me that time.",
+"She said me that she cannot help me this time.",
+"She told me that I could not help you that time.",
+"She told me that she can't help me this time."
+],
+"ans": 0,
+"sol": "<b>She told me that she could not help me that time.</b> is correct.<br>\"cannot\" → \"could not\"; \"this time\" → \"that time\"; \"you\" → \"me\""
+},
+{
+"q": "The reporter said, \"The minister is attending the conference right now.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The reporter said that the minister was attending the conference right then.",
+"The reporter said that the minister is attending the conference right now.",
+"The reporter told that the minister was attending the conference at that time.",
+"The reporter said that the minister had been attending the conference at that time."
+],
+"ans": 2,
+"sol": "<b>The reporter told that the minister was attending the conference at that time.</b> is correct.<br>Present continuous → Past continuous; \"said\" has no object so \"told\" needs object — (C) is correct phrasing"
+},
+{
+"q": "He said, \"I will be free tomorrow afternoon.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he would be free tomorrow afternoon.",
+"He said that he would be free the following afternoon.",
+"He said that he will be free the next afternoon.",
+"He said that he is going to be free the next afternoon."
+],
+"ans": 1,
+"sol": "<b>He said that he would be free the following afternoon.</b> is correct.<br>\"will\" → \"would\"; \"tomorrow afternoon\" → \"the following afternoon\""
+},
+{
+"q": "She said, \"I have just posted the letter.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she had just posted the letter.",
+"She said that she has just posted the letter.",
+"She told that she just posted the letter.",
+"She said that she was just posting the letter."
+],
+"ans": 0,
+"sol": "<b>She said that she had just posted the letter.</b> is correct.<br>Present Perfect → Past Perfect; \"just\" is retained"
+},
+{
+"q": "The officer said to the clerk, \"You were absent without notice yesterday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The officer told the clerk that he had been absent without notice the day before.",
+"The officer told the clerk that he was absent without notice the previous day.",
+"The officer said to the clerk that you were absent without notice yesterday.",
+"The officer told the clerk that you had been absent without notice yesterday."
+],
+"ans": 0,
+"sol": "<b>The officer told the clerk that he had been absent without notice the day before.</b> is correct.<br>Past simple → Past perfect; \"you\" → \"he\"; \"yesterday\" → \"the day before\""
+},
+{
+"q": "He said, \"I may have misunderstood you.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he might have misunderstood me.",
+"He said that he may have misunderstood me.",
+"He said that he might misunderstood me.",
+"He told that he might have misunderstood me."
+],
+"ans": 0,
+"sol": "<b>He said that he might have misunderstood me.</b> is correct.<br>\"may have\" → \"might have\"; \"you\" → \"me\"; no object for \"said\" so (A) is standard"
+},
+{
+"q": "She said, \"I was born in this city twenty years ago.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she was born in that city twenty years before.",
+"She said that she had been born in that city twenty years before.",
+"She said that she was born in this city twenty years ago.",
+"She told that she had been born in this city twenty years ago."
+],
+"ans": 0,
+"sol": "<b>She said that she was born in that city twenty years before.</b> is correct.<br>Birth — factual/historical event: tense stays as simple past; \"this\" → \"that\"; \"ago\" → \"before\""
+},
+{
+"q": "She said to me, \"Do you like coffee?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked me if I like coffee.",
+"She asked me that I liked coffee.",
+"She asked me if I liked coffee.",
+"She asked me do I like coffee."
+],
+"ans": 2,
+"sol": "<b>She asked me if I liked coffee.</b> is correct.<br>Yes/No question → \"if/whether\" + assertive; \"do\" removed; \"like\" → \"liked\"; \"you\" → \"I\""
+},
+{
+"q": "He said to her, \"Where are you going?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked her where was she going.",
+"He asked her where she was going.",
+"He told her where she was going.",
+"He asked her where is she going."
+],
+"ans": 1,
+"sol": "<b>He asked her where she was going.</b> is correct.<br>Wh-question: \"where\" retained; inversion removed (she was going); \"said to\" → \"asked\""
+},
+{
+"q": "The teacher said to the students, \"Have you finished the assignment?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The teacher asked the students if they had finished the assignment.",
+"The teacher asked the students that had they finished the assignment.",
+"The teacher told the students whether they finished the assignment.",
+"The teacher asked the students if they have finished the assignment."
+],
+"ans": 0,
+"sol": "<b>The teacher asked the students if they had finished the assignment.</b> is correct.<br>Present Perfect → Past Perfect; \"you\" → \"they\"; \"if\" introduces yes/no question"
+},
+{
+"q": "She said to him, \"When did you return from abroad?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him when did he return from abroad.",
+"She asked him when he returned from abroad.",
+"She asked him when he had returned from abroad.",
+"She told him when he had returned from abroad."
+],
+"ans": 2,
+"sol": "<b>She asked him when he had returned from abroad.</b> is correct.<br>Simple past → Past perfect in reported question; no inversion; wh-word \"when\" retained"
+},
+{
+"q": "He said to me, \"Are you coming to the party tonight?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me whether I am coming to the party tonight.",
+"He asked me whether I was coming to the party that night.",
+"He asked me if I came to the party that night.",
+"He told me whether I was coming to the party tonight."
+],
+"ans": 1,
+"sol": "<b>He asked me whether I was coming to the party that night.</b> is correct.<br>\"tonight\" → \"that night\"; \"are coming\" → \"was coming\"; yes/no → \"whether\""
+},
+{
+"q": "She said to her friend, \"How long have you been waiting?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked her friend how long she had been waiting.",
+"She asked her friend how long had she been waiting.",
+"She asked her friend how long she has been waiting.",
+"She asked her friend how long were she waiting."
+],
+"ans": 0,
+"sol": "<b>She asked her friend how long she had been waiting.</b> is correct.<br>Present Perfect Continuous → Past Perfect Continuous; no inversion"
+},
+{
+"q": "He said, \"Who broke the window?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked who had broken the window.",
+"He asked that who broke the window.",
+"He asked who broke the window.",
+"He questioned who had broke the window."
+],
+"ans": 0,
+"sol": "<b>He asked who had broken the window.</b> is correct.<br>\"who\" as subject — no change in word order; Simple past → Past perfect"
+},
+{
+"q": "The manager said to the employee, \"Why were you late today?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The manager asked the employee why he was late that day.",
+"The manager asked the employee why had he been late today.",
+"The manager asked the employee why he had been late that day.",
+"The manager told the employee why he was late today."
+],
+"ans": 2,
+"sol": "<b>The manager asked the employee why he had been late that day.</b> is correct.<br>Past simple → Past Perfect; \"today\" → \"that day\"; no inversion in reported question"
+},
+{
+"q": "She said to me, \"Will you help me with this task?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked me whether I would help her with that task.",
+"She asked me if I will help her with this task.",
+"She asked me that will I help her with that task.",
+"She told me whether I would help her with that task."
+],
+"ans": 0,
+"sol": "<b>She asked me whether I would help her with that task.</b> is correct.<br>\"will\" → \"would\"; \"this\" → \"that\"; \"me\" (speaker) → \"her\"; yes/no question → \"whether\""
+},
+{
+"q": "He said to her, \"Did she pass the examination?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked her that did she pass the examination.",
+"He asked her if she passed the examination.",
+"He asked her whether she had passed the examination.",
+"He told her if she had passed the examination."
+],
+"ans": 2,
+"sol": "<b>He asked her whether she had passed the examination.</b> is correct.<br>Simple past → Past perfect; \"Did she pass\" → \"whether she had passed\""
+},
+{
+"q": "She asked him, \"What time does the train arrive?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him what time did the train arrive.",
+"She asked him what time the train arrives.",
+"She asked him what time the train arrived.",
+"She asked him what time was the train arriving."
+],
+"ans": 2,
+"sol": "<b>She asked him what time the train arrived.</b> is correct.<br>Present simple → Past simple; no inversion; \"does\" dropped"
+},
+{
+"q": "He said to me, \"Have you ever been to Paris?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me if I had ever been to Paris.",
+"He asked me whether I have ever been to Paris.",
+"He asked me that I had ever been to Paris.",
+"He told me if I had ever been to Paris."
+],
+"ans": 0,
+"sol": "<b>He asked me if I had ever been to Paris.</b> is correct.<br>Present Perfect → Past Perfect; \"ever\" retained; \"Have you\" → \"if I had\""
+},
+{
+"q": "The interviewer said to the candidate, \"What motivates you?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The interviewer asked the candidate what motivated him.",
+"The interviewer asked the candidate that what motivates you.",
+"The interviewer told the candidate what motivated him.",
+"The interviewer asked the candidate what had motivated him."
+],
+"ans": 0,
+"sol": "<b>The interviewer asked the candidate what motivated him.</b> is correct.<br>Present simple → Past simple; \"you\" → \"him\"; no \"that\" with wh-word"
+},
+{
+"q": "She said to him, \"Is this the book you recommended?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him whether that was the book he had recommended.",
+"She asked him if this is the book he had recommended.",
+"She asked him whether this was the book that he recommended.",
+"She asked him whether that was the book he recommended."
+],
+"ans": 0,
+"sol": "<b>She asked him whether that was the book he had recommended.</b> is correct.<br>\"this\" → \"that\"; \"Is\" → \"was\"; \"recommended\" → \"had recommended\" (past sequence)"
+},
+{
+"q": "He said to her, \"Can you speak French?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked her whether she can speak French.",
+"He asked her if she could speak French.",
+"He told her if she could speak French.",
+"He asked her whether could she speak French."
+],
+"ans": 1,
+"sol": "<b>He asked her if she could speak French.</b> is correct.<br>\"Can\" → \"could\"; yes/no question → \"if\"; no inversion in reported question"
+},
+{
+"q": "She asked, \"Who is responsible for this mess?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked who was responsible for that mess.",
+"She asked that who is responsible for this mess.",
+"She asked who had been responsible for that mess.",
+"She asked who is responsible for the mess."
+],
+"ans": 0,
+"sol": "<b>She asked who was responsible for that mess.</b> is correct.<br>\"is\" → \"was\"; \"this\" → \"that\"; no inversion; no \"that\" after wh-word"
+},
+{
+"q": "He said to me, \"Which route did you take yesterday?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me which route I had taken the previous day.",
+"He asked me which route I took the day before.",
+"He asked me which route had I taken the day before.",
+"He told me which route I had taken the previous day."
+],
+"ans": 0,
+"sol": "<b>He asked me which route I had taken the previous day.</b> is correct.<br>Simple past → Past perfect; \"yesterday\" → \"the previous day\"; no inversion"
+},
+{
+"q": "She said to her son, \"Have you brushed your teeth?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked her son whether he has brushed his teeth.",
+"She asked her son if he had brushed his teeth.",
+"She told her son if he had brushed his teeth.",
+"She asked her son that he had brushed his teeth."
+],
+"ans": 1,
+"sol": "<b>She asked her son if he had brushed his teeth.</b> is correct.<br>Present Perfect → Past Perfect; \"you\" → \"he\"; \"your\" → \"his\"; yes/no → \"if\""
+},
+{
+"q": "He asked, \"Which of you broke the vase?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked which of them had broken the vase.",
+"He asked which of you broke the vase.",
+"He asked which of them broke the vase.",
+"He asked that which of them had broken the vase."
+],
+"ans": 0,
+"sol": "<b>He asked which of them had broken the vase.</b> is correct.<br>\"you\" → \"them\"; Simple past → Past perfect; \"which\" — no inversion"
+},
+{
+"q": "She said to him, \"Why didn't you inform me earlier?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him why he didn't inform her earlier.",
+"She asked him why he hadn't informed her earlier.",
+"She asked him why hadn't he informed her earlier.",
+"She told him why he had not informed her before."
+],
+"ans": 1,
+"sol": "<b>She asked him why he hadn't informed her earlier.</b> is correct.<br>\"didn't inform\" → \"hadn't informed\" (Past → Past Perfect); \"me\" → \"her\"; no inversion"
+},
+{
+"q": "He said to me, \"Do you know where she lives?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me if I knew where she lived.",
+"He asked me whether I know where does she live.",
+"He asked me if I know where she lives.",
+"He asked me if I knew where does she live."
+],
+"ans": 0,
+"sol": "<b>He asked me if I knew where she lived.</b> is correct.<br>Double reported: outer \"do you know\" → \"if I knew\"; inner \"where she lives\" → \"where she lived\""
+},
+{
+"q": "She asked her friend, \"Are you still in touch with Priya?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked her friend if she is still in touch with Priya.",
+"She asked her friend whether she was still in touch with Priya.",
+"She asked her friend if she was in touch with Priya still.",
+"She told her friend whether she was still in touch with Priya."
+],
+"ans": 1,
+"sol": "<b>She asked her friend whether she was still in touch with Priya.</b> is correct.<br>\"Are you\" → \"whether she was\"; \"still\" stays; no inversion"
+},
+{
+"q": "He said, \"What has made you so restless today?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked what had made me so restless that day.",
+"He asked what has made me so restless today.",
+"He asked what made me so restless that day.",
+"He asked that what had made me so restless today."
+],
+"ans": 0,
+"sol": "<b>He asked what had made me so restless that day.</b> is correct.<br>\"has made\" → \"had made\"; \"today\" → \"that day\"; \"you\" → \"me\""
+},
+{
+"q": "The customs officer said to the traveller, \"Where have you come from?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The customs officer asked the traveller where he came from.",
+"The customs officer asked the traveller where he had come from.",
+"The customs officer told the traveller where he had come from.",
+"The customs officer asked the traveller that where had he come from."
+],
+"ans": 1,
+"sol": "<b>The customs officer asked the traveller where he had come from.</b> is correct.<br>\"have come\" → \"had come\"; \"you\" → \"he\"; wh-word before subject-verb"
+},
+{
+"q": "She asked him, \"Whose laptop is this?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him whose laptop that was.",
+"She asked him whose laptop this is.",
+"She asked him that whose laptop was that.",
+"She inquired him whose laptop was that."
+],
+"ans": 0,
+"sol": "<b>She asked him whose laptop that was.</b> is correct.<br>\"Whose\" retained; \"is\" → \"was\"; \"this\" → \"that\"; no \"that\" after wh-word"
+},
+{
+"q": "He said to her, \"How many times have you visited this place?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked her how many times she had visited that place.",
+"He asked her how many times she has visited this place.",
+"He asked her how many times had she visited that place.",
+"He told her how many times she had visited that place."
+],
+"ans": 0,
+"sol": "<b>He asked her how many times she had visited that place.</b> is correct.<br>Present Perfect → Past Perfect; \"you\" → \"she\"; \"this\" → \"that\"; no inversion"
+},
+{
+"q": "She said, \"Is it true that he was involved in the scam?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked if it was true that he had been involved in the scam.",
+"She asked if it is true that he was involved in the scam.",
+"She asked whether it was true that he was involved in the scam.",
+"Both (A) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (C) are correct.</b> is correct.<br>Both forms are valid; the inner clause \"was involved\" may stay or shift to \"had been involved\""
+},
+{
+"q": "He asked me, \"Don't you want to come with us?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me if I didn't want to come with them.",
+"He asked me whether I did not want to come with them.",
+"He asked me if I wanted to come with them.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>Negative question in direct becomes \"if/whether I did not want\" — both (A) and (B) are correct"
+},
+{
+"q": "The judge said to the accused, \"Were you present at the scene of the crime?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The judge asked the accused whether he had been present at the scene of the crime.",
+"The judge asked the accused if he was present at the scene of crime.",
+"The judge told the accused whether he had been present at the scene of the crime.",
+"The judge asked the accused that had he been present at the scene of the crime."
+],
+"ans": 0,
+"sol": "<b>The judge asked the accused whether he had been present at the scene of the crime.</b> is correct.<br>\"Were you\" → \"whether he had been\"; Past → Past Perfect; no \"that\" with yes/no"
+},
+{
+"q": "She said to him, \"How much did the painting cost?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him how much the painting had cost.",
+"She asked him how much had the painting cost.",
+"She asked him how much the painting costed.",
+"She told him how much the painting had cost."
+],
+"ans": 0,
+"sol": "<b>She asked him how much the painting had cost.</b> is correct.<br>Simple past → Past perfect; wh-word \"how much\" kept; no inversion; \"said to\" → \"asked\""
+},
+{
+"q": "She said to him, \"Please help me with the luggage.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him to please help her with the luggage.",
+"She requested him to help her with the luggage.",
+"She asked him please to help her with the luggage.",
+"She ordered him to help her with the luggage."
+],
+"ans": 1,
+"sol": "<b>She requested him to help her with the luggage.</b> is correct.<br>\"Please\" = polite request → \"requested him to\"; no \"please\" in reported form"
+},
+{
+"q": "The officer said to the soldier, \"Stand at ease.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The officer told the soldier to stand at ease.",
+"The officer ordered the soldier to stand at ease.",
+"The officer asked the soldier to stand at ease.",
+"The officer commanded the soldier stood at ease."
+],
+"ans": 1,
+"sol": "<b>The officer ordered the soldier to stand at ease.</b> is correct.<br>Military command → \"ordered\"; \"Stand\" → \"to stand\""
+},
+{
+"q": "Mother said to the child, \"Don't touch that hot stove.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"Mother told the child to not touch that hot stove.",
+"Mother asked the child that he should not touch that hot stove.",
+"Mother warned the child not to touch that hot stove.",
+"Mother forbade the child from touching that hot stove."
+],
+"ans": 2,
+"sol": "<b>Mother warned the child not to touch that hot stove.</b> is correct.<br>Negative imperative with safety = \"warned not to\"; (D) is also acceptable but (C) is more precise"
+},
+{
+"q": "He said to me, \"Lend me your pen, will you?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He requested me to lend him my pen.",
+"He told me to lend him my pen.",
+"He asked me whether I would lend him my pen.",
+"He ordered me to lend him my pen."
+],
+"ans": 0,
+"sol": "<b>He requested me to lend him my pen.</b> is correct.<br>Tag with imperative = polite request → \"requested\" + infinitive"
+},
+{
+"q": "The doctor said to the patient, \"Take this medicine three times a day.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The doctor ordered the patient to take that medicine three times a day.",
+"The doctor told the patient to take that medicine three times a day.",
+"The doctor asked the patient to take this medicine three times a day.",
+"The doctor advised the patient to take that medicine three times a day."
+],
+"ans": 3,
+"sol": "<b>The doctor advised the patient to take that medicine three times a day.</b> is correct.<br>Medical instruction = \"advised\"; \"this\" → \"that\""
+},
+{
+"q": "She said to him, \"Never tell a lie.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She advised him never to tell a lie.",
+"She asked him to never tell a lie.",
+"She told him to never tell a lie.",
+"She ordered him never telling a lie."
+],
+"ans": 0,
+"sol": "<b>She advised him never to tell a lie.</b> is correct.<br>\"Never + imperative\" = strong moral advice → \"advised him never to + V\""
+},
+{
+"q": "He said, \"Let us go for a walk.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that let us go for a walk.",
+"He proposed that they should go for a walk.",
+"He suggested going for a walk.",
+"Both (B) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (B) and (C) are correct.</b> is correct.<br>\"Let us\" = suggestion: can be \"proposed that they should\" or \"suggested going/that they go\""
+},
+{
+"q": "The captain said to the crew, \"Man the lifeboats immediately!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The captain requested the crew to man the lifeboats immediately.",
+"The captain ordered the crew to man the lifeboats immediately.",
+"The captain told the crew to man the lifeboats at once.",
+"The captain commanded the crew to man the lifeboats at that moment."
+],
+"ans": 1,
+"sol": "<b>The captain ordered the crew to man the lifeboats immediately.</b> is correct.<br>Urgent command → \"ordered\"; \"immediately\" may be retained or changed to \"at once\" — (B) standard"
+},
+{
+"q": "She said to her friend, \"Please don't tell anyone about this.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She requested her friend not to tell anyone about that.",
+"She told her friend to not tell anyone about this.",
+"She ordered her friend not to tell anyone about this.",
+"She asked her friend that she should not tell anyone about this."
+],
+"ans": 0,
+"sol": "<b>She requested her friend not to tell anyone about that.</b> is correct.<br>Negative request with \"please\" → \"requested not to\"; \"this\" → \"that\""
+},
+{
+"q": "The judge said to the witness, \"Speak the truth and nothing but the truth.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The judge told the witness to speak the truth and nothing but the truth.",
+"The judge ordered the witness to speak the truth and nothing but the truth.",
+"The judge advised the witness to speak the truth and nothing but the truth.",
+"The judge asked the witness to speak the truth and nothing but the truth."
+],
+"ans": 1,
+"sol": "<b>The judge ordered the witness to speak the truth and nothing but the truth.</b> is correct.<br>Court command by judge = \"ordered\""
+},
+{
+"q": "He said, \"Let there be no noise in the hall.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He requested that there should be no noise in the hall.",
+"He ordered that there should be no noise in the hall.",
+"He told that there should be no noise in the hall.",
+"He suggested that there be no noise in the hall."
+],
+"ans": 1,
+"sol": "<b>He ordered that there should be no noise in the hall.</b> is correct.<br>\"Let there be\" (3rd person let) = command/order; appropriate reporting verb = \"ordered\""
+},
+{
+"q": "She said to her students, \"Work hard and you will succeed.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She advised her students to work hard and said they would succeed.",
+"She told her students that if they worked hard, they would succeed.",
+"She told her students to work hard and they would succeed.",
+"Both (B) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (B) and (C) are correct.</b> is correct.<br>Conditional imperative: both \"told...if\" or \"advised to... and would\" forms are valid"
+},
+{
+"q": "The coach said to the player, \"Don't let pressure get to you.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The coach told the player not to let pressure get to him.",
+"The coach advised the player not to let pressure get to him.",
+"The coach ordered the player not to let pressure get to him.",
+"The coach asked the player not to let pressure get to him."
+],
+"ans": 1,
+"sol": "<b>The coach advised the player not to let pressure get to him.</b> is correct.<br>Coaching advice = \"advised\"; \"you\" → \"him\""
+},
+{
+"q": "He said, \"Hurrah! We have won the match!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He exclaimed with joy that we had won the match.",
+"He exclaimed joyfully that they had won the match.",
+"He said happily that they have won the match.",
+"He shouted that they won the match."
+],
+"ans": 1,
+"sol": "<b>He exclaimed joyfully that they had won the match.</b> is correct.<br>\"Hurrah!\" = exclamation of joy: \"exclaimed joyfully/with joy that\"; Present Perfect → Past Perfect; \"we\" → \"they\""
+},
+{
+"q": "She said, \"Alas! My favourite vase is broken.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She exclaimed sadly that her favourite vase was broken.",
+"She exclaimed with sorrow that my favourite vase was broken.",
+"She said sadly that her favourite vase is broken.",
+"She cried that her favourite vase had broken."
+],
+"ans": 0,
+"sol": "<b>She exclaimed sadly that her favourite vase was broken.</b> is correct.<br>\"Alas!\" = exclamation of grief: \"exclaimed sadly/with sorrow that\"; \"my\" → \"her\"; \"is\" → \"was\""
+},
+{
+"q": "He said, \"What a beautiful painting this is!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He exclaimed that the painting was very beautiful.",
+"He exclaimed admiringly that it was a very beautiful painting.",
+"He said what a beautiful painting that was.",
+"He exclaimed that what a beautiful painting that was."
+],
+"ans": 1,
+"sol": "<b>He exclaimed admiringly that it was a very beautiful painting.</b> is correct.<br>\"What a...!\" = exclamation of admiration → \"exclaimed admiringly/with admiration that + it was + very + adj + noun\""
+},
+{
+"q": "She said, \"How clever you are!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She exclaimed how clever I was.",
+"She exclaimed that he was very clever.",
+"She exclaimed that I was very clever.",
+"She said that how clever you were."
+],
+"ans": 1,
+"sol": "<b>She exclaimed that he was very clever.</b> is correct.<br>\"How + adj!\" → \"exclaimed that + subject + was very + adj\"; \"you\" → \"he\""
+},
+{
+"q": "The crowd said, \"Bravo! What a performance!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The crowd exclaimed with approval that it was a great performance.",
+"The crowd applauded saying what a great performance it was.",
+"The crowd exclaimed with admiration that it was a wonderful performance.",
+"All of the above are acceptable reported forms."
+],
+"ans": 3,
+"sol": "<b>All of the above are acceptable reported forms.</b> is correct.<br>\"Bravo!\" = applause/admiration; multiple valid reporting expressions exist"
+},
+{
+"q": "He said to me, \"May God bless you!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He wished that God might bless me.",
+"He prayed that God should bless me.",
+"He prayed that God might bless me.",
+"Both (A) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (C) are correct.</b> is correct.<br>Optative sentence with \"May\" = wish/prayer: \"prayed/wished that might\" — both are correct"
+},
+{
+"q": "She said, \"If only I could turn back the clock!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She wished she could turn back the clock.",
+"She said that if only she could turn back the clock.",
+"She exclaimed wishing she could turn back the clock.",
+"She wished that she can turn back the clock."
+],
+"ans": 0,
+"sol": "<b>She wished she could turn back the clock.</b> is correct.<br>\"If only\" = strong wish → \"wished that/she + could\"; no \"if only\" in reported form"
+},
+{
+"q": "He said, \"Shut up and sit down!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He requested them to shut up and sit down.",
+"He told them to shut up and sit down.",
+"He ordered them to shut up and sit down.",
+"He shouted at them to shut up and sit down."
+],
+"ans": 2,
+"sol": "<b>He ordered them to shut up and sit down.</b> is correct.<br>Rude command → \"ordered\"; (D) may be used contextually but \"ordered\" is grammatically standard"
+},
+{
+"q": "She said to the peon, \"Get me a cup of tea.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told the peon to get her a cup of tea.",
+"She asked the peon to get her a cup of tea.",
+"She requested the peon to get her a cup of tea.",
+"She ordered the peon to get her a cup of tea."
+],
+"ans": 0,
+"sol": "<b>She told the peon to get her a cup of tea.</b> is correct.<br>Instruction to subordinate = \"told\"; \"me\" → \"her\""
+},
+{
+"q": "He said, \"Let him do whatever he wants.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that let him do whatever he wanted.",
+"He permitted him to do whatever he wanted.",
+"He suggested that he be allowed to do whatever he wanted.",
+"He said that he should do whatever he wanted."
+],
+"ans": 1,
+"sol": "<b>He permitted him to do whatever he wanted.</b> is correct.<br>\"Let + 3rd person\" = granting permission: \"permitted/allowed him to\"; \"wants\" → \"wanted\""
+},
+{
+"q": "She said to him, \"Please don't be late for the interview.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She requested him not to be late for the interview.",
+"She told him to not be late for the interview.",
+"She asked him that he should not be late for the interview.",
+"She warned him not to be late for the interview."
+],
+"ans": 0,
+"sol": "<b>She requested him not to be late for the interview.</b> is correct.<br>\"Please + negative\" = request; \"said to\" → \"requested\"; proper infinitive form: \"not to be\""
+},
+{
+"q": "The general said to his troops, \"Advance and capture the enemy position.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The general told his troops to advance and capture the enemy position.",
+"The general requested his troops to advance and capture the enemy position.",
+"The general ordered his troops to advance and capture the enemy position.",
+"The general commanded his troops to advance and capture the enemy position."
+],
+"ans": 2,
+"sol": "<b>The general ordered his troops to advance and capture the enemy position.</b> is correct.<br>Military command = \"ordered\"; (D) \"commanded\" also acceptable, but standard exam answer = \"ordered\""
+},
+{
+"q": "She said, \"What a pity that he missed the opportunity!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She exclaimed with pity that he had missed the opportunity.",
+"She said what a pity it was that he missed the opportunity.",
+"She exclaimed sorrowfully that he had missed the opportunity.",
+"Both (A) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (C) are correct.</b> is correct.<br>\"What a pity!\" = exclamation of sorrow/regret; \"missed\" → \"had missed\""
+},
+{
+"q": "He said, \"God save the King!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He prayed that God might save the King.",
+"He wished that God would save the King.",
+"He exclaimed praying for the King to be saved by God.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>National/ceremonial wish = \"prayed that might\" or \"wished that would\" — both valid"
+},
+{
+"q": "She said to him, \"Make yourself at home.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him to make himself at home.",
+"She requested him to make himself at home.",
+"She asked him to make himself at home.",
+"She advised him to make himself at home."
+],
+"ans": 0,
+"sol": "<b>She told him to make himself at home.</b> is correct.<br>Hospitable instruction = \"told\"; \"yourself\" → \"himself\""
+},
+{
+"q": "He said, \"Beware of the dog!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told to beware of the dog.",
+"He warned to beware of the dog.",
+"He cautioned them to beware of the dog.",
+"He warned them to beware of the dog."
+],
+"ans": 3,
+"sol": "<b>He warned them to beware of the dog.</b> is correct.<br>Warning = \"warned\"; subject needed: \"them\"; infinitive: \"to beware of the dog\""
+},
+{
+"q": "She said, \"How dare you speak to me like that!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She asked him how he dared to speak to her like that.",
+"She exclaimed angrily asking how he dared to speak to her like that.",
+"She exclaimed with anger at how he dared to speak to her like that.",
+"Both (B) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (B) and (C) are correct.</b> is correct.<br>Exclamation of anger + indirect question element; multiple valid reported forms"
+},
+{
+"q": "She said to him, \"I have been thinking about what you said yesterday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she had been thinking about what he had said the day before.",
+"She told him that she has been thinking about what he said yesterday.",
+"She told him that I had been thinking about what he said the day before.",
+"She asked him that she had been thinking about what he said the previous day."
+],
+"ans": 0,
+"sol": "<b>She told him that she had been thinking about what he had said the day before.</b> is correct.<br>Present Perfect Continuous → Past Perfect Continuous; \"yesterday\" → \"the day before\"; both clauses shift"
+},
+{
+"q": "He said to the interviewer, \"I am confident that I can handle the pressure.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told the interviewer that he was confident that he could handle the pressure.",
+"He told the interviewer that he is confident that he can handle the pressure.",
+"He said to the interviewer that he was confident that he could handle the pressure.",
+"He informed the interviewer that he was confident that he can handle the pressure."
+],
+"ans": 0,
+"sol": "<b>He told the interviewer that he was confident that he could handle the pressure.</b> is correct.<br>\"said to\" → \"told\"; both \"am/can\" → \"was/could\" in reported speech"
+},
+{
+"q": "She said, \"I would have helped you if I had known about it.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she would help me if she had known about it.",
+"She said that she would have helped me if she had known about it.",
+"She said that she would have helped me if she knew about it.",
+"She said that she had helped me if she had known about it."
+],
+"ans": 1,
+"sol": "<b>She said that she would have helped me if she had known about it.</b> is correct.<br>Third conditional (hypothetical past) — both parts stay unchanged; \"you\" → \"me\""
+},
+{
+"q": "He said, \"I wish I were a millionaire.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he wishes he was a millionaire.",
+"He said that he had wished he were a millionaire.",
+"He wished that he were a millionaire.",
+"He expressed that he wished he were a millionaire."
+],
+"ans": 3,
+"sol": "<b>He expressed that he wished he were a millionaire.</b> is correct.<br>Subjunctive \"were\" stays; \"wish\" (present reporting verb sense) → no further tense shift needed for the wish"
+},
+{
+"q": "The scientist said, \"Water boils at 100°C at sea level.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The scientist said that water boiled at 100°C at sea level.",
+"The scientist said that water would boil at 100°C at sea level.",
+"The scientist said that water boils at 100°C at sea level.",
+"The scientist told that water has boiled at 100°C at sea level."
+],
+"ans": 2,
+"sol": "<b>The scientist said that water boils at 100°C at sea level.</b> is correct.<br>Scientific truth — tense is NEVER changed in reported speech"
+},
+{
+"q": "She said to him, \"I shall never forget the day we first met.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she would never forget the day they had first met.",
+"She told him that she should never forget the day they first met.",
+"She told him that she would never forget the day they first met.",
+"She told him that she shall never forget the day we first met."
+],
+"ans": 2,
+"sol": "<b>She told him that she would never forget the day they first met.</b> is correct.<br>\"shall\" (1st person) → \"would\"; \"we first met\" → \"they had first met\" (past in reported clause)"
+},
+{
+"q": "He said, \"I was told that the project had already been cancelled.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he had been told that the project had already been cancelled.",
+"He said that he was told that the project had been already cancelled.",
+"He said that he had been told that the project was already cancelled.",
+"He said that I was told that the project had already been cancelled."
+],
+"ans": 0,
+"sol": "<b>He said that he had been told that the project had already been cancelled.</b> is correct.<br>\"was told\" → \"had been told\" (passive past → passive past perfect); inner clause stays"
+},
+{
+"q": "She said to me, \"I may not be able to attend unless you reschedule.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told me that she might not be able to attend unless I rescheduled.",
+"She told me that she may not attend unless I reschedule.",
+"She told me that she might not attend unless I had rescheduled.",
+"She told me that she might not be able to attend unless I will reschedule."
+],
+"ans": 0,
+"sol": "<b>She told me that she might not be able to attend unless I rescheduled.</b> is correct.<br>\"may\" → \"might\"; \"unless you reschedule\" → \"unless I rescheduled\"; pronoun shift \"you\" → \"I\""
+},
+{
+"q": "He said, \"I would rather stay home than go to the party.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he would rather stay home than go to the party.",
+"He said that he had rather stayed home than gone to the party.",
+"He said that he would have rather stayed home than gone to the party.",
+"He said that he would rather stayed home than gone to the party."
+],
+"ans": 0,
+"sol": "<b>He said that he would rather stay home than go to the party.</b> is correct.<br>\"would rather\" = modal expression stays unchanged in reported speech"
+},
+{
+"q": "She said to the journalist, \"I cannot comment on anything that is currently under investigation.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told the journalist that she could not comment on anything that was currently under investigation.",
+"She said to the journalist that she cannot comment on anything that is currently under investigation.",
+"She told the journalist that she could not comment on anything currently under investigation.",
+"Both (A) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (C) are correct.</b> is correct.<br>Both maintain the meaning; dropping \"that was\" and using participial phrase is stylistically acceptable"
+},
+{
+"q": "He said, \"I had barely fallen asleep when the phone rang.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he had barely fallen asleep when the phone had rung.",
+"He said that he had barely fallen asleep when the phone rang.",
+"He said that he barely fell asleep when the phone had rung.",
+"He said that he had barely fallen asleep when the phone was ringing."
+],
+"ans": 0,
+"sol": "<b>He said that he had barely fallen asleep when the phone had rung.</b> is correct.<br>Both clauses already past: first → stays Past Perfect; second past simple can → past perfect as sequential"
+},
+{
+"q": "She said to him, \"Unless you apologise, I will not forgive you.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that unless he apologised, she would not forgive him.",
+"She told him unless he would apologise, she will not forgive him.",
+"She told him that unless he had apologised, she would not forgive him.",
+"She told him unless he apologises, she would not forgive him."
+],
+"ans": 0,
+"sol": "<b>She told him that unless he apologised, she would not forgive him.</b> is correct.<br>Conditional: \"apologise\" → \"apologised\"; \"will\" → \"would\"; \"you\" → \"him\"; \"I\" → \"she\""
+},
+{
+"q": "The chairman said, \"We have achieved a record profit this year.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The chairman said that they had achieved a record profit that year.",
+"The chairman said that we have achieved a record profit this year.",
+"The chairman announced that they achieved a record profit that year.",
+"The chairman told that they had achieved a record profit this year."
+],
+"ans": 0,
+"sol": "<b>The chairman said that they had achieved a record profit that year.</b> is correct.<br>\"said\" with no object; Present Perfect → Past Perfect; \"this year\" → \"that year\"; \"we\" → \"they\""
+},
+{
+"q": "He said to her, \"I've been meaning to talk to you about something important.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that he had been meaning to talk to her about something important.",
+"He told her that he has been meaning to talk to her about something important.",
+"He told her that I had been meaning to talk to her about something important.",
+"He said to her that he had been meaning to talk about something important."
+],
+"ans": 0,
+"sol": "<b>He told her that he had been meaning to talk to her about something important.</b> is correct.<br>Present Perfect Continuous → Past Perfect Continuous; \"you\" → \"her\""
+},
+{
+"q": "She said, \"No sooner did I enter the room than the lights went out.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that no sooner had she entered the room than the lights had gone out.",
+"She said that no sooner she entered the room than the lights went out.",
+"She said that no sooner did she enter the room than the lights went out.",
+"She said that she had no sooner entered the room when the lights went out."
+],
+"ans": 0,
+"sol": "<b>She said that no sooner had she entered the room than the lights had gone out.</b> is correct.<br>\"No sooner did\" → \"no sooner had...than\" with past perfect; both clauses shift to past perfect"
+},
+{
+"q": "He said to the board, \"We must reconsider our strategy or we will face severe losses.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told the board that they must reconsider their strategy or they would face severe losses.",
+"He told the board that they had to reconsider their strategy or they would face severe losses.",
+"He told the board that they should reconsider their strategy or they will face severe losses.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>\"must\" (urgency/necessity) can become \"must\" or \"had to\"; \"will\" → \"would\"; both valid"
+},
+{
+"q": "She said, \"I would appreciate it if you could be a little more considerate.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she would appreciate it if I could be a little more considerate.",
+"She said that she would appreciate if he could be a little more considerate.",
+"She told that she would have appreciated it if he could be a little more considerate.",
+"She said that she would appreciate it if he could be a little more considerate."
+],
+"ans": 3,
+"sol": "<b>She said that she would appreciate it if he could be a little more considerate.</b> is correct.<br>Polite conditional with \"would/could\" — no tense shift needed; \"you\" → \"he\""
+},
+{
+"q": "He said, \"Neither have I seen such courage, nor will I ever forget it.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that neither had he seen such courage nor would he ever forget it.",
+"He said neither has he seen such courage nor will he ever forget it.",
+"He said that he had seen neither such courage nor would he ever forget it.",
+"He said that neither he had seen such courage, nor he would ever forget it."
+],
+"ans": 0,
+"sol": "<b>He said that neither had he seen such courage nor would he ever forget it.</b> is correct.<br>Correlative conjunction preserved; \"have\" → \"had\"; \"will\" → \"would\"; inversion preserved in reported subordinate"
+},
+{
+"q": "She said to him, \"Even if you try your best, you may not succeed.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that even if he tried his best, he might not succeed.",
+"She told him that even if he tries his best, he may not succeed.",
+"She told him that even though he tried his best, he might not succeed.",
+"She said to him that even if he tried his best, he might not succeed."
+],
+"ans": 0,
+"sol": "<b>She told him that even if he tried his best, he might not succeed.</b> is correct.<br>\"try\" → \"tried\"; \"may\" → \"might\"; \"you\" → \"he\"; \"said to\" → \"told\""
+},
+{
+"q": "He said, \"I dare not go there alone.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he dare not go there alone.",
+"He said that he dared not go there alone.",
+"He said that he did not dare to go there alone.",
+"Both (B) and (C) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (B) and (C) are correct.</b> is correct.<br>\"dare not\" (semi-modal) → \"dared not\" or \"did not dare to\" — both are grammatically correct"
+},
+{
+"q": "She said to him, \"You look pale. Have you been feeling unwell lately?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that he looked pale and asked whether he had been feeling unwell lately.",
+"She told him that he looks pale and asked if he has been feeling unwell lately.",
+"She said to him that he looked pale and asked if he had been feeling unwell lately.",
+"She told him he had looked pale and asked whether he had been feeling unwell."
+],
+"ans": 0,
+"sol": "<b>She told him that he looked pale and asked whether he had been feeling unwell lately.</b> is correct.<br>Two sentences: assertive + interrogative; \"look\" → \"looked\"; \"Have you been\" → \"had been\"; \"lately\" stays"
+},
+{
+"q": "He said, \"I wonder whether she will come or not.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he wondered whether she would come or not.",
+"He wondered whether she will come or not.",
+"He said that he had wondered whether she would come or not.",
+"He said he wonders whether she would come or not."
+],
+"ans": 0,
+"sol": "<b>He said that he wondered whether she would come or not.</b> is correct.<br>\"wonder\" (thinking aloud) → \"wondered\"; \"will\" → \"would\"; \"whether...or not\" retained"
+},
+{
+"q": "She said to the audience, \"I would like to thank each and every one of you for your support.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told the audience that she would like to thank each and every one of them for their support.",
+"She told the audience she liked to thank each and every one of them for their support.",
+"She told the audience that she would have liked to thank every one of them for their support.",
+"She said to the audience that she would like to thank every one of them for their support."
+],
+"ans": 0,
+"sol": "<b>She told the audience that she would like to thank each and every one of them for their support.</b> is correct.<br>\"you\" → \"them\"; \"your\" → \"their\"; \"would like\" stays (polite form); \"said to\" → \"told\""
+},
+{
+"q": "He said to her, \"I am sorry for what happened yesterday, and I promise it won't happen again.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He apologised to her for what had happened the day before and promised that it would not happen again.",
+"He told her that he was sorry for what happened the day before and promised it will not happen again.",
+"He apologised to her for what had happened yesterday and promised that it would not happen again.",
+"He told her he was sorry for what had happened the day before and it would not happen again."
+],
+"ans": 0,
+"sol": "<b>He apologised to her for what had happened the day before and promised that it would not happen again.</b> is correct.<br>\"I am sorry\" → \"apologised\"; \"yesterday\" → \"the day before\"; \"won't\" → \"would not\"; \"I promise\" → \"promised\""
+},
+{
+"q": "She said, \"Had I known earlier, I would have acted differently.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that had she known earlier, she would have acted differently.",
+"She said that if she had known earlier, she would have acted differently.",
+"She said that she would have acted differently if she had known earlier.",
+"All of the above are correct reported forms."
+],
+"ans": 3,
+"sol": "<b>All of the above are correct reported forms.</b> is correct.<br>Third conditional with inversion: all three variants are grammatically valid reported forms"
+},
+{
+"q": "He said to her, \"I can't thank you enough for everything you've done.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that he couldn't thank her enough for everything she had done.",
+"He told her that he can't thank her enough for everything she's done.",
+"He said to her that he couldn't thank her enough for everything she did.",
+"He thanked her saying that he couldn't thank her enough for everything she did."
+],
+"ans": 0,
+"sol": "<b>He told her that he couldn't thank her enough for everything she had done.</b> is correct.<br>\"can't\" → \"couldn't\"; \"you've done\" → \"she had done\"; \"said to\" → \"told\""
+},
+{
+"q": "She said, \"The more I think about it, the less certain I become.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that the more she thought about it, the less certain she became.",
+"She said that the more she thinks about it, the less certain she becomes.",
+"She said the more she thought about it, the less certain she had become.",
+"She said that the more she thought about it, the less certain she gets."
+],
+"ans": 0,
+"sol": "<b>She said that the more she thought about it, the less certain she became.</b> is correct.<br>Double comparative structure: both verbs shift — \"think\" → \"thought\"; \"become\" → \"became\""
+},
+{
+"q": "He said to his colleague, \"I've completed the analysis you asked for.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told his colleague that he had completed the analysis his colleague had asked for.",
+"He told his colleague that he had completed the analysis he had asked for.",
+"He told his colleague that I had completed the analysis he had asked for.",
+"He said his colleague that he had completed the analysis he had asked for."
+],
+"ans": 1,
+"sol": "<b>He told his colleague that he had completed the analysis he had asked for.</b> is correct.<br>\"you\" (the colleague) → \"he\"; \"asked\" → \"had asked\"; \"said to\" → \"told\""
+},
+{
+"q": "She said, \"I was under the impression that you had already left.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that she was under the impression that he had already left.",
+"She said that she had been under the impression that he had already left.",
+"She said that she was under the impression that he already left.",
+"She said that I was under the impression that he had already left."
+],
+"ans": 1,
+"sol": "<b>She said that she had been under the impression that he had already left.</b> is correct.<br>\"was\" → \"had been\" (past simple → past perfect for the outer clause); inner past perfect stays"
+},
+{
+"q": "He said to the committee, \"I strongly believe that the decision should be reconsidered.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told the committee that he strongly believed that the decision should be reconsidered.",
+"He told the committee that he strongly believes that the decision should be reconsidered.",
+"He said to the committee that he strongly believed that the decision must be reconsidered.",
+"He told the committee that he had strongly believed that the decision should be reconsidered."
+],
+"ans": 0,
+"sol": "<b>He told the committee that he strongly believed that the decision should be reconsidered.</b> is correct.<br>\"believe\" → \"believed\"; \"should\" stays (advisory modal); \"said to\" → \"told\""
+},
+{
+"q": "Select the correct indirect form: \"Why did you not reply to my message?\" he asked her.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked her why she had not replied to his message.",
+"He asked her why she did not reply to his message.",
+"He asked her why had she not replied to his message.",
+"He questioned her why she has not replied to his message."
+],
+"ans": 0,
+"sol": "<b>He asked her why she had not replied to his message.</b> is correct.<br>Simple past negative → Past perfect negative; \"my\" → \"his\"; \"you\" → \"she\"; no inversion"
+},
+{
+"q": "SSC CGL 2022 pattern — Select correct direct form: She told me that she had been working on the report since morning.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said to me, \"I have been working on the report since morning.\"",
+"She said to me, \"I was working on the report since morning.\"",
+"She said to me, \"I had been working on the report since morning.\"",
+"She said to me, \"I am working on the report since morning.\""
+],
+"ans": 0,
+"sol": "<b>She said to me, \"I have been working on the report since morning.\"</b> is correct.<br>Past Perfect Continuous in indirect → Present Perfect Continuous in direct; \"since morning\" stays"
+},
+{
+"q": "Select the correct indirect form: The professor said to the students, \"Submit your projects by next Friday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The professor told the students to submit their projects by the following Friday.",
+"The professor said to the students to submit your projects by next Friday.",
+"The professor asked the students to submit their projects by next Friday.",
+"The professor ordered the students to submit their projects by the following Friday."
+],
+"ans": 0,
+"sol": "<b>The professor told the students to submit their projects by the following Friday.</b> is correct.<br>\"submit\" = instruction → \"told...to\"; \"your\" → \"their\"; \"next Friday\" → \"the following Friday\""
+},
+{
+"q": "SSC CHSL pattern — Select the correct option: He said to me, \"Don't you think you should apologise?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He asked me if I did not think I should apologise.",
+"He asked me whether I thought I should apologise.",
+"He suggested that I think I should apologise.",
+"He asked me that didn't I think I should apologise."
+],
+"ans": 0,
+"sol": "<b>He asked me if I did not think I should apologise.</b> is correct.<br>Negative question softened to neutral indirect form; \"you\" → \"I\"; \"think\" → \"thought\""
+},
+{
+"q": "Select the correct indirect form: She said, \"Congratulations on your promotion!\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said congratulations on his promotion.",
+"She congratulated him on his promotion.",
+"She wished him congratulations on his promotion.",
+"She exclaimed congratulations on his promotion."
+],
+"ans": 1,
+"sol": "<b>She congratulated him on his promotion.</b> is correct.<br>Exclamatory congratulation → \"congratulated him on his promotion\""
+},
+{
+"q": "SSC CGL Tier 2 type — Select the correct indirect form: \"I cannot tell you how grateful I am,\" she said to him.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she could not tell him how grateful she was.",
+"She said to him that she cannot tell him how grateful she is.",
+"She told him she could not tell how grateful she was.",
+"She told him that she couldn't tell him how grateful I was."
+],
+"ans": 0,
+"sol": "<b>She told him that she could not tell him how grateful she was.</b> is correct.<br>\"cannot\" → \"could not\"; \"am\" → \"was\"; \"I\" → \"she\"; \"you\" → \"him\""
+},
+{
+"q": "Select the correct direct form: The manager told the staff that the meeting had been postponed indefinitely.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The manager said to the staff, \"The meeting will be postponed indefinitely.\"",
+"The manager said to the staff, \"The meeting has been postponed indefinitely.\"",
+"The manager said to the staff, \"The meeting was postponed indefinitely.\"",
+"The manager said to the staff, \"The meeting had been postponed indefinitely.\""
+],
+"ans": 1,
+"sol": "<b>The manager said to the staff, \"The meeting has been postponed indefinitely.\"</b> is correct.<br>Past Perfect passive in indirect → Present Perfect passive in direct; \"indefinitely\" stays"
+},
+{
+"q": "SSC CGL 2023 type: He said, \"I would love to visit Japan someday.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he would love to visit Japan someday.",
+"He said that he had loved to visit Japan someday.",
+"He said that he would love to visit Japan some day.",
+"He wished that he would love to visit Japan someday."
+],
+"ans": 0,
+"sol": "<b>He said that he would love to visit Japan someday.</b> is correct.<br>\"would love\" stays (already past modal form); \"someday\" may be kept or changed to \"some day\" — (A) is standard"
+},
+{
+"q": "SSC CHSL Tier 2 type: She said to him, \"I have not heard from you in a long time. Are you alright?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she had not heard from him in a long time and asked if he was alright.",
+"She told him that she has not heard from him in a long time and asked whether he is alright.",
+"She asked him whether she had not heard from him in a long time or he was alright.",
+"She told him she had not heard from him for a long time asking if he is alright."
+],
+"ans": 0,
+"sol": "<b>She told him that she had not heard from him in a long time and asked if he was alright.</b> is correct.<br>Two sentences combined: declarative + interrogative; tense shifts; \"in a long time\" stays"
+},
+{
+"q": "Select the correct indirect form: \"Let's not discuss this in public,\" she said.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She suggested that they should not discuss that in public.",
+"She told not to discuss this in public.",
+"She proposed that they not to discuss this in public.",
+"She suggested to not discuss that in public."
+],
+"ans": 0,
+"sol": "<b>She suggested that they should not discuss that in public.</b> is correct.<br>\"Let's not\" = suggestion → \"suggested that they should not\"; \"this\" → \"that\""
+},
+{
+"q": "SSC CGL 2022 (Dec) actual pattern: Select the correct direct form: She asked me why I had been so silent throughout the meeting.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said to me, \"Why were you so silent throughout the meeting?\"",
+"She said to me, \"Why have you been so silent throughout the meeting?\"",
+"She said to me, \"Why are you so silent throughout the meeting?\"",
+"She said to me, \"Why had you been so silent throughout the meeting?\""
+],
+"ans": 0,
+"sol": "<b>She said to me, \"Why were you so silent throughout the meeting?\"</b> is correct.<br>Past Perfect in indirect → Simple Past in direct; \"I\" → \"you\"; \"me\" → her addressee"
+},
+{
+"q": "Select the correct indirect form: \"May you live long!\" he said to her.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He wished her a long life.",
+"He prayed that she might live long.",
+"He expressed the wish that she may live long.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>Optative \"May you\" = blessing/wish: \"wished her a long life\" or \"prayed that she might live long\""
+},
+{
+"q": "SSC CHSL Tier 1 type: He said to her, \"I suppose you haven't met my brother yet.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that he supposed she had not met his brother yet.",
+"He asked her if she had not met his brother yet.",
+"He told her that he supposed she hasn't met his brother.",
+"He said to her that he supposes she had not met his brother yet."
+],
+"ans": 0,
+"sol": "<b>He told her that he supposed she had not met his brother yet.</b> is correct.<br>\"suppose\" → \"supposed\"; \"haven't met\" → \"had not met\"; \"my\" → \"his\"; \"you\" → \"she\""
+},
+{
+"q": "Advanced SSC pattern: She said, \"I wish I had taken that job when I had the chance.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She wished that she had taken that job when she had the chance.",
+"She said that she wished she had taken that job when she had the chance.",
+"She said that she wishes she had taken that job when she had the chance.",
+"She expressed regret that she had not taken that job when she had the chance."
+],
+"ans": 1,
+"sol": "<b>She said that she wished she had taken that job when she had the chance.</b> is correct.<br>\"wish\" (subjunctive) + past perfect: \"said that she wished she had taken\"; no further tense shift in wish clause"
+},
+{
+"q": "Select the correct indirect form: \"The train leaves at 8 AM tomorrow,\" said the station master.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The station master said that the train leaves at 8 AM the next day.",
+"The station master said that the train left at 8 AM the next day.",
+"The station master said that the train would leave at 8 AM the next day.",
+"The station master announced that the train was to leave at 8 AM the next morning."
+],
+"ans": 3,
+"sol": "<b>The station master announced that the train was to leave at 8 AM the next morning.</b> is correct.<br>Scheduled/timetabled future: \"leaves\" can → \"was to leave\" or \"would leave\"; \"tomorrow\" → \"the next morning\" — (D) is the most precise SSC answer"
+},
+{
+"q": "SSC CGL pattern: He said, \"I would sooner die than betray my country.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he would sooner die than betray his country.",
+"He said that he would have sooner died than betrayed his country.",
+"He said that he would sooner have died than betrayed his country.",
+"He exclaimed that he would die before betraying his country."
+],
+"ans": 0,
+"sol": "<b>He said that he would sooner die than betray his country.</b> is correct.<br>\"would sooner...than\" = strong preference stays as is in reported speech; no tense change"
+},
+{
+"q": "SSC CHSL Tier 2: She said to the manager, \"Could you please check if my application has been processed?\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She requested the manager to please check if her application had been processed.",
+"She requested the manager to check if her application had been processed.",
+"She asked the manager whether he could check if her application has been processed.",
+"She asked the manager to check whether her application has been processed."
+],
+"ans": 1,
+"sol": "<b>She requested the manager to check if her application had been processed.</b> is correct.<br>Polite request with \"Could you please\" → \"requested to check\"; \"has been\" → \"had been\"; no \"please\" in indirect"
+},
+{
+"q": "Select the correct indirect form: \"How interesting it would be if we could travel back in time!\" she said.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She exclaimed with interest that it would be interesting if they could travel back in time.",
+"She said how interesting it would be if they could travel back in time.",
+"She exclaimed that how interesting it would be if they could travel back in time.",
+"She wondered how interesting it would be if they could travel back in time."
+],
+"ans": 0,
+"sol": "<b>She exclaimed with interest that it would be interesting if they could travel back in time.</b> is correct.<br>\"How interesting!\" = exclamation → \"exclaimed...that it would be interesting\"; conditional stays; \"we\" → \"they\""
+},
+{
+"q": "SSC CGL Tier 2 advanced: He said, \"I am not the sort of person who gives up easily.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he was not the sort of person who gave up easily.",
+"He said that he is not the sort of person who gives up easily.",
+"He said that he had not been the sort of person who gave up easily.",
+"He said that he was not the sort of person who had given up easily."
+],
+"ans": 0,
+"sol": "<b>He said that he was not the sort of person who gave up easily.</b> is correct.<br>\"am\" → \"was\"; \"gives\" → \"gave\" (relative clause verb also shifts with the main verb)"
+},
+{
+"q": "Select the correct indirect form: \"It's high time you started taking your health seriously,\" the doctor said to the patient.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The doctor told the patient that it was high time he started taking his health seriously.",
+"The doctor told the patient that it is high time he starts taking his health seriously.",
+"The doctor advised the patient that it was high time he should start taking his health seriously.",
+"The doctor told the patient it was high time he had started taking his health seriously."
+],
+"ans": 0,
+"sol": "<b>The doctor told the patient that it was high time he started taking his health seriously.</b> is correct.<br>\"It's high time\" + past subjunctive stays; \"you\" → \"he\"; \"your\" → \"his\"; \"is\" → \"was\""
+},
+{
+"q": "SSC CGL actual question type: She said to him, \"I hope you don't mind my asking.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she hoped he didn't mind her asking.",
+"She asked him if he minded her asking.",
+"She told him that she hopes he doesn't mind her asking.",
+"She told him that she hoped he didn't mind my asking."
+],
+"ans": 0,
+"sol": "<b>She told him that she hoped he didn't mind her asking.</b> is correct.<br>\"hope\" → \"hoped\"; \"don't mind\" → \"didn't mind\"; \"my asking\" → \"her asking\""
+},
+{
+"q": "Select the correct indirect form: \"Hardly had I sat down when the doorbell rang,\" she said.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She said that hardly had she sat down when the doorbell had rung.",
+"She said that she had hardly sat down when the doorbell rang.",
+"She said that she had hardly sat down when the doorbell had rung.",
+"She said that hardly she had sat down when the doorbell rang."
+],
+"ans": 2,
+"sol": "<b>She said that she had hardly sat down when the doorbell had rung.</b> is correct.<br>\"Hardly had I\" → \"she had hardly\"; both clauses already past; simple past \"rang\" → past perfect \"had rung\""
+},
+{
+"q": "SSC CHSL Tier 2 — Select correct direct form: The inspector asked the suspect if he had been at home the previous evening.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The inspector said to the suspect, \"Were you at home yesterday evening?\"",
+"The inspector said to the suspect, \"Had you been at home the previous evening?\"",
+"The inspector said to the suspect, \"Have you been at home yesterday evening?\"",
+"The inspector said to the suspect, \"Are you at home last evening?\""
+],
+"ans": 0,
+"sol": "<b>The inspector said to the suspect, \"Were you at home yesterday evening?\"</b> is correct.<br>Past Perfect in indirect → Simple Past in direct; \"previous evening\" → \"yesterday evening\""
+},
+{
+"q": "Advanced: He said, \"I take pride in the fact that I have never broken a promise.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that he took pride in the fact that he had never broken a promise.",
+"He said that he takes pride in the fact that he has never broken a promise.",
+"He said that he had taken pride in the fact that he had never broken a promise.",
+"He said that he was proud of the fact that he never broke a promise."
+],
+"ans": 0,
+"sol": "<b>He said that he took pride in the fact that he had never broken a promise.</b> is correct.<br>\"take\" → \"took\"; \"have never broken\" → \"had never broken\"; \"the fact that\" retained"
+},
+{
+"q": "SSC CGL Tier 2 (Jan 2026 pattern): \"Whether you agree or not, I intend to go ahead with my plan,\" he said.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He said that whether I agreed or not, he intended to go ahead with his plan.",
+"He said that whether they agreed or not, he intended to go ahead with his plan.",
+"He said that whether she agreed or not, he intended to go ahead with his plan.",
+"He said that whether he agreed or not, he intended to go ahead with his plan."
+],
+"ans": 3,
+"sol": "<b>He said that whether he agreed or not, he intended to go ahead with his plan.</b> is correct.<br>\"you\" (audience) → \"they\" (in reported context); \"agree\" → \"agreed\"; \"I intend\" → \"he intended\"; \"my\" → \"his\""
+},
+{
+"q": "Select the correct indirect: She said to him, \"I'm telling you this for your own good.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She told him that she was telling him that for his own good.",
+"She told him that I am telling him this for his own good.",
+"She told him that she told him that for his own good.",
+"She told him that she was telling him this for his own good."
+],
+"ans": 0,
+"sol": "<b>She told him that she was telling him that for his own good.</b> is correct.<br>\"this\" → \"that\"; \"your\" → \"his\"; \"I'm telling\" → \"she was telling\""
+},
+{
+"q": "SSC CGL advanced: He said to her, \"I would have called you, but I lost my phone.\"",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"He told her that he would have called her but he had lost his phone.",
+"He told her that he would have called her but he lost his phone.",
+"He told her that he would have called her but he would lose his phone.",
+"He told her that he had called her but he had lost his phone."
+],
+"ans": 0,
+"sol": "<b>He told her that he would have called her but he had lost his phone.</b> is correct.<br>\"would have called\" stays; \"lost\" → \"had lost\" (past → past perfect for sequence); \"my\" → \"his\""
+},
+{
+"q": "Select the correct indirect: \"The early bird catches the worm,\" the coach told them.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The coach told them that the early bird catches the worm.",
+"The coach told them that the early bird caught the worm.",
+"The coach said to them that the early bird catches the worm.",
+"The coach told them that the early bird had caught the worm."
+],
+"ans": 0,
+"sol": "<b>The coach told them that the early bird catches the worm.</b> is correct.<br>Proverb — tense is NEVER changed in reported speech"
+},
+{
+"q": "SSC CHSL 2025 type: \"I can't believe you've been keeping this a secret for so long!\" she said to him.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"She exclaimed disbelievingly that she couldn't believe he had been keeping that a secret for so long.",
+"She told him that she couldn't believe that he had been keeping this a secret for so long.",
+"She said that she can't believe he's been keeping this a secret for so long.",
+"She exclaimed that she couldn't believe he has been keeping that secret for so long."
+],
+"ans": 0,
+"sol": "<b>She exclaimed disbelievingly that she couldn't believe he had been keeping that a secret for so long.</b> is correct.<br>Exclamatory + complex: \"can't\" → \"couldn't\"; \"you've been keeping\" → \"he had been keeping\"; \"this\" → \"that\""
+},
+{
+"q": "SSC CGL Tier 2 Master: \"Had you paid attention in class, you would not be struggling now,\" the teacher said to the student.",
+"tag": "SSC CGL &amp; CHSL 2026 — The Versatile Mentor",
+"opts": [
+"The teacher told the student that had he paid attention in class, he would not be struggling then.",
+"The teacher said to the student that if he had paid attention in class, he would not be struggling then.",
+"The teacher told the student that if he had paid attention in class, he would not have been struggling then.",
+"Both (A) and (B) are correct."
+],
+"ans": 3,
+"sol": "<b>Both (A) and (B) are correct.</b> is correct.<br>Third conditional with inversion: both \"had he paid\" (retained inversion) and \"if he had paid\" are valid; \"now\" → \"then\""
+}
+];
+
+const labels=['A','B','C','D'];
+const TOTAL_TIME = 150*60; // 150 minutes in seconds
+const MARK_CORRECT = 1;
+const MARK_WRONG = -0.25;
+
+let currentQ = 0;
+let currentReviewQ = 0;
+let timeLeft = TOTAL_TIME;
+let timerInterval = null;
+let testSubmitted = false;
+
+// responses[i] = null (not visited/not answered) or option index (0-3)
+const responses = new Array(questions.length).fill(null);
+// visited[i] = true once user has landed on that question
+const visited = new Array(questions.length).fill(false);
+
+function $(id){ return document.getElementById(id); }
+
+function initInfo(){
+  $('infoTotalQ').textContent = questions.length;
+}
+initInfo();
+
+function startTest(){
+  $('mainHeader').style.display='none';
+  $('startScreen').style.display='none';
+  $('testTopBar').style.display='flex';
+  $('testLayout').style.display='block';
+  currentQ = 0;
+  buildPalette();
+  showQuestion(0);
+  startTimer();
+}
+
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    if(timeLeft <= 0){
+      timeLeft = 0;
+      updateTimerDisplay();
+      clearInterval(timerInterval);
+      doSubmit(true);
+      return;
+    }
+    updateTimerDisplay();
+  },1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  $('timerVal').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const box = $('timerBox');
+  if(timeLeft <= 300){ box.classList.add('low'); } else { box.classList.remove('low'); }
+}
+
+function buildPalette(){
+  const grid = $('paletteGrid');
+  grid.innerHTML='';
+  questions.forEach((_,i)=>{
+    const b = document.createElement('div');
+    b.className = 'pbtn';
+    b.textContent = i+1;
+    b.id = `pbtn-${i}`;
+    b.onclick = ()=> { showQuestion(i); closePalette(); };
+    grid.appendChild(b);
+  });
+  refreshPalette();
+}
+
+function refreshPalette(){
+  questions.forEach((_,i)=>{
+    const b = $(`pbtn-${i}`);
+    if(!b) return;
+    b.classList.remove('answered','notanswered','current');
+    if(responses[i] !== null){
+      b.classList.add('answered');
+    } else if(visited[i]){
+      b.classList.add('notanswered');
+    }
+    if(i === currentQ){ b.classList.add('current'); }
+  });
+}
+
+function togglePalette(){
+  $('paletteDropdown').classList.toggle('show');
+}
+function closePalette(){
+  $('paletteDropdown').classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  const dd = $('paletteDropdown');
+  const btn = $('paletteToggleBtn');
+  if(dd && dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    closePalette();
+  }
+});
+
+function buildReviewPalette(){
+  const grid = $('reviewPaletteGrid');
+  grid.innerHTML='';
+  questions.forEach((item,i)=>{
+    const b = document.createElement('div');
+    b.className = 'pbtn';
+    b.textContent = i+1;
+    b.id = `rpbtn-${i}`;
+    const userAns = responses[i];
+    if(userAns !== null && userAns === item.ans){
+      b.classList.add('answered'); // correct
+    } else if(userAns !== null && userAns !== item.ans){
+      b.classList.add('notanswered'); // wrong
+    }
+    b.onclick = ()=> { showReviewQuestion(i); closeReviewPalette(); };
+    grid.appendChild(b);
+  });
+  refreshReviewPalette();
+}
+
+function refreshReviewPalette(){
+  questions.forEach((_,i)=>{
+    const b = $(`rpbtn-${i}`);
+    if(!b) return;
+    b.classList.remove('current');
+    if(i === currentReviewQ){ b.classList.add('current'); }
+  });
+}
+
+function toggleReviewPalette(){
+  $('reviewPaletteDropdown').classList.toggle('show');
+}
+function closeReviewPalette(){
+  $('reviewPaletteDropdown').classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  const dd = $('reviewPaletteDropdown');
+  const btn = $('reviewPaletteToggleBtn');
+  if(dd && dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    closeReviewPalette();
+  }
+});
+
+function showQuestion(qi){
+  currentQ = qi;
+  visited[qi] = true;
+  const item = questions[qi];
+  $('qTag').textContent = item.tag;
+  $('qNumLabel').textContent = `Question ${qi+1} of ${questions.length}`;
+  $('qText').innerHTML = item.q;
+  $('progressText').textContent = `Question ${qi+1} / ${questions.length}`;
+
+  const optsDiv = $('qOpts');
+  optsDiv.innerHTML = '';
+  item.opts.forEach((opt,oi)=>{
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(responses[qi] === oi) btn.classList.add('selected');
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+    btn.onclick = ()=> selectOption(qi,oi);
+    optsDiv.appendChild(btn);
+  });
+
+  $('prevBtn').disabled = (qi === 0);
+  $('nextBtn').textContent = (qi === questions.length-1) ? 'Next ➡️' : 'Next ➡️';
+  refreshPalette();
+}
+
+function selectOption(qi,oi){
+  responses[qi] = oi;
+  showQuestion(qi);
+}
+
+function clearResponse(){
+  responses[currentQ] = null;
+  showQuestion(currentQ);
+}
+
+function goPrev(){
+  if(currentQ > 0) showQuestion(currentQ-1);
+}
+function goNext(){
+  if(currentQ < questions.length-1) showQuestion(currentQ+1);
+  else{
+    // last question -> nudge toward submit
+    confirmSubmit();
+  }
+}
+
+function confirmSubmit(){
+  if(testSubmitted) return;
+  const unattempted = responses.filter(r=>r===null).length;
+  const msg = unattempted > 0
+    ? `Aapne ${unattempted} question(s) attempt nahi kiye hain. Kya aap test submit karna chahte hain?`
+    : `Kya aap test submit karna chahte hain?`;
+  $('modalMsg').textContent = msg;
+  $('modalOverlay').classList.add('show');
+}
+
+function closeModal(){
+  $('modalOverlay').classList.remove('show');
+}
+
+function modalConfirmYes(){
+  closeModal();
+  doSubmit(false);
+}
+
+function doSubmit(autoSubmitted){
+  if(testSubmitted) return;
+  testSubmitted = true;
+  clearInterval(timerInterval);
+
+  let correct=0, wrong=0, attempted=0;
+  questions.forEach((item,i)=>{
+    if(responses[i] !== null){
+      attempted++;
+      if(responses[i] === item.ans) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = questions.length - attempted;
+  const score = (correct*MARK_CORRECT) + (wrong*MARK_WRONG);
+
+  $('submitReasonText').textContent = autoSubmitted
+    ? '⏰ Time khatam ho gaya — test auto-submit ho gaya hai.'
+    : 'Aapne test submit kar diya hai.';
+  $('finalScore').textContent = score.toFixed(2).replace(/\.00$/,'');
+  $('finalMax').textContent = questions.length;
+  $('statTotal').textContent = questions.length;
+  $('statAttempted').textContent = attempted;
+  $('statUnattempted').textContent = unattempted;
+  $('statCorrect').textContent = correct;
+  $('statWrong').textContent = wrong;
+
+  $('testTopBar').style.display='none';
+  $('testLayout').style.display='none';
+  $('alertBanner').style.display='none';
+  $('resultScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===== REVIEW SCREEN ===== */
+function openReview(qi){
+  $('resultScreen').style.display='none';
+  $('reviewScreen').style.display='block';
+  buildReviewPalette();
+  showReviewQuestion(qi);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function backToResult(){
+  $('reviewScreen').style.display='none';
+  $('resultScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showReviewQuestion(qi){
+  currentReviewQ = qi;
+  const item = questions[qi];
+  const userAns = responses[qi];
+
+  $('rQTag').textContent = item.tag;
+  $('rQNumLabel').textContent = `Question ${qi+1} of ${questions.length}`;
+  $('rQText').innerHTML = item.q;
+  $('reviewProgress').textContent = `Question ${qi+1} / ${questions.length}`;
+
+  const statusTag = $('reviewStatusTag');
+  if(userAns === null){
+    statusTag.textContent = 'Unattempted';
+    statusTag.className = 'review-status skip';
+  } else if(userAns === item.ans){
+    statusTag.textContent = 'Correct';
+    statusTag.className = 'review-status correct';
+  } else {
+    statusTag.textContent = 'Wrong';
+    statusTag.className = 'review-status wrong';
+  }
+
+  const optsDiv = $('rQOpts');
+  optsDiv.innerHTML = '';
+  item.opts.forEach((opt,oi)=>{
+    const btn = document.createElement('div');
+    btn.className = 'opt locked';
+    if(oi === item.ans) btn.classList.add('correct');
+    if(userAns !== null && oi === userAns && userAns !== item.ans) btn.classList.add('wrong');
+    let markHtml = '';
+    if(oi === item.ans) markHtml = '<span class="mark c">✓</span>';
+    else if(userAns !== null && oi === userAns) markHtml = '<span class="mark w">✗</span>';
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>${markHtml}`;
+    optsDiv.appendChild(btn);
+  });
+
+  $('rYourAns').innerHTML = userAns === null
+    ? `<b>Your Answer:</b> Not Attempted`
+    : `<b>Your Answer:</b> ${labels[userAns]} &nbsp;|&nbsp; <b>Correct Answer:</b> ${labels[item.ans]}`;
+
+  $('rSolBody').innerHTML = item.sol;
+
+  refreshReviewPalette();
+
+  $('rPrevBtn').disabled = (qi === 0);
+  $('rNextBtn').textContent = (qi === questions.length-1) ? 'Finish' : 'Next ➡️';
+}
+
+function reviewPrev(){
+  if(currentReviewQ > 0) showReviewQuestion(currentReviewQ-1);
+}
+function reviewNext(){
+  if(currentReviewQ < questions.length-1) showReviewQuestion(currentReviewQ+1);
+  else backToResult();
+}
+
+$('modalOverlay').addEventListener('click', function(e){
+  if(e.target === $('modalOverlay')) closeModal();
+});
+
+// Warn before leaving mid-test
+window.addEventListener('beforeunload', function(e){
+  if(!testSubmitted && timerInterval){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+</script>
+</body>
+</html>

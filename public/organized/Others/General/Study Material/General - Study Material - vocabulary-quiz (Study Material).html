@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Quiz - Letter A</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+        :root {
+            --bg-gradient: radial-gradient(circle at top left, #0ea5e9 0%, transparent 50%), radial-gradient(circle at bottom right, #22d3ee 0%, transparent 55%), #0f172a;
+            --surface: rgba(15, 23, 42, 0.75);
+            --surface-alt: rgba(30, 41, 59, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5f5;
+            --accent: #38bdf8;
+            --accent-strong: #0ea5e9;
+            --success: #22c55e;
+            --warning: #f97316;
+            --danger: #ef4444;
+            --muted: rgba(148, 163, 184, 0.65);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            background: var(--surface);
+            border-radius: 28px;
+            border: 1px solid var(--border-glass);
+            max-width: 940px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(18px);
+        }
+
+        .main-area {
+            padding: 0 48px 56px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        .quiz-shell {
+            display: none;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .quiz-shell.active {
+            display: flex;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        .status-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .status-heading {
+            font-size: 1.1rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .status-card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .status-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .status-note {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .header {
+            padding: 48px 48px 32px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(56, 189, 248, 0.08));
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+
+        .header p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 24px 48px;
+            background: var(--surface-alt);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .progress-text {
+            min-width: 150px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 12px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.9), rgba(34, 211, 238, 0.8));
+            transition: width 0.35s ease;
+            width: 0%;
+        }
+
+        .progress-score {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .quiz-content {
+            padding: 0;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: floatUp 0.6s ease;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 26px;
+            padding: 38px 34px;
+            box-shadow: 0 24px 60px rgba(14, 165, 233, 0.08);
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .word-highlight {
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.9rem;
+            background: rgba(14, 165, 233, 0.12);
+            padding: 6px 14px;
+            border-radius: 16px;
+        }
+
+        .options {
+            display: grid;
+            gap: 18px;
+        }
+
+        .option {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 18px;
+            padding: 22px 26px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(14, 165, 233, 0.18), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .option:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 18px 35px rgba(14, 165, 233, 0.18);
+        }
+
+        .option:hover::after {
+            opacity: 1;
+        }
+
+        .option.correct {
+            border-color: rgba(34, 197, 94, 0.65);
+            background: rgba(34, 197, 94, 0.15);
+            color: #dcfce7;
+            box-shadow: 0 18px 40px rgba(34, 197, 94, 0.25);
+        }
+
+        .option.incorrect {
+            border-color: rgba(239, 68, 68, 0.6);
+            background: rgba(239, 68, 68, 0.15);
+            color: #fee2e2;
+            box-shadow: 0 18px 35px rgba(239, 68, 68, 0.2);
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 36px;
+        }
+
+        .btn {
+            padding: 16px 38px;
+            font-size: 1.05rem;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .next-btn-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(56, 189, 248, 0.85));
+            color: var(--text-primary);
+            box-shadow: 0 16px 35px rgba(14, 165, 233, 0.35);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(74, 222, 128, 0.85));
+            color: #f0fdf4;
+            box-shadow: 0 18px 40px rgba(34, 197, 94, 0.35);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.95), rgba(251, 146, 60, 0.85));
+            color: #fff7ed;
+            box-shadow: 0 18px 40px rgba(249, 115, 22, 0.35);
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 56px 48px 64px;
+        }
+
+        .results.active {
+            display: block;
+            animation: floatUp 0.6s ease;
+        }
+
+        .score-circle {
+            width: 220px;
+            height: 220px;
+            border-radius: 32px;
+            margin: 36px auto;
+            padding: 24px;
+            background: linear-gradient(160deg, rgba(14, 165, 233, 0.8), rgba(56, 189, 248, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 25px 60px rgba(14, 165, 233, 0.35);
+        }
+
+        .score-number {
+            font-size: 3.4rem;
+            font-weight: 700;
+        }
+
+        .score-label {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .results h2 {
+            font-size: 2.3rem;
+            margin-bottom: 16px;
+        }
+
+        .results p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .feedback {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid var(--border-glass);
+            text-align: left;
+        }
+
+        .feedback h3 {
+            font-size: 1.35rem;
+        }
+
+        .feedback p {
+            margin: 12px 0 0;
+            color: var(--text-secondary);
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 52px 48px 60px;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .start-screen h2 {
+            font-size: 2.4rem;
+            margin-bottom: 18px;
+        }
+
+        .start-screen p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 0 auto 34px;
+            max-width: 620px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            margin: 36px 0 48px;
+        }
+
+        .stat-box {
+            padding: 26px 22px;
+            border-radius: 18px;
+            background: rgba(14, 165, 233, 0.12);
+            border: 1px solid rgba(14, 165, 233, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                border-radius: 24px;
+            }
+
+            .header {
+                padding: 40px 28px 28px;
+            }
+
+            .header h1 {
+                font-size: 2.1rem;
+            }
+
+            .main-area {
+                padding: 0 24px 40px;
+                gap: 28px;
+            }
+
+            .quiz-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-panel {
+                position: static;
+                order: -1;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 18px;
+                padding: 22px;
+            }
+
+            .status-cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+                flex: 1 1 100%;
+            }
+
+            .status-card {
+                padding: 16px;
+            }
+
+            .progress-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 24px 28px;
+            }
+
+            .progress-text {
+                min-width: auto;
+            }
+
+            .quiz-content {
+                padding: 0;
+            }
+
+            .question {
+                font-size: 1.5rem;
+            }
+
+            .word-highlight {
+                font-size: 1.6rem;
+            }
+
+            .button-container {
+                justify-content: center;
+            }
+
+            .results {
+                padding: 48px 28px 56px;
+            }
+
+            .status-note {
+                margin-top: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Letter A Mastery</h1>
+            <p>Sharpen your exam vocabulary with 100 essential words. Questions repeat until every definition feels effortless.</p>
+        </div>
+
+        <main class="main-area">
+            <section class="start-screen" id="startScreen">
+                <h2>Ready for the Mastery Challenge?</h2>
+                <p>Step into an immersive study session built to lock in every single 'A' word on your list. Answer on instinct, learn from instant feedback, and repeat any misses until you’re flawless.</p>
+                
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number">100</div>
+                        <div class="stat-label">Questions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">100</div>
+                        <div class="stat-label">Words Covered</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">~25</div>
+                        <div class="stat-label">Minutes</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="startQuiz()">Begin Mastery Session</button>
+            </section>
+
+            <section class="quiz-shell" id="quizShell">
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <span id="questionNumber" class="progress-text">Mastered 0/100 · Card 1 of 100</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="scoreDisplay" class="progress-score">First-try score: 0</span>
+                </div>
+
+                <div class="quiz-grid">
+                    <div class="quiz-content" id="quizContent" style="display: none;">
+                        <!-- Questions will be dynamically inserted here -->
+                    </div>
+                    <aside class="status-panel" id="statusPanel">
+                        <div class="status-heading">Session Stats</div>
+                        <div class="status-cards">
+                            <div class="status-card">
+                                <span class="status-label">Mastered</span>
+                                <span class="status-value" id="masteredCount">0</span>
+                            </div>
+                            <div class="status-card">
+                                <span class="status-label">Words remaining</span>
+                                <span class="status-value" id="remainingCount">100</span>
+                            </div>
+                            <div class="status-card">
+                                <span class="status-label">First-try accuracy</span>
+                                <span class="status-value" id="accuracyPercent">0%</span>
+                            </div>
+                            <div class="status-card">
+                                <span class="status-label">Needs revisit</span>
+                                <span class="status-value" id="reviewCount">0</span>
+                            </div>
+                        </div>
+                        <p class="status-note">Track your progress at a glance. Any missed word will circle back later so the meaning sticks.</p>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="results" id="results">
+                <h2>Quiz Complete! 🎉</h2>
+                <div class="score-circle">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-label">first-try correct</div>
+                </div>
+                <p id="resultMessage"></p>
+                <div class="feedback" id="feedbackContainer"></div>
+                <button class="btn btn-primary" onclick="restartQuiz()">Try Again</button>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                word: "Abandon",
+                meaning: "To leave or give up completely",
+                options: ["To leave or give up completely", "To assist or encourage someone", "To gather or collect over time", "To decorate or add beauty"],
+                correct: 0
+            },
+            {
+                word: "Abdicate",
+                meaning: "To renounce or give up a position of power",
+                options: ["To renounce or give up a position of power", "To kidnap or take someone by force", "To decorate or add beauty", "To evaluate or judge"],
+                correct: 0
+            },
+            {
+                word: "Abduct",
+                meaning: "To kidnap or take someone by force",
+                options: ["To free from guilt", "To kidnap or take someone by force", "To leave completely", "To warn or scold"],
+                correct: 1
+            },
+            {
+                word: "Abet",
+                meaning: "To assist or encourage someone in wrongdoing",
+                options: ["To assist or encourage someone in wrongdoing", "To hate or detest", "To officially end something", "To gather over time"],
+                correct: 0
+            },
+            {
+                word: "Abhor",
+                meaning: "To hate or detest",
+                options: ["To love deeply", "To hate or detest", "To accept reluctantly", "To declare not guilty"],
+                correct: 1
+            },
+            {
+                word: "Abolish",
+                meaning: "To officially end or put an end to something",
+                options: ["To start something new", "To officially end or put an end to something", "To postpone or suspend", "To stick or follow closely"],
+                correct: 1
+            },
+            {
+                word: "Absolve",
+                meaning: "To free from guilt or blame",
+                options: ["To blame for wrongdoing", "To free from guilt or blame", "To warn or scold", "To make someone feel isolated"],
+                correct: 1
+            },
+            {
+                word: "Abstain",
+                meaning: "To refrain from doing something",
+                options: ["To refrain from doing something", "To participate actively", "To gather or collect", "To distribute or assign"],
+                correct: 0
+            },
+            {
+                word: "Abundant",
+                meaning: "Plentiful or more than enough",
+                options: ["Scarce and limited", "Plentiful or more than enough", "Without definite shape", "Dry and lacking moisture"],
+                correct: 1
+            },
+            {
+                word: "Accumulate",
+                meaning: "To gather or collect over time",
+                options: ["To scatter or disperse", "To gather or collect over time", "To destroy completely", "To prevent or avoid"],
+                correct: 1
+            },
+            {
+                word: "Accuse",
+                meaning: "To blame someone for wrongdoing",
+                options: ["To free from blame", "To blame someone for wrongdoing", "To declare not guilty", "To accept reluctantly"],
+                correct: 1
+            },
+            {
+                word: "Acquaintance",
+                meaning: "A person known but not close",
+                options: ["A close friend", "A person known but not close", "An enemy", "A family member"],
+                correct: 1
+            },
+            {
+                word: "Acquiesce",
+                meaning: "To accept reluctantly without protest",
+                options: ["To attack or criticise", "To accept reluctantly without protest", "To shock or surprise greatly", "To resist strongly"],
+                correct: 1
+            },
+            {
+                word: "Acquit",
+                meaning: "To declare not guilty",
+                options: ["To declare not guilty", "To blame for wrongdoing", "To kidnap by force", "To postpone or suspend"],
+                correct: 0
+            },
+            {
+                word: "Adhere",
+                meaning: "To stick or follow closely",
+                options: ["To separate or detach", "To stick or follow closely", "To officially end", "To make changes"],
+                correct: 1
+            },
+            {
+                word: "Adjourn",
+                meaning: "To postpone or suspend",
+                options: ["To start immediately", "To postpone or suspend", "To destroy completely", "To gather or collect"],
+                correct: 1
+            },
+            {
+                word: "Admonish",
+                meaning: "To warn or scold",
+                options: ["To praise highly", "To warn or scold", "To free from guilt", "To calm or pacify"],
+                correct: 1
+            },
+            {
+                word: "Adorn",
+                meaning: "To decorate or add beauty",
+                options: ["To remove decoration", "To decorate or add beauty", "To destroy appearance", "To leave bare"],
+                correct: 1
+            },
+            {
+                word: "Advocate",
+                meaning: "Supporter or defender",
+                options: ["Opponent or enemy", "Supporter or defender", "Neutral observer", "Critic or skeptic"],
+                correct: 1
+            },
+            {
+                word: "Affable",
+                meaning: "Friendly and easy to talk to",
+                options: ["Unfriendly and distant", "Friendly and easy to talk to", "Worried or nervous", "Bold and daring"],
+                correct: 1
+            },
+            {
+                word: "Affluent",
+                meaning: "Wealthy",
+                options: ["Poor and struggling", "Wealthy", "Selfless", "Old-fashioned"],
+                correct: 1
+            },
+            {
+                word: "Aghast",
+                meaning: "Shocked or horrified",
+                options: ["Calm and peaceful", "Shocked or horrified", "Friendly and pleasant", "Eager and ready"],
+                correct: 1
+            },
+            {
+                word: "Agitate",
+                meaning: "To stir up or provoke",
+                options: ["To calm or pacify", "To stir up or provoke", "To free from guilt", "To stick or follow"],
+                correct: 1
+            },
+            {
+                word: "Alacrity",
+                meaning: "Eagerness and readiness",
+                options: ["Feeling of worry or unease", "Eagerness and readiness", "State of pain or suffering", "Strong dislike"],
+                correct: 1
+            },
+            {
+                word: "Allege",
+                meaning: "To claim without proof",
+                options: ["To prove conclusively", "To claim without proof", "To deny completely", "To accept as true"],
+                correct: 1
+            },
+            {
+                word: "Allocate",
+                meaning: "To distribute or assign",
+                options: ["To gather or collect", "To distribute or assign", "To destroy completely", "To prevent or avoid"],
+                correct: 1
+            },
+            {
+                word: "Allude",
+                meaning: "To suggest or indirectly refer to",
+                options: ["To state directly", "To suggest or indirectly refer to", "To deny completely", "To prove with evidence"],
+                correct: 1
+            },
+            {
+                word: "Ally",
+                meaning: "A person or group that supports or helps",
+                options: ["An enemy or opponent", "A person or group that supports or helps", "A neutral party", "A critic"],
+                correct: 1
+            },
+            {
+                word: "Altruist",
+                meaning: "Someone who is selfless",
+                options: ["Someone who is greedy", "Someone who is selfless", "Someone who is shocked", "Someone who is outdated"],
+                correct: 1
+            },
+            {
+                word: "Ambiguous",
+                meaning: "Having more than one meaning",
+                options: ["Clearly visible or understood", "Extremely wealthy", "Having more than one meaning", "Friendly and pleasant"],
+                correct: 2
+            },
+            {
+                word: "Ambush",
+                meaning: "A surprise attack from a hidden position",
+                options: ["A direct frontal attack", "A surprise attack from a hidden position", "A peaceful negotiation", "A strategic retreat"],
+                correct: 1
+            },
+            {
+                word: "Amend",
+                meaning: "To make changes or improvements",
+                options: ["To keep unchanged", "To make changes or improvements", "To destroy completely", "To postpone indefinitely"],
+                correct: 1
+            },
+            {
+                word: "Amiable",
+                meaning: "Friendly and pleasant",
+                options: ["Hostile and unpleasant", "Friendly and pleasant", "Worried and nervous", "Bold and daring"],
+                correct: 1
+            },
+            {
+                word: "Amnesty",
+                meaning: "Pardon or forgiveness",
+                options: ["Punishment or penalty", "Pardon or forgiveness", "Blame or accusation", "Attack or assault"],
+                correct: 1
+            },
+            {
+                word: "Amorphous",
+                meaning: "Without a definite shape",
+                options: ["Having clear boundaries", "Without a definite shape", "Suitable for farming", "Based on random choice"],
+                correct: 1
+            },
+            {
+                word: "Ample",
+                meaning: "Abundant or more than enough",
+                options: ["Insufficient or lacking", "Abundant or more than enough", "Without shape", "Dry and arid"],
+                correct: 1
+            },
+            {
+                word: "Anarchy",
+                meaning: "Absence of government or authority",
+                options: ["Power or control over others", "Absence of government or authority", "A union or partnership", "A statement accepted as true"],
+                correct: 1
+            },
+            {
+                word: "Anecdote",
+                meaning: "A short and amusing story",
+                options: ["A long epic tale", "A short and amusing story", "A list of items", "A person of high rank"],
+                correct: 1
+            },
+            {
+                word: "Animosity",
+                meaning: "Strong hostility or hatred",
+                options: ["Friendly and pleasant feelings", "Strong hostility or hatred", "Consciousness or knowledge", "Help or support"],
+                correct: 1
+            },
+            {
+                word: "Annihilate",
+                meaning: "Destroy completely",
+                options: ["Create or build", "Destroy completely", "Improve or enhance", "Preserve carefully"],
+                correct: 1
+            },
+            {
+                word: "Annotate",
+                meaning: "To add notes or comments",
+                options: ["To remove all text", "To add notes or comments", "To destroy evidence", "To prevent access"],
+                correct: 1
+            },
+            {
+                word: "Anomaly",
+                meaning: "Something that deviates from the norm",
+                options: ["A short amusing story", "Something that deviates from the norm", "A list of items", "A person of high rank"],
+                correct: 1
+            },
+            {
+                word: "Antagonist",
+                meaning: "Opposing character or force",
+                options: ["Supporting character", "Opposing character or force", "Neutral observer", "Main protagonist"],
+                correct: 1
+            },
+            {
+                word: "Anticipate",
+                meaning: "To expect or predict",
+                options: ["To be completely surprised", "To expect or predict", "To destroy completely", "To prevent occurrence"],
+                correct: 1
+            },
+            {
+                word: "Antiquated",
+                meaning: "Old-fashioned or outdated",
+                options: ["Genuine and original", "Old-fashioned or outdated", "Bold and daring", "Plentiful and abundant"],
+                correct: 1
+            },
+            {
+                word: "Anxious",
+                meaning: "Worried or nervous",
+                options: ["Calm and relaxed", "Worried or nervous", "Bold and daring", "Friendly and pleasant"],
+                correct: 1
+            },
+            {
+                word: "Apathy",
+                meaning: "Lack of interest or emotion",
+                options: ["Extreme enthusiasm", "Lack of interest or emotion", "A feeling of wonder", "Eagerness and readiness"],
+                correct: 1
+            },
+            {
+                word: "Apex",
+                meaning: "Highest point or peak",
+                options: ["Lowest point or valley", "Highest point or peak", "Middle ground", "Random location"],
+                correct: 1
+            },
+            {
+                word: "Appall",
+                meaning: "To shock or horrify",
+                options: ["To delight or please", "To shock or horrify", "To calm or soothe", "To encourage gently"],
+                correct: 1
+            },
+            {
+                word: "Apparent",
+                meaning: "Clearly visible or understood",
+                options: ["Hidden or obscure", "Clearly visible or understood", "Having multiple meanings", "Without definite shape"],
+                correct: 1
+            },
+            {
+                word: "Appease",
+                meaning: "To calm or pacify",
+                options: ["To stir up or provoke", "To calm or pacify", "To attack or assault", "To blame or accuse"],
+                correct: 1
+            },
+            {
+                word: "Apprehend",
+                meaning: "To understand or perceive",
+                options: ["To misunderstand completely", "To understand or perceive", "To destroy evidence", "To prevent access"],
+                correct: 1
+            },
+            {
+                word: "Apprentice",
+                meaning: "A person learning a trade or profession",
+                options: ["An expert master", "A person learning a trade or profession", "A person of high rank", "A neutral observer"],
+                correct: 1
+            },
+            {
+                word: "Arable",
+                meaning: "Suitable for farming",
+                options: ["Dry and lacking moisture", "Without definite shape", "Suitable for farming", "Based on personal whim"],
+                correct: 2
+            },
+            {
+                word: "Arbitrary",
+                meaning: "Based on personal whim or random choice",
+                options: ["Based on careful logic", "Based on personal whim or random choice", "Clearly systematic", "Following strict rules"],
+                correct: 1
+            },
+            {
+                word: "Arduous",
+                meaning: "Difficult or tiring",
+                options: ["Easy and simple", "Difficult or tiring", "Amusing and entertaining", "Suitable for farming"],
+                correct: 1
+            },
+            {
+                word: "Arid",
+                meaning: "Dry, lacking moisture",
+                options: ["Wet and humid", "Dry, lacking moisture", "Suitable for farming", "Without definite shape"],
+                correct: 1
+            },
+            {
+                word: "Aristocrat",
+                meaning: "A person of high social rank",
+                options: ["A common person", "A person of high social rank", "A person learning a trade", "A selfless helper"],
+                correct: 1
+            },
+            {
+                word: "Ascend",
+                meaning: "To go up or climb",
+                options: ["To go down or descend", "To go up or climb", "To stay level", "To move sideways"],
+                correct: 1
+            },
+            {
+                word: "Aspire",
+                meaning: "To have a strong desire or ambition",
+                options: ["To give up completely", "To have a strong desire or ambition", "To lack interest", "To prevent others"],
+                correct: 1
+            },
+            {
+                word: "Assail",
+                meaning: "To attack or criticise",
+                options: ["To praise highly", "To attack or criticise", "To calm or pacify", "To free from blame"],
+                correct: 1
+            },
+            {
+                word: "Assent",
+                meaning: "Agreement or approval",
+                options: ["Disagreement or rejection", "Agreement or approval", "Lack of interest", "Strong hostility"],
+                correct: 1
+            },
+            {
+                word: "Assert",
+                meaning: "To state or declare confidently",
+                options: ["To question uncertainly", "To state or declare confidently", "To deny completely", "To remain silent"],
+                correct: 1
+            },
+            {
+                word: "Assess",
+                meaning: "To evaluate or judge",
+                options: ["To ignore completely", "To evaluate or judge", "To destroy evidence", "To prevent access"],
+                correct: 1
+            },
+            {
+                word: "Assimilate",
+                meaning: "To absorb or integrate",
+                options: ["To reject or expel", "To absorb or integrate", "To separate distinctly", "To destroy completely"],
+                correct: 1
+            },
+            {
+                word: "Assuage",
+                meaning: "To make less intense or severe",
+                options: ["To make less intense or severe", "To increase or enhance", "To destroy completely", "To go up or climb"],
+                correct: 0
+            },
+            {
+                word: "Astound",
+                meaning: "To shock or surprise greatly",
+                options: ["To bore completely", "To shock or surprise greatly", "To calm gently", "To understand clearly"],
+                correct: 1
+            },
+            {
+                word: "Atheist",
+                meaning: "A person who does not believe in God",
+                options: ["A religious devotee", "A person who does not believe in God", "A person of high rank", "A selfless helper"],
+                correct: 1
+            },
+            {
+                word: "Atone",
+                meaning: "To make amends for a wrong",
+                options: ["To commit more wrongs", "To make amends for a wrong", "To blame others", "To avoid responsibility"],
+                correct: 1
+            },
+            {
+                word: "Attain",
+                meaning: "To achieve or reach",
+                options: ["To fail completely", "To achieve or reach", "To abandon effort", "To prevent others"],
+                correct: 1
+            },
+            {
+                word: "Attentive",
+                meaning: "Paying close attention",
+                options: ["Distracted and careless", "Paying close attention", "Lacking interest", "Feeling worried"],
+                correct: 1
+            },
+            {
+                word: "Attribute",
+                meaning: "A characteristic or quality",
+                options: ["A complete absence", "A characteristic or quality", "A random event", "A hostile action"],
+                correct: 1
+            },
+            {
+                word: "Audacious",
+                meaning: "Bold and daring",
+                options: ["Worried or nervous", "Bold and daring", "Lacking moisture", "Friendly and pleasant"],
+                correct: 1
+            },
+            {
+                word: "Augment",
+                meaning: "To increase or enhance",
+                options: ["To decrease or reduce", "To increase or enhance", "To destroy completely", "To make less severe"],
+                correct: 1
+            },
+            {
+                word: "Auspicious",
+                meaning: "Favourable or promising",
+                options: ["Shocking or horrifying", "Difficult or tiring", "Favourable or promising", "Old-fashioned or outdated"],
+                correct: 2
+            },
+            {
+                word: "Authentic",
+                meaning: "Genuine, real, original",
+                options: ["Fake or counterfeit", "Genuine, real, original", "Old-fashioned", "Without definite shape"],
+                correct: 1
+            },
+            {
+                word: "Avarice",
+                meaning: "Extreme greed for wealth",
+                options: ["Lack of interest", "Strong hostility", "Extreme greed for wealth", "Feeling of love"],
+                correct: 2
+            },
+            {
+                word: "Aversion",
+                meaning: "Strong dislike",
+                options: ["Feeling of respect and wonder", "Strong dislike", "Agreement or approval", "Eagerness and readiness"],
+                correct: 1
+            },
+            {
+                word: "Avert",
+                meaning: "To prevent or avoid",
+                options: ["To cause or create", "To prevent or avoid", "To enhance or increase", "To gather or collect"],
+                correct: 1
+            },
+            {
+                word: "Awe",
+                meaning: "A feeling of respect and wonder",
+                options: ["Strong dislike", "A feeling of respect and wonder", "Lack of interest", "Extreme greed"],
+                correct: 1
+            },
+            {
+                word: "Axiom",
+                meaning: "A statement accepted as true without proof",
+                options: ["A claim requiring proof", "A statement accepted as true without proof", "A random choice", "A hostile action"],
+                correct: 1
+            },
+            {
+                word: "Assertive",
+                meaning: "Confident and self-assured",
+                options: ["Timid and uncertain", "Confident and self-assured", "Worried and nervous", "Lacking interest"],
+                correct: 1
+            },
+            {
+                word: "Assumption",
+                meaning: "A belief or idea taken for granted",
+                options: ["A proven fact", "A belief or idea taken for granted", "A hostile action", "A feeling of wonder"],
+                correct: 1
+            },
+            {
+                word: "Audacity",
+                meaning: "Boldness, daring",
+                options: ["Timidity, fear", "Boldness, daring", "Lack of interest", "Strong dislike"],
+                correct: 1
+            },
+            {
+                word: "Auxiliary",
+                meaning: "Providing supplementary help",
+                options: ["Primary or main", "Providing supplementary help", "Hostile or violent", "Concerned with beauty"],
+                correct: 1
+            },
+            {
+                word: "Awareness",
+                meaning: "Consciousness or knowledge",
+                options: ["Ignorance or unawareness", "Consciousness or knowledge", "Strong hostility", "Extreme greed"],
+                correct: 1
+            },
+            {
+                word: "Alliance",
+                meaning: "A union or partnership",
+                options: ["A hostile conflict", "A union or partnership", "Absence of authority", "A statement without proof"],
+                correct: 1
+            },
+            {
+                word: "Admire",
+                meaning: "To respect or praise",
+                options: ["To hate or detest", "To respect or praise", "To blame for wrongdoing", "To shock or horrify"],
+                correct: 1
+            },
+            {
+                word: "Affection",
+                meaning: "A feeling of love and care",
+                options: ["Strong hostility", "A feeling of love and care", "Extreme greed", "Lack of interest"],
+                correct: 1
+            },
+            {
+                word: "Anxiety",
+                meaning: "Feeling of worry or unease",
+                options: ["Feeling of calm", "Feeling of worry or unease", "Eagerness and readiness", "Feeling of wonder"],
+                correct: 1
+            },
+            {
+                word: "Affliction",
+                meaning: "A state of pain or suffering",
+                options: ["A state of joy", "A state of pain or suffering", "A feeling of love", "Consciousness or knowledge"],
+                correct: 1
+            },
+            {
+                word: "Authority",
+                meaning: "Power or control over others",
+                options: ["Absence of government", "Power or control over others", "A union or partnership", "Lack of interest"],
+                correct: 1
+            },
+            {
+                word: "Aggression",
+                meaning: "Hostile or violent behavior",
+                options: ["Friendly or peaceful behavior", "Hostile or violent behavior", "Beauty appreciation", "Supplementary help"],
+                correct: 1
+            },
+            {
+                word: "Assistance",
+                meaning: "Help or support",
+                options: ["Hindrance or obstruction", "Help or support", "Strong hostility", "Extreme greed"],
+                correct: 1
+            },
+            {
+                word: "Approval",
+                meaning: "Acceptance or agreement",
+                options: ["Rejection or disagreement", "Acceptance or agreement", "Strong dislike", "Lack of interest"],
+                correct: 1
+            },
+            {
+                word: "Alienate",
+                meaning: "To make someone feel isolated",
+                options: ["To bring together", "To make someone feel isolated", "To free from blame", "To calm or pacify"],
+                correct: 1
+            },
+            {
+                word: "Acknowledge",
+                meaning: "To recognize or admit",
+                options: ["To deny or reject", "To recognize or admit", "To prevent or avoid", "To destroy completely"],
+                correct: 1
+            },
+            {
+                word: "Agenda",
+                meaning: "A list of items to be discussed",
+                options: ["A random occurrence", "A list of items to be discussed", "Something deviating from norm", "A short amusing story"],
+                correct: 1
+            },
+            {
+                word: "Abstinence",
+                meaning: "Self-restraint",
+                options: ["Excessive indulgence", "Self-restraint", "Hostile behavior", "Beauty appreciation"],
+                correct: 1
+            },
+            {
+                word: "Aesthetic",
+                meaning: "Concerned with beauty and art appreciation",
+                options: ["Hostile or violent", "Self-restraint", "Concerned with beauty and art appreciation", "Providing supplementary help"],
+                correct: 2
+            }
+        ];
+
+        let score = 0;
+        let userAnswers = {};
+        let missedQuestions = new Set();
+        let questionOrder = [];
+        let currentPosition = 0;
+        let completedQuestions = new Set();
+        let currentOptionOrder = [];
+        let isAnswered = false;
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startQuiz() {
+            score = 0;
+            userAnswers = {};
+            missedQuestions = new Set();
+            questionOrder = Array.from({ length: quizData.length }, (_, index) => index);
+            currentPosition = 0;
+            completedQuestions = new Set();
+            isAnswered = false;
+
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('quizShell').classList.add('active');
+            document.getElementById('progressContainer').style.display = 'flex';
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('questionNumber').textContent = `Mastered 0/${quizData.length} · Card 1 of ${questionOrder.length}`;
+            document.getElementById('scoreDisplay').textContent = 'First-try score: 0';
+            document.getElementById('masteredCount').textContent = '0';
+            document.getElementById('remainingCount').textContent = `${quizData.length}`;
+            document.getElementById('accuracyPercent').textContent = '0%';
+            document.getElementById('reviewCount').textContent = '0';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentPosition >= questionOrder.length) {
+                showResults();
+                return;
+            }
+
+            const quizContent = document.getElementById('quizContent');
+            const questionIndex = questionOrder[currentPosition];
+            const question = quizData[questionIndex];
+            currentOptionOrder = shuffleArray(question.options.map((_, idx) => idx));
+            isAnswered = false;
+
+            quizContent.innerHTML = `
+                <div class="question-container active">
+                    <div class="question">
+                        What is the meaning of <span class="word-highlight">${question.word}</span>?
+                    </div>
+                    <div class="options" id="options">
+                        ${currentOptionOrder.map((optionIndex, displayIndex) => `
+                            <div class="option" onclick="selectOption(${displayIndex})" data-option-index="${optionIndex}">
+                                ${question.options[optionIndex]}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="button-container">
+                        <button class="btn btn-primary next-btn-hidden" id="nextBtn" onclick="nextQuestion()" disabled>Continue</button>
+                    </div>
+                </div>
+            `;
+
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            if (isAnswered) return;
+
+            const options = document.querySelectorAll('.option');
+            const nextBtn = document.getElementById('nextBtn');
+            const questionIndex = questionOrder[currentPosition];
+            const question = quizData[questionIndex];
+            const selectedOption = options[index];
+            const selectedActualIndex = Number(selectedOption.dataset.optionIndex);
+            isAnswered = true;
+
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedActualIndex === question.correct) {
+                options[index].classList.add('correct');
+
+                const previouslyMissed = missedQuestions.has(questionIndex);
+                if (!userAnswers[questionIndex]) {
+                    if (!previouslyMissed) {
+                        score++;
+                    }
+                    userAnswers[questionIndex] = true;
+                }
+
+                missedQuestions.delete(questionIndex);
+
+                completedQuestions.add(questionIndex);
+
+                for (let i = questionOrder.length - 1; i > currentPosition; i--) {
+                    if (questionOrder[i] === questionIndex) {
+                        questionOrder.splice(i, 1);
+                    }
+                }
+
+                setTimeout(() => {
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('next-btn-hidden', 'btn-warning');
+                    nextBtn.classList.remove('btn-primary');
+                    nextBtn.classList.add('btn-success');
+                    nextBtn.textContent = currentPosition + 1 >= questionOrder.length ? 'Finish Quiz ✓' : 'Next Card ✓';
+                }, 300);
+            } else {
+                options[index].classList.add('incorrect');
+                const correctDisplayIndex = currentOptionOrder.indexOf(question.correct);
+                if (correctDisplayIndex !== -1) {
+                    options[correctDisplayIndex].classList.add('correct');
+                }
+
+                missedQuestions.add(questionIndex);
+
+                const minIndex = currentPosition + 2;
+                let insertIndex = questionOrder.length;
+                if (minIndex <= questionOrder.length) {
+                    const maxIndex = questionOrder.length;
+                    const range = maxIndex - minIndex + 1;
+                    insertIndex = range > 0 ? Math.floor(Math.random() * range) + minIndex : maxIndex;
+                }
+                questionOrder.splice(insertIndex, 0, questionIndex);
+
+                setTimeout(() => {
+                    nextBtn.disabled = false;
+                    nextBtn.classList.remove('next-btn-hidden', 'btn-success');
+                    nextBtn.classList.remove('btn-primary');
+                    nextBtn.classList.add('btn-warning');
+                    nextBtn.textContent = 'Keep Going →';
+                }, 300);
+            }
+
+            updateProgress();
+        }
+
+        function nextQuestion() {
+            if (!isAnswered) return;
+
+            currentPosition++;
+            loadQuestion();
+        }
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const questionNumber = document.getElementById('questionNumber');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const masteredCountEl = document.getElementById('masteredCount');
+            const remainingCountEl = document.getElementById('remainingCount');
+            const accuracyPercentEl = document.getElementById('accuracyPercent');
+            const reviewCountEl = document.getElementById('reviewCount');
+
+            const mastered = completedQuestions.size;
+            const total = quizData.length;
+            const percentage = Math.min((mastered / total) * 100, 100);
+            progressFill.style.width = `${percentage}%`;
+
+            const currentCard = Math.min(currentPosition + 1, questionOrder.length);
+            questionNumber.textContent = `Mastered ${mastered}/${total} · Card ${currentCard} of ${questionOrder.length}`;
+
+            scoreDisplay.textContent = `First-try score: ${score}`;
+
+            masteredCountEl.textContent = `${mastered}`;
+            remainingCountEl.textContent = `${Math.max(total - mastered, 0)}`;
+            const accuracy = total === 0 ? 0 : Math.round((score / total) * 100);
+            accuracyPercentEl.textContent = `${accuracy}%`;
+            reviewCountEl.textContent = `${missedQuestions.size}`;
+        }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('quizShell').classList.remove('active');
+            document.getElementById('results').classList.add('active');
+            
+            document.getElementById('finalScore').textContent = score;
+            
+            const percentage = (score / quizData.length) * 100;
+            let message = '';
+            
+            if (percentage === 100) {
+                message = '🎯 Perfect Score! You mastered all the vocabulary words!';
+            } else if (percentage >= 90) {
+                message = '🌟 Excellent! You have an outstanding vocabulary!';
+            } else if (percentage >= 75) {
+                message = '👏 Great job! You have a strong command of these words!';
+            } else if (percentage >= 60) {
+                message = '👍 Good effort! Keep practicing to improve!';
+            } else {
+                message = '📚 Keep learning! Review the words and try again!';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+            
+            // Since all wrong answers are retried, show success message
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const accuracy = Math.round(percentage);
+            feedbackContainer.innerHTML = `
+                <h3 style="margin-bottom: 16px; color: #22c55e;">🎉 Quiz Complete!</h3>
+                <p style="font-size: 1.1rem; color: rgba(226, 232, 240, 0.85);">First-try accuracy: <strong>${score}/${quizData.length}</strong> (${accuracy}%).</p>
+                <p style="font-size: 1rem; color: rgba(148, 163, 184, 0.8); margin-top: 12px;">Every word is mastered after review—keep pushing that first-try score higher next round!</p>
+            `;
+        }
+
+        function restartQuiz() {
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('quizShell').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,3777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YATRI Test</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--p:#4F46E5;--s:#10B981;--d:#EF4444;--w:#F59E0B;--bg:#F8FAFC;--card:#FFF;--txt:#1F2937;--txtL:#6B7280;--brd:#E5E7EB}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:80px}
+        
+        /* Image containment styles */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        /* Ensure images don't overflow in any container */
+        .q-txt img, .opt-txt img, .sol img, .comp img {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        /* Specific image containers */
+        .img-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        
+        .hdr{background:var(--card);border-bottom:1px solid var(--brd);padding:12px 16px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;position:sticky;top:0;z-index:100}
+        .hdr-l{display:flex;align-items:center;gap:12px;justify-self:start}
+        .hdr-c{text-align:center;font-weight:600;font-size:15px}
+        .hdr-r{display:flex;justify-self:end;align-items:center;gap:8px}
+        .q-info{font-size:14px;font-weight:600}
+        .timer{background:#FEF3C7;color:#92400E;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:600}
+        .btn{border:none;border-radius:8px;font-weight:500;cursor:pointer;transition:all .2s;font-size:13px}
+        .btn-sm{padding:8px 12px}
+        .btn-p{background:var(--p);color:white}
+        .btn-o{background:transparent;border:1px solid var(--brd);color:var(--txt)}
+        .btn:active{transform:scale(.98)}
+        .cont{padding:16px;max-width:100%;overflow-x:hidden}
+        .q-card{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--brd);overflow:hidden}
+        .lang{display:flex;background:#F3F4F6;border-radius:8px;padding:2px;margin-bottom:16px}
+        .lang-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:6px;font-size:13px;cursor:pointer;transition:all .2s}
+        .lang-btn.active{background:white;color:var(--p);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+        .comp{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:16px;margin-bottom:20px;overflow:hidden}
+        .comp h4{color:#0369A1;font-size:14px;margin-bottom:8px}
+        .q-txt{font-size:16px;line-height:1.6;margin-bottom:20px;color:var(--txt);overflow:hidden;word-wrap:break-word}
+        .opts{display:flex;flex-direction:column;gap:12px}
+        .opt{display:flex;align-items:center;padding:16px;background:var(--card);border:2px solid var(--brd);border-radius:12px;cursor:pointer;transition:all .2s;gap:12px;overflow:hidden}
+        .opt:hover:not(.submitted){border-color:var(--p)}
+        .opt.sel{border-color:var(--p);background:#F0F9FF}
+        .opt.correct{border-color:var(--s);background:#F0FDF4 !important}
+        .opt.wrong{border-color:var(--d);background:#FEF2F2 !important}
+        .opt.submitted{cursor:default}
+        .opt-radio{width:20px;height:20px;border:2px solid var(--brd);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .opt.sel .opt-radio{border-color:var(--p);background:var(--p)}
+        .opt.sel .opt-radio::after{content:'✓';color:white;font-size:12px;font-weight:bold}
+        .opt.correct .opt-radio{border-color:var(--s) !important;background:var(--s) !important}
+        .opt.correct .opt-radio::after{content:'✓';color:white;font-size:12px;font-weight:bold}
+        .opt.wrong .opt-radio{border-color:var(--d) !important;background:var(--d) !important}
+        .opt.wrong .opt-radio::after{content:'✗';color:white;font-size:12px;font-weight:bold}
+        .opt-txt{flex:1;font-size:15px;overflow:hidden;word-wrap:break-word}
+        .sol{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:16px;margin-top:20px;display:none;overflow:hidden}
+        .sol.show{display:block}
+        .sol h4{color:var(--s);font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--brd);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+        .nav-btn{padding:12px 20px;border-radius:8px;font-weight:600;min-width:80px}
+        .nav-btn:disabled{opacity:.5;cursor:not-allowed}
+        .prog{text-align:center;font-size:13px;color:var(--txtL)}
+        .panel{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--card);z-index:200;transform:translateY(100%);transition:transform .3s ease;overflow-y:auto}
+        .panel.open{transform:translateY(0)}
+        .panel-hdr{background:var(--p);color:white;padding:16px;display:flex;justify-content:space-between;align-items:center}
+        .panel-close{background:none;border:none;color:white;font-size:18px;cursor:pointer}
+        .q-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:20px}
+        .q-num{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#F3F4F6;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s;font-size:14px}
+        .q-num.cur{background:var(--p);color:white}
+        .q-num.ans{background:var(--s);color:white}
+        .q-num.wrong{background:var(--d);color:white}
+        .q-num:hover{transform:scale(1.05)}
+        .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+        .modal.show{display:flex}
+        .result{background:var(--card);border-radius:16px;padding:24px;width:100%;max-width:400px;text-align:center}
+        .score{font-size:2rem;font-weight:bold;color:var(--p);margin:16px 0}
+        .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}
+        .stat{text-align:center;padding:12px;border-radius:8px;border:1px solid var(--brd)}
+        .stat-val{font-size:1.5rem;font-weight:bold;margin-bottom:4px}
+        .stat-lbl{font-size:12px;color:var(--txtL)}
+        .stat.c{border-color:var(--s);background:#F0FDF4}
+        .stat.c .stat-val{color:var(--s)}
+        .stat.w{border-color:var(--d);background:#FEF2F2}
+        .stat.w .stat-val{color:var(--d)}
+        .modal-acts{display:flex;gap:12px;margin-top:20px}
+        .modal-btn{flex:1;padding:12px;border-radius:8px;font-weight:600}
+        @media (max-width:375px){.hdr{padding:10px 12px}.cont{padding:12px}.q-card{padding:16px}.q-grid{grid-template-columns:repeat(4,1fr)}}
+    </style>
+</head>
+<body>
+    <div class="hdr">
+        <div class="hdr-l">
+            <div class="q-info" id="qInfo">Q1/233</div>
+            <div class="timer" id="timer">60:00</div>
+        </div>
+        <div class="hdr-c">YATRI</div>
+        <div class="hdr-r">
+            <button class="btn btn-o btn-sm" id="menuBtn"><i class="fas fa-th"></i></button>
+            <button class="btn btn-p btn-sm" id="subBtn">Submit</button>
+        </div>
+    </div>
+
+    <div class="cont">
+        <div class="q-card">
+
+            <div id="compSec" class="comp" style="display:none">
+                <h4><i class="fas fa-book"></i> Comprehension</h4>
+                <div id="compCont"></div>
+            </div>
+
+            <div class="q-txt" id="qTxt"></div>
+            <div class="opts" id="opts"></div>
+
+            <div class="sol" id="sol">
+                <h4><i class="fas fa-lightbulb"></i> Solution</h4>
+                <div id="solCont"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <button class="btn btn-o nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+        <div class="prog">
+            <div id="progTxt">1 of 233</div>
+            <div style="font-size:11px">Answered: <span id="ansCnt">0</span> | <a href="https://t.me/yatri">YATRI</a></div>
+        </div>
+        <button class="btn btn-p nav-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <div class="panel" id="panel">
+        <div class="panel-hdr">
+            <h3>All Questions</h3>
+            <button class="panel-close" id="panelClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="q-grid" id="qGrid"></div>
+        <div style="padding:20px;font-size:12px;color:var(--txtL)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <div class="q-num ans" style="width:24px;height:24px">✓</div><span>Answered</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <div class="q-num cur" style="width:24px;height:24px">•</div><span>Current</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalOver">
+        <div class="result">
+            <h2>Test Complete!</h2>
+            <div class="score" id="scoreDisp">0/25</div>
+            <div class="stats">
+                <div class="stat c"><div class="stat-val" id="corrStat">0</div><div class="stat-lbl">Correct</div></div>
+                <div class="stat w"><div class="stat-val" id="incStat">0</div><div class="stat-lbl">Incorrect</div></div>
+                <div class="stat"><div class="stat-val" id="unaStat">0</div><div class="stat-lbl">Unattempted</div></div>
+                <div class="stat"><div class="stat-val" id="timeStat">0</div><div class="stat-lbl">Minutes</div></div>
+            </div>
+            <div class="modal-acts">
+                <button class="btn btn-o modal-btn" id="closeModal">Close</button>
+                <button class="btn btn-p modal-btn" id="revBtn">Review</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TestApp {
+            constructor() {
+                this.qs = [
+  {
+    "question": "<p>1. Select the option that rectifies the spelling of the underlined word in the given sentence.<br>She always wears a <span style=\"text-decoration: underline;\">bizzare</span> combination of clothes.</p>",
+    "options": [
+      " Bizarre",
+      " Bizaar",
+      " Bizzar",
+      " Bizare"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>1.(a) bizarre<br>'Bizarre' is the correct spelling.</p>",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 0
+  },
+  {
+    "question": "2. Select the correctly spelt word. ",
+    "options": [
+      " Ocassion",
+      " Acommodate",
+      " Embarrassment",
+      " Recieve"
+    ],
+    "correct_option_id": 2,
+    "solution": "2.(c) embarrassment<br />'Embarrassment' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 1
+  },
+  {
+    "question": "3. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Necessary",
+      " Cuorse",
+      " Consider",
+      " Personal"
+    ],
+    "correct_option_id": 1,
+    "solution": "3.(b) cuorse<br />‘Course’ is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 2
+  },
+  {
+    "question": "4. Select the INCORRECTLY spelt word.  ",
+    "options": [
+      " Belligerent",
+      " Eficcient",
+      " Tournament",
+      " Parliament"
+    ],
+    "correct_option_id": 1,
+    "solution": "4.(b) Eficcient<br />'Efficient' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 3
+  },
+  {
+    "question": "5. Select the correctly spelled sentence.  ",
+    "options": [
+      " The librarian told the childern to return their books by Fryday.",
+      " The librarian told the children to return their books by Friday.",
+      " The libraian told the childrean to return their books by Friday.",
+      " The liberian told the childrean to return their boooks by Friday."
+    ],
+    "correct_option_id": 1,
+    "solution": "5.(b) The librarian told the children to return their books by Friday.<br />‘Librarian’, ‘children’, ‘books’ and ‘Friday’ are the correct spellings.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 4
+  },
+  {
+    "question": "6. Select the INCORRECTLY spelt word.<br />Majority of communication satelites are placed in geostationary orbits around the earth, which means that their speed matches the rate of its rotation. ",
+    "options": [
+      " Satelites",
+      " Communication",
+      " Rotation",
+      " Geostationary"
+    ],
+    "correct_option_id": 0,
+    "solution": "6.(a) Satelites<br />‘Satellites’ is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 5
+  },
+  {
+    "question": "7. Rectify the sentence by selecting the correct spelling from the options.<br />Despite his busy scheuduel, Rohit managed to complete the assignment on time. ",
+    "options": [
+      " schedule",
+      " scedhule",
+      " scheudul",
+      " schedeule"
+    ],
+    "correct_option_id": 0,
+    "solution": "7.(a) schedule<br />'Schedule' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 6
+  },
+  {
+    "question": "8.  Select the INCORRECTLY spelt word.. ",
+    "options": [
+      " Occurrence",
+      " Manoevre",
+      " Consistent",
+      " Embarrassment"
+    ],
+    "correct_option_id": 1,
+    "solution": "8.(b) Manoevre<br />'Manoeuvre' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 7
+  },
+  {
+    "question": "9. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Detrimental",
+      " Regimental",
+      " Fundementel",
+      " Transcendental     <br />        "
+    ],
+    "correct_option_id": 2,
+    "solution": "9.(c) Fundementel<br />'Fundamental' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 8
+  },
+  {
+    "question": "10. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Sacrilege  ",
+      " Committee  ",
+      " Assesment  ",
+      " Exaggeration <br /> "
+    ],
+    "correct_option_id": 2,
+    "solution": "10.(c) assesment<br />'Assessment' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 9
+  },
+  {
+    "question": "11. Select the option with the correctly spelt word to fill in the blank.<br />The delta of river __________ looks like a bird's foot because a lot of sediment is carried into the calm sea water. ",
+    "options": [
+      " Missisippi ",
+      " Mississipi  ",
+      " Mississippi  ",
+      " Mississipppi "
+    ],
+    "correct_option_id": 2,
+    "solution": "11.(c) Mississippi<br />'Mississippi' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 10
+  },
+  {
+    "question": "<p>12. Select the option that correctly rectifies the underlined spelling error in the given sentence.<br>In the first half century after U.S. independence, a major <span style=\"text-decoration: underline;\">preportion</span> of the nation's labour force shifted from the agricultural to the manufacturing sector.</p>",
+    "options": [
+      "<p>priposon</p>",
+      "<p>proportion</p>",
+      "<p>prepotion</p>",
+      "<p>preposion</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>12.(b) proportion<br>&lsquo;Proportion&rsquo; is the correct spelling.</p>",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 11
+  },
+  {
+    "question": "13. Select the INCORRECTLY spelt word from the given sentence. <br />The explorer's adventuros spirit led to the discovery of an ancient civilisation.  ",
+    "options": [
+      " Ancient ",
+      " Adventuros ",
+      " Discovery",
+      " Explorer’s"
+    ],
+    "correct_option_id": 1,
+    "solution": "13.(b) adventuros<br />'Adventurous' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 12
+  },
+  {
+    "question": "14. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Abodomen ",
+      " Abolished  ",
+      " Adverse ",
+      " Annoyed "
+    ],
+    "correct_option_id": 0,
+    "solution": "14.(a) abodomen<br />'Abdomen' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 13
+  },
+  {
+    "question": "15. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Consensus ",
+      " Conceive ",
+      " Disapoint ",
+      " Disappear"
+    ],
+    "correct_option_id": 2,
+    "solution": "15.(c) disapoint<br />'Disappoint' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 14
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e3bb6aa3-3111-4aaf-8a1f-0e9739887976.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/19189c1d-b1b1-47b7-84bd-d9b1b0e6e748.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 15
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/16e15a25-e437-4753-889a-e036df83be45.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/7dbbdef5-ec16-4a49-9c41-fe382a8b2300.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 16
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c872ece2-c7fe-4cdb-8d99-43efee1e079f.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/442145f3-a40e-4f06-8169-d47a4db2c7cd.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 17
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/aa84b4b8-ead1-4183-98b4-867e088b5cf6.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d1a6b8ba-bbd0-4ea4-a96f-faad62a9e581.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 18
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/54c0933e-e5a9-4946-b82c-f1d3fc0f0d88.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d2ef3a5a-0dda-4efe-b61b-7c3b4f91a145.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 19
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a6718ee0-1825-4ae6-889f-62bcd84f9e20.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d8ee4990-ac09-4b2e-a30f-839f7644e3e3.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 20
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4be79661-263f-4443-9a49-8d08b0cb4fe8.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4c2db28d-6c5a-40b1-90bb-784a53d4c2e1.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 21
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/72c32e7d-42e9-4a92-ac6b-55aa08e233a7.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1400317a-2e39-48e6-aab2-36c3bbd6a5f7.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 22
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/08b11da3-1afd-4a11-8156-94918f8f8625.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/68d058b1-0d23-4f1a-9500-9ce8a72d45d7.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 23
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/b900878c-207d-41be-9b21-80f82092d179.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ccff3093-987c-47a6-9432-19fd8b0d9457.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 24
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9e68aa3b-1e6d-4b49-9f87-10efaabd7d67.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6ab06c06-28e1-47e2-91a8-da7335f59c58.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 25
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1460d9bd-9c50-477f-a0c8-8348d9e56582.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/3a20ed57-5da6-4e0a-a0f1-2b8cebc4a479.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 26
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ed2f4a3c-4c7d-4a9d-bb62-433e567f48f6.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4bf21a32-356b-4d62-9c0d-a5fe3138b1f8.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 27
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6fc53857-85d8-4bcc-8ea2-b7bc57db0e4c.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6519caa2-d9a7-4d58-977c-4b31632dc560.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 28
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c51959b6-3835-496d-a7b4-5d6b188e4961.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/0d189dfe-977b-4755-aa0d-a44d0182b4cd.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 29
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/185cb6ff-b45f-45d4-a342-975d8febd31c.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f44145ec-dceb-42ae-ab14-5d84edcc8c94.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 30
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/16a47fce-d9df-4002-b404-d54edbb832c3.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c02b5fca-d118-4597-9f3a-2a24b3b4c0eb.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 31
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/78d24f79-f418-4cfd-863b-0b30f4897b02.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/2b8ca66a-4feb-461f-8653-cb28aa6c5213.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 32
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9c24938c-e9b9-479f-8efc-0aa3180f63af.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/7d576967-2912-4bbe-b7cb-6555e4555d46.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 33
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ec01a263-e036-4b99-8326-139b97f401eb.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/20b911ab-f4ea-4e4a-9ac4-00d358cb118f.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 34
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/574f16f6-88af-41c3-9ee7-9e8e5d2662cb.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d1e0722b-d931-44af-a6e3-140ee6b95fa8.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 35
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/fbc23b55-4980-44fe-bb33-531e37e0ef7e.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/94a9d14e-0f82-487e-bbbf-82c5b018d9a3.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 36
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ebbf7eec-2b39-4e8b-b570-be27e4abf759.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/472e639f-c6ad-4648-917f-b0469f48558a.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 37
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/fee53ed7-fb4f-44b6-890c-4a3f4dad820d.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/30293893-3dcf-48f7-a13f-6039032d1b12.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 38
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/25b3891c-5997-4143-af70-a4a5f71a54ce.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/0b8795c3-3bcc-457c-ad12-c9ed2328fa15.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0,
+    "question_index": 39
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/13824ea0-ebd7-4f1c-b406-60fc2e8db886.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e9ee97ab-251f-45a8-b7c4-b33edae5d866.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 40
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/440ff8c2-4fe3-41f7-84f9-ddbb04caca48.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/88a52d24-c510-45e6-85a1-8b7fc8d057df.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 41
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c97c1e21-1287-4dbb-92cd-bf64f1a421d4.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/8b9ad413-db85-4c6b-a662-f4a169f59289.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 42
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/8d4469f4-8090-4404-bdc6-9fa3da6eec99.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/93424502-c3b8-4e7b-9078-1dd179350791.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 43
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6524598b-eb9a-43c8-b8f9-c45d5fe6ed6c.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/931dce34-11ee-40e8-93e7-9917fc9189dd.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 44
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/def0245e-49b5-4736-85e1-3ea654cdab75.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/fdd9cf0c-03f1-46e6-a7e5-bfcfbc6ccc81.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 45
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e75f5ee9-1095-4e47-8d81-12c1b00f0f6b.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/30d592e2-553a-4596-80cd-1c55a7d7dcdc.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 46
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4e77550b-ac16-4ed7-8af8-27f2d841013a.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e6da052b-e5da-4da4-beab-f577c162ebd1.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 47
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6fc48337-bdf4-4925-822c-f8ed28578911.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d68cff1c-8d2e-4b78-b975-b6bf525e353d.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 48
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1a2fdd7e-42ef-41eb-b14b-c303d975e039.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1d552c1e-9dc1-4d5b-8941-eebcadc7defa.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 49
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/82e089b9-4f4f-4791-9fdf-63340461232e.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9bd2644e-f18e-4c54-a29d-663be7609ba1.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 50
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/42a07b1b-064b-4028-aeac-07dd62793e6c.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/8143b1af-615c-4481-921f-a92927384f15.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 51
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4f23505a-e697-48bc-ad09-1f01ba7bb4d8.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d1d6e60f-85f8-4bbb-a572-461cef4cc80c.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 52
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6f27e2ca-9783-431c-b60b-25abc6c89c49.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/b8a11db1-b515-4c14-b433-159e8a8be621.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 53
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/711f0e28-6da0-4cd1-95d9-b1d24c7a45ad.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9dcd3bd7-e637-4dcd-8d65-decd82283bbf.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 54
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9c5a45d7-add1-4163-b535-bebc4c63235f.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/0863284f-a58f-49a6-abc2-0f8bc762ab9a.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 55
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4a362880-744a-4ad8-8f15-b4e5ad5533f6.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e26a3681-c408-482c-bcc7-ebe88cdda5e4.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 56
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1b3827d7-7ece-46b0-afaf-63cb5365bdf6.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/89721f65-88c2-4c97-8768-ec0aeb20d5ae.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 57
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/78df2bca-04bc-4dc5-99a3-b2735f4f3a23.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/98601257-ccbe-4435-937d-e492b4b89e24.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 58
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/23b2cc90-b8d6-43b7-b501-f16cdd1f4522.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/5f666ca5-937b-4791-8745-a28ab58eca33.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 59
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6da8ce1e-8514-42d6-9c60-20dd6bf18a5d.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9db5d52b-ec76-46b9-b1d9-b58af51e6e6f.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 60
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/75ad1279-2c13-45ae-97a5-29599ba28363.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/429a7217-18cb-4b98-9140-ba03692f38d5.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 61
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/957c6e03-19b4-4b40-8fa5-0741f5c2c37a.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6f4ace10-11ca-4fee-8bf4-a8f3f4de22e8.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 62
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/62d804e4-213e-4dff-a392-9c80f5b726c1.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/eb080046-c653-4882-9c10-379eb6b71955.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 63
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/fecb6a70-d8df-4145-b658-f561e5bdf99b.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c8fb15cd-08a6-4920-adf8-f342d737fee1.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 64
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f31c778f-312d-4584-a174-93389d1a5079.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f6695faf-4ee8-4083-9632-1ee9c697bcd6.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 65
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/5765caf1-6578-4ee7-8fe3-3702bdcb64b0.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e09c03fc-4553-4c75-a7a7-823fc0aa4523.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 66
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/08df26e2-576e-41d4-8805-d5d264055f02.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9c321c1e-4607-4ff2-af44-20f5f8a45d70.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 67
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/581b2358-0729-4074-91ed-daf636375fc0.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/0b58dd1d-91cc-4633-8e1e-42106538651b.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 68
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/72d14d85-0298-43d0-8421-e7a8d53f111d.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/086ce184-c40e-4827-b6c2-778daddee40d.png'>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 69
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/cdcd20c9-5e0d-49e5-9341-0893e6bb3560.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/5e6cac57-bbfa-405d-ad15-3859dc8750bc.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 70
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/43a7b6d9-f522-40bd-b2f0-a0646bfdc435.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9e833e92-babd-4db3-958f-efbcf3286009.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 71
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a585b145-fc18-4e92-8801-ad08411b92ad.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/e0ce2f79-59bf-4b58-980c-70ceed03a82a.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 72
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9e85f91f-1a57-4ff4-81d9-b91eacd7a02a.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/96263be5-44d5-43c7-8d97-829772fb18d1.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 73
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/b7472beb-04f2-4c53-a0ae-cde9a7befd8b.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f5ca5cdf-cec4-4d52-b278-26a2518727e6.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 74
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/65dfd1c1-1638-4c5e-aad4-c82a1c8e6536.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/df7e8eab-fafe-4a9a-a8b0-e1057b63bd7c.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 75
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d127eec5-20c1-4ac9-a6d6-a028d4298182.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/3a10888f-415a-4b49-9394-abaab2132147.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 76
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f0d0d884-e3da-4153-b021-0b2ce7faedbb.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/cf27bdd3-578c-4a39-a9ff-bdbf7dd99d07.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 77
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/61a76c6c-a0d6-4cf6-845d-f8f46c1937ae.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c1a611b4-9b50-48b7-b122-d28135408768.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 78
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/98027465-fb29-4550-8e5a-26cf92a026bb.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/43e93387-e4c3-4428-88d4-9bd804daf565.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 79
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a8ded63d-8bfd-43b0-83e2-d4a7f2d83f61.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/589a5598-f7ed-48c6-ae47-bef5de69e6c6.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 80
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/8183efdd-982e-4f2c-914c-c00e8942f2e4.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4d0ad5b8-ed24-49d1-89b7-82a4e268d14c.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 81
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/194d7581-2c1f-4f85-8734-ca86795f4ace.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ea335284-2ee4-4fb1-8e47-602fa9271100.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 82
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c88da99b-9dbf-4376-85e6-4dfc77fbfdf3.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/02c98a84-95e6-448c-b6dc-dc98a975777e.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 83
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a1e98523-f00d-47d4-89e5-6d517eb1bfde.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a9467c8e-30e4-450e-af33-1f523fad59b9.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 84
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/a7b26f0e-bddc-4608-889b-d1707cf01a53.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/fb1f6f9f-fa6c-4b29-a22e-457cca1b0340.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 85
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/aadedf21-8e69-4966-84a1-5cc9d8fd2fda.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/4dbdf9f8-9e2b-47a9-816a-9b927e1ca14f.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 86
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/8c8348e4-b75b-4d36-972b-efb6a7ded89c.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c69b2bad-415a-46ed-b567-12aad7359fd0.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 87
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/707f0d6c-0293-423a-b067-ba191a570bf4.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/9dd34def-0142-4151-b180-3ba46fedcab9.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 88
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/663a9ba9-28a4-44a2-bd45-1f663f3a7bf2.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/1f2b45a5-6dbf-4944-a746-23ff8a0fae2c.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 89
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/2c413dcf-df15-425d-9fba-b0574deb2538.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/cbe10262-fb5d-4beb-960b-b8810a175f68.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 90
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/be6883bd-c071-4165-ad11-43f59cebaaf1.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/68d9a6a3-455a-4d3b-b4bd-86370a4ef8b0.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 91
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/f5c2a952-b49d-4ec8-b641-e3d5121d2952.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/59e6591b-aeb8-4859-9855-25b346d9b58f.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 92
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/47ecf082-229a-4eca-8d06-ab9fa4301327.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/55e5224a-94b3-4542-8390-2aaddc5d16fa.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 93
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/cc798919-d40c-4f9d-9093-82ca15f6e3ba.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/55dc97a1-32b7-4185-8152-b22f4b5ae73e.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 94
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/12018594-8543-4e23-bc07-dd5aecb9dc95.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c8312f98-cfdc-4f07-991a-1462218fdb14.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 95
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/d93851b1-5d0c-4a06-a6c8-51509a456ea9.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 0,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/db928b39-bc93-4e85-8911-74f19dc68683.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 96
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/2a8aa705-cab1-4654-81c6-1044e59b86e3.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 2,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/67173673-9984-4363-bd75-2a5ccf59b3c6.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 97
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/ddd0d545-a51b-4fda-9d1a-c34949dc842f.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 1,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/6466c1ec-a5c7-41a1-a8db-df44f3645536.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 98
+  },
+  {
+    "question": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/732e76a4-197f-431b-ae7a-e2b7d33af28a.png'>",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_option_id": 3,
+    "solution": "<img src='https://d2bps9p1kiy4ka.cloudfront.net/5b09189f7285894d9130ccd0/c9cadc71-0585-4c3d-89bd-f8203c4797ad.png'>",
+    "pos_mark": 1,
+    "negative_mark": 0.25,
+    "question_index": 99
+  },
+  {
+    "question": "1.Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Rhyme",
+      " Restaurant ",
+      " Reciept",
+      " Referred"
+    ],
+    "correct_option_id": 2,
+    "solution": "1.(c) Reciept.<br />Receipt is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 100
+  },
+  {
+    "question": "<p>2. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Censure</p>",
+      "<p>Criticism</p>",
+      "<p>Hellicopter</p>",
+      "<p>Approval</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>2.(c) Hellicopter. <br>Helicopter is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 101
+  },
+  {
+    "question": "<p>3. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Subseqently</p>",
+      "<p>Substantially</p>",
+      "<p>Solicitation</p>",
+      "<p>Sentimentally</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>3.(a) Subseqently.<br>Subsequently is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 102
+  },
+  {
+    "question": "4. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Colossal ",
+      " Concensus ",
+      " Magnificent ",
+      "<p>Articulate</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>4.(b) Concensus.<br>&lsquo;Consensus&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 103
+  },
+  {
+    "question": "5. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Cadre ",
+      " Calender ",
+      "<p>Carnivorous</p>",
+      "<p>Commit</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>5.(b) Calender.<br>&lsquo;Calendar&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 104
+  },
+  {
+    "question": "<p>6. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Dental</p>",
+      "<p>Doubt</p>",
+      "<p>Dictonary</p>",
+      "<p>Drought</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>6.(c) Dictonary. <br>Dictionary is the correct spelling</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 105
+  },
+  {
+    "question": "<p>7. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Adequate</p>",
+      "<p>Adviseable</p>",
+      "<p>Adamant</p>",
+      "<p>Alternate</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>7.(b) Adviseable. <br>Advisable is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 106
+  },
+  {
+    "question": "<p>8. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Discourage</p>",
+      "<p>Disastrous</p>",
+      "<p>Desperate</p>",
+      "<p>Dissapoint</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>8.(d) Dissapoint.<br>Disappoint is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 107
+  },
+  {
+    "question": "9. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Unison ",
+      " Ocassion ",
+      " Vehemence ",
+      " Liaison "
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>9.(b) Ocassion. <br>Occasion is the correct spelling</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 108
+  },
+  {
+    "question": "<p>10.Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Concrete</p>",
+      "<p>Secrete</p>",
+      "<p>Petete</p>",
+      "<p>Elite</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>10.(c) Petete.<br>Petite is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 109
+  },
+  {
+    "question": "<p>11. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Refurbish</p>",
+      "<p>Sanctity</p>",
+      "<p>Esscalator</p>",
+      "<p>Automated</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>11.(c) Esscalator. <br>Escalator is the correct spelling</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 110
+  },
+  {
+    "question": "<p>12. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Preshious</p>",
+      "<p>Barricade</p>",
+      "<p>Innovation</p>",
+      "<p>Infection</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>12.(a) Preshious.<br>&lsquo;Precious&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 111
+  },
+  {
+    "question": "<p>13. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Detective</p>",
+      "<p>Evidence</p>",
+      "<p>Priority</p>",
+      "<p>Vacine</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>13.(d) Vacine. <br>&lsquo;Vaccine&rsquo; is the correct spelling</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 112
+  },
+  {
+    "question": "<p>14. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Deceive&nbsp;</p>",
+      "<p>Review&nbsp;</p>",
+      "<p>Reciept&nbsp;</p>",
+      "<p>Perceive&nbsp;</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>14.(c) Reciept.&nbsp;<br>Receipt is the correct spelling&nbsp;</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 113
+  },
+  {
+    "question": "<p>15. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Impeccable</p>",
+      "<p>Incandesent</p>",
+      "<p>Impervious</p>",
+      "<p>Inconclusive</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>15.(b) Incandesent. <br>Incandescent is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 114
+  },
+  {
+    "question": "<p>16. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Boasting</p>",
+      "<p>Ascetic</p>",
+      "<p>Overide</p>",
+      "<p>Evidence</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>16.(c) Overide. <br>&lsquo;Override&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 115
+  },
+  {
+    "question": "<p>17. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Chandelier</p>",
+      "<p>Haphazard</p>",
+      "<p>Aesthetic</p>",
+      "<p>Licenced</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>17.(d) Licenced. <br>&lsquo;Licensed&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 116
+  },
+  {
+    "question": "<p>18. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Neice</p>",
+      "<p>Cousin</p>",
+      "<p>Nephew</p>",
+      "<p>Uncle</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>18.(a) Neice. <br>Niece is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 117
+  },
+  {
+    "question": "<p>19. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Plough</p>",
+      "<p>Playwright</p>",
+      "<p>Plagiarise</p>",
+      "<p>Playful</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>19.(c) Plagiarise.&nbsp;<br>Plagiarize is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 118
+  },
+  {
+    "question": "<p>20. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Anarchy</p>",
+      "<p>Tyrany</p>",
+      "<p>Aristocracy</p>",
+      "<p>Monarchy</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>20.(b) Tyrany. <br>&lsquo;Tyranny&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 119
+  },
+  {
+    "question": "<p>21. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Written</p>",
+      "<p>Verbal</p>",
+      "<p>Speach</p>",
+      "<p>Melody</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>21.(c) Speach. <br>&lsquo;Speech&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 120
+  },
+  {
+    "question": "1. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Embarrass",
+      " Connoisseur",
+      " Relevent",
+      " Bureaucracy"
+    ],
+    "correct_option_id": 2,
+    "solution": "1.(c) Relevent<br />'Relevant' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 121
+  },
+  {
+    "question": "<p>2. In the following sentence, four words are underlined out of which one word is misspelt. Identify the INCORRECTLY spelt word.<br>After the <span style=\"text-decoration: underline;\">recapture</span> (A) of Tololing and the adjacent features, <span style=\"text-decoration: underline;\">evacting</span> (B) the enemy from this <span style=\"text-decoration: underline;\">well-fortified</span> (C) position became a <span style=\"text-decoration: underline;\">priority.</span>(D)</p>",
+    "options": [
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>2.(a) (B) evacting<br>'Evicting' is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 122
+  },
+  {
+    "question": "<p>3. Select the correctly spelled sentence.</p>",
+    "options": [
+      "<p>I will definitely attend the conference.</p>",
+      "<p>I will definitly attend the conference.</p>",
+      "<p>I will definetely attend the conference.</p>",
+      "<p>I will definately attend the conference</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>3.(a) I will <span style=\"text-decoration: underline;\">definitely</span> attend the conference.<br>'Definitely' is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 123
+  },
+  {
+    "question": "4. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Allocation",
+      " Abismal",
+      " Allegation",
+      " Aversion"
+    ],
+    "correct_option_id": 1,
+    "solution": "4.(b) Abismal<br />'Abysmal' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 124
+  },
+  {
+    "question": "5. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Accommodate ",
+      " Mischievious  ",
+      " Millennium ",
+      " Privilege"
+    ],
+    "correct_option_id": 1,
+    "solution": "5.(b) Mischievious<br />'Mischievous' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 125
+  },
+  {
+    "question": "6. Identify the INCORRECTLY spelt word in the following sentence and select its correct spelling from the given options.<br />I receieved a parcel in the mail today. ",
+    "options": [
+      " received",
+      " recived",
+      " recieved ",
+      " receaved"
+    ],
+    "correct_option_id": 0,
+    "solution": "6.(a) received<br />'Received' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 126
+  },
+  {
+    "question": "7. The following sentence contains a word with a spelling error. Rectify the sentence by selecting the correct spelling of the identified word from the given options.<br />He has to be conscious of his public manners as he is a decendent of a reputed family in this region.",
+    "options": [
+      " Dicsendent",
+      " Descendant ",
+      " Discendent",
+      " Decendant"
+    ],
+    "correct_option_id": 1,
+    "solution": "7.(b) Descendant<br />'Descendant' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 127
+  },
+  {
+    "question": "8. Select the correctly spelt word.",
+    "options": [
+      " Conscensus ",
+      " Entrepreneurship ",
+      " Collaegue",
+      " Bizzaire"
+    ],
+    "correct_option_id": 1,
+    "solution": "8.(b) Entrepreneurship<br />'Entrepreneurship' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 128
+  },
+  {
+    "question": "<p>9. Select the correct spelling to fill in the blank.<br>Subir's long absence is likely to have _______for employees in the office.</p>",
+    "options": [
+      "<p>repercusions</p>",
+      "<p>repercussions</p>",
+      "<p>reperrcussions</p>",
+      "<p>rapercussions</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>9.(b) repercussions<br>'Repercussions' is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 129
+  },
+  {
+    "question": "10. Select the correctly spelt word.",
+    "options": [
+      " Privelege ",
+      " Priviledge",
+      " Privilege",
+      " Privilej"
+    ],
+    "correct_option_id": 2,
+    "solution": "10.(c) Privilege<br />'Privilege' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 130
+  },
+  {
+    "question": "<p>11. Select the correctly spelt word to fill in the blank.<br>The transistors are used as the main ______, which are built into computer chips.</p>",
+    "options": [
+      "<p>components</p>",
+      "<p>cumponents</p>",
+      "<p>kamponents</p>",
+      "<p>kumponents</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>11.(a) components<br>'Components' is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 131
+  },
+  {
+    "question": "12.  Select the INCORRECTLY spelt word.",
+    "options": [
+      " Verminous",
+      " Vomitus",
+      " Voluptuous",
+      " Verifibility"
+    ],
+    "correct_option_id": 3,
+    "solution": "12.(d) Verifibility<br />'Verifiability' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 132
+  },
+  {
+    "question": "13.  The following sentence contains a word with a spelling error. Rectify the sentence by selecting the correct spelling of the identified word from the given options.<br />I was upstaires when somebody rang the doorbell.",
+    "options": [
+      " Upstares",
+      " Upstaire",
+      " upsatires",
+      " Upstairs"
+    ],
+    "correct_option_id": 3,
+    "solution": "13.(d) Upstairs<br />'Upstairs' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 133
+  },
+  {
+    "question": "14. Identify the INCORRECTLY spelt word in the following sentence and select its correct spelling from the given options.<br />His acquiantance with the author led to many fruitful collaborations.",
+    "options": [
+      " acuiantance ",
+      " acquaintance",
+      " acquaintence",
+      " aquaintance"
+    ],
+    "correct_option_id": 1,
+    "solution": "14.(b) acquaintance<br />'Acquaintance' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 134
+  },
+  {
+    "question": "15. Select the INCORRECTLY spelt word from the given sentence .<br />She recieved an award for her outstanding performance.",
+    "options": [
+      " recieved",
+      " award",
+      " performance",
+      " outstanding"
+    ],
+    "correct_option_id": 0,
+    "solution": "15.(a) recieved<br />'Received' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 135
+  },
+  {
+    "question": "<p>1. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Tution</p>",
+      "<p>Circuit</p>",
+      "<p>Genuine</p>",
+      "<p>Manners</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>1.(a) Tution.<br>&lsquo;Tuition&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 136
+  },
+  {
+    "question": "<p>2. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Retort</p>",
+      "<p>Retrieve</p>",
+      "<p>Revange</p>",
+      "<p>Return</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>2.(c) Revange.<br>&lsquo;Revenge&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 137
+  },
+  {
+    "question": "<p>3. Select the correctly spelt word.</p>",
+    "options": [
+      "<p>Weird</p>",
+      "<p>Cansel</p>",
+      "<p>Recieive</p>",
+      "<p>Prepair</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>3.(a) Weird.<br>&lsquo;Weird&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 138
+  },
+  {
+    "question": "<p>4. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Progress</p>",
+      "<p>Mystery</p>",
+      "<p>Pilgrim</p>",
+      "<p>Symtoms</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>4.(d) Symtoms.<br>&lsquo;Symptoms&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 139
+  },
+  {
+    "question": "<p>5. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Whitan</p>",
+      "<p>Enlighten</p>",
+      "<p>Hasten</p>",
+      "<p>Brighten</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>5.(a) Whitan.<br>Whitman is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 140
+  },
+  {
+    "question": "<p>6. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Statutory</p>",
+      "<p>Stratagy</p>",
+      "<p>Stationary</p>",
+      "<p>Stationery</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>6.(b) Stratagy.<br>&lsquo;Strategy&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 141
+  },
+  {
+    "question": "<p>7. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Aisle</p>",
+      "<p>Adorn</p>",
+      "<p>Attick</p>",
+      "<p>Altar</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>7.(c) Attick.<br>&lsquo;Attack&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 142
+  },
+  {
+    "question": "<p>8. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Correspondence</p>",
+      "<p>Miscellaneous</p>",
+      "<p>Exclaimation</p>",
+      "<p>Disciplinarian</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>8.(c) Exclaimation.<br>&lsquo;Exclamation&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 143
+  },
+  {
+    "question": "<p>9. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Contrary</p>",
+      "<p>Terribal</p>",
+      "<p>Longitude</p>",
+      "<p>Manners</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>9.(b) Terribal.<br>&lsquo;Terrible&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 144
+  },
+  {
+    "question": "<p>10. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Deceive</p>",
+      "<p>Leisure</p>",
+      "<p>Believe</p>",
+      "<p>Wellfare</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>10.(d) Wellfare.<br>&lsquo;Welfare&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 145
+  },
+  {
+    "question": "<p>11. Select the correctly spelt word.</p>",
+    "options": [
+      "<p>Convert</p>",
+      "<p>Conect</p>",
+      "<p>Concent</p>",
+      "<p>Convect</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>11.(a) Convert.<br>&lsquo;Convert&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 146
+  },
+  {
+    "question": "<p>12. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Tenure</p>",
+      "<p>Digonal</p>",
+      "<p>Partner</p>",
+      "<p>Oblique</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>12.(b) Digonal.<br>&lsquo;Diagonal&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 147
+  },
+  {
+    "question": "<p>13. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Ensure</p>",
+      "<p>Adjourn</p>",
+      "<p>Purity</p>",
+      "<p>Exhast</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>13.(d) Exhast. <br>&lsquo;Exhaust&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 148
+  },
+  {
+    "question": "<p>14. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Disturbence</p>",
+      "<p>Genius</p>",
+      "<p>Opportunity</p>",
+      "<p>Conscious</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>14.(a) Disturbence. <br>&lsquo;Disturbance&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 149
+  },
+  {
+    "question": "<p>15. Select the INCORRECTLY spelt word</p>",
+    "options": [
+      "<p>Annivarsary</p>",
+      "<p>Anguish</p>",
+      "<p>Anonymous</p>",
+      "<p>Announcement</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>15.(a) Annivarsary.<br>&lsquo;Anniversary&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 150
+  },
+  {
+    "question": "<p>16. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Necessary</p>",
+      "<p>Beggining</p>",
+      "<p>Irrelevant</p>",
+      "<p>Location</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>16.(b) Beggining.<br>&lsquo;Beginning&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 151
+  },
+  {
+    "question": "<p>17. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      " Adventure",
+      "<p>Benefit</p>",
+      "<p>Acquire</p>",
+      "<p>Pathatic</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "17.(d) Pathatic.<br />‘Pathetic’ is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 152
+  },
+  {
+    "question": "<p>18. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Contemplate</p>",
+      "<p>Cooperate</p>",
+      "<p>Temprate</p>",
+      "<p>Syndicate</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>18.(c) Temprate.<br>Temperate is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 153
+  },
+  {
+    "question": "<p>19. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Voluntary</p>",
+      "<p>Disparity</p>",
+      "<p>Continuanse</p>",
+      "<p>Convincing</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>19.(c) Continuanse, <br>&lsquo;Continuance&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 154
+  },
+  {
+    "question": "<p>20. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Alphabet</p>",
+      "<p>Allergic</p>",
+      "<p>Altarnate</p>",
+      "<p>Allotted</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>20.(c) Altarnate.<br>&lsquo;Alternate&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 155
+  },
+  {
+    "question": "<p>21. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Secratariat</p>",
+      "<p>Heartbeat</p>",
+      "<p>Performance</p>",
+      "<p>Tongue</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>21.(a) Secratariat. <br>&lsquo;Secretariat&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 156
+  },
+  {
+    "question": "<p>22. Select the INCORRECTLY spelt word.</p>",
+    "options": [
+      "<p>Giggle</p>",
+      "<p>Girdle</p>",
+      "<p>Gingar</p>",
+      "<p>Giant</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>22.(c) Gingar. <br>Ginger is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 157
+  },
+  {
+    "question": "<p>1. <span style=\"font-family: Cambria Math;\">Parts of the following sentence have been given as options. Select the option that contains an error.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">You need to acknowledge the </span><span style=\"font-family: Cambria Math;\">itinary</span><span style=\"font-family: Cambria Math;\"> and accommodation details of your journey as per the given calendar.</span></p>\n",
+    "options": [
+      "<p>calendar</p>\n",
+      "<p>accommodation</p>\n",
+      "<p>acknowledge</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">itinary</span></p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">1.(</span><span style=\"font-family: Cambria Math;\">d) </span><span style=\"font-family: Cambria Math;\">Itinary</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Itinerary&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 158
+  },
+  {
+    "question": "<p>2. <span style=\"font-family: Cambria Math;\">Select the option with the correct spelling that can replace the underlined word </span><span style=\"font-family: Cambria Math;\">in the </span><span style=\"font-family: Cambria Math;\">given</span><span style=\"font-family: Cambria Math;\"> sentence. </span></p>\r\n<p><span style=\"font-family: Cambria Math;\">Kasturi</span><span style=\"font-family: Cambria Math;\"> acts as a </span><span style=\"text-decoration: underline;\"><span style=\"font-family: Cambria Math;\">liason</span></span><span style=\"font-family: Cambria Math;\"> between patients and staff.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">liaision</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">laision</span></p>\n",
+      "<p>liaison</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">liaisan</span></p>\n"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">2.(</span><span style=\"font-family: Cambria Math;\">c) </span><span style=\"font-family: Cambria Math;\">Liaison</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Liaison&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 159
+  },
+  {
+    "question": "<p>3. <span style=\"font-family: Cambria Math;\">Select the correctly spelt word.</span></p>\n",
+    "options": [
+      "<p>Business</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Buisnesc</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Buisness</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Busines</span></p>\n"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">3.(</span><span style=\"font-family: Cambria Math;\">a)</span><span style=\"font-family: Cambria Math;\"> Business</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Business&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 160
+  },
+  {
+    "question": "<p>4. <span style=\"font-family: Cambria Math;\">Select the option with the correct spellings to replace the underlined words in the </span><span style=\"font-family: Cambria Math;\">given</span><span style=\"font-family: Cambria Math;\"> sentence.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">The </span><span style=\"text-decoration: underline;\"><span style=\"font-family: Cambria Math;\">enchanteng</span><span style=\"font-family: Cambria Math;\"> </span><span style=\"font-family: Cambria Math;\">scenary</span></span><span style=\"font-family: Cambria Math;\"> of the beautiful lake was </span><span style=\"font-family: Cambria Math;\">mesmerising</span><span style=\"font-family: Cambria Math;\">.</span></p>\n",
+    "options": [
+      "<p>enchanting; scenery</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">encantin</span><span style=\"font-family: Cambria Math;\">g</span><span style=\"font-family: Cambria Math;\">; scenery</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">enchenting</span><span style=\"font-family: Cambria Math;\">; </span><span style=\"font-family: Cambria Math;\">seenary</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">enchantine</span><span style=\"font-family: Cambria Math;\">; </span><span style=\"font-family: Cambria Math;\">senery</span></p>\n"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">4.(</span><span style=\"font-family: Cambria Math;\">a) </span><span style=\"font-family: Cambria Math;\">Enchanting; Scenery</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Enchanting&rsquo;, &lsquo;Scenery&rsquo; are the correct spellings.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 161
+  },
+  {
+    "question": "<p>5. <span style=\"font-family: Cambria Math;\">Select the correct spelling from the given options to fill in the blank.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">Jaysmita</span><span style=\"font-family: Cambria Math;\"> is one of the most ______________ persons I have ever met as she has many </span><span style=\"font-family: Cambria Math;\">talents</span><span style=\"font-family: Cambria Math;\">.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">versataile</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">versatele</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">versateile</span></p>\n",
+      "<p>versatile</p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">5.(</span><span style=\"font-family: Cambria Math;\">d) </span><span style=\"font-family: Cambria Math;\">Versatile</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Versatile&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 162
+  },
+  {
+    "question": "<p>6.<span style=\"font-family: Cambria Math;\"> Select the correct spelling from the given options to replace the underlined word in the </span><span style=\"font-family: Cambria Math;\">following</span><span style=\"font-family: Cambria Math;\"> sentence.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">The new policy will </span><span style=\"text-decoration: underline;\"><span style=\"font-family: Cambria Math;\">su</span><span style=\"font-family: Cambria Math;\">pp</span><span style=\"font-family: Cambria Math;\">lant</span></span><span style=\"font-family: Cambria Math;\"> the old one and introduce stricter measures for </span><span style=\"font-family: Cambria Math;\">workplace</span><span style=\"font-family: Cambria Math;\"> safety.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">overide</span></p>\n",
+      "<p>supersede</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">suceed</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">superseed</span></p>\n"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">6.(</span><span style=\"font-family: Cambria Math;\">b) </span><span style=\"font-family: Cambria Math;\">Supersede</span><span style=\"font-family: Cambria Math;\">- </span><span style=\"font-family: Cambria Math;\">to take the place of a person or thing previously in authority or use.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 163
+  },
+  {
+    "question": "<p>7. <span style=\"font-family: Cambria Math;\">Select the correct spelling from the given options to fill in the blank. </span></p>\r\n<p><span style=\"font-family: Cambria Math;\">The civil engineers ar</span><span style=\"font-family: Cambria Math;\">e trying to ____________ the bridge using the new technology.</span></p>\n",
+    "options": [
+      "<p>elevate</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">ilivate</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">alivate</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">elivait</span></p>\n"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">7.(</span><span style=\"font-family: Cambria Math;\">a) </span><span style=\"font-family: Cambria Math;\">Elevate</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Elevate&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 164
+  },
+  {
+    "question": "<p>8. <span style=\"font-family: Cambria Math;\">I</span><span style=\"font-family: Cambria Math;\">dentify the INCORRECTLY spelt word in the following sentence and select its correct spelling from the given options.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">Your lack of knowledge of recent advances in technology will be a </span><span style=\"font-family: Cambria Math;\">sitback</span><span style=\"font-family: Cambria Math;\"> for your business.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">advancess</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">knowleidge</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">bussiness</span></p>\n",
+      "<p>setback</p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">8.(</span><span style=\"font-family: Cambria Math;\">d) </span><span style=\"font-family: Cambria Math;\">Sitback</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Setback&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 165
+  },
+  {
+    "question": "<p>9. <span style=\"font-family: Cambria Math;\">Identify the correct spelling of the underlined word.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">Medical </span><span style=\"text-decoration: underline;\"><span style=\"font-family: Cambria Math;\">termnalogy</span></span><span style=\"font-family: Cambria Math;\"> is difficult to under</span><span style=\"font-family: Cambria Math;\">stand.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">tarmnalogy</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">tarminology</span></p>\n",
+      "<p>terminology</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">terminiology</span></p>\n"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">9.(</span><span style=\"font-family: Cambria Math;\">c) </span><span style=\"font-family: Cambria Math;\">Terminology</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Terminology&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 166
+  },
+  {
+    "question": "<p>10<span style=\"font-family: Cambria Math;\">. </span><span style=\"font-family: Cambria Math;\">Parts of the following sentence have been given as options. Select the option that contains an error.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">My </span><span style=\"font-family: Cambria Math;\">colleages</span><span style=\"font-family: Cambria Math;\"> have lacked the conscience needed to be morally correct on this grave issue.</span></p>\n",
+    "options": [
+      "<p>conscience</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">colleages</span></p>\n",
+      "<p>morally</p>\n",
+      "<p>grave</p>\n"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">10</span><span style=\"font-family: Cambria Math;\">.(b) </span><span style=\"font-family: Cambria Math;\">Colleages</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Colleagues&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 167
+  },
+  {
+    "question": "<p>11<span style=\"font-family: Cambria Math;\">. </span><span style=\"font-family: Cambria Math;\">Identify the correct spelling of the underlined word.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">It is considered a great </span><span style=\"text-decoration: underline;\"><span style=\"font-family: Cambria Math;\">phenamina</span></span><span style=\"font-family: Cambria Math;\"> in the field of economics.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">phinomina</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">fenomena</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">phynamena</span></p>\n",
+      "<p>phenomena</p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><span style=\"font-family: Cambria Math;\">11</span><span style=\"font-family: Cambria Math;\">.(d) </span><span style=\"font-family: Cambria Math;\">Phenomena</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Phenomena&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 168
+  },
+  {
+    "question": "<p>12<span style=\"font-family: Cambria Math;\">.</span><span style=\"font-family: Cambria Math;\"> Select the sentence that has the correct use of spellings from the given options.</span></p>\n",
+    "options": [
+      "<p>While the <span style=\"font-family: Cambria Math;\">negociation</span><span style=\"font-family: Cambria Math;\"> process was complex and at times contentious, the two sides </span><span style=\"font-family: Cambria Math;\">ultimately</span><span style=\"font-family: Cambria Math;\"> reached a mutually </span><span style=\"font-family: Cambria Math;\">be</span><span style=\"font-family: Cambria Math;\">nificial</span><span style=\"font-family: Cambria Math;\"> </span><span style=\"font-family: Cambria Math;\">aggreement</span><span style=\"font-family: Cambria Math;\">.</span></p>\n",
+      "<p>While the negotiation process was complex and at times contentious, the two sides <span style=\"font-family: Cambria Math;\">ultimately</span><span style=\"font-family: Cambria Math;\"> reached a mutually beneficial agreement.</span></p>\n",
+      "<p>While the <span style=\"font-family: Cambria Math;\">nagotiation</span><span style=\"font-family: Cambria Math;\"> process was complex and at times </span><span style=\"font-family: Cambria Math;\">contencious</span><span style=\"font-family: Cambria Math;\">, the two sides </span><span style=\"font-family: Cambria Math;\">ultimately</span><span style=\"font-family: Cambria Math;\"> reached a mutually beneficial agreement.</span></p>\n",
+      "<p>While the negotiation process was complex and at times <span style=\"font-family: Cambria Math;\">contencious</span><span style=\"font-family: Cambria Math;\">, the two sides </span><span style=\"font-family: Cambria Math;\">ultimately</span><span style=\"font-family: Cambria Math;\"> reached a mutually beneficial </span><span style=\"font-family: Cambria Math;\">aggreement</span><span style=\"font-family: Cambria Math;\">.</span></p>\n"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>12<span style=\"font-family: Cambria Math;\">.(b)</span><span style=\"font-family: Cambria Math;\"> While the negotiation process was complex and at times contentious, the two sides ultimately reached a mutually beneficial agreement.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Negotiation, Contentious, Ag</span><span style=\"font-family: Cambria Math;\">reement&rsquo; are the correct spellings.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 169
+  },
+  {
+    "question": "<p>13<span style=\"font-family: Cambria Math;\">. </span><span style=\"font-family: Cambria Math;\">Select</span><span style=\"font-family: Cambria Math;\"> the sentence that has the correct use of spellings from the given options.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">Althogh</span><span style=\"font-family: Cambria Math;\"> the book was difficult to read, I persisted and </span><span style=\"font-family: Cambria Math;\">eventualy</span><span style=\"font-family: Cambria Math;\"> understood the </span><span style=\"font-family: Cambria Math;\">complex</span><span style=\"font-family: Cambria Math;\"> ideas.</span></p>\n",
+      "<p>Although the book was difficult to read, I persisted and eventually understood the <span style=\"font-family: Cambria Math;\">complex</span><span style=\"font-family: Cambria Math;\"> ideas.</span></p>\n",
+      "<p>Although the book was difficult to read, I persisted and <span style=\"font-family: Cambria Math;\">eventualy</span><span style=\"font-family: Cambria Math;\"> understood the </span><span style=\"font-family: Cambria Math;\">complex</span><span style=\"font-family: Cambria Math;\"> ideas.</span></p>\n",
+      "<p>Although the book was difficult to read, I <span style=\"font-family: Cambria Math;\">persested</span><span style=\"font-family: Cambria Math;\"> and eventually understood the </span><span style=\"font-family: Cambria Math;\">complex</span><span style=\"font-family: Cambria Math;\"> ideas.</span></p>\n"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>13<span style=\"font-family: Cambria Math;\">.(b) </span><span style=\"font-family: Cambria Math;\">Although the book was difficult to read, I persisted and eventually understood the complex ideas.</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Although, Persisted, Eventually&rsquo; are the corre</span><span style=\"font-family: Cambria Math;\">ct spellings.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 170
+  },
+  {
+    "question": "<p>14<span style=\"font-family: Cambria Math;\">.Select</span><span style=\"font-family: Cambria Math;\"> the correctly spelt word.</span></p>\n",
+    "options": [
+      "<p><span style=\"font-family: Cambria Math;\">Ocasion</span></p>\n",
+      "<p>Occasion</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Occa</span><span style=\"font-family: Cambria Math;\">sien</span></p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Occassion</span></p>\n"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>14<span style=\"font-family: Cambria Math;\">.(b) </span><span style=\"font-family: Cambria Math;\">Occasion</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Occasion&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 171
+  },
+  {
+    "question": "<p>15<span style=\"font-family: Cambria Math;\">. </span><span style=\"font-family: Cambria Math;\">Select the INCORRECTLY spelt word.</span></p>\n",
+    "options": [
+      "<p>Grateful</p>\n",
+      "<p>Immigrate</p>\n",
+      "<p>Ignorance</p>\n",
+      "<p><span style=\"font-family: Cambria Math;\">Hieararchy</span></p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>15<span style=\"font-family: Cambria Math;\">.(d) </span><span style=\"font-family: Cambria Math;\">Hieararchy</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Hierarchy&rsquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 172
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">1.</span><span style=\"font-family:Cambria Math\"> Choose the sentence with no spelling error.</span></p>",
+    "options": [
+      " <p>The cursor must be plased at the strat of the line.  </span></p>",
+      " <p> The cursor must be placed at the start of the line.  </span></p>",
+      " <p> The cursor must be plased at the start of the line. </span></p>",
+      " <p> The cursur must be placed at the start of the line.</span></p>"
+    ],
+    "correct_option_id": 1,
+    "solution": " <p>1.(b) </span></p> <p><span style=\"font-family:Cambria Math\">‘Cursor’, ‘placed’ & ‘start’ are the correct spellings which are only given in option b. </span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 173
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">2. </span><span style=\"font-family:Cambria Math\">Select the correctly spelt word</span></p>",
+    "options": [
+      " <p> Amatuer </span></p>",
+      " <p> Amatueer </span></p>",
+      " <p> Amture</span></p>",
+      " <p> Amateur</span></p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " <p>2.(d) “</span><span style=\"font-family:Cambria Math\">Amateur” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 174
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">3. </span><span style=\"font-family:Cambria Math\">Select the correctly spelt word</span></p>",
+    "options": [
+      " <p> Reprimand  </span></p>",
+      " <p> Repriment</span></p>",
+      " <p> Reprimend</span></p>",
+      " <p> Reprimant</span></p>"
+    ],
+    "correct_option_id": 0,
+    "solution": " <p>3.(a) </span><span style=\"font-family:Cambria Math\">“Reprimand” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 175
+  },
+  {
+    "question": "<p><span style=\"font-family: Cambria Math;\">4. </span><span style=\"font-family: Cambria Math;\">Choose the correctly spelt word.</span></p>\n",
+    "options": [
+      "<p>MINARET</p>\n",
+      "<p>PERTIMENT</p>\n",
+      "<p>OCCURED</p>\n",
+      "<p>RELEVENT</p>\n"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>4.(a) &ldquo;<span style=\"font-family: Cambria Math;\">MINARET</span><span style=\"font-family: Cambria Math;\">&rdquo; </span><span style=\"font-family: Cambria Math;\">is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 176
+  },
+  {
+    "question": " <p>5. </span><span style=\"font-family:Cambria Math\">Choose the incorrectly spelt word.</span></p>",
+    "options": [
+      " <p> </span><span style=\"font-family:Cambria Math\">SPLENDID</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\">MEAGRE</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\">MARRIAGEABLE</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\">CONSCENT</span></p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " <p>5.(d) </span><span style=\"font-family:Cambria Math\">CONSCENT</span></p> <p><span style=\"font-family:Cambria Math\">“</span><span style=\"font-family:Cambria Math\">CONSENT</span><span style=\"font-family:Cambria Math\">”</span><span style=\"font-family:Cambria Math\"> is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 177
+  },
+  {
+    "question": "<p><span style=\"font-family: Cambria Math;\">6. </span><span style=\"font-family: Cambria Math;\">Choose the sentence with no spelling error.</span></p>\n",
+    "options": [
+      "<p>They give the impressin that you are desperate.</p>\n",
+      "<p>They give the impression that you are desparate.</p>\n",
+      "<p>They give the impression that you are desperate.</p>\n",
+      "<p>They give the impresion that you are desperate.</p>\n"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>6.(c)</p>\r\n<p><span style=\"font-family: Cambria Math;\">&lsquo;Impression&rsquo; &amp; &lsquo;Desperate&rsquo; are the correct spellings which are only given in option c.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 178
+  },
+  {
+    "question": "<p><span style=\"font-family: Cambria Math;\">7. </span><span style=\"font-family: Cambria Math;\">Choose the incorrectly spelt word.</span></p>\n",
+    "options": [
+      "<p>Treasure</p>\n",
+      "<p>Poison</p>\n",
+      "<p>Mason</p>\n",
+      "<p>Clouwn</p>\n"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>7.(d) <span style=\"font-family: Cambria Math;\"> Clouwn</span></p>\r\n<p><span style=\"font-family: Cambria Math;\">&ldquo;Clown&rdquo; is the correct spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 179
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">8. </span><span style=\"font-family:Cambria Math\">Select the wrongly spelt word</span></p>",
+    "options": [
+      " <p>   Innocuous</span></p>",
+      " <p>   Ingenous</span></p>",
+      " <p>   Inimical</span></p>",
+      " <p>  Invulnerable</span></p>"
+    ],
+    "correct_option_id": 1,
+    "solution": " <p>8.(b) </span><span style=\"font-family:Cambria Math\">Ingenous</span></p> <p><span style=\"font-family:Cambria Math\">“</span><span style=\"font-family:Cambria Math\">Ingenious</span><span style=\"font-family:Cambria Math\">” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 180
+  },
+  {
+    "question": " <p>9. </span><span style=\"font-family:Cambria Math\">Select the wrongly spelt word</span></p>",
+    "options": [
+      " <p> </span><span style=\"font-family:Cambria Math\">gauche</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\">fallacious</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\"> erudite</span></p>",
+      " <p> </span><span style=\"font-family:Cambria Math\">harange</span></p> <p><span style=\"font-family:Cambria Math\"> </span></p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " <p>9.(d) </span><span style=\"font-family:Cambria Math\">harange</span></p> <p><span style=\"font-family:Cambria Math\">“Harangue” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 181
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">10.</span><span style=\"font-family:Cambria Math\"> Choose the incorrectly spelt word.</span></p>",
+    "options": [
+      " <p> Prepaer</span></p>",
+      " <p> Mushy</span></p>",
+      " <p> Busiest</span></p>",
+      " <p> Matter</span></p>"
+    ],
+    "correct_option_id": 0,
+    "solution": " <p>10.(a) </span><span style=\"font-family:Cambria Math\">Prepaer</span></p> <p><span style=\"font-family:Cambria Math\">‘Prepare’ is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 182
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">11.  </span><span style=\"font-family:Cambria Math\">Choose the sentence with no spelling error.</span></p>",
+    "options": [
+      " <p> We can never solvve our problems.</span></p>",
+      " <p> We can never solve our problems.</span></p>",
+      " <p> We can never solve our problams.</span></p>",
+      " <p> We can nver solve our problems.</span></p>"
+    ],
+    "correct_option_id": 1,
+    "solution": " <p>11.(b) </span></p> <p><span style=\"font-family:Cambria Math\">‘Never’, ‘solve’ & ‘problems’ are the correct spellings which are only given in option b..</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 183
+  },
+  {
+    "question": "<p><span style=\"font-family: Cambria Math;\">12. </span><span style=\"font-family: Cambria Math;\">Choose the incorrectly spelt word.</span></p>\n",
+    "options": [
+      "<p>WASSE</p>\n",
+      "<p>FITTER</p>\n",
+      "<p>COURIER</p>\n",
+      "<p>COURSE</p>\n"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>12.(a) WASSE</p>\r\n<p><span style=\"font-family: Cambria Math;\">&ldquo;WASTE&rdquo; is the correct</span><span style=\"font-family: Cambria Math;\"> spelling.</span></p>\n",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 184
+  },
+  {
+    "question": " <p>13. </span><span style=\"font-family:Cambria Math\">Choose the correctly spelt word.</span></p>",
+    "options": [
+      " <p> TEMPORERY </span></p>",
+      " <p> CAMOFLAGUE</span></p>",
+      " <p> PSEUDONYM </span></p>",
+      " <p> TABBOO</span></p>"
+    ],
+    "correct_option_id": 2,
+    "solution": " <p>13.(c)”</span><span style=\"font-family:Cambria Math\">PSEUDONYM” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 185
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">14. </span><span style=\"font-family:Cambria Math\">Choose the incorrectly spelt word.</span></p>",
+    "options": [
+      " <p> Bubble </span></p>",
+      " <p> Fantsy </span></p>",
+      " <p> Stormy </span></p>",
+      " <p> Mince</span></p>"
+    ],
+    "correct_option_id": 1,
+    "solution": " <p>14.(b) </span><span style=\"font-family:Cambria Math\">Fantsy </span></p> <p><span style=\"font-family:Cambria Math\">“Fantasy ” is the correct spelling.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 186
+  },
+  {
+    "question": " <p><span style=\"font-family:Cambria Math\">15. </span><span style=\"font-family:Cambria Math\">Choose the sentence with no spelling error.</span></p>",
+    "options": [
+      " <p> I thought I was going to die. </span></p>",
+      " <p> I thought I was going to diye. </span></p>",
+      " <p> I thought I was goinng to die. </span></p>",
+      " <p> I thught I was going to die.</span></p>"
+    ],
+    "correct_option_id": 0,
+    "solution": " <p>15.(a) </span><span style=\"font-family:Cambria Math\"> </span></p> <p><span style=\"font-family:Cambria Math\">‘Thought’, ‘going’ & ‘die’ are the correct spellings which are only given in option a.</span></p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 187
+  },
+  {
+    "question": "<p>1.Select the INCORRECTLY spelt word in the given sentence.<br>The village beggars, no longer ill at ease in the gathering of gliterring dignitaries, sat in their assigned rows and joked with vegetarian Brahmin apprentices.</p>",
+    "options": [
+      "<p>assigned</p>",
+      "<p>apprentices</p>",
+      "<p>beggars</p>",
+      "<p>gliterring</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>1.(d) <strong>gliterring</strong><br>&lsquo;Glittering&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 188
+  },
+  {
+    "question": "<p>2.Select the correct spelling of the underline word.<br>They denied having any <span style=\"text-decoration: underline;\">associasion</span> with the terrorists.</p>",
+    "options": [
+      " asociation",
+      " asocciation ",
+      " assosiation",
+      " association"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>2.(d) <strong>association</strong><br>&lsquo;Association&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 189
+  },
+  {
+    "question": "3.Identify and correct the INCORRECTLY spelt word in the given sentence.<br />The Collector paid floral tributes to the statue of Mahatma Gandhi after hosting the flag.",
+    "options": [
+      " floaral",
+      " stateu",
+      " trebutes",
+      " hoisting<br /> "
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>3.(d) <strong>Hoisting</strong><br><strong>Correct Spellings-</strong> Floral, statue and Tributes.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 190
+  },
+  {
+    "question": "<p>4.In the following sentence, four words are underlined, out of which one word is Incorrectly spelt. Identify the INCORRECTLY spelt word.<br>A lot of <span style=\"text-decoration: underline;\">spontanit</span>y is required from the speaker in an <span style=\"text-decoration: underline;\">extempore</span> speech. The speaker is expected to <span style=\"text-decoration: underline;\">brainstorm</span> ideas and give speech <span style=\"text-decoration: underline;\">instantaneousl</span>y.</p>",
+    "options": [
+      " instantaneously",
+      " extempore",
+      " brainstorm",
+      " spontanity<br /> "
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>4.<strong>(d) spontanity</strong><br>&lsquo;Spontaneity&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 191
+  },
+  {
+    "question": "<p>5. Identify the option that rectifies the underlined spelling error in the given sentence.<br>The boys of our class have reported that considerable progress in the <span style=\"text-decoration: underline;\">implimentation</span> of their policies has been made.</p>",
+    "options": [
+      " Implimentation",
+      " implimantation  ",
+      " Implementation  ",
+      " Implemantation"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>5.<strong>(c) Implementation</strong> <br>&lsquo;Implementation&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 192
+  },
+  {
+    "question": "6.  Select the INCORRECTLY spelt word . ",
+    "options": [
+      " Opportunity ",
+      " Reliance",
+      " Appraoch ",
+      " Bureau"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>6.<strong>(c) Appraoch</strong> <br>&lsquo;Approach&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 193
+  },
+  {
+    "question": "<p>7. In the following sentence, four words are underlined, out of which one word is incorrectly spelt. Identify the INCORRECTLY spelt word.<br>Seema was a <span style=\"text-decoration: underline;\">timid</span> girl. She did not talk to people who were not <span style=\"text-decoration: underline;\">familiar</span> to her. She was an <span style=\"text-decoration: underline;\">introvert</span> since <span style=\"text-decoration: underline;\">adolosense</span>.</p>",
+    "options": [
+      " introvert",
+      " timid",
+      " adolosense",
+      " familiar"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>7.<strong>(c) adolosense</strong><br>&lsquo;Adolescence&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 194
+  },
+  {
+    "question": "8. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Deceived  ",
+      " Reciept",
+      " Resistance",
+      " Postponed"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>8.<strong>(b) Reciept</strong><br>&lsquo;Receipt&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 195
+  },
+  {
+    "question": "<p>9. Select the correctly spelt option that can substitute the underlined word in the given sentence.<br><span style=\"text-decoration: underline;\">Patrrol</span> is very costly these days.</p>",
+    "options": [
+      " Petrole ",
+      " Petru ",
+      " Patrole",
+      " Petrol"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>9.(d) <strong>Petrol</strong><br>&lsquo;Petrol&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 196
+  },
+  {
+    "question": "<p>10. Select the correctly spelt option that can substitute the underlined word in the given sentence.<br>The goods were taken on a public <span style=\"text-decoration: underline;\">career</span>.</p>",
+    "options": [
+      " carier",
+      " carryer ",
+      " carrier ",
+      " courier"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>10.(c) <strong>carrier</strong> <br>&lsquo;Carrier&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 197
+  },
+  {
+    "question": "11. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Nefew  ",
+      " Father  ",
+      " Niece  ",
+      " Uncle<br /> "
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>11.(a) <strong>Nefew</strong> <br>&lsquo;Nephew&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 198
+  },
+  {
+    "question": "12. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Fruitful ",
+      " Unction  ",
+      " Wilfull  ",
+      " Cradle  "
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>12.(c) <strong>Wilfull</strong><br>&lsquo;Wilful&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 199
+  },
+  {
+    "question": "13.Select the INCORRECTLY spelt word.",
+    "options": [
+      " Connotation ",
+      " Pattron  ",
+      " Dearth",
+      " Quarry<br /> "
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>13.(b) <strong>Pattron</strong> <br>&lsquo;Patron&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 200
+  },
+  {
+    "question": "14.Select the INCORRECTLY spelt word.",
+    "options": [
+      " Astute  ",
+      " Absolute  ",
+      " Abrupt  ",
+      " Abendance<br /> "
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>14.(d) <strong>Abendance</strong><br>&lsquo;Abundance&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 201
+  },
+  {
+    "question": "15. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Reasonable",
+      " Laughable",
+      " Blessed",
+      " Prophane"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>15.(d) <strong>Prophane</strong><br>&lsquo;Profane&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 202
+  },
+  {
+    "question": "1. Select the INCORRECTLY spelt word.",
+    "options": [
+      " Eficient",
+      " Contribution",
+      " Miscalculation",
+      " Mediation"
+    ],
+    "correct_option_id": 0,
+    "solution": "1.(a) Eficient<br />'Efficient' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 203
+  },
+  {
+    "question": "<p>2. Select the sentence that contains a spelling error.</p>",
+    "options": [
+      "<p>The host institution must provide the delegates with accomodation at a subsidised rate.</p>",
+      "<p>The occurrence of the lunar eclipse is often a mystery for children.</p>",
+      "<p>The boss addressed the meeting.</p>",
+      "<p>Rail lines go parallel.</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>2.(a) The host institution must provide the delegates with <span style=\"text-decoration: underline;\">accomodation </span>at a subsidised rate.<br>&lsquo;Accommodation&rsquo; is the correct spelling.</p>",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 204
+  },
+  {
+    "question": "3. Select the correct spelling to fill in the blank.<br />The thought of eating half-cooked food under compulsion fills me with ____ .",
+    "options": [
+      "  ripugnance",
+      " repegnance ",
+      " repugnance ",
+      " repugnence"
+    ],
+    "correct_option_id": 2,
+    "solution": "3.(c) repugnance<br />'Repugnance' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 205
+  },
+  {
+    "question": "4. Select the INCORRECTLY spelt word from the given sentence.<br />The resturant offers a wide variety of dishes.",
+    "options": [
+      " variety",
+      " resturant",
+      " dishes",
+      " offers"
+    ],
+    "correct_option_id": 1,
+    "solution": "4.(b) resturant<br />'Restaurant' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 206
+  },
+  {
+    "question": "5. Select the INCORRECTLY spelt word in the given sentence.<br />Educational technology has become a necesity if one desires excellent output.",
+    "options": [
+      " necesity",
+      " excellent",
+      " Educational",
+      " technology"
+    ],
+    "correct_option_id": 0,
+    "solution": "5.(a) necesity<br />'Necessity' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 207
+  },
+  {
+    "question": "6. Select the sentence that does NOT have a spelling error.",
+    "options": [
+      " The new caches of materials reveal a secret pleascence that was hidden away from the rest of the world",
+      " Statistical patterns and historical data cannot predict the futristic problems that await a civilisation like <br />      ours.",
+      " Many friends and memoirists have described the author in detail but there are no photos of the author   <br />      available to the press.",
+      " The author is famous for leading a life of subterfuge and contredictions which has led to challenges in <br />       understanding past works."
+    ],
+    "correct_option_id": 2,
+    "solution": "6.(c) Many friends and memoirists have described the author in detail but there are no photos of the author available to the press.<br />‘Pleasence’, ‘futuristic’ and ‘contradictions’ are the correct spellings.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 208
+  },
+  {
+    "question": "7.  Select the INCORRECTLY spelt word.",
+    "options": [
+      " Conscientious",
+      " Mischievious",
+      " Ostentatious",
+      " Accommodate<br /> "
+    ],
+    "correct_option_id": 1,
+    "solution": "7.(b) Mischievious<br />'Mischievous' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 209
+  },
+  {
+    "question": "8. Select the correctly spelt word to fill in the blank.<br />Helium is used with oxygen for asthma treatment because it ____ very easily.",
+    "options": [
+      " difusez",
+      " difuses",
+      "  diffuses",
+      " diffuzes"
+    ],
+    "correct_option_id": 2,
+    "solution": "8.(c) diffuses<br />‘Diffuses’ is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 210
+  },
+  {
+    "question": "9. Select the correct spelling to fill in the blank. <br />When numerous ideas are presented in a historical context, more than mere ____ can be seen",
+    "options": [
+      "  parallelism",
+      "  paralialism",
+      "  paralelism ",
+      "  parollelism"
+    ],
+    "correct_option_id": 0,
+    "solution": "9.(a) parallelism<br />'Parallelism' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 211
+  },
+  {
+    "question": "10.  Select the correctly spelt word to fill in the blank. <br />Calder Hall is a nuclear power station in England which is known as the first nuclear power station to generate electricity for ____ purposes.",
+    "options": [
+      "  comercial",
+      "  comercail",
+      "  commerceil",
+      " commercial"
+    ],
+    "correct_option_id": 3,
+    "solution": "10.(d) commercial<br />'Commercial' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 212
+  },
+  {
+    "question": "11. Select the word with the correct spelling to fill in the blank. <br />Hiren loves to use ____ words while writing anything.",
+    "options": [
+      " coloquial ",
+      " colloquial  ",
+      " colloquil  ",
+      " colloqual<br /> "
+    ],
+    "correct_option_id": 1,
+    "solution": "11.(b) colloquial<br />'Colloquial' is the correct spelling. ",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 213
+  },
+  {
+    "question": "12. Select the INCORRECTLY spelt word in the given sentence. <br />Economics began with growth and removel of poverty as its grand theme",
+    "options": [
+      " Poverty ",
+      " Grand ",
+      " Removel",
+      " Economics"
+    ],
+    "correct_option_id": 2,
+    "solution": "12.(c) Removel<br />'Removal' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 214
+  },
+  {
+    "question": "13. Select the INCORRECTLY spelt word in the given sentence.<br />Fundamentels of every subject need to be learnt on priority basis.",
+    "options": [
+      " priority",
+      " basis",
+      " Fundamentels",
+      " learnt"
+    ],
+    "correct_option_id": 2,
+    "solution": "13.(c) Fundamentels<br />‘Fundamentals’ is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 215
+  },
+  {
+    "question": "14.  Out of the four sentences given, three have spelling errors. Identify the sentence that has no spelling error.",
+    "options": [
+      " What advice did he give to young entreprenuers?",
+      " She tried to manoeuvre her trolley around people.",
+      " The computer's software detected an anamoly caused by a virus.",
+      " A clergyman read the litturgy from the prayer-book."
+    ],
+    "correct_option_id": 1,
+    "solution": "14.(b) She tried to manoeuvre her trolley around people.<br />‘Entrepreneurs’, ‘anomaly’ and ‘liturgy’ are the correct spellings.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 216
+  },
+  {
+    "question": "15. The following sentence has been split into four segments. Identify the segment that contains a spelling error. <br />Big Data has inandated / the education industry. / It has transformed it / by leaps and bounds.",
+    "options": [
+      " It has transformed it  ",
+      " by leaps and bounds ",
+      " the education industry ",
+      " Big Data has inandated"
+    ],
+    "correct_option_id": 3,
+    "solution": "15.(d) Big Data has inandated<br />'Inundated' is the correct spelling.",
+    "pos_mark": 2,
+    "negative_mark": 0.5,
+    "question_index": 217
+  },
+  {
+    "question": "1. Select the INCORRECTLY spelt word… ",
+    "options": [
+      "  Vigilante",
+      " Masquerade ",
+      " Squadroun ",
+      " Caricature"
+    ],
+    "correct_option_id": 2,
+    "solution": "1.(c) Squadroun<br />'Squadron' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 218
+  },
+  {
+    "question": "2. Select the INCORRECTLY spelt word.   ",
+    "options": [
+      " Choronology  ",
+      " Competent  ",
+      " Soliloquy  ",
+      " Protein"
+    ],
+    "correct_option_id": 0,
+    "solution": "2.(a) Choronology<br />'Chronology' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 219
+  },
+  {
+    "question": "3. Select the INCORRECTLY spelt word.. ",
+    "options": [
+      " Postuer ",
+      " Gesture  ",
+      " Culture  ",
+      " Lecture"
+    ],
+    "correct_option_id": 0,
+    "solution": "3.(a) Postuer<br />'Posture' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 220
+  },
+  {
+    "question": "4. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Search ",
+      " Multiple ",
+      " Creative ",
+      " Revaeled "
+    ],
+    "correct_option_id": 3,
+    "solution": "4.(d) Revaeled<br />'Revealed' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 221
+  },
+  {
+    "question": "5. Rectify the sentence by selecting the correct spelling from the options. <br />While threatening the integrity of Universal values, the campaign to spread democracy will not suceed. ",
+    "options": [
+      " Suucced ",
+      " Succeed ",
+      " Sucseed ",
+      " Succsed "
+    ],
+    "correct_option_id": 1,
+    "solution": "5.(b) Succeed<br />'Succeed' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 222
+  },
+  {
+    "question": "<p>6. Select the option that rectifies the spelling error of the underlined word. <br>The historic <span style=\"text-decoration: underline;\">cathedrel</span> stood as a symbol of faith and architectural marvel, drawing visitors from around the world.</p>",
+    "options": [
+      "<p>cathidrel</p>",
+      "<p>cathedril</p>",
+      "<p>cathidral</p>",
+      "<p>cathedral</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>6.(d) cathedral<br>'Cathedral' is the correct spelling.</p>",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 223
+  },
+  {
+    "question": "7. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Oblegation ",
+      " Overview ",
+      " Opponent ",
+      " Ointment"
+    ],
+    "correct_option_id": 0,
+    "solution": "7.(a) Oblegation<br />'Obligation' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 224
+  },
+  {
+    "question": "8. Select the INCORRECTLY spelt word in the given sentence. <br />Applicants who are younger and prettier than you will continue appliying. ",
+    "options": [
+      " younger ",
+      " applicants ",
+      " prettier ",
+      " aapliying"
+    ],
+    "correct_option_id": 3,
+    "solution": "8.(d) appliying<br />'Applying' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 225
+  },
+  {
+    "question": "9. Select the INCORRECTLY spelt word.<br />A) Exaggerate<br />B) Accommodate<br />C) Exuberant<br />D) Perservere ",
+    "options": [
+      " C ",
+      " A ",
+      " B ",
+      " D"
+    ],
+    "correct_option_id": 3,
+    "solution": "9.(d) D- perservere<br />'Persevere' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 226
+  },
+  {
+    "question": "10. Select the correctly spelt word to fill in the blank.<br />We ______ to follow the traffic rules. ",
+    "options": [
+      " aut ",
+      "  aught",
+      "  ought",
+      " oght"
+    ],
+    "correct_option_id": 2,
+    "solution": "10.(c) ought<br />'Ought' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 227
+  },
+  {
+    "question": "11. Select the correctly spelt word to fill in the blank meaningfully..<br />The ______ on the wall was beautifully painted. ",
+    "options": [
+      " pictur ",
+      " picture ",
+      " picter",
+      " pickchure"
+    ],
+    "correct_option_id": 1,
+    "solution": "11.(b) picture<br />'Picture' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 228
+  },
+  {
+    "question": "12. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Synchronous ",
+      " Inadvertant",
+      " Effeminate ",
+      " Blatant"
+    ],
+    "correct_option_id": 1,
+    "solution": "12.(b) Inadvertant<br />'Inadvertent' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 229
+  },
+  {
+    "question": "13.  Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Awful ",
+      " Awsome ",
+      " Bitter",
+      " Barren"
+    ],
+    "correct_option_id": 1,
+    "solution": "13.(b) Awsome<br />'Awesome' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 230
+  },
+  {
+    "question": "<p>14. Select the option that correctly rectifies the underlined spelling error.<br>He received an <span style=\"text-decoration: underline;\">honarary</span> degree for his contributions.</p>",
+    "options": [
+      " Honorary",
+      " Honnary",
+      " Honnaary",
+      " Honnorary"
+    ],
+    "correct_option_id": 0,
+    "solution": "14.(a) Honorary<br />'Honorary' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 231
+  },
+  {
+    "question": "15. Select the INCORRECTLY spelt word. ",
+    "options": [
+      " Occurred",
+      " Questionnaire",
+      " Peculiar",
+      " Mischievious"
+    ],
+    "correct_option_id": 3,
+    "solution": "15.(d) Mischievious<br />'Mischievous' is the correct spelling.",
+    "pos_mark": 3,
+    "negative_mark": 1,
+    "question_index": 232
+  }
+];
+                this.curQ = 0;
+                this.ans = new Array(this.qs.length).fill(null);
+                this.startT = Date.now();
+                this.timeLeft = this.qs.length * 40;
+                this.maxScore = this.qs.reduce((sum, q) => sum + (q.pos_mark !== undefined ? q.pos_mark : 1), 0);
+                this.sub = false;
+                this.eng = true;
+                this.timer = null;
+                this.initEls();
+                this.init();
+                this.validateData(); // Add data validation
+            }
+            
+            // Add data validation method
+            validateData() {
+                console.log('Validating question data...');
+                this.qs.forEach((q, idx) => {
+                    if (q.correct_option_id !== undefined) {
+                        console.log(`Q${idx + 1}: correct_option_id = ${q.correct_option_id}, options count = ${q.options ? q.options.length : 0}`);
+                        
+                        // Ensure correct_option_id is within valid range
+                        if (q.options && (q.correct_option_id < 0 || q.correct_option_id >= q.options.length)) {
+                            console.warn(`Q${idx + 1}: Invalid correct_option_id ${q.correct_option_id} for ${q.options.length} options`);
+                        }
+                    }
+                });
+            }
+            
+            initEls() {
+                this.els = {
+                    qInfo: document.getElementById('qInfo'),
+                    progTxt: document.getElementById('progTxt'),
+                    ansCnt: document.getElementById('ansCnt'),
+                    timer: document.getElementById('timer'),
+                    qTxt: document.getElementById('qTxt'),
+                    compSec: document.getElementById('compSec'),
+                    compCont: document.getElementById('compCont'),
+                    opts: document.getElementById('opts'),
+                    sol: document.getElementById('sol'),
+                    solCont: document.getElementById('solCont'),
+                    qGrid: document.getElementById('qGrid'),
+                    panel: document.getElementById('panel'),
+                    modalOver: document.getElementById('modalOver'),
+                    scoreDisp: document.getElementById('scoreDisp'),
+                    corrStat: document.getElementById('corrStat'),
+                    incStat: document.getElementById('incStat'),
+                    unaStat: document.getElementById('unaStat'),
+                    timeStat: document.getElementById('timeStat')
+                };
+            }
+            
+            init() {
+                this.createGrid();
+                this.startTimer();
+                this.loadQ(0);
+                this.setupEvents();
+            }
+            
+            setupEvents() {
+                document.getElementById('menuBtn').onclick = () => this.togglePanel();
+                document.getElementById('subBtn').onclick = () => this.confirmSub();
+                document.getElementById('prevBtn').onclick = () => this.nav(-1);
+                document.getElementById('nextBtn').onclick = () => this.nav(1);
+                document.getElementById('panelClose').onclick = () => this.closePanel();
+                document.getElementById('closeModal').onclick = () => this.closeModal();
+                document.getElementById('revBtn').onclick = () => this.review();
+            }
+            
+            extractTxt(html, isEng) {
+                if (!html) return '';
+                const cls = isEng ? 'eqt' : 'hqt';
+                const match = html.match(new RegExp(`<span class="${cls}"[^>]*>(.*?)</span>`, 's'));
+                return match ? match[1] : html;
+            }
+            
+            createGrid() {
+                this.els.qGrid.innerHTML = '';
+                this.qs.forEach((_, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'q-num';
+                    div.textContent = i + 1;
+                    div.onclick = () => this.goToQ(i);
+                    this.els.qGrid.appendChild(div);
+                });
+            }
+            
+            loadQ(idx) {
+                this.curQ = idx;
+                const q = this.qs[idx];
+                
+                this.els.qInfo.textContent = `Q${idx + 1}/${this.qs.length}`;
+                this.els.progTxt.textContent = `${idx + 1} of ${this.qs.length}`;
+                this.updateAnsCnt();
+                this.updateNav();
+                this.updateGrid();
+                
+                if (q.comp) {
+                    this.els.compSec.style.display = 'block';
+                    this.els.compCont.innerHTML = q.comp;
+                } else {
+                    this.els.compSec.style.display = 'none';
+                }
+                
+                this.els.qTxt.innerHTML = this.extractTxt(q.question, this.eng);
+                this.loadOpts(q, idx);
+                
+                if (this.sub && q.solution) {
+                    this.els.solCont.innerHTML = q.solution;
+                    this.els.sol.classList.add('show');
+                } else {
+                    this.els.sol.classList.remove('show');
+                }
+            }
+            
+            loadOpts(q, qIdx) {
+                this.els.opts.innerHTML = '';
+                const userAnswer = this.ans[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                console.log(`Loading Q${qIdx + 1} options:`, {
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer,
+                    submitted: this.sub,
+                    optionsCount: q.options ? q.options.length : 0
+                });
+                
+                if (!q.options || !Array.isArray(q.options)) {
+                    console.error(`Q${qIdx + 1}: No valid options array`);
+                    return;
+                }
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let cls = 'opt';
+                    
+                    // Add submitted class if test is submitted
+                    if (this.sub) {
+                        cls += ' submitted';
+                    }
+                    
+                    // User's selection
+                    if (userAnswer === i) {
+                        cls += ' sel';
+                        console.log(`Q${qIdx + 1}: User selected option ${i}`);
+                    }
+                    
+                    // After submission - show correct/wrong highlighting
+                    if (this.sub && correctAnswer !== undefined && correctAnswer !== null) {
+                        if (i === correctAnswer) {
+                            // This is the correct answer - always highlight as correct
+                            cls += ' correct';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as correct (is correct answer)`);
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            // User selected this option but it's wrong
+                            cls += ' wrong';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as wrong (user selected but incorrect)`);
+                        }
+                    }
+                    
+                    div.className = cls;
+                    div.innerHTML = `
+                        <div class="opt-radio"></div>
+                        <div class="opt-txt">${this.extractTxt(opt, this.eng)}</div>
+                    `;
+                    
+                    // Only allow clicking if test is not submitted
+                    if (!this.sub) {
+                        div.onclick = () => this.selOpt(i, qIdx);
+                    }
+                    
+                    this.els.opts.appendChild(div);
+                });
+            }
+            
+            selOpt(optIdx, qIdx) {
+                if (this.sub) return;
+                this.ans[qIdx] = this.ans[qIdx] === optIdx ? null : optIdx;
+                console.log(`Q${qIdx + 1}: Selected option ${optIdx}, answer array:`, this.ans[qIdx]);
+                this.loadOpts(this.qs[qIdx], qIdx);
+                this.updateAnsCnt();
+                this.updateGrid();
+            }
+            
+            nav(dir) {
+                const newIdx = this.curQ + dir;
+                if (newIdx >= 0 && newIdx < this.qs.length) {
+                    this.loadQ(newIdx);
+                }
+            }
+            
+            goToQ(idx) {
+                this.loadQ(idx);
+                this.closePanel();
+            }
+            
+            updateNav() {
+                document.getElementById('prevBtn').disabled = this.curQ === 0;
+                document.getElementById('nextBtn').disabled = this.curQ === this.qs.length - 1;
+            }
+            
+            updateGrid() {
+                const nums = this.els.qGrid.querySelectorAll('.q-num');
+                nums.forEach((el, i) => {
+                    el.className = 'q-num';
+                    if (i === this.curQ) {
+                        el.classList.add('cur');
+                    } else if (this.ans[i] !== null) {
+                        // Check if it's correct or wrong after submission
+                        if (this.sub && this.qs[i].correct_option_id !== undefined && this.qs[i].correct_option_id !== null) {
+                            if (this.ans[i] === this.qs[i].correct_option_id) {
+                                el.classList.add('ans'); // Correct answer
+                            } else {
+                                el.classList.add('wrong'); // Wrong answer
+                            }
+                        } else {
+                            el.classList.add('ans'); // Just answered (before submission)
+                        }
+                    }
+                });
+            }
+            
+            updateAnsCnt() {
+                const cnt = this.ans.filter(a => a !== null).length;
+                this.els.ansCnt.textContent = cnt;
+            }
+            
+            setLang(eng) {
+                this.eng = eng;
+                document.getElementById('engBtn').classList.toggle('active', eng);
+                document.getElementById('hinBtn').classList.toggle('active', !eng);
+                this.loadQ(this.curQ);
+            }
+            
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.subTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.timeLeft / 60);
+                    const secs = this.timeLeft % 60;
+                    this.els.timer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            stopTimer() {
+                if (this.timer) clearInterval(this.timer);
+            }
+            
+            togglePanel() {
+                this.els.panel.classList.toggle('open');
+            }
+            
+            closePanel() {
+                this.els.panel.classList.remove('open');
+            }
+            
+            confirmSub() {
+                const unanswered = this.ans.filter(a => a === null).length;
+                const msg = unanswered > 0 ? `${unanswered} questions unanswered. Submit anyway?` : 'Submit test?';
+                if (confirm(msg)) this.subTest();
+            }
+            
+            subTest() {
+                if (this.sub) return;
+                console.log('Submitting test. Final answers:', this.ans);
+                this.sub = true;
+                this.stopTimer();
+                document.getElementById('subBtn').style.display = 'none';
+                const results = this.calcResults();
+                this.showResults(results);
+                // Reload current question to show correct/incorrect highlighting
+                this.loadQ(this.curQ);
+                this.updateGrid();
+            }
+            
+            calcResults() {
+                const timeTaken = Math.round((Date.now() - this.startT) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                console.log('Calculating results...');
+                this.qs.forEach((q, i) => {
+                    const userAns = this.ans[i];
+                    const correctAns = q.correct_option_id;
+                    
+                    console.log(`Q${i + 1}: user=${userAns}, correct=${correctAns}`);
+                    
+                    if (userAns === null || userAns === undefined) {
+                        unattempted++;
+                    } else if (correctAns !== undefined && correctAns !== null && userAns === correctAns) {
+                        correct++;
+                        const pm = q.pos_mark !== undefined ? q.pos_mark : 1;
+                        score += pm;
+                        console.log(`Q${i + 1}: CORRECT (+${pm} marks)`);
+                    } else {
+                        incorrect++;
+                        const nm = q.negative_mark !== undefined ? q.negative_mark : 0;
+                        score -= nm;
+                        console.log(`Q${i + 1}: INCORRECT (-${nm} marks)`);
+                    }
+                });
+                
+                const results = { score: Math.max(0, score), correct, incorrect, unattempted, timeTaken };
+                console.log('Final results:', results);
+                return results;
+            }
+            
+            showResults(results) {
+                this.els.scoreDisp.textContent = `${results.score}/${this.maxScore}`;
+                this.els.corrStat.textContent = results.correct;
+                this.els.incStat.textContent = results.incorrect;
+                this.els.unaStat.textContent = results.unattempted;
+                this.els.timeStat.textContent = results.timeTaken;
+                this.els.modalOver.classList.add('show');
+            }
+            
+            closeModal() {
+                this.els.modalOver.classList.remove('show');
+            }
+            
+            review() {
+                this.closeModal();
+                this.loadQ(0);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => new TestApp());
+    </script>
+</body>
+</html>

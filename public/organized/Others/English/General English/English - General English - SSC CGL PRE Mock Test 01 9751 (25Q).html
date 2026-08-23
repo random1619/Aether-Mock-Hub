@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - em</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> em</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">9751</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">25</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">25</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">15 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+1 / -0.25</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">em</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">15:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 9751</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 25</div>
+                                <div class="question-marks" id="questionMarks">Marks: 1</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 25</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/25</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p><strong>Choose the correct one-word substitute for:</strong><br />\r\nA person who believes that everything in life is determined by fate</p>",
+    "comp": "",
+    "options": [
+      "Fatalist",
+      "Realist",
+      "Idealist",
+      "Pragmatist"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>A) Fatalist</strong> (noun) &ndash; a person who believes that events in life are predetermined by fate भाग्यवादी / नियतिवादी</p>\r\n\r\n<p>&bull; <strong>Realist</strong> (noun) &ndash; a person who accepts life as it is यथार्थवादी</p>\r\n\r\n<p>&bull; <strong>Idealist</strong> (noun) &ndash; a person guided by ideals आदर्शवादी</p>\r\n\r\n<p>&bull; <strong>Pragmatist</strong> (noun) &ndash; a person guided by practical considerations व्यवहारवादी</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Identify the part of the sentence that contains a grammatical error.</p>\r\n\r\n<p><strong>A. The main affect B. of the new policy C. will be an increase D. in productivity.</strong></p>",
+    "comp": "",
+    "options": [
+      "The main affect",
+      "of the new policy",
+      "will be an increase",
+      "in productivity."
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>A) affect&#39;</strong> के बदले <strong>&#39;effect&#39;</strong> का प्रयोग होगा क्योंकि यहाँ अर्थ <strong>result / outcome (परिणाम)</strong> का है और इस अर्थ में <strong>effect (noun)</strong> आता है, जबकि <strong>affect</strong> सामान्यतः <strong>verb (प्रभाव डालना)</strong> के रूप में प्रयोग होता है; जैसे&mdash;<br />\r\nThe <strong>effect</strong> of the policy was remarkable.</p>\r\n\r\n<p>&bull; <strong>&#39;effect&#39;</strong> will be used instead of <strong>&#39;affect&#39;</strong> because the meaning here is <strong>result/outcome</strong>, and in this meaning <strong>effect</strong> is the correct <strong>noun</strong>, whereas <strong>affect</strong> is mainly used as a <strong>verb</strong>; Like&mdash;<br />\r\nThe <strong>effect</strong> of the policy was remarkable.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Fill in the blank with the most appropriate conjunction:</strong><br />\r\nHe neither attended the seminar _____ submitted his report on time.</p>",
+    "comp": "",
+    "options": [
+      "but also",
+      "or",
+      "nor",
+      "and"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>C) <strong>&lsquo;nor&rsquo; का प्रयोग होगा</strong> क्योंकि entire structure में &lsquo;neither &hellip; nor&rsquo; pairing बनती है, जो दो negative alternatives को जोड़ती है। वाक्य में दो कार्य &mdash; seminar attend करना और report submit करना &mdash; दोनों के न होने की बात कही जा रही है, इसलिए &lsquo;nor&rsquo; सबसे उचित conjunction है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;nor&rsquo; should be used</strong> because it correctly completes the correlative conjunction pair &lsquo;neither &hellip; nor&rsquo;, which is used to link two negative ideas. The sentence expresses that he did not do either of the two actions (attending the seminar or submitting the report), making &lsquo;nor&rsquo; the most appropriate choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Select the most appropriate <strong>antonym</strong> of the word:&nbsp;<strong>Gregarious</strong></p>",
+    "comp": "",
+    "options": [
+      "Sociable",
+      "Solitary",
+      "Friendly",
+      "Outgoing"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>B)&nbsp;&nbsp;<strong>Gregarious</strong> (adjective) &ndash; Fond of company; sociable; outgoing; friendly; convivial. <strong>मिलनसार / संग-साथ पसंद करने वाला</strong></p>\r\n\r\n<p><strong>Antonym:</strong> <strong>Solitary</strong> (adjective) &ndash; Preferring to be alone; unsociable; withdrawn. <strong>एकांतप्रिय / अकेला रहने वाला</strong></p>\r\n\r\n<p>&bull; <strong>Sociable</strong> (adjective) &ndash; Enjoying the company of others. <strong>मिलनसार</strong><br />\r\n&bull; <strong>Friendly</strong> (adjective) &ndash; Kind, pleasant, warm. <strong>मित्रतापूर्ण</strong><br />\r\n&bull; <strong>Outgoing</strong> (adjective) &ndash; Extroverted, social, cheerful. <strong>हंसमुख / मेलजोल पसंद करने वाला</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Select the most appropriate <strong>antonym</strong> of the word:&nbsp;<strong>Ineffable</strong></p>",
+    "comp": "",
+    "options": [
+      "Expressible",
+      "Inarticulate",
+      "Unfathomable",
+      "Indescribable"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>A) Ineffable</strong> (adjective) &ndash; Too great to be expressed in words, indescribable <strong>अकथनीय, अवर्णनीय</strong></p>\r\n\r\n<p><strong>Antonym: Expressible</strong> (adjective) &ndash; Able to be stated, articulated, communicated, conveyed, described <strong>व्यक्त करने योग्य</strong></p>\r\n\r\n<p><strong>&nbsp;</strong>&bull; <strong>Inarticulate</strong> (adjective) &ndash; Unable to express clearly <strong>अस्पष्ट बोलने वाला</strong><br />\r\n&bull; <strong>Unfathomable</strong> (adjective) &ndash; Incomprehensible, deep, immeasurable <strong>अगम्य, अपार</strong><br />\r\n&bull; <strong>Indescribable</strong> (adjective) &ndash; Too extraordinary to describe <strong>वर्णनातीत</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>&nbsp;Identify the part of the sentence that contains a grammatical error.</strong></p>\r\n\r\n<p><strong>A. The new manager B. is responsible of C the entire marketing D. campaign.</strong></p>",
+    "comp": "",
+    "options": [
+      "The new manager",
+      "is responsible of",
+      "the entire marketing",
+      "campaign."
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B)&nbsp; &#39;is responsible of&#39;</strong> के बदले <strong>&#39;is responsible for&#39;</strong> का प्रयोग होगा क्योंकि adjective <strong>responsible</strong> के बाद सही preposition <strong>for</strong> लगता है; जैसे&mdash; She is <strong>responsible for</strong> the project.</p>\r\n\r\n<p>&bull; <strong>&#39;is responsible for&#39;</strong> will be used instead of <strong>&#39;is responsible of&#39;</strong> because the correct preposition that follows <strong>responsible</strong> is <strong>for</strong>; Like&mdash; She is <strong>responsible for</strong> the project.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>&nbsp;Rearrange the following sentences to form a meaningful and grammatically correct paragraph:</strong><br />\r\nP. She used her little trowel to loosen the rich, black dirt.<br />\r\nQ. She made a shallow hole and carefully lowered a little seed into it.<br />\r\nR. She would now watch for the emergence of the first small sprout.<br />\r\nS. The ground was saturated by a soft stream of water, signifying the possibility of fresh life.</p>",
+    "comp": "",
+    "options": [
+      "P, Q, S, R",
+      "R, Q, S, P",
+      "Q, P, S, R",
+      "S, Q, P, R"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>A) P, Q, S, R</strong></p>\r\n\r\n<p>She used her little trowel to loosen the rich, black dirt.She made a shallow hole and carefully lowered a little seed into it.The ground was saturated by a soft stream of water, signifying the possibility of fresh life.She would now watch for the emergence of the first small sprout.</p>\r\n\r\n<p>Explanation&nbsp;</p>\r\n\r\n<p>Sentence P सबसे पहले आता है because soil को loosen करना planting का पहला step होता है। यहाँ used और loosen verbs action की शुरुआत दिखाते हैं, इसलिए यह paragraph की opening बनता है।</p>\r\n\r\n<p>Sentence Q next आता है because मिट्टी ढीली करने के बाद ही hole बनाया जाता है और seed डाला जाता है। यहाँ&nbsp; action logically P के बाद follow करता है।</p>\r\n\r\n<p>Sentence S इसके बाद आता है क्योंकि seed डालने के बाद जमीन को water किया जाता है। was saturated condition बताता है और signifying water से new life की possibility बनती है।</p>\r\n\r\n<p>Sentence R last आता है because sprout को watch करना future action है। would now time connector है जो बताता है कि planting और watering के बाद next step waiting है।</p>\r\n\r\n<p>Sentence P comes first because loosening the soil is the initial step before planting. The verbs used and loosen show the beginning of the action.</p>\r\n\r\n<p>Sentence Q comes next because after the soil is loosened, a hole is made and the seed is placed.&nbsp;</p>\r\n\r\n<p>Sentence S follows because watering the soil happens after planting. The phrase was saturated describes the condition of the ground, and signifying acts as a cause-effect connector, showing the possibility of new life.</p>\r\n\r\n<p>Sentence R comes last because watching for a sprout is a future action. The words would now work as time connectors, indicating the final stage of the process.</p>\r\n\r\n<p>Therefore, the correct order is P &rarr; Q &rarr; S &rarr; R.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Choose the correctly spelt word:</p>",
+    "comp": "",
+    "options": [
+      "Delusion",
+      "Dilusion",
+      "Delussion",
+      "Delusian"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>A) The correctly spelt word is <strong>Delusion</strong> which means &ldquo;a false belief or impression&rdquo; भ्रम / भ्रमित धारणा।</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Select the most appropriate synonym of the word:&nbsp;<strong>Nadir</strong></p>",
+    "comp": "",
+    "options": [
+      "Apex",
+      "Zenith",
+      "Peak",
+      "Low point"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>D)&nbsp;<strong>Nadir (noun)</strong> &ndash; <strong>lowest point</strong>, depth, rock-bottom, base, pit. <strong>सबसे निचला बिंदु</strong></p>\r\n\r\n<p><strong>Synonym:</strong> <strong>Low point (noun)</strong> &ndash; lowest stage or condition, bottom level. <strong>निम्नतम स्तर</strong></p>\r\n\r\n<p>&bull; <strong>Apex (noun)</strong> &ndash; top, summit, highest point. <strong>शिखर</strong><br />\r\n&bull; <strong>Zenith (noun)</strong> &ndash; highest point, climax, culmination. <strong>चरम</strong><br />\r\n&bull; <strong>Peak (noun)</strong> &ndash; summit, top, height. <strong>चोटी</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Fill in the blank with the most appropriate idiom:</strong><br />\r\nDespite numerous setbacks, she remained optimistic and continued to ______.</p>",
+    "comp": "",
+    "options": [
+      "turn over a new leaf",
+      "keep her nose to the grindstone",
+      "throw caution to the wind",
+      "pull the plug"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) keep her nose to the grindstone</strong> &ndash; to continue working hard despite difficulties कठिनाइयों के बावजूद मेहनत जारी रखना</p>\r\n\r\n<p>&bull; <strong>turn over a new leaf</strong> &ndash; to start behaving in a better way नया सुधारात्मक आरंभ करना</p>\r\n\r\n<p>&bull; <strong>throw caution to the wind</strong> &ndash; to act without worrying about risk जोखिम की परवाह न करना</p>\r\n\r\n<p>&bull; <strong>pull the plug</strong> &ndash; to stop or discontinue something किसी काम को बंद कर देना</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>&nbsp;Read the following passage and answer the questions based on it:</strong></p>\r\n\r\n<p>Online purchasing, which combines unmatched ease with a distinct set of disadvantages, has completely changed how consumers behave. Accessibility is its main benefit; customers may explore and buy things from almost anywhere at any time, and there is frequently a greater selection than in physical stores. Important lures include competitive pricing, made possible by internet retailers&#39; reduced overhead, and the simplicity of comparing prices from several providers. However, there are significant drawbacks to online shopping&#39;s virtual nature. Delivery-related discontent may result from the inability to personally inspect things before purchase. Concerns over shipping delays, unstated expenses, and the effects of packaging and transportation on the environment are becoming more widespread. Additionally, the individualised customer service experience may be weakened by a lack of human interaction.</p>\r\n\r\n<p>What is the primary advantage of online purchasing according to the text?</p>",
+    "comp": "<p>What is the primary advantage of online purchasing according to the text?</p>",
+    "options": [
+      "It allows for in-person inspection of products",
+      "It provides easy access to a wider selection of items from anywhere at any time",
+      "It offers higher prices than physical stores",
+      "It eliminates the need for shipping"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) It provides easy access to a wider selection of items from anywhere at any time</strong></p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p><strong>&lsquo;Easy access to a wider selection of items from anywhere at any time&rsquo; का प्रयोग होगा</strong> क्योंकि passage में online purchasing की मुख्य विशेषता accessibility बताई गई है, जहाँ लोग किसी भी स्थान और समय पर अधिक विकल्पों के साथ सामान खरीद सकते हैं। इसलिए यह विकल्प संदर्भानुसार सबसे उपयुक्त है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;Easy access to a wider selection of items from anywhere at any time&rsquo; should be used</strong> because the text highlights accessibility as the main advantage, noting that consumers can browse and purchase products anytime and from almost anywhere, with more variety than physical stores. Thus, this is the most accurate choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Read the following passage and answer the questions based on it:</strong></p>\r\n\r\n<p>Online purchasing, which combines unmatched ease with a distinct set of disadvantages, has completely changed how consumers behave. Accessibility is its main benefit; customers may explore and buy things from almost anywhere at any time, and there is frequently a greater selection than in physical stores. Important lures include competitive pricing, made possible by internet retailers&#39; reduced overhead, and the simplicity of comparing prices from several providers. However, there are significant drawbacks to online shopping&#39;s virtual nature. Delivery-related discontent may result from the inability to personally inspect things before purchase. Concerns over shipping delays, unstated expenses, and the effects of packaging and transportation on the environment are becoming more widespread. Additionally, the individualised customer service experience may be weakened by a lack of human interaction.</p>\r\n\r\n<p>What is one of the key benefits of online shopping in terms of pricing?</p>",
+    "comp": "<p>What is one of the key benefits of online shopping in terms of pricing?</p>",
+    "options": [
+      "Higher prices due to store overhead costs",
+      "Competitive pricing due to lower overhead costs for online retailers",
+      "Fixed prices with no possibility of comparison",
+      "Prices that remain constant across all platforms"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) Competitive pricing due to lower overhead costs for online retailers</strong></p>\r\n\r\n<p><strong>&lsquo;Competitive pricing due to lower overhead costs for online retailers&rsquo; का प्रयोग होगा</strong> क्योंकि passage में बताया गया है कि online retailers के पास कम overhead expenses होते हैं, जिसके कारण वे competitive prices प्रदान कर पाते हैं। इसलिए यह विकल्प संदर्भ के अनुसार सबसे उपयुक्त है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;Competitive pricing due to lower overhead costs for online retailers&rsquo; should be used</strong> because the text states that reduced overhead enables online sellers to offer more competitive prices, making this the most accurate choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Read the following passage and answer the questions based on it:</strong></p>\r\n\r\n<p>Online purchasing, which combines unmatched ease with a distinct set of disadvantages, has completely changed how consumers behave. Accessibility is its main benefit; customers may explore and buy things from almost anywhere at any time, and there is frequently a greater selection than in physical stores. Important lures include competitive pricing, made possible by internet retailers&#39; reduced overhead, and the simplicity of comparing prices from several providers. However, there are significant drawbacks to online shopping&#39;s virtual nature. Delivery-related discontent may result from the inability to personally inspect things before purchase. Concerns over shipping delays, unstated expenses, and the effects of packaging and transportation on the environment are becoming more widespread. Additionally, the individualised customer service experience may be weakened by a lack of human interaction.</p>\r\n\r\n<p>What is a significant drawback of online shopping mentioned in the text?</p>",
+    "comp": "<p>What is a significant drawback of online shopping mentioned in the text?</p>",
+    "options": [
+      "Lack of variety in products",
+      "The inability to inspect products before purchasing",
+      "Higher prices of shipping",
+      "Limited access to the internet"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) The inability to inspect products before purchasing</strong></p>\r\n\r\n<p><strong>&lsquo;The inability to inspect products before purchasing&rsquo; का प्रयोग होगा</strong> क्योंकि passage में स्पष्ट रूप से बताया गया है कि online shopping की virtual nature के कारण ग्राहक वस्तुओं को हाथ से जांच नहीं पाते, जिससे dissatisfaction हो सकती है। इसलिए यह विकल्प संदर्भानुसार सबसे उपयुक्त है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;The inability to inspect products before purchasing&rsquo; should be used</strong> because the text notes that the virtual nature of online shopping prevents customers from physically examining items, which can lead to dissatisfaction. Thus, this is the most accurate choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Read the following passage and answer the questions based on it:</strong></p>\r\n\r\n<p>Online purchasing, which combines unmatched ease with a distinct set of disadvantages, has completely changed how consumers behave. Accessibility is its main benefit; customers may explore and buy things from almost anywhere at any time, and there is frequently a greater selection than in physical stores. Important lures include competitive pricing, made possible by internet retailers&#39; reduced overhead, and the simplicity of comparing prices from several providers. However, there are significant drawbacks to online shopping&#39;s virtual nature. Delivery-related discontent may result from the inability to personally inspect things before purchase. Concerns over shipping delays, unstated expenses, and the effects of packaging and transportation on the environment are becoming more widespread. Additionally, the individualised customer service experience may be weakened by a lack of human interaction.</p>\r\n\r\n<p>What are some growing concerns related to the environmental impact of online shopping?</p>",
+    "comp": "<p>What are some growing concerns related to the environmental impact of online shopping?</p>",
+    "options": [
+      "Increased store visits",
+      "Concerns over shipping delays",
+      "Higher fuel consumption from physical stores",
+      "Limited product availability"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) Concerns over shipping delays</strong></p>\r\n\r\n<p><strong>Concerns over shipping delays&rsquo; का प्रयोग होगा</strong> क्योंकि passage में online shopping के virtual nature से जुड़े कई issues बताए गए हैं, जिनमें shipping delays और packaging व transportation से होने वाले environmental effects शामिल हैं। इसलिए यह विकल्प संदर्भ के अनुसार सबसे उपयुक्त है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;Concerns over shipping delays&rsquo; should be used</strong> because the text mentions growing concerns linked to delivery issues along with environmental impacts caused by packaging and transportation. Thus, this is the most contextually suitable choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Read the following passage and answer the questions based on it:</strong></p>\r\n\r\n<p>Online purchasing, which combines unmatched ease with a distinct set of disadvantages, has completely changed how consumers behave. Accessibility is its main benefit; customers may explore and buy things from almost anywhere at any time, and there is frequently a greater selection than in physical stores. Important lures include competitive pricing, made possible by internet retailers&#39; reduced overhead, and the simplicity of comparing prices from several providers. However, there are significant drawbacks to online shopping&#39;s virtual nature. Delivery-related discontent may result from the inability to personally inspect things before purchase. Concerns over shipping delays, unstated expenses, and the effects of packaging and transportation on the environment are becoming more widespread. Additionally, the individualised customer service experience may be weakened by a lack of human interaction.</p>\r\n\r\n<p>What aspect of the customer experience may be weakened by online shopping?</p>",
+    "comp": "<p>What aspect of the customer experience may be weakened by online shopping?</p>",
+    "options": [
+      "The ability to compare prices easily",
+      "Personalized customer service due to lack of human interaction",
+      "The variety of products available",
+      "Convenience of purchasing from anywhere"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B) Personalized customer service due to lack of human interaction</strong></p>\r\n\r\n<p><strong>&lsquo;Personalized customer service due to lack of human interaction&rsquo; का प्रयोग होगा</strong> क्योंकि passage में बताया गया है कि online shopping में human interaction कम हो जाने से individualized customer service कमजोर पड़ सकती है। इसलिए यह विकल्प संदर्भानुसार सबसे उपयुक्त है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;Personalized customer service due to lack of human interaction&rsquo; should be used</strong> because the text states that the lack of human interaction may weaken the individualized customer service experience. Thus, this is the most accurate and context-appropriate choice.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Choose the correctly spelt word:</p>",
+    "comp": "",
+    "options": [
+      "Millenium",
+      "Millennium",
+      "Millenniam",
+      "Milenium"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>B) The correctly spelt word is <strong>Millennium</strong> which means &ldquo;a period of one thousand years&rdquo; एक हज़ार वर्षों की अवधि।</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Choose the correct one-word substitute for:</strong><br />\r\nThe art of beautiful handwriting.</p>",
+    "comp": "",
+    "options": [
+      "Calligraphy",
+      "Orthography",
+      "Lexicography",
+      "Etymolgy"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>A) Calligraphy</strong> (noun) &ndash; the art of beautiful handwriting सुन्दर लेखन कला</p>\r\n\r\n<p>&bull; <strong>Orthography</strong> (noun) &ndash; correct spelling प्रणाली सही वर्तनी प्रणाली</p>\r\n\r\n<p>&bull; <strong>Lexicography</strong> (noun) &ndash; the practice of compiling dictionaries शब्दकोश निर्माण कला</p>\r\n\r\n<p>&bull; <strong>Etymology</strong> (noun) &ndash; the study of word origins शब्द&ndash;व्युत्पत्ति विज्ञान</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Select the most appropriate <em><strong>synonym</strong></em> of the word:&nbsp;<strong>Glib</strong></p>",
+    "comp": "",
+    "options": [
+      "Sincere",
+      "Forthright",
+      "Articulate",
+      "Dispassionate"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><strong>C) Glib</strong> (adjective) &ndash; Fluent but often insincere or superficial in speech <strong>चालाकी से या आसानी से बोलने वाला (कभी-कभी असत्य/ऊपरी)</strong></p>\r\n\r\n<p><strong>Synonym: Articulate</strong> (adjective) &ndash; Fluent, eloquent, clear-spoken, expressive, well-spoken <strong>स्पष्ट बोलने वाला / प्रभावशाली</strong></p>\r\n\r\n<p>&bull; <strong>Sincere</strong> (adjective) &ndash; Genuine, honest, heartfelt <strong>ईमानदार, सच्चा</strong><br />\r\n&bull; <strong>Forthright</strong> (adjective) &ndash; Direct, straightforward, candid <strong>स्पष्टवादी</strong><br />\r\n&bull; <strong>Dispassionate</strong> (adjective) &ndash; Unemotional, impartial, unbiased <strong>निर्पेक्ष, भावनारहित</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Change the following sentence into the Active form.</strong><br />\r\n<em>Let the documents be submitted to the head of the department by the end of the week.</em></p>",
+    "comp": "",
+    "options": [
+      "You should submit the documents to the head of the department by the end of the week.",
+      "Submit the documents to the head of the department by the end of the week.",
+      "The documents will be submitted to the head of the department by the end of the week.",
+      "Let the head of the department submit the documents by the end of the week."
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B)</strong> <strong>Submit the documents to the head of the department by the end of the week.</strong></p>\r\n\r\n<p><strong>Active से Passive Voice में बदलने के लिए</strong>, Active वाक्य का <strong>Object Passive वाक्य का Subject</strong> बन जाता है और Verb को Tense के अनुसार Passive रूप में बदला जाता है। Passive वाक्य में &ldquo;Let the documents be submitted&hellip;&rdquo; के रूप में <strong>documents</strong> Object है और Verb Passive Imperative रूप &ldquo;be submitted&rdquo; है। इसे Active Imperative में बदलने पर Verb का रूप <strong>Submit</strong> (Imperative Active) हो जाता है और Object <strong>documents</strong> वही रहता है, जबकि शेष वाक्य संरचना समान रहती है। अंत में &ldquo;by the end of the week&rdquo; समय दर्शाता है और वहीं रहता है।</p>\r\n\r\n<p><strong>To change a sentence from Passive to Active Voice</strong>, the object of the passive sentence remains the object in the active structure if it is an imperative sentence. The passive form &ldquo;be submitted&rdquo; (Imperative Passive) changes to &ldquo;Submit&rdquo; (Imperative Active). The time expression &ldquo;by the end of the week&rdquo; is retained at the end of the sentence.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Select the option that expresses the given sentence in indirect voice.</strong><br />\r\n<em>The student said, &quot;I have been practicing for the competition for months, but I am still nervous, as the other competitors are very skilled.&quot;</em></p>",
+    "comp": "",
+    "options": [
+      "The student said that he has been practicing for the competition for months, but he is still nervous, as the other competitors are very skilled.",
+      "The student said that he had been practicing for the competition for months, but he was still nervous, as the other competitors were very skilled.",
+      "The student said that he had been practicing for the competition for months, but he is still nervous, as the other competitors are very skilled.",
+      "The student said that he was practicing for the competition for months, but he was still nervous, as the other competitors were very skilled."
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B)</strong> The student said that he had been practicing for the competition for months, but he was still nervous, as the other competitors were very skilled.</p>\r\n\r\n<p><strong>Direct से Indirect Speech</strong> में बदलते समय Reporting Verb <strong>said</strong> Past में है, इसलिए Reported Speech का Tense भी <strong>Backshift</strong> होकर बदलता है। Direct वाक्य में &ldquo;I have been practicing&hellip;&rdquo; Present Perfect Continuous है, जो Indirect में <strong>Past Perfect Continuous (had been practicing)</strong> में बदलता है। इसी प्रकार &ldquo;I am still nervous&rdquo; में <strong>am</strong> Past में <strong>was</strong> बनता है और &ldquo;competitors are very skilled&rdquo; में <strong>are</strong> Past में <strong>were</strong> हो जाता है। Pronoun &ldquo;I&rdquo; संदर्भ के अनुसार <strong>he</strong> में परिवर्तित होता है।</p>\r\n\r\n<p><strong>To convert from Direct to Indirect Speech</strong>, because the reporting verb is in past form (said), present perfect continuous changes to past perfect continuous, present continuous changes to past continuous or simple past depending on context, and present verb &ldquo;are&rdquo; changes to &ldquo;were&rdquo;. The pronoun &ldquo;I&rdquo; changes to &ldquo;he&rdquo; to maintain consistency.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Which of the following sentences uses the word &quot;park&quot; with the same meaning as in the following sentence?</strong><br />\r\n<em>&quot;We decided to spend the afternoon playing in the <strong>park</strong>.&quot;</em></p>",
+    "comp": "",
+    "options": [
+      "The old car was difficult to park.",
+      "The kids ran to the park to play on the swings.",
+      "She learned to park her car in a very small space.",
+      "Do not park your vehicle here."
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>B)</strong> Highlighted वाक्य में <strong>&lsquo;park&rsquo;</strong> का अर्थ है &mdash; <em>बच्चों के खेलने और लोगों के घूमने-फिरने की जगह (public recreational area)</em>।<br />\r\nविकल्प <strong>B</strong> में भी <strong>&lsquo;park&rsquo;</strong> का उपयोग <strong>उसी अर्थ</strong> में हुआ है &mdash; <em>बच्चों के खेलने की जगह</em>।<br />\r\nइसलिए यह <strong>same meaning</strong> का सही उदाहरण है।</p>\r\n\r\n<p>In the highlighted sentence, <strong>&lsquo;park&rsquo;</strong> refers to <em>a recreational public area with playground or open space</em>.<br />\r\nOption <strong>B</strong> uses <strong>&lsquo;park&rsquo;</strong> in the same sense &mdash; <em>a place where kids play</em>.<br />\r\nThus, <strong>option B</strong> matches the same meaning.</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p>Choose the correct meaning of the idiom:&nbsp;<strong>Chalk and cheese</strong></p>",
+    "comp": "",
+    "options": [
+      "Things that are opposites or completely different",
+      "Things that are similar",
+      "Things that complement each other",
+      "Things that are tasteless"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>A) <strong>Chalk and cheese (idioms</strong>)-&nbsp;<strong>Things that are opposites or completely different -</strong>&nbsp;<strong>एक-दूसरे से बिल्कुल अलग / विपरीत चीज़ें</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Select the correct Passive form of the given sentence.</strong><br />\r\nWhen will the manager attend the programme?</p>",
+    "comp": "",
+    "options": [
+      "When will the programme be attended by the manager?",
+      "When would the programme be attended by the manager?",
+      "When can the programme be attended by the manager?",
+      "When should the programme be attended by the manager?"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>A)&nbsp;<strong>When will the programme be attended by the manager?</strong></p>\r\n\r\n<p>Active से Passive Voice में बदलने के लिए, Active वाक्य का <strong>Object</strong> Passive वाक्य का <strong>Subject</strong> बन जाता है। Verb को Active से Passive में बदलते समय <strong>सही Tense और Auxiliary Verb</strong> का प्रयोग किया जाता है।<br />\r\nActive वाक्य में <strong>&ldquo;the manager&rdquo;</strong> Subject है, <strong>&ldquo;will attend&rdquo;</strong> Verb (Future Simple Tense) है और <strong>&ldquo;the programme&rdquo;</strong> Object है। Passive में बदलने पर Object <strong>&ldquo;the programme&rdquo;</strong> Subject बन गया है, Verb को <strong>&ldquo;will be attended&rdquo;</strong> (Future Simple Passive) में बदला गया है और <strong>&ldquo;by the manager&rdquo;</strong> के रूप में Agent जोड़ा गया है।</p>\r\n\r\n<p><strong>In English</strong></p>\r\n\r\n<p><strong>To change a sentence from Active to Passive Voice (interrogative):</strong></p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>The object of the active sentence becomes the subject of the passive sentence.</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>The tense must remain the same.</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>Modal/auxiliary verbs should not be changed.</p>\r\n\t</li>\r\n</ul>\r\n\r\n<p><strong>In this sentence:</strong></p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>&ldquo;the manager&rdquo; &rarr; Subject (Active)</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;will attend&rdquo; &rarr; Verb (Simple Future)</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;the programme&rdquo; &rarr; Object</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;When&rdquo; &rarr; Interrogative word</p>\r\n\t</li>\r\n</ul>\r\n\r\n<p><strong>After conversion:</strong></p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>&ldquo;the programme&rdquo; &rarr; Subject</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;will be attended&rdquo; &rarr; Passive verb (Simple Future Passive)</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;by the manager&rdquo; &rarr; Agent</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>&ldquo;When&rdquo; remains unchanged</p>\r\n\t</li>\r\n</ul>\r\n\r\n<p><strong>Correct passive sentence:</strong><br />\r\nWhen will the programme be attended by the manager?</p>\r\n\r\n<p><strong>Other Option Analysis:</strong></p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>Option (2): Changes <strong>will</strong> to <strong>would</strong> (tense change).</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>Option (3): Changes <strong>will</strong> to <strong>can</strong> (modal change).</p>\r\n\t</li>\r\n\t<li>\r\n\t<p>Option (4): Changes <strong>will</strong> to <strong>should</strong> (modal change).</p>\r\n\t</li>\r\n</ul>\r\n\r\n<p><br />\r\n&nbsp;</p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Choose the most suitable option to replace the highlighted part of the sentence:</strong><br />\r\n<ins><strong>The less clothes</strong></ins> that I made for the wedding have gone out of style.</p>",
+    "comp": "",
+    "options": [
+      "The few clothes",
+      "The fewer clothes",
+      "The fewest clothes",
+      "The little clothes"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>A)&nbsp;&nbsp;<strong>The less clothes&rsquo;</strong> के बदले <strong>&lsquo;The few clothes&rsquo;</strong> का प्रयोग होगा क्योंकि <strong>clothes</strong> countable noun है और countable nouns के लिए <strong>few/fewer/fewest</strong> का प्रयोग होता है जबकि <strong>less</strong> uncountable nouns के साथ प्रयोग होता है; जैसे&mdash; <strong>Few friends came to see him.</strong></p>\r\n\r\n<p>&bull; <strong>&lsquo;The few clothes&rsquo;</strong> will be used instead of <strong>&lsquo;The less clothes&rsquo;</strong> because <strong>clothes</strong> is a countable noun and for countable nouns we use <strong>few/fewer/fewest</strong>, whereas <strong>less</strong> is used with uncountable nouns; Like&mdash; <strong>Few friends came to see him.</strong></p>",
+    "marks": 2.0
+  },
+  {
+    "question": "<p><strong>Fill in the blank with the most appropriate preposition:</strong><br />\r\nThe treaty was signed _____ mutual understanding and cooperation.</p>",
+    "comp": "",
+    "options": [
+      "by",
+      "over",
+      "under",
+      "with"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><strong>D) with</strong><br />\r\n&lsquo;<strong>with</strong>&rsquo; का प्रयोग होगा क्योंकि पूरा वाक्य सहयोग, सहमति और साझे प्रयास की स्थिति को दिखा रहा है। &ldquo;The treaty was signed <strong>with</strong> mutual understanding and cooperation&rdquo; में &ldquo;with&rdquo; दो पक्षों के बीच <strong>सहमति के आधार</strong> पर किए गए कार्य को दर्शाता है। इसलिए, <strong>with</strong> सबसे उपयुक्त preposition है।</p>\r\n\r\n<p>&bull; <strong>&lsquo;with&rsquo; should be used</strong> because the sentence expresses a condition of <strong>agreement and joint cooperation</strong>. The phrase &ldquo;signed <strong>with</strong> mutual understanding and cooperation&rdquo; conveys that the treaty came into effect <strong>through</strong> shared consent and collaborative intent. Hence, <strong>with</strong> is the most appropriate choice.</p>",
+    "marks": 2.0
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 1;
+        const negMarks = 0.25;
+        const totalDuration = 15;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+                
+                // Render LaTeX in all updated elements
+                renderMath(this.els.questionText);
+                renderMath(this.els.comprehensionText);
+                renderMath(this.els.solutionText);
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+                // Render LaTeX in options
+                renderMath(this.els.optionsList);
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // ── KaTeX auto-render helper ──────────────────────────────────────
+        // Renders any LaTeX found in an element after innerHTML is set.
+        // Handles: \(...\)  \[...\]  $...$  $$...$$
+        function renderMath(el) {
+            if (!el || typeof renderMathInElement === 'undefined') return;
+            try {
+                renderMathInElement(el, {
+                    delimiters: [
+                        {left: '$$',  right: '$$',  display: true},
+                        {left: '\\[', right: '\\]', display: true},
+                        {left: '$',   right: '$',   display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                    ],
+                    throwOnError: false,
+                    strict: false,
+                });
+            } catch(e) {}
+        }
+
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

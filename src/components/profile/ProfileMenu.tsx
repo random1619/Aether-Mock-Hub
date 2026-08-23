@@ -27,7 +27,7 @@ function Avatar({ name, size = 26 }: { name: string; size?: number }) {
     <span
       className={clsx(
         "grid place-items-center text-white font-bold shrink-0 shadow-sm transition-all",
-        isNetflix ? "rounded-[3px] bg-gradient-to-tr from-[#E50914] to-[#b20710]" : "rounded-full bg-primary"
+        isNetflix ? "rounded-full bg-gradient-to-tr from-[#E50914] to-[#b20710]" : "rounded-full bg-primary"
       )}
       style={{ width: size, height: size, fontSize: size * 0.4 }}
       aria-hidden
@@ -97,7 +97,7 @@ export function ProfileMenu() {
           <motion.div
             role="menu"
             aria-label="Account"
-            className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-bg-raised border border-[var(--glass-border)] shadow-2xl overflow-hidden z-[9999]"
+            className="absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-bg-raised border border-[var(--glass-border)] shadow-2xl overflow-hidden z-[9999]"
             initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}

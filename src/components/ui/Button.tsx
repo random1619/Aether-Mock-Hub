@@ -12,10 +12,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
-/* Apple buttons are fully-rounded pills (border-radius 980px) in #0071e3 blue
-   with white text; hover lifts the brightness a touch, no heavy shadows. */
+/* Apple buttons: pill (#0071e3), instant pointer-down feedback, continuous hover.
+   Feedback lives on the press (transform + brightness), not just hover. */
 const base =
-  'inline-flex items-center justify-center gap-2 font-semibold rounded-full border transition-all duration-200 ease-standard cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none active:scale-[0.97] tracking-[-0.01em]';
+  'inline-flex items-center justify-center gap-2 font-semibold rounded-full border cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:shadow-[var(--focus-ring)] focus-visible:outline-none active:scale-[0.96] tracking-[-0.01em] transition-[transform,background-color,box-shadow,border-color] duration-150 ease-out will-change-transform';
 
 const variants: Record<Variant, string> = {
   primary: 'bg-primary text-white border-transparent hover:bg-primary-hover shadow-sm',

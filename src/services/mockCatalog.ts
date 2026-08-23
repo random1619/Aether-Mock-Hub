@@ -93,6 +93,25 @@ export async function loadMockCatalog(): Promise<MockEntry[]> {
 }
 
 async function fetchMockCatalog(): Promise<MockEntry[]> {
+  // 1. In live browser runtime, try dynamic backend REST API first
+  const proc = (globalThis as unknown as { process?: { env?: Record<string, string> } }).process;
+  const isVitest = !!(proc && (proc.env?.VITEST || proc.env?.NODE_ENV === 'test'));
+  if (!isVitest && typeof window !== 'undefined') {
+    try {
+      const apiRes = await fetch('/api/catalog', { signal: AbortSignal.timeout(2500) });
+      if (apiRes.ok) {
+        const json = await apiRes.json();
+        if (Array.isArray(json) && json.length > 0) {
+          _cache = json.filter(hasEntryShape).filter(isRenderableMock);
+          if (_cache.length > 0) return _cache;
+        }
+      }
+    } catch {
+      // fallback to static mocks-data.js
+    }
+  }
+
+  // 2. Fallback to static catalog (mocks-data.js)
   const res = await fetch('/mocks-data.js');
   if (!res.ok) throw new Error(`Failed to load mocks catalog (HTTP ${res.status})`);
   const text = await res.text();
@@ -134,8 +153,30 @@ export function subjectsOf(mocks: MockEntry[]): string[] {
   return [...new Set(mocks.map((m) => m.subject))].sort();
 }
 
+export function topicsOf(mocks: MockEntry[]): string[] {
+  return [...new Set(mocks.map((m) => m.topic).filter(Boolean) as string[])].sort();
+}
+
+export function subtopicsOf(mocks: MockEntry[]): string[] {
+  return [...new Set(mocks.map((m) => m.subtopic).filter(Boolean) as string[])].sort();
+}
+
 export function categoriesOf(mocks: MockEntry[]): string[] {
   return [...new Set(mocks.map((m) => m.category))].sort();
+}
+
+export function groupBySubjectTopic(mocks: MockEntry[]): Map<string, Map<string, MockEntry[]>> {
+  const bySubject = new Map<string, Map<string, MockEntry[]>>();
+  mocks.forEach(m=>{
+    const subj = m.subject || 'General';
+    const topic = m.topic || m.category || 'General';
+    let byTopic = bySubject.get(subj);
+    if(!byTopic) bySubject.set(subj, byTopic = new Map());
+    const list = byTopic.get(topic) || [];
+    list.push(m);
+    byTopic.set(topic, list);
+  });
+  return bySubject;
 }
 
 /** Resolve the friendly provider name for a mock path by consulting the

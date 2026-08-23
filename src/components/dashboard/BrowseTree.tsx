@@ -82,7 +82,8 @@ export function BrowseTree({ mocks, scoresMap, isDone, onToggle, perCategory = 1
         <div>
           <h2 className="text-xl sm:text-[22px] font-bold tracking-[-0.02em] text-text flex items-center gap-2.5">
             {isNetflix ? (
-              <span className="border-l-4 border-[#E50914] pl-2.5 inline-block text-white">
+              <span className="flex items-center gap-2.5 text-white">
+                <span className="w-1.5 h-6 bg-[#E50914] rounded-full inline-block shadow-[0_0_12px_#E50914]" />
                 Browse the Catalog
               </span>
             ) : (
@@ -102,7 +103,7 @@ export function BrowseTree({ mocks, scoresMap, isDone, onToggle, perCategory = 1
           const meta = providerMeta(p.provider);
           const pOpen = openProviders.has(p.provider);
           return (
-            <div key={p.provider} className="rounded-2xl bg-surface overflow-hidden">
+            <div key={p.provider} className="rounded-2xl bg-surface overflow-hidden ring-1 ring-[var(--glass-border)]">
               {/* Provider header: toggle button + "Open" link as siblings —
                   nesting a link inside a button is invalid HTML and confuses AT. */}
               <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 hover:bg-surface-2 transition-colors">
@@ -125,7 +126,7 @@ export function BrowseTree({ mocks, scoresMap, isDone, onToggle, perCategory = 1
                 </button>
                 <Link
                   to={providerPath(p.provider)}
-                  className="shrink-0 inline-flex items-center px-3 py-1 rounded-full bg-surface-2 text-xs font-semibold text-text-2 hover:bg-primary hover:text-white transition-colors"
+                  className="shrink-0 inline-flex items-center px-4 py-1.5 rounded-full bg-surface-2 text-xs font-semibold text-text-2 hover:bg-primary hover:text-white active:scale-95 transition-all shadow-xs"
                 >
                   Open
                 </Link>
@@ -144,13 +145,13 @@ export function BrowseTree({ mocks, scoresMap, isDone, onToggle, perCategory = 1
                         <button
                           onClick={() => toggleSet(openCats, catKey, setOpenCats)}
                           aria-expanded={cOpen}
-                          className="w-full flex items-center gap-3 px-4 sm:px-5 py-2.5 pl-10 text-left hover:bg-surface-2 transition-colors"
+                          className="w-full flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-5 py-2.5 pl-7 sm:pl-10 text-left hover:bg-surface-2 transition-colors cursor-pointer"
                         >
                           <span className="text-muted shrink-0">
                             {cOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                           </span>
                           <FolderOpen size={14} className="text-primary shrink-0" />
-                          <span className="flex-1 min-w-0 text-sm font-medium text-text truncate">
+                          <span className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-text truncate">
                             {c.label}
                           </span>
                           <span className="shrink-0 text-xs text-muted tabular-nums">
@@ -159,7 +160,7 @@ export function BrowseTree({ mocks, scoresMap, isDone, onToggle, perCategory = 1
                         </button>
 
                         {cOpen && (
-                          <div className="px-4 sm:px-5 pb-4 pt-1 flex flex-wrap gap-4">
+                          <div className="px-3 sm:px-5 pb-3 sm:pb-4 pt-1 flex flex-wrap gap-2.5 sm:gap-4">
                             {shown.map((m) => (
                               <MockCard
                                 key={m.path}

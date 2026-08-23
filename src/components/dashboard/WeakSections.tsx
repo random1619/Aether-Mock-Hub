@@ -2,20 +2,24 @@ import { Link } from 'react-router-dom';
 import { TrendingDown } from 'lucide-react';
 import { Card, CardHeader, Reveal } from '@/components/ui';
 import type { SectionStat } from '@/services/sectionAnalytics';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 /** "Where you're losing marks" — weakest sections as gradient meters.
     Expects pre-filtered/sorted stats (weakest first, accuracy non-null). */
 export function WeakSections({ sections }: { sections: SectionStat[] }) {
+  const { theme } = useSettingsStore();
+  const isOnePiece = theme === 'onepiece';
+
   return (
     <Reveal delay={0.05}>
       <Card>
         <CardHeader
-          title="Where you're losing marks"
-          hint="weakest sections across all attempts"
-          icon={<TrendingDown size={15} />}
+          title={isOnePiece ? '⚔️ Haki Vulnerabilities & Weak Points' : "Where you're losing marks"}
+          hint={isOnePiece ? 'training priority for Grand Line battles' : 'weakest sections across all attempts'}
+          icon={<TrendingDown size={15} className={isOnePiece ? 'text-[#FF334B]' : undefined} />}
           action={
             <Link to="/analytics" className="text-[13px] font-medium text-primary hover:underline transition-colors">
-              Full analytics ›
+              {isOnePiece ? 'Haki analytics ›' : 'Full analytics ›'}
             </Link>
           }
         />

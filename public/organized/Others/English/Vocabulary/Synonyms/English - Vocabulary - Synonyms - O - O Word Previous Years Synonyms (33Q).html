@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRI Mock Hub — Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+    --tan:#e9e1cf;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px 40px;}
+
+  /* ---------- HEADER (start screen only) ---------- */
+  header{
+    text-align:center;
+    padding:28px 16px 20px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 14px;letter-spacing:-0.01em;
+  }
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    background:#29a9eb;color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 20px;border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #topicLine{
+    margin-top:14px;font-family:'Fraunces',serif;font-weight:700;font-size:15px;
+    color:var(--accent);background:var(--card);display:inline-block;
+    padding:6px 18px;border:1px solid var(--rule);border-radius:20px;
+  }
+
+  /* ---------- START SCREEN ---------- */
+  .divider{
+    max-width:720px;margin:0 auto;border-top:3px double var(--rule);
+  }
+  #startScreen{text-align:center;padding:28px 16px 0;}
+  .start-card{
+    background:var(--card);border:1px solid var(--rule);border-radius:18px;
+    padding:32px 20px;margin:24px 0;
+  }
+  .start-card h2{
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;margin:0 0 24px;line-height:1.3;
+  }
+  .info-boxes{display:flex;gap:12px;justify-content:center;margin-bottom:26px;flex-wrap:nowrap;}
+  .info-box{
+    background:var(--tan);border-radius:12px;
+    padding:14px 16px;flex:1;min-width:0;text-align:left;
+  }
+  .info-box .lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;white-space:nowrap;}
+  .info-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--accent);}
+  #startBtn{
+    background:var(--accent);color:#fff;border:none;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:16px;
+    padding:15px 36px;border-radius:10px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(138,90,43,0.35);
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  #startBtn:hover{transform:translateY(-1px);}
+  #startBtn .playIcon{
+    background:#e8912f;border-radius:6px;width:26px;height:26px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+  }
+  .start-footnote{
+    text-align:center;font-size:13.5px;color:var(--muted);line-height:1.6;
+    padding:0 20px 30px;max-width:600px;margin:0 auto;
+  }
+
+  /* ---------- TOP BAR (test + review) ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--card);border-bottom:1px solid var(--rule);
+    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+  }
+  .topbar .brand{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;flex-shrink:0;}
+  .topbar .center-info{
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);
+    flex:1;justify-content:center;min-width:0;
+  }
+  .topbar .timer{
+    font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--wrong);
+    white-space:nowrap;
+  }
+  .topbar .progress{white-space:nowrap;color:var(--muted);}
+  .paletteWrap{position:relative;flex-shrink:0;}
+  .paletteBtn{
+    background:var(--paper);border:1px solid var(--rule);border-radius:8px;
+    padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
+    white-space:nowrap;
+  }
+  .paletteDropdown{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:12px;
+    width:240px;max-height:320px;overflow-y:auto;z-index:30;
+  }
+  .paletteDropdown.show{display:block;}
+  .paletteLegend{display:flex;gap:10px;font-size:11px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;}
+  .legendDot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+  .paletteGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .paletteNum{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;
+    border:1px solid transparent;
+  }
+  .paletteNum.answered{background:var(--correct-bg);color:var(--correct);border-color:var(--correct);}
+  .paletteNum.notanswered{background:var(--wrong-bg);color:var(--wrong);border-color:var(--wrong);}
+  .paletteNum.notvisited{background:var(--tan);color:var(--muted);}
+  .paletteNum.current{outline:2px solid var(--accent);outline-offset:1px;}
+
+  /* ---------- TEST SCREEN ---------- */
+  #testScreen{display:none;}
+  .qcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:20px 18px;margin:18px 0;position:relative;
+  }
+  .qcard .tag{
+    float:right;font-size:10.5px;color:var(--muted);background:var(--paper);
+    border:1px solid var(--rule);padding:2px 8px;border-radius:20px;
+  }
+  .qcard .qmeta{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .qcard .marks-note{font-size:11.5px;color:var(--accent);margin-bottom:10px;font-weight:600;}
+  .qcard .qtext{font-size:17px;line-height:1.55;margin:6px 0 16px;clear:both;}
+  .qcard .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;
+    padding:11px 14px;font-size:15px;cursor:pointer;
+    transition:border-color .15s, background .15s;font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .opt:hover{border-color:var(--accent);background:#fff;}
+  .opt .lab{font-weight:700;color:var(--accent);min-width:18px;}
+  .opt.selected{background:#efe3cf;border-color:var(--accent);}
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .navrow{
+    display:flex;gap:8px;margin-top:16px;flex-wrap:nowrap;
+  }
+  .navrow button{
+    flex:1;min-width:0;
+    border:1px solid var(--rule);background:var(--card);
+    border-radius:8px;padding:10px 6px;font-size:12.5px;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .navrow button:hover{border-color:var(--accent);}
+  .navrow button:disabled{opacity:.4;cursor:not-allowed;}
+  .submitRow{margin-top:10px;}
+  .submitRow button{
+    width:100%;background:var(--accent);color:#fff;border:none;
+    border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ---------- MODAL ---------- */
+  .modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(27,26,23,0.5);
+    z-index:50;align-items:center;justify-content:center;padding:20px;
+  }
+  .modalOverlay.show{display:flex;}
+  .modalBox{
+    background:var(--card);border-radius:14px;padding:24px 22px;max-width:340px;width:100%;
+    text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.25);
+  }
+  .modalBox h3{font-family:'Fraunces',serif;font-size:19px;margin:0 0 10px;}
+  .modalBox p{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5;}
+  .modalBtns{display:flex;gap:10px;}
+  .modalBtns button{
+    flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .modalBtns .yesBtn{background:var(--accent);color:#fff;border:none;}
+  .modalBtns .cancelBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- RESULT SCREEN ---------- */
+  #resultScreen{display:none;text-align:center;padding:30px 16px;}
+  #resultScreen h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 24px;}
+  .result-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;
+  }
+  .result-box{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 10px;
+  }
+  .result-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;}
+  .result-box .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .result-box.correct .num{color:var(--correct);}
+  .result-box.wrong .num{color:var(--wrong);}
+  .score-box{
+    background:var(--accent);color:#fff;border-radius:14px;padding:20px;margin-bottom:26px;
+  }
+  .score-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:36px;}
+  .score-box .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.1em;opacity:.85;margin-top:2px;}
+  .resultBtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .resultBtns button{
+    padding:12px 22px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .resultBtns .reviewBtn{background:var(--accent);color:#fff;border:none;}
+  .resultBtns .retakeBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- REVIEW SCREEN ---------- */
+  #reviewScreen{display:none;}
+  .statustag{
+    font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;
+  }
+  .statustag.correct{background:var(--correct-bg);color:var(--correct);}
+  .statustag.wrong{background:var(--wrong-bg);color:var(--wrong);}
+  .statustag.unattempted{background:var(--tan);color:var(--muted);}
+  .review-topbar-title{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;}
+  .yourans{font-size:13px;margin:10px 0 2px;color:var(--muted);}
+  .yourans b{color:var(--ink);}
+  .solution{
+    margin-top:14px;padding:14px 16px;background:#fbf7ee;
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    font-size:14.5px;line-height:1.65;
+  }
+  .solution .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+  <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+  <h1>YATRI Mock Hub</h1>
+  <a href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank" rel="noopener" id="tgBtn">
+    <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+      <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+    </svg>
+    <span>Join Telegram</span>
+  </a>
+  <div id="topicLine">Topic: O Words — Previous Years Synonyms</div>
+</header>
+
+<div class="divider"></div>
+
+<div class="wrap">
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Vocabulary Synonyms Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="lbl">Total Questions</div><div class="num" id="totalQCount">0</div></div>
+        <div class="info-box"><div class="lbl">Total Time</div><div class="num" id="totalTimeDisplay">0 Min</div></div>
+      </div>
+      <button id="startBtn"><span class="playIcon">▶</span> Start Test</button>
+    </div>
+    <div class="start-footnote">Submit ke baad hi answers, score aur explanation dikhenge — pura test pehle imandari se attempt karein.</div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="center-info">
+        <span class="timer" id="timerDisplay">00:00</span>
+        <span class="progress" id="progressDisplay">Question 1 / 1</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnTest">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownTest">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Answered</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Not Answered</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Not Visited</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridTest"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="qTag"></span>
+      <div class="qmeta" id="qMeta">Question 1 of 1</div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="qOpts"></div>
+    </div>
+
+    <div class="navrow">
+      <button id="prevBtn">⬅️ Previous</button>
+      <button id="clearBtn">Clear Response</button>
+      <button id="nextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="submitBtn">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen">
+    <h2>Test Complete!</h2>
+    <div class="result-grid">
+      <div class="result-box"><div class="num" id="rTotal">0</div><div class="lbl">Total Questions</div></div>
+      <div class="result-box"><div class="num" id="rAttempted">0</div><div class="lbl">Attempted</div></div>
+      <div class="result-box"><div class="num" id="rUnattempted">0</div><div class="lbl">Unattempted</div></div>
+      <div class="result-box correct"><div class="num" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="result-box wrong"><div class="num" id="rWrong">0</div><div class="lbl">Wrong</div></div>
+    </div>
+    <div class="score-box">
+      <div class="num" id="rScore">0</div>
+      <div class="lbl">Final Score</div>
+    </div>
+    <div class="resultBtns">
+      <button class="reviewBtn" id="reviewBtn">🔍 Review Solutions</button>
+      <button class="retakeBtn" id="retakeBtn">🔁 Retake Test</button>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen">
+    <div class="topbar" style="z-index:20;">
+      <div class="review-topbar-title">Review Solutions</div>
+      <div class="center-info" style="justify-content:flex-end;">
+        <span class="statustag" id="reviewStatusTag">—</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnReview">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownReview">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Correct</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Wrong</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Unattempted</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridReview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="rvTag"></span>
+      <div class="qmeta" id="rvMeta">Question 1 of 1</div>
+      <div class="qtext" id="rvText"></div>
+      <div class="options" id="rvOpts"></div>
+      <div class="yourans" id="rvYourAns"></div>
+      <div class="solution" id="rvSolution">
+        <div class="lbl">Solution</div>
+        <div id="rvSolutionText"></div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button id="rvPrevBtn">⬅️ Previous</button>
+      <button id="rvNextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="backToResultBtn">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUBMIT CONFIRMATION MODAL -->
+<div class="modalOverlay" id="submitModal">
+  <div class="modalBox">
+    <h3>Submit Test?</h3>
+    <p id="submitModalText">Aap sure hain ki test submit karna chahte hain?</p>
+    <div class="modalBtns">
+      <button class="cancelBtn" id="modalCancelBtn">Cancel</button>
+      <button class="yesBtn" id="modalYesBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Obstinate",
+"tag": "SSC CGL 23/09/2024 (Shift-II)",
+"opts": [
+"Stubborn",
+"Adaptive",
+"Submissive",
+"Obedient"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Obstinate' का अर्थ है <b>हठी/जिद्दी</b>। Synonym 'Stubborn' (<b>जिद्दी</b>) है।</span><br>Adaptive – अनुकूलनशील, Submissive – आज्ञाकारी, Obedient – आज्ञाकारी।"
+},
+{
+"q": "Select the most appropriate synonym of the underlined word. She was overstrung before her dance performance.",
+"tag": "SSC CGL 11/09/2024 (Shift-I)",
+"opts": [
+"Cheerful",
+"Nervous",
+"Calm",
+"Placid"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Overstrung' का अर्थ है <b>अत्यधिक तनावग्रस्त</b>। Synonym 'Nervous' (<b>घबराया हुआ</b>) है।</span><br>Cheerful – प्रसन्न, Calm – शांत, Placid – शांत/स्थिर।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Omnipresent",
+"tag": "SSC GD 12/01/2023 (Shift-II)",
+"opts": [
+"Powerful",
+"Unique",
+"Contemporary",
+"Universal"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Omnipresent' का अर्थ है <b>सर्वव्यापी</b>। Synonym 'Universal' (<b>सर्वव्यापी</b>) है।</span><br>Powerful – शक्तिशाली, Unique – अद्वितीय, Contemporary – समकालीन।"
+},
+{
+"q": "Choose the word that means the same as the given word. \\'Oblate\\'",
+"tag": "SSC CHSL (Tier-I) 21/03/2023 (Shift-IV)",
+"opts": [
+"Mendicant",
+"Heathen",
+"Layperson",
+"Secular"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Oblate' का अर्थ है <b>धर्म को समर्पित व्यक्ति</b>। Synonym 'Mendicant' (<b>भिक्षु</b>) है।</span><br>Heathen – अधर्मी, Layperson – आम व्यक्ति, Secular – धर्मनिरपेक्ष।"
+},
+{
+"q": "Choose the word that means the same as the given word. Obligation",
+"tag": "SSC CHSL (Tier-I) 17/03/2023 (Shift-IV) SSC MTS 10/10/2017 (Shift-II)",
+"opts": [
+"Imperative",
+"Loophole",
+"Discharge",
+"Quietus"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Obligation' का अर्थ है <b>दायित्व/कर्तव्य</b>। Synonym 'Imperative' (<b>अनिवार्य कर्तव्य</b>) है।</span><br>Loophole – खामी, Discharge – मुक्ति, Quietus – अंत/शमन।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Obstruct",
+"tag": "SSC MTS-06/07/2022 (Shift-III)",
+"opts": [
+"Replace",
+"Curb",
+"Release",
+"Unclog"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Obstruct' का अर्थ है <b>बाधा डालना</b>। Synonym 'Curb' (<b>रोकना</b>) है।</span><br>Replace – प्रतिस्थापित करना, Release – छोड़ना, Unclog – अवरोध हटाना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Occlude",
+"tag": "SSC MTS-05/07/2022 Shift-III",
+"opts": [
+"facilitate",
+"promote",
+"Abstain",
+"Obstruct"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Occlude' का अर्थ है <b>बंद करना/रोकना</b>। Synonym 'Obstruct' (<b>बाधा डालना</b>) है।</span><br>Facilitate – सुगम बनाना, Promote – बढ़ावा देना, Abstain – परहेज़ करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Obtrusive",
+"tag": "SSC MTS-06/07/2022 Shift-II",
+"opts": [
+"Pervasive",
+"Exclusive",
+"Prominent",
+"Modest"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Obtrusive' का अर्थ है <b>अत्यधिक स्पष्ट/नज़र में आने वाला</b>। Synonym 'Prominent' (<b>प्रमुख</b>) है।</span><br>Pervasive – व्याप्त, Exclusive – विशिष्ट, Modest – विनम्र।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ostentatious",
+"tag": "SSC CGL (Tier-I) 11/04/2022 Shift-I",
+"opts": [
+"showy",
+"tasteful",
+"sudden",
+"quick"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Ostentatious' का अर्थ है <b>दिखावटी</b>। Synonym 'Showy' (<b>भड़कीला/दिखावटी</b>) है।</span><br>Tasteful – सुरुचिपूर्ण, Sudden – अचानक, Quick – तेज़।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Overture",
+"tag": "SSC CHSL 30.05.2022 Shift-I",
+"opts": [
+"Slander",
+"Plunk",
+"Preamble",
+"Conclusion"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Overture' का अर्थ है <b>प्रस्ताव/भूमिका</b>। Synonym 'Preamble' (<b>प्रस्तावना</b>) है।</span><br>Slander – मानहानि, Plunk – धप से रखना, Conclusion – निष्कर्ष।"
+},
+{
+"q": "Amit is optimistic about the prospects of his investments.",
+"tag": "UPSC NDA & NA 10/04/2022 (Shift-I)",
+"opts": [
+"pessimistic",
+"uncaring",
+"carefree",
+"sanguine"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Optimistic' का अर्थ है <b>आशावादी</b>। Synonym 'Sanguine' (<b>आशावादी</b>) है।</span><br>Pessimistic – निराशावादी, Uncaring – उदासीन, Carefree – बेफिक्र।"
+},
+{
+"q": "OBSTINATE",
+"tag": "Patna (District Court) Steno Exam: 17.07.2016",
+"opts": [
+"Clever",
+"Pretty",
+"Silly",
+"Stubborn"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Obstinate' का अर्थ है <b>हठी</b>। Synonym 'Stubborn' (<b>जिद्दी</b>) है।</span><br>Clever – चतुर, Pretty – सुंदर, Silly – मूर्खतापूर्ण।"
+},
+{
+"q": "Under his leadership the company grew in an organic manner.",
+"tag": "UPSC NDA & NA 18/04/2021 (Shift-I)",
+"opts": [
+"natural",
+"speedy",
+"unusual",
+"disciplined"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Organic (manner)' का अर्थ है <b>स्वाभाविक/जैविक</b>। Synonym 'Natural' (<b>स्वाभाविक</b>) है।</span><br>Speedy – तेज़, Unusual – असामान्य, Disciplined – अनुशासित।"
+},
+{
+"q": "The Arabs who are not in the cities live in the desert throughout the year, shifting from one oasis to another.",
+"tag": "UPSC NDA & NA 21/04/2019 (Shift-I)",
+"opts": [
+"sandbank",
+"mound",
+"dune",
+"spring"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Oasis' का अर्थ है <b>मरूद्यान</b>। Synonym 'Spring' (<b>झरना/जलस्रोत</b>) है।</span><br>Sandbank – रेत का टीला, Mound – टीला, Dune – बालू का टीला।"
+},
+{
+"q": "He is very OBLIGING by nature.",
+"tag": "UPSC NDA & NA 19/08/2012 (Shift-II)",
+"opts": [
+"helpful",
+"nice",
+"thankful",
+"compelling"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Obliging' का अर्थ है <b>सहायक/उपकारी</b>। Synonym 'Helpful' (<b>सहायक</b>) है।</span><br>Nice – अच्छा, Thankful – आभारी, Compelling – बाध्यकारी।"
+},
+{
+"q": "Obscure",
+"tag": "DSSSB Lab Assistant Exam (26-04-2015)",
+"opts": [
+"distinct",
+"uncertain",
+"unambiguous",
+"ascertained"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Obscure' का अर्थ है <b>अस्पष्ट</b>। Synonym 'Uncertain' (<b>अनिश्चित</b>) है।</span><br>Distinct – स्पष्ट, Unambiguous – स्पष्ट/असंदिग्ध, Ascertained – निर्धारित।"
+},
+{
+"q": "OBDURATE",
+"tag": "DSSSB TGT (Computer Science) Exam 21/05/2017 / DSSSB TGT/PGT Computer Science Exam (21-06-2017)",
+"opts": [
+"Bold",
+"Stubborn",
+"Fighter",
+"Obnoxious"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Obdurate' का अर्थ है <b>जिद्दी/अडिग</b>। Synonym 'Stubborn' (<b>हठी</b>) है।</span><br>Bold – साहसी, Fighter – योद्धा, Obnoxious – आपत्तिजनक।"
+},
+{
+"q": "it was obligatory for the board to implement the rule.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Compulsory",
+"Unnecessary",
+"By chance",
+"Problematic"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Obligatory' का अर्थ है <b>अनिवार्य</b>। Synonym 'Compulsory' (<b>अनिवार्य</b>) है।</span><br>Unnecessary – अनावश्यक, By chance – संयोग से, Problematic – समस्याग्रस्त।"
+},
+{
+"q": "ODIUM",
+"tag": "CDS 2013 (Shift-II)",
+"opts": [
+"Illness",
+"Hatred",
+"Oddity",
+"Devious"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Odium' का अर्थ है <b>घृणा</b>। Synonym 'Hatred' (<b>घृणा</b>) है।</span><br>Illness – बीमारी, Oddity – विचित्रता, Devious – कपटी।"
+},
+{
+"q": "OUTLOOK",
+"tag": "CDS 2011 (Shift-II)",
+"opts": [
+"Looking out",
+"Prospect",
+"Outward appearance",
+"Scrutiny"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Outlook' का अर्थ है <b>दृष्टिकोण/संभावना</b>। Synonym 'Prospect' (<b>संभावना</b>) है।</span><br>Looking out – बाहर देखना, Outward appearance – बाहरी रूप, Scrutiny – जांच।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Obliterate",
+"tag": "UPSC NDA & NA 19/04/2015 (Shift-I) / UPSC NDA & NA 21/04/2019 (Shift-I) / ACIO (Tier-II) 20/02/2021 (Shift-I)",
+"opts": [
+"Epistle",
+"Extirpate",
+"Establish",
+"Hansom"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Obliterate' का अर्थ है <b>पूरी तरह मिटा देना</b>। Synonym 'Extirpate' (<b>जड़ से उखाड़ना</b>) है।</span><br>Epistle – पत्र, Establish – स्थापित करना, Hansom – एक प्रकार की गाड़ी।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OBLIVIOUS",
+"tag": "SSC CPO-SI – 25/11/2020 (Shift-II) CDS-2013",
+"opts": [
+"ignorant",
+"attentive",
+"obvious",
+"sensitive"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Oblivious' का अर्थ है <b>अनजान/बेखबर</b>। Synonym 'Ignorant' (<b>अनजान</b>) है।</span><br>Attentive – चौकस, Obvious – स्पष्ट, Sensitive – संवेदनशील।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OBSTACLE",
+"tag": "SSC CGL (Tier-I) – 13/06/2019 (Shift-I)",
+"opts": [
+"benefit.",
+"clearance",
+"accessory",
+"barrier"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Obstacle' का अर्थ है <b>बाधा</b>। Synonym 'Barrier' (<b>बाधा</b>) है।</span><br>Benefit – लाभ, Clearance – निकासी, Accessory – सहायक वस्तु।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OFFEND",
+"tag": "SSC CPO-SI – 09/12/2019 (Shift-II)",
+"opts": [
+"aid",
+"annoy",
+"assist",
+"assuage"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Offend' का अर्थ है <b>अपमान करना</b>। Synonym 'Annoy' (<b>नाराज़ करना</b>) है।</span><br>Aid – सहायता करना, Assist – सहायता करना, Assuage – शांत करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OPINION",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-II)",
+"opts": [
+"view",
+"wisdom",
+"chance",
+"sense"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Opinion' का अर्थ है <b>राय</b>। Synonym 'View' (<b>विचार</b>) है।</span><br>Wisdom – बुद्धि, Chance – संयोग, Sense – समझ।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OSTENTATIOUS",
+"tag": "SSC CHSL (Tier-I) 10/07/2019 (Shift-I)",
+"opts": [
+"distinct",
+"complete",
+"flashy",
+"trusted"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Ostentatious' का अर्थ है <b>दिखावटी</b>। Synonym 'Flashy' (<b>भड़कीला</b>) है।</span><br>Distinct – स्पष्ट, Complete – पूर्ण, Trusted – विश्वसनीय।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ORTHODOX",
+"tag": "SSC CHSL (Tier-I) –09/07/2019 (Shift-I)",
+"opts": [
+"civilized",
+"habitual",
+"traditional",
+"deliberate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Orthodox' का अर्थ है <b>रूढ़िवादी</b>। Synonym 'Traditional' (<b>पारंपरिक</b>) है।</span><br>Civilized – सभ्य, Habitual – अभ्यस्त, Deliberate – जानबूझकर।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OPPORTUNE",
+"tag": "SSC CHSL (Tier-I) –04/07/2019 (Shift-III) UPSC NDA and NA 05/09/2021",
+"opts": [
+"rarely",
+"likely",
+"timely",
+"barely"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Opportune' का अर्थ है <b>उपयुक्त समय पर</b>। Synonym 'Timely' (<b>सामयिक</b>) है।</span><br>Rarely – शायद ही, Likely – संभावित, Barely – मुश्किल से।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OPULENT",
+"tag": "SSC CHSL (Tier-I) 13/10/2020 (Shift-I) SSC CHSL (Tier-I) 19/10/2020 (Shift-III)",
+"opts": [
+"Virulent",
+"Distant",
+"Luxurious",
+"Shabby"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Opulent' का अर्थ है <b>विलासी/धनाढ्य</b>। Synonym 'Luxurious' (<b>विलासी</b>) है।</span><br>Virulent – घातक/विषैला, Distant – दूर, Shabby – जीर्ण-शीर्ण।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OCCUR",
+"tag": "SSC CHSL (Tier-I) 17/03/2020 (Shift-III)",
+"opts": [
+"Hinder",
+"Hasten",
+"Happen",
+"Hamper"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Occur' का अर्थ है <b>घटित होना</b>। Synonym 'Happen' (<b>होना</b>) है।</span><br>Hinder – बाधा डालना, Hasten – जल्दी करना, Hamper – बाधा डालना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Obvious",
+"tag": "SSC MTS 06/08/2019 (Shift-I)",
+"opts": [
+"Vague",
+"Various",
+"Flexible",
+"Evident"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Obvious' का अर्थ है <b>स्पष्ट</b>। Synonym 'Evident' (<b>स्पष्ट</b>) है।</span><br>Vague – अस्पष्ट, Various – विविध, Flexible – लचीला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Optimist",
+"tag": "SSC MTS – 06/08/2019 (Shift-I)",
+"opts": [
+"Critic",
+"Distinct",
+"Pessimist",
+"Idealist"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Optimist' का अर्थ है <b>आशावादी</b>। Synonym 'Idealist' (<b>आदर्शवादी</b>) है।</span><br>Critic – आलोचक, Distinct – स्पष्ट, Pessimist – निराशावादी।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. OBTAIN",
+"tag": "SSC MTS – 20/08/2019 (Shift-I)",
+"opts": [
+"Achieve",
+"Suppress",
+"Inspire",
+"Lessen"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Obtain' का अर्थ है <b>प्राप्त करना</b>। Synonym 'Achieve' (<b>प्राप्त करना</b>) है।</span><br>Suppress – दबाना, Inspire – प्रेरित करना, Lessen – कम करना।"
+}
+];
+
+const TEST_MINUTES = 18;
+const TOTAL_SECONDS = TEST_MINUTES * 60;
+const labels = ['A','B','C','D'];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null); // null = not answered
+let visited = new Array(questions.length).fill(false);
+let timeLeft = TOTAL_SECONDS;
+let timerInterval = null;
+let testSubmitted = false;
+
+document.getElementById('totalQCount').textContent = questions.length;
+document.getElementById('totalTimeDisplay').textContent = TEST_MINUTES + ' Min';
+
+// ---------- START ----------
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('mainHeader').style.display = 'none';
+  document.querySelector('.divider').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  startTimer();
+});
+
+function startTimer(){
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest(true);
+    }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s = (timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = m+':'+s;
+}
+updateTimerDisplay();
+
+// ---------- TEST SCREEN RENDER ----------
+function renderQuestion(){
+  const q = questions[currentQ];
+  document.getElementById('qTag').textContent = q.tag || '';
+  document.getElementById('qMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('progressDisplay').textContent = `Question ${currentQ+1} / ${questions.length}`;
+  document.getElementById('qText').innerHTML = q.q;
+
+  const optsDiv = document.getElementById('qOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(userAnswers[currentQ] === oi) btn.classList.add('selected');
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectOption(oi);
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('prevBtn').disabled = currentQ === 0;
+  document.getElementById('nextBtn').textContent = currentQ === questions.length-1 ? 'Next ➡️' : 'Next ➡️';
+  renderPalette('Test');
+}
+
+function selectOption(oi){
+  userAnswers[currentQ] = oi;
+  renderQuestion();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  userAnswers[currentQ] = null;
+  renderQuestion();
+});
+
+// ---------- PALETTE ----------
+function renderPalette(which){
+  const grid = document.getElementById('paletteGrid' + which);
+  grid.innerHTML = '';
+  questions.forEach((q, i) => {
+    const cell = document.createElement('div');
+    let cls = 'notvisited';
+    if(which === 'Test'){
+      if(userAnswers[i] !== null) cls = 'answered';
+      else if(visited[i]) cls = 'notanswered';
+      else cls = 'notvisited';
+    } else {
+      if(userAnswers[i] === null) cls = 'notvisited';
+      else if(userAnswers[i] === q.ans) cls = 'answered';
+      else cls = 'notanswered';
+    }
+    cell.className = 'paletteNum ' + cls + (i===currentQ ? ' current' : '');
+    cell.textContent = i+1;
+    cell.onclick = () => {
+      currentQ = i;
+      visited[i] = true;
+      if(which === 'Test'){
+        renderQuestion();
+        document.getElementById('paletteDropdownTest').classList.remove('show');
+      } else {
+        renderReview();
+        document.getElementById('paletteDropdownReview').classList.remove('show');
+      }
+      window.scrollTo(0,0);
+    };
+    grid.appendChild(cell);
+  });
+}
+
+document.getElementById('paletteBtnTest').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownTest').classList.toggle('show');
+});
+document.getElementById('paletteBtnReview').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownReview').classList.toggle('show');
+});
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.paletteWrap')){
+    document.getElementById('paletteDropdownTest').classList.remove('show');
+    document.getElementById('paletteDropdownReview').classList.remove('show');
+  }
+});
+
+// ---------- SUBMIT ----------
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const unattempted = userAnswers.filter(a => a === null).length;
+  document.getElementById('submitModalText').textContent =
+    `Aap sure hain? ${unattempted} question(s) abhi bhi unattempted hain.`;
+  document.getElementById('submitModal').classList.add('show');
+});
+document.getElementById('modalCancelBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('submitModal').addEventListener('click', (e) => {
+  if(e.target.id === 'submitModal') document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('modalYesBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+  submitTest(false);
+});
+
+function submitTest(auto){
+  if(testSubmitted) return;
+  testSubmitted = true;
+  clearInterval(timerInterval);
+
+  let correct = 0, wrong = 0, attempted = 0;
+  questions.forEach((q, i) => {
+    if(userAnswers[i] !== null){
+      attempted++;
+      if(userAnswers[i] === q.ans) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = questions.length - attempted;
+  const score = (correct*1 - wrong*0.25).toFixed(2);
+
+  document.getElementById('rTotal').textContent = questions.length;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rScore').textContent = score;
+
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ---------- REVIEW ----------
+document.getElementById('reviewBtn').addEventListener('click', () => {
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  currentQ = 0;
+  renderReview();
+  window.scrollTo(0,0);
+});
+document.getElementById('backToResultBtn').addEventListener('click', () => {
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+document.getElementById('rvPrevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; renderReview(); window.scrollTo(0,0);}
+});
+document.getElementById('rvNextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; renderReview(); window.scrollTo(0,0);}
+});
+
+function renderReview(){
+  const q = questions[currentQ];
+  const userAns = userAnswers[currentQ];
+  document.getElementById('rvTag').textContent = q.tag || '';
+  document.getElementById('rvMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('rvText').innerHTML = q.q;
+
+  let statusCls, statusText;
+  if(userAns === null){ statusCls='unattempted'; statusText='Unattempted'; }
+  else if(userAns === q.ans){ statusCls='correct'; statusText='Correct'; }
+  else { statusCls='wrong'; statusText='Wrong'; }
+  const tagEl = document.getElementById('reviewStatusTag');
+  tagEl.className = 'statustag ' + statusCls;
+  tagEl.textContent = statusText;
+
+  const optsDiv = document.getElementById('rvOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(oi === q.ans) btn.classList.add('correct');
+    else if(oi === userAns) btn.classList.add('wrong');
+    let mark = '';
+    if(oi === q.ans) mark = '<span class="mark c">✓</span>';
+    else if(oi === userAns) mark = '<span class="mark w">✗</span>';
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>${mark}`;
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('rvYourAns').innerHTML =
+    userAns === null
+      ? 'Aapne ye question attempt nahi kiya.'
+      : `Your answer: <b>${labels[userAns]}</b> &nbsp;|&nbsp; Correct answer: <b>${labels[q.ans]}</b>`;
+
+  document.getElementById('rvSolutionText').innerHTML = q.sol;
+
+  document.getElementById('rvPrevBtn').disabled = currentQ === 0;
+  document.getElementById('rvNextBtn').disabled = currentQ === questions.length-1;
+  renderPalette('Review');
+}
+
+// ---------- RETAKE ----------
+document.getElementById('retakeBtn').addEventListener('click', () => {
+  userAnswers = new Array(questions.length).fill(null);
+  visited = new Array(questions.length).fill(false);
+  currentQ = 0;
+  timeLeft = TOTAL_SECONDS;
+  testSubmitted = false;
+  updateTimerDisplay();
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('mainHeader').style.display = 'block';
+  document.querySelector('.divider').style.display = 'block';
+  document.getElementById('startScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27352255</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">20</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">40.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27352255</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 20</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 20</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/40.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<div class=\"text-base my-auto mx-auto [--thread-content-margin:--spacing(4)] @w-sm/main:[--thread-content-margin:--spacing(6)] @w-lg/main:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)\">\n<div class=\"[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn\">\n<div class=\"flex max-w-full flex-col grow\">\n<div class=\"min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1\" data-message-author-role=\"assistant\" data-message-id=\"6e85dc36-fb59-415c-84e7-390e7b3f0ab5\" data-message-model-slug=\"gpt-5-2\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[1px]\">\n<div class=\"markdown prose dark:prose-invert w-full wrap-break-word light markdown-new-styling\">\n<p data-start=\"152\" data-end=\"291\">With reference to the Padma Awards, consider the following statements:<br data-start=\"222\" data-end=\"225\" /><strong data-start=\"225\" data-end=\"291\">पद्म पुरस्कारों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"293\" data-end=\"1488\">\n<li data-start=\"293\" data-end=\"488\">\n<p data-start=\"296\" data-end=\"488\">The Padma Awards were instituted in 1954 and are announced every year on Republic Day.<br data-start=\"382\" data-end=\"385\" />पद्म पुरस्कारों की स्थापना 1954 में की गई थी और इनकी घोषणा प्रत्येक वर्ष गणतंत्र दिवस पर की जाती है।</p>\n</li>\n<li data-start=\"490\" data-end=\"835\">\n<p data-start=\"493\" data-end=\"835\">Initially, the Padma Vibhushan was classified into three classes, which were renamed in 1955 as Padma Vibhushan, Padma Bhushan and Padma Shri through a Presidential Notification.<br data-start=\"671\" data-end=\"674\" />प्रारंभ में पद्म विभूषण को तीन वर्गों में वर्गीकृत किया गया था, जिन्हें 1955 में राष्ट्रपति अधिसूचना द्वारा पद्म विभूषण, पद्म भूषण एवं पद्म श्री नाम दिया गया।</p>\n</li>\n<li data-start=\"837\" data-end=\"1024\">\n<p data-start=\"840\" data-end=\"1024\">The order of precedence among the Padma Awards is: Padma Shri &rarr; Padma Bhushan &rarr; Padma Vibhushan.<br data-start=\"936\" data-end=\"939\" />पद्म पुरस्कारों में वरीयता क्रम इस प्रकार है: पद्म श्री &rarr; पद्म भूषण &rarr; पद्म विभूषण।</p>\n</li>\n<li data-start=\"1026\" data-end=\"1337\">\n<p data-start=\"1029\" data-end=\"1337\">The awards are conferred by the President of India at ceremonial functions held at Rashtrapati Bhavan, and recipients receive a Sanad and a medallion.<br data-start=\"1179\" data-end=\"1182\" />ये पुरस्कार भारत के राष्ट्रपति द्वारा राष्ट्रपति भवन में आयोजित समारोह में प्रदान किए जाते हैं, तथा प्राप्तकर्ताओं को एक सनद और पदक प्रदान किया जाता है।</p>\n</li>\n<li data-start=\"1339\" data-end=\"1488\">\n<p data-start=\"1342\" data-end=\"1488\">The awards were not conferred during the periods 1978&ndash;1979 and 1993&ndash;1997.<br data-start=\"1415\" data-end=\"1418\" />ये पुरस्कार 1978&ndash;1979 तथा 1993&ndash;1997 के दौरान प्रदान नहीं किए गए थे।</p>\n</li>\n</ol>\n<h3 data-start=\"1495\" data-end=\"1549\">Which of the statements given above are correct?</h3>\n<h3 data-start=\"1550\" data-end=\"1590\">उपर्युक्त में से कौन-से कथन सही हैं?</h3>\n<p data-start=\"1592\" data-end=\"1689\">(a) 1, 2, 4 and 5 only<br data-start=\"1614\" data-end=\"1617\" />(b) 1, 2, 3 and 4 only<br data-start=\"1639\" data-end=\"1642\" />(c) 1, 2&nbsp; and 5 only<br data-start=\"1664\" data-end=\"1667\" />(d) 1, 2, 3, 4 and 5</p>\n</div>\n</div>\n</div>\n</div>\n<div class=\"z-0 flex min-h-[46px] justify-start\"></div>\n</div>\n</div>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>A</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<h3 data-start=\"1696\" data-end=\"1731\">✅ Correct Answer / सही उत्तर:</h3>\n<p data-start=\"1732\" data-end=\"1758\"><strong data-start=\"1732\" data-end=\"1758\">(a) 1, 2, 4 and 5 only</strong></p>\n<p data-start=\"1760\" data-end=\"1972\" data-is-last-node=\"\" data-is-only-node=\"\"><strong data-start=\"1760\" data-end=\"1784\">Explanation (Brief):</strong><br data-start=\"1784\" data-end=\"1787\" />Statement 3 is incorrect because the correct order of precedence is:<br data-start=\"1855\" data-end=\"1858\" /><strong data-start=\"1858\" data-end=\"1907\">Padma Vibhushan &rarr; Padma Bhushan &rarr; Padma Shri.</strong><br data-start=\"1907\" data-end=\"1910\" />सही वरीयता क्रम है:<br data-start=\"1929\" data-end=\"1932\" /><strong data-start=\"1932\" data-end=\"1972\" data-is-last-node=\"\">पद्म विभूषण &rarr; पद्म भूषण &rarr; पद्म श्री।</strong></p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"184\" data-end=\"323\">With reference to the Padma Awards, consider the following statements:<br data-start=\"254\" data-end=\"257\" /><strong data-start=\"257\" data-end=\"323\">पद्म पुरस्कारों के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"325\" data-end=\"1809\">\n<li data-start=\"325\" data-end=\"611\">\n<p data-start=\"328\" data-end=\"611\">The Padma Awards are open to all persons without distinction of race, occupation, position or sex, including foreigners, NRIs, PIOs and OCIs.<br data-start=\"469\" data-end=\"472\" />पद्म पुरस्कार जाति, पेशा, पद या लिंग के भेद के बिना सभी व्यक्तियों के लिए खुले हैं, जिनमें विदेशी, एनआरआई, पीआईओ तथा ओसीआई भी शामिल हैं।</p>\n</li>\n<li data-start=\"613\" data-end=\"892\">\n<p data-start=\"616\" data-end=\"892\">Government servants, including those working in Public Sector Undertakings (PSUs), are eligible for Padma Awards without any exception.<br data-start=\"751\" data-end=\"754\" />सरकारी कर्मचारी, जिनमें सार्वजनिक उपक्रमों (PSUs) में कार्यरत कर्मचारी भी शामिल हैं, बिना किसी अपवाद के पद्म पुरस्कार के लिए पात्र हैं।</p>\n</li>\n<li data-start=\"894\" data-end=\"1125\">\n<p data-start=\"897\" data-end=\"1125\">The Padma Awards Committee is constituted annually by the Prime Minister and is headed by the Cabinet Secretary.<br data-start=\"1009\" data-end=\"1012\" />पद्म पुरस्कार समिति का गठन प्रतिवर्ष प्रधानमंत्री द्वारा किया जाता है और इसकी अध्यक्षता कैबिनेट सचिव करते हैं।</p>\n</li>\n<li data-start=\"1127\" data-end=\"1422\">\n<p data-start=\"1130\" data-end=\"1422\">The total number of Padma Awards in a year cannot exceed 120, excluding posthumous awards and awards given to foreigners/NRIs/OCIs.<br data-start=\"1261\" data-end=\"1264\" />किसी वर्ष में पद्म पुरस्कारों की कुल संख्या 120 से अधिक नहीं हो सकती, जिसमें मरणोपरांत पुरस्कार तथा विदेशी/एनआरआई/ओसीआई को दिए गए पुरस्कार शामिल नहीं होते।</p>\n</li>\n<li data-start=\"1424\" data-end=\"1809\">\n<p data-start=\"1427\" data-end=\"1809\">In <em data-start=\"1430\" data-end=\"1465\">Balaji Raghavan v. Union of India</em> (1996), the Supreme Court held that Padma Awards are &ldquo;National Honours&rdquo; and not titles, and therefore do not violate Article 18(1) of the Constitution.<br data-start=\"1617\" data-end=\"1620\" /><em data-start=\"1623\" data-end=\"1654\">Balaji Raghavan बनाम भारत संघ</em> (1996) में सर्वोच्च न्यायालय ने निर्णय दिया कि पद्म पुरस्कार &ldquo;राष्ट्रीय सम्मान&rdquo; हैं, न कि उपाधियाँ, अतः वे संविधान के अनुच्छेद 18(1) का उल्लंघन नहीं करते।</p>\n</li>\n</ol>\n<h3 data-start=\"1816\" data-end=\"1870\">Which of the statements given above are correct?</h3>\n<h3 data-start=\"1871\" data-end=\"1911\">उपर्युक्त में से कौन-से कथन सही हैं?</h3>\n<p></p>\n<p data-start=\"1913\" data-end=\"2007\">(a) 1, 3, 4 and 5 only<br data-start=\"1935\" data-end=\"1938\" />(b) 1, 2, 3 and 4 only<br data-start=\"1960\" data-end=\"1963\" />(c) 1, 3 and 5 only<br data-start=\"1982\" data-end=\"1985\" />(d) 1, 2, 3, 4 and 5</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<ul>\n<li data-start=\"2133\" data-end=\"2271\">\n<p data-start=\"2135\" data-end=\"2271\"><strong data-start=\"2135\" data-end=\"2164\">Statement 2 is incorrect.</strong> Government servants (including PSU employees) are generally not eligible, except Doctors and Scientists.</p>\n</li>\n<li data-start=\"2272\" data-end=\"2328\">\n<p data-start=\"2274\" data-end=\"2328\">Padma Awards are <strong data-start=\"2291\" data-end=\"2305\">not titles</strong> under Article 18(1).</p>\n</li>\n<li data-start=\"2329\" data-end=\"2391\">\n<p data-start=\"2331\" data-end=\"2391\">Supreme Court (1996) upheld their constitutional validity.</p>\n</li>\n</ul>\n<p></p>\n<ul>\n<li data-start=\"2392\" data-end=\"2463\">\n<p data-start=\"2394\" data-end=\"2463\">Annual limit: <strong data-start=\"2408\" data-end=\"2461\">120 (excluding posthumous &amp; foreigners category).</strong></p>\n</li>\n<li data-start=\"2392\" data-end=\"2463\">\n<p data-start=\"0\" data-end=\"185\">&bull; <strong data-start=\"2\" data-end=\"19\">कथन 2 गलत है।</strong> सरकारी कर्मचारी (जिसमें सार्वजनिक उपक्रमों &ndash; PSUs &ndash; के कर्मचारी भी शामिल हैं) सामान्यतः पद्म पुरस्कार के लिए पात्र नहीं होते, <strong data-start=\"146\" data-end=\"185\">केवल डॉक्टर और वैज्ञानिक अपवाद हैं।</strong></p>\n<p data-start=\"187\" data-end=\"281\">&bull; <strong data-start=\"189\" data-end=\"223\">पद्म पुरस्कार &ldquo;उपाधि&rdquo; नहीं हैं</strong> और ये संविधान के <strong data-start=\"241\" data-end=\"259\">अनुच्छेद 18(1)</strong> का उल्लंघन नहीं करते।</p>\n<p data-start=\"283\" data-end=\"352\">&bull; <strong data-start=\"285\" data-end=\"313\">सर्वोच्च न्यायालय (1996)</strong> ने इनकी संवैधानिक वैधता को बरकरार रखा।</p>\n<p data-start=\"354\" data-end=\"489\" data-is-last-node=\"\" data-is-only-node=\"\">&bull; किसी वर्ष में पद्म पुरस्कारों की <strong data-start=\"389\" data-end=\"408\">अधिकतम सीमा 120</strong> है (इसमें मरणोपरांत तथा विदेशी/एनआरआई/ओसीआई को दिए गए पुरस्कार शामिल नहीं होते)।</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"15\" data-end=\"81\">Evaluate the following statements regarding <strong data-start=\"59\" data-end=\"80\">Padma Awards 2026</strong>:</p>\n<p data-start=\"83\" data-end=\"149\">(पद्म पुरस्कार 2026 के संबंध में निम्नलिखित कथनों पर विचार कीजिए:)</p>\n<p data-start=\"151\" data-end=\"284\">I. In 2026, <strong data-start=\"163\" data-end=\"177\">131 awards</strong> were approved (5 Vibhushan, 13 Bhushan, 113 Shri).<br data-start=\"228\" data-end=\"231\" />(2026 में 131 पुरस्कार: 5 विभूषण, 13 भूषण, 113 श्री।)</p>\n<p data-start=\"286\" data-end=\"466\">II. Awardees include 19 Women, 6 Foreigners/NRI/OCI, 16 Posthumous; around 45 Unsung Heroes were honoured.<br data-start=\"392\" data-end=\"395\" />(19 महिलाएं, 6 विदेशी/एनआरआई/ओसीआई, 16 मरणोपरांत; लगभग 45 गुमनाम नायकों (Unsung Heroes)</p>\n<p data-start=\"468\" data-end=\"640\">III. Maharashtra (15) had the highest awards, followed by Tamil Nadu (13), UP (11) and West Bengal (11).<br data-start=\"572\" data-end=\"575\" />(महाराष्ट्र 15 के साथ शीर्ष पर; तमिलनाडु 13, यूपी व बंगाल 11-11।)</p>\n<p data-start=\"642\" data-end=\"819\">IV. Related to Article 18(1); committee headed by Cabinet Secretary; present names adopted in 1955.<br data-start=\"741\" data-end=\"744\" />(अनुच्छेद 18(1) से संबंधित; समिति के प्रमुख कैबिनेट सचिव; नामकरण 1955 में।)</p>\n<p data-start=\"821\" data-end=\"935\">V. The total number of awards announced in a single year cannot exceed <strong data-path-to-node=\"8\" data-index-in-node=\"104\">120</strong>; however, this limit <strong data-path-to-node=\"8\" data-index-in-node=\"129\">excludes</strong> posthumous awards and those given to foreigners or NRIs.</p>\n<p data-start=\"821\" data-end=\"935\">(एक वर्ष में घोषित पुरस्कारों की कुल संख्या <strong data-path-to-node=\"8\" data-index-in-node=\"239\">120</strong> से अधिक नहीं हो सकती; हालांकि, इस सीमा में मरणोपरांत पुरस्कार और विदेशियों या अनिवासी भारतीयों को दिए गए पुरस्कार <strong data-path-to-node=\"8\" data-index-in-node=\"357\">शामिल नहीं</strong> हैं।)</p>\n<p data-start=\"821\" data-end=\"935\"></p>\n<p data-start=\"821\" data-end=\"935\"><strong>identify the CORRECT combination:</strong></p>\n<h3 data-start=\"937\" data-end=\"949\">Options:</h3>\n<p data-start=\"950\" data-end=\"1024\">(a) I, III, IV<br data-start=\"964\" data-end=\"967\" />(b) II, IV, V<br data-start=\"980\" data-end=\"983\" />(c) I, II, IV, V<br data-start=\"999\" data-end=\"1002\" />(d) All of the above</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<table class=\"w-fit min-w-(--thread-content-width)\" style=\"border-style: dotted;\" data-start=\"86\" data-end=\"1147\">\n<thead data-start=\"86\" data-end=\"196\">\n<tr data-start=\"86\" data-end=\"196\">\n<th class=\"\" data-start=\"86\" data-end=\"113\" data-col-size=\"sm\"><strong data-start=\"88\" data-end=\"112\">Parameter (पैरामीटर)</strong></th>\n<th class=\"\" data-start=\"113\" data-end=\"152\" data-col-size=\"md\"><strong data-start=\"115\" data-end=\"151\">Statistic / Fact (आंकड़ा / तथ्य)</strong></th>\n<th class=\"\" data-start=\"152\" data-end=\"196\" data-col-size=\"lg\"><strong data-start=\"154\" data-end=\"194\">Exam Relevance (परीक्षा प्रासंगिकता)</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"311\" data-end=\"1147\">\n<tr data-start=\"311\" data-end=\"408\">\n<td data-start=\"311\" data-end=\"351\" data-col-size=\"sm\">Total Awards 2026 (कुल पुरस्कार 2026)</td>\n<td data-col-size=\"md\" data-start=\"351\" data-end=\"357\">131</td>\n<td data-col-size=\"lg\" data-start=\"357\" data-end=\"408\">Includes 2 duo cases. (2 युगल मामले शामिल हैं।)</td>\n</tr>\n<tr data-start=\"409\" data-end=\"562\">\n<td data-start=\"409\" data-end=\"445\" data-col-size=\"sm\">Top State 2026 (शीर्ष राज्य 2026)</td>\n<td data-col-size=\"md\" data-start=\"445\" data-end=\"482\">Maharashtra &ndash; 15 (महाराष्ट्र &ndash; 15)</td>\n<td data-col-size=\"lg\" data-start=\"482\" data-end=\"562\">Often asked in State PCS/SSC exams. (राज्य PCS/SSC में प्रायः पूछा जाता है।)</td>\n</tr>\n<tr data-start=\"563\" data-end=\"753\">\n<td data-start=\"563\" data-end=\"593\" data-col-size=\"sm\">Unsung Heroes (अनसुने नायक)</td>\n<td data-col-size=\"md\" data-start=\"593\" data-end=\"647\">Approximately 45 Awardees (लगभग 45 पुरस्कार विजेता)</td>\n<td data-col-size=\"lg\" data-start=\"647\" data-end=\"753\">Core feature of the &ldquo;People&rsquo;s Padma&rdquo; trend since 2014. (2014 के बाद &ldquo;पीपुल्स पद्म&rdquo; की प्रमुख विशेषता।)</td>\n</tr>\n<tr data-start=\"754\" data-end=\"886\">\n<td data-start=\"754\" data-end=\"795\" data-col-size=\"sm\">Women Awardees (महिला पुरस्कार विजेता)</td>\n<td data-col-size=\"md\" data-start=\"795\" data-end=\"800\">19</td>\n<td data-col-size=\"lg\" data-start=\"800\" data-end=\"886\">Important demographic fact for exams. (परीक्षा हेतु महत्वपूर्ण जनसांख्यिकीय तथ्य।)</td>\n</tr>\n<tr data-start=\"887\" data-end=\"1022\">\n<td data-start=\"887\" data-end=\"921\" data-col-size=\"sm\">Nomenclature Year (नामकरण वर्ष)</td>\n<td data-col-size=\"md\" data-start=\"921\" data-end=\"928\">1955</td>\n<td data-col-size=\"lg\" data-start=\"928\" data-end=\"1022\">Year when present categories were adopted. (वर्तमान श्रेणियों का नाम 1955 में अपनाया गया।)</td>\n</tr>\n<tr data-start=\"1023\" data-end=\"1147\">\n<td data-start=\"1023\" data-end=\"1055\" data-col-size=\"sm\">Committee Head (समिति प्रमुख)</td>\n<td data-col-size=\"md\" data-start=\"1055\" data-end=\"1090\">Cabinet Secretary (कैबिनेट सचिव)</td>\n<td data-col-size=\"lg\" data-start=\"1090\" data-end=\"1147\">Key administrative fact. (महत्वपूर्ण प्रशासनिक तथ्य।)</td>\n</tr>\n</tbody>\n</table>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"161\" data-end=\"196\"><strong data-start=\"161\" data-end=\"194\">Padma Vibhushan Awardees 2026</strong></p>\n<p data-start=\"198\" data-end=\"232\">(पद्म विभूषण पुरस्कार विजेता 2026)</p>\n<p data-start=\"234\" data-end=\"317\">Match List&ndash;I with List&ndash;II and select the correct answer using the code given below:</p>\n<p data-start=\"319\" data-end=\"397\">(सूची&ndash;I को सूची&ndash;II से मिलाइए और नीचे दिए गए कूट का प्रयोग कर सही उत्तर चुनिए:)</p>\n<hr data-start=\"399\" data-end=\"402\" />\n<h3 data-start=\"404\" data-end=\"448\"><strong data-start=\"408\" data-end=\"446\">List&ndash;I (Awardee / पुरस्कार विजेता)</strong></h3>\n<p data-start=\"450\" data-end=\"602\">A. Shri Dharmendra Singh Deol (Posthumous)<br data-start=\"492\" data-end=\"495\" />B. Shri K. T. Thomas<br data-start=\"515\" data-end=\"518\" />C. Ms. N. Rajam<br data-start=\"533\" data-end=\"536\" />D. Shri P. Narayanan<br data-start=\"556\" data-end=\"559\" />E. Shri V. S. Achuthanandhan (Posthumous)</p>\n<hr data-start=\"604\" data-end=\"607\" />\n<h3 data-start=\"609\" data-end=\"660\"><strong data-start=\"613\" data-end=\"658\">List&ndash;II (Field &ndash; State / क्षेत्र &ndash; राज्य)</strong></h3>\n<ol data-start=\"662\" data-end=\"804\">\n<li data-start=\"662\" data-end=\"690\">\n<p data-start=\"665\" data-end=\"690\">Public Affairs &ndash; Kerala</p>\n</li>\n<li data-start=\"691\" data-end=\"713\">\n<p data-start=\"694\" data-end=\"713\">Art &ndash; Maharashtra</p>\n</li>\n<li data-start=\"714\" data-end=\"750\">\n<p data-start=\"717\" data-end=\"750\">Literature &amp; Education &ndash; Kerala</p>\n</li>\n<li data-start=\"751\" data-end=\"775\">\n<p data-start=\"754\" data-end=\"775\">Art &ndash; Uttar Pradesh</p>\n</li>\n<li data-start=\"776\" data-end=\"804\">\n<p data-start=\"779\" data-end=\"804\">Public Affairs &ndash; Kerala</p>\n</li>\n</ol>\n<hr data-start=\"806\" data-end=\"809\" />\n<h3 data-start=\"811\" data-end=\"827\">Codes / कूट:</h3>\n<p data-start=\"829\" data-end=\"948\">(a) A&ndash;2, B&ndash;1, C&ndash;4, D&ndash;3, E&ndash;5<br data-start=\"856\" data-end=\"859\" />(b) A&ndash;1, B&ndash;2, C&ndash;4, D&ndash;3, E&ndash;5<br data-start=\"886\" data-end=\"889\" />(c) A&ndash;2, B&ndash;3, C&ndash;4, D&ndash;1, E&ndash;5<br data-start=\"916\" data-end=\"919\" />(d) A&ndash;2, B&ndash;1, C&ndash;3, D&ndash;4, E&ndash;5</p>\n<p data-start=\"990\" data-end=\"1021\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"166\" data-end=\"1460\">\n<thead data-start=\"166\" data-end=\"266\">\n<tr data-start=\"166\" data-end=\"266\">\n<th class=\"\" data-start=\"166\" data-end=\"183\" data-col-size=\"sm\"><strong data-start=\"168\" data-end=\"182\">Name (नाम)</strong></th>\n<th class=\"\" data-start=\"183\" data-end=\"205\" data-col-size=\"md\"><strong data-start=\"185\" data-end=\"204\">Field (क्षेत्र)</strong></th>\n<th class=\"\" data-start=\"205\" data-end=\"225\" data-col-size=\"sm\"><strong data-start=\"207\" data-end=\"224\">State (राज्य)</strong></th>\n<th class=\"\" data-start=\"225\" data-end=\"266\" data-col-size=\"lg\"><strong data-start=\"227\" data-end=\"264\">Key Detail for Exams (मुख्य तथ्य)</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"365\" data-end=\"1460\">\n<tr data-start=\"365\" data-end=\"567\">\n<td data-start=\"365\" data-end=\"406\" data-col-size=\"sm\"><strong data-start=\"367\" data-end=\"405\">Dharmendra Singh Deol (Posthumous)</strong></td>\n<td data-col-size=\"md\" data-start=\"406\" data-end=\"418\">Art (कला)</td>\n<td data-col-size=\"sm\" data-start=\"418\" data-end=\"445\">Maharashtra (महाराष्ट्र)</td>\n<td data-col-size=\"lg\" data-start=\"445\" data-end=\"567\">Posthumously honoured for legendary contribution to Indian Cinema. (भारतीय सिनेमा में योगदान हेतु मरणोपरांत सम्मानित।)</td>\n</tr>\n<tr data-start=\"568\" data-end=\"778\">\n<td data-start=\"568\" data-end=\"587\" data-col-size=\"sm\"><strong data-start=\"570\" data-end=\"586\">K. T. Thomas</strong></td>\n<td data-col-size=\"md\" data-start=\"587\" data-end=\"631\">Public Affairs (लोक सेवा/सार्वजनिक कार्य)</td>\n<td data-col-size=\"sm\" data-start=\"631\" data-end=\"647\">Kerala (केरल)</td>\n<td data-col-size=\"lg\" data-start=\"647\" data-end=\"778\">Recognized for distinguished legal career and service in Public Affairs. (विशिष्ट विधिक सेवा और सार्वजनिक कार्य हेतु सम्मानित।)</td>\n</tr>\n<tr data-start=\"779\" data-end=\"1032\">\n<td data-start=\"779\" data-end=\"798\" data-col-size=\"sm\"><strong data-start=\"781\" data-end=\"797\">Ms. N. Rajam</strong></td>\n<td data-col-size=\"md\" data-start=\"798\" data-end=\"869\">Art &ndash; Hindustani Classical Music (कला &ndash; हिंदुस्तानी शास्त्रीय संगीत)</td>\n<td data-col-size=\"sm\" data-start=\"869\" data-end=\"900\">Uttar Pradesh (उत्तर प्रदेश)</td>\n<td data-col-size=\"lg\" data-start=\"900\" data-end=\"1032\">Renowned violinist honored for mastery in classical music. (प्रसिद्ध वायलिन वादक, शास्त्रीय संगीत में उत्कृष्टता हेतु सम्मानित।)</td>\n</tr>\n<tr data-start=\"1033\" data-end=\"1243\">\n<td data-start=\"1033\" data-end=\"1057\" data-col-size=\"sm\"><strong data-start=\"1035\" data-end=\"1056\">Shri P. Narayanan</strong></td>\n<td data-col-size=\"md\" data-start=\"1057\" data-end=\"1103\">Literature &amp; Education (साहित्य एवं शिक्षा)</td>\n<td data-col-size=\"sm\" data-start=\"1103\" data-end=\"1119\">Kerala (केरल)</td>\n<td data-col-size=\"lg\" data-start=\"1119\" data-end=\"1243\">Honoured for immense contribution to Literature and Education. (साहित्य एवं शिक्षा में महत्वपूर्ण योगदान हेतु सम्मानित।)</td>\n</tr>\n<tr data-start=\"1244\" data-end=\"1460\">\n<td data-start=\"1244\" data-end=\"1284\" data-col-size=\"sm\"><strong data-start=\"1246\" data-end=\"1283\">V. S. Achuthanandhan (Posthumous)</strong></td>\n<td data-col-size=\"md\" data-start=\"1284\" data-end=\"1328\">Public Affairs (लोक सेवा/सार्वजनिक कार्य)</td>\n<td data-col-size=\"sm\" data-start=\"1328\" data-end=\"1344\">Kerala (केरल)</td>\n<td data-col-size=\"lg\" data-start=\"1344\" data-end=\"1460\">Posthumously awarded for long political career in Public Affairs. (दीर्घ राजनीतिक जीवन हेतु मरणोपरांत सम्मानित।)</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n<p data-start=\"1517\" data-end=\"1700\"></p>\n<p data-start=\"1517\" data-end=\"1700\">✔ <strong data-start=\"1519\" data-end=\"1546\">Posthumous (मरणोपरांत):</strong><br data-start=\"1546\" data-end=\"1549\" />In 2026, <strong data-start=\"1558\" data-end=\"1572\">2 out of 5</strong> Padma Vibhushan awards were posthumous (Dharmendra &amp; V. S. Achuthanandhan).<br data-start=\"1648\" data-end=\"1651\" />2026 में 5 में से 2 पद्म विभूषण मरणोपरांत दिए गए।</p>\n<p data-start=\"1517\" data-end=\"1700\"></p>\n<p data-start=\"1702\" data-end=\"1825\">✔ <strong data-start=\"1704\" data-end=\"1734\">State Focus (राज्य ध्यान):</strong><br data-start=\"1734\" data-end=\"1737\" /><strong data-start=\"1737\" data-end=\"1757\">Kerala dominated</strong> with 3 out of 5 awardees.<br data-start=\"1783\" data-end=\"1786\" />केरल से 5 में से 3 पुरस्कार विजेता रहे।</p>\n<p data-start=\"1702\" data-end=\"1825\"></p>\n<p></p>\n<p data-start=\"1827\" data-end=\"2016\">✔ <strong data-start=\"1829\" data-end=\"1867\">Field Trend (क्षेत्रीय प्रवृत्ति):</strong><br data-start=\"1867\" data-end=\"1870\" /><strong data-start=\"1870\" data-end=\"1894\">Art &amp; Public Affairs</strong> received the majority of the highest honours in 2026.<br data-start=\"1948\" data-end=\"1951\" />2026 में सर्वोच्च सम्मान मुख्यतः कला और लोक सेवा क्षेत्र को मिला।</p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"196\" data-end=\"287\">With reference to the <strong data-start=\"218\" data-end=\"251\">Padma Vibhushan 2026 awardees</strong>, consider the following statements:</p>\n<p data-start=\"289\" data-end=\"372\">(पद्म विभूषण 2026 पुरस्कार विजेताओं के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:)</p>\n<ol data-start=\"374\" data-end=\"1180\">\n<li data-start=\"374\" data-end=\"569\">\n<p data-start=\"377\" data-end=\"569\">Dharmendra Singh Deol was posthumously awarded and was earlier a recipient of the Padma Bhushan.<br data-start=\"473\" data-end=\"476\" />(धर्मेंद्र सिंह देओल को मरणोपरांत सम्मानित किया गया और उन्हें पहले पद्म भूषण मिल चुका था।)</p>\n</li>\n<li data-start=\"571\" data-end=\"803\">\n<p data-start=\"574\" data-end=\"803\">K. T. Thomas is a former Judge of the Supreme Court of India and was recognized for his work related to legal reforms.<br data-start=\"692\" data-end=\"695\" />(के. टी. थॉमस सर्वोच्च न्यायालय के पूर्व न्यायाधीश रहे और उन्हें विधिक सुधारों के लिए सम्मानित किया गया।)</p>\n</li>\n<li data-start=\"805\" data-end=\"1062\">\n<p data-start=\"808\" data-end=\"1062\">N. Rajam is a Hindustani classical violinist known for the &ldquo;Gayaki Ang&rdquo; style and has received all three Padma awards.<br data-start=\"926\" data-end=\"929\" />(एन. राजम हिंदुस्तानी शास्त्रीय वायलिन वादक हैं, &lsquo;गायकी अंग&rsquo; शैली के लिए प्रसिद्ध हैं और तीनों पद्म पुरस्कार प्राप्त कर चुकी हैं।)</p>\n</li>\n<li data-start=\"1064\" data-end=\"1180\">\n<p data-start=\"1067\" data-end=\"1180\">V. S. Achuthanandhan was the Chief Minister of Tamil Nadu.<br data-start=\"1125\" data-end=\"1128\" />(वी. एस. अच्युतानंदन तमिलनाडु के मुख्यमंत्री थे।)</p>\n</li>\n</ol>\n<h3 data-start=\"1182\" data-end=\"1194\">Options:</h3>\n<p data-start=\"1195\" data-end=\"1277\">(a) 1, 2 and 3 only<br data-start=\"1214\" data-end=\"1217\" />(b) 1 and 4 only<br data-start=\"1233\" data-end=\"1236\" />(c) 2 and 3 only<br data-start=\"1252\" data-end=\"1255\" />(d) All of the above</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1303\" data-end=\"1326\"><strong data-start=\"1303\" data-end=\"1326\">(a) 1, 2 and 3 only</strong></p>\n<p></p>\n<p data-start=\"1328\" data-end=\"1434\">👉 Statement 4 is incorrect because V. S. Achuthanandhan was Chief Minister of&nbsp;<strong data-start=\"1407\" data-end=\"1417\">Kerala</strong>, not Tamil Nadu.</p>\n<h2 data-start=\"122\" data-end=\"169\">Padma Vibhushan 2026 &ndash; Awardee Profiles</h2>\n<h3 data-start=\"170\" data-end=\"219\">(पद्म विभूषण 2026 &ndash; पुरस्कार विजेता प्रोफाइल)</h3>\n<p data-start=\"1328\" data-end=\"1434\"></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"221\" data-end=\"1925\">\n<thead data-start=\"221\" data-end=\"328\">\n<tr data-start=\"221\" data-end=\"328\">\n<th class=\"\" data-start=\"221\" data-end=\"238\" data-col-size=\"sm\"><strong data-start=\"223\" data-end=\"237\">Name (नाम)</strong></th>\n<th class=\"\" data-start=\"238\" data-end=\"276\" data-col-size=\"md\"><strong data-start=\"240\" data-end=\"275\">Field &amp; State (क्षेत्र व राज्य)</strong></th>\n<th class=\"\" data-start=\"276\" data-end=\"328\" data-col-size=\"xl\"><strong data-start=\"278\" data-end=\"326\">Key Facts for Exam (परीक्षा हेतु मुख्य तथ्य)</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"433\" data-end=\"1925\">\n<tr data-start=\"433\" data-end=\"777\">\n<td data-start=\"433\" data-end=\"479\" data-col-size=\"sm\"><strong data-start=\"435\" data-end=\"478\">Shri Dharmendra Singh Deol (Posthumous)</strong></td>\n<td data-col-size=\"md\" data-start=\"479\" data-end=\"540\">Art &ndash; Cinema (कला &ndash; सिनेमा) <br />Maharashtra (महाराष्ट्र)</td>\n<td data-col-size=\"xl\" data-start=\"540\" data-end=\"777\">\n<ul>\n<li>Known as &ldquo;He-Man&rdquo; of Indian Cinema; acted in 300+ films.</li>\n<li>Played &lsquo;Veeru&rsquo; in <em data-start=\"622\" data-end=\"637\">Sholay (1975)</em>.</li>\n<li>MP (Lok Sabha) from Bikaner (2004&ndash;2009).</li>\n<li>Padma Bhushan (2012).</li>\n<li>Passed away on 24 Nov 2025; honoured posthumously in 2026.</li>\n</ul>\n</td>\n</tr>\n<tr data-start=\"778\" data-end=\"1078\">\n<td data-start=\"778\" data-end=\"802\" data-col-size=\"sm\"><strong data-start=\"780\" data-end=\"801\">Shri K. T. Thomas</strong></td>\n<td data-col-size=\"md\" data-start=\"802\" data-end=\"876\">Public Affairs &ndash; Judiciary (लोक कार्य &ndash; न्यायपालिका) <br />Kerala (केरल)</td>\n<td data-col-size=\"xl\" data-start=\"876\" data-end=\"1078\">\n<ul>\n<li>Former Supreme Court Judge (1996&ndash;2002).</li>\n<li>Headed Thomas Committee on &ldquo;Prevention of Damage to Public Property&rdquo;.</li>\n<li>Known for reforms in Evidence Act &amp; police reforms.</li>\n<li>Padma Bhushan (2007).</li>\n</ul>\n</td>\n</tr>\n<tr data-start=\"1079\" data-end=\"1376\">\n<td data-start=\"1079\" data-end=\"1098\" data-col-size=\"sm\"><strong data-start=\"1081\" data-end=\"1097\">Ms. N. Rajam</strong></td>\n<td data-start=\"1098\" data-end=\"1180\" data-col-size=\"md\">Art &ndash; Classical Music (कला &ndash; शास्त्रीय संगीत) <br />Uttar Pradesh (उत्तर प्रदेश)</td>\n<td data-col-size=\"xl\" data-start=\"1180\" data-end=\"1376\">\n<ul>\n<li>Legendary Hindustani violinist.</li>\n<li>Pioneer of &ldquo;Gayaki Ang&rdquo; style.</li>\n<li>Former Professor &amp; Dean, BHU.</li>\n<li>Called &ldquo;Singing Violinist&rdquo;.</li>\n<li>Received all three Padma Awards (1984, 2004, 2026).</li>\n</ul>\n</td>\n</tr>\n<tr data-start=\"1377\" data-end=\"1617\">\n<td data-start=\"1377\" data-end=\"1401\" data-col-size=\"sm\"><strong data-start=\"1379\" data-end=\"1400\">Shri P. Narayanan</strong></td>\n<td data-col-size=\"md\" data-start=\"1401\" data-end=\"1466\">Literature &amp; Education (साहित्य एवं शिक्षा) <br />Kerala (केरल)</td>\n<td data-col-size=\"xl\" data-start=\"1466\" data-end=\"1617\">\n<ul>\n<li>Eminent journalist; former editor of Janmabhumi.</li>\n<li>Translated 40+ books into Malayalam.</li>\n<li>Known for work on national culture &amp; social reform.</li>\n</ul>\n</td>\n</tr>\n<tr data-start=\"1618\" data-end=\"1925\">\n<td data-start=\"1618\" data-end=\"1663\" data-col-size=\"sm\"><strong data-start=\"1620\" data-end=\"1662\">Shri V. S. Achuthanandhan (Posthumous)</strong></td>\n<td data-col-size=\"md\" data-start=\"1663\" data-end=\"1732\">Public Affairs &ndash; Politics (लोक कार्य &ndash; राजनीति) <br />Kerala (केरल)</td>\n<td data-col-size=\"xl\" data-start=\"1732\" data-end=\"1925\">\n<ul>\n<li>Founding member of CPI(M).</li>\n<li>20th Chief Minister of Kerala (2006&ndash;2011).</li>\n<li>Role in Punnapra-Vayalar uprising.</li>\n<li>Known as &ldquo;Fidel Castro of Kerala&rdquo;.</li>\n<li>Awarded posthumously in 2026.</li>\n</ul>\n</td>\n</tr>\n</tbody>\n</table>\n<p></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"143\" data-end=\"1745\">\n<thead data-start=\"143\" data-end=\"206\">\n<tr data-start=\"143\" data-end=\"206\">\n<th class=\"\" data-start=\"143\" data-end=\"153\" data-col-size=\"sm\"><strong data-start=\"145\" data-end=\"152\">नाम</strong></th>\n<th class=\"\" data-start=\"153\" data-end=\"175\" data-col-size=\"sm\"><strong data-start=\"155\" data-end=\"174\">क्षेत्र व राज्य</strong></th>\n<th class=\"\" data-start=\"175\" data-end=\"206\" data-col-size=\"xl\"><strong data-start=\"177\" data-end=\"204\">परीक्षा हेतु मुख्य तथ्य</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"270\" data-end=\"1745\">\n<tr data-start=\"270\" data-end=\"629\">\n<td data-start=\"270\" data-end=\"313\" data-col-size=\"sm\"><strong data-start=\"272\" data-end=\"312\">श्री धर्मेंद्र सिंह देओल (मरणोपरांत)</strong></td>\n<td data-col-size=\"sm\" data-start=\"313\" data-end=\"344\">कला &ndash; सिनेमा <br />महाराष्ट्र</td>\n<td data-col-size=\"xl\" data-start=\"344\" data-end=\"629\">&bull; भारतीय सिनेमा के &ldquo;ही-मैन&rdquo; के रूप में प्रसिद्ध। <br />&bull; 300 से अधिक फिल्मों में अभिनय। <br />&bull; <em data-start=\"440\" data-end=\"453\">शोले (1975)</em> में &lsquo;वीरू&rsquo; की भूमिका। <br />&bull; बीकानेर (राजस्थान) से लोकसभा सांसद (2004&ndash;2009)। <br />&bull; पद्म भूषण (2012) से सम्मानित। <br />&bull; 24 नवम्बर 2025 को निधन; 2026 में मरणोपरांत सम्मानित।</td>\n</tr>\n<tr data-start=\"630\" data-end=\"914\">\n<td data-start=\"630\" data-end=\"654\" data-col-size=\"sm\"><strong data-start=\"632\" data-end=\"653\">श्री के. टी. थॉमस</strong></td>\n<td data-col-size=\"sm\" data-start=\"654\" data-end=\"690\">लोक कार्य &ndash; न्यायपालिका <br />केरल</td>\n<td data-col-size=\"xl\" data-start=\"690\" data-end=\"914\">&bull; सर्वोच्च न्यायालय के पूर्व न्यायाधीश (1996&ndash;2002)। <br />&bull; &ldquo;सार्वजनिक संपत्ति को क्षति की रोकथाम&rdquo; संबंधी थॉमस समिति के अध्यक्ष। <br />&bull; साक्ष्य अधिनियम एवं पुलिस सुधारों हेतु प्रसिद्ध। <br />&bull; पद्म भूषण (2007) से सम्मानित।</td>\n</tr>\n<tr data-start=\"915\" data-end=\"1239\">\n<td data-start=\"915\" data-end=\"937\" data-col-size=\"sm\"><strong data-start=\"917\" data-end=\"936\">सुश्री एन. राजम</strong></td>\n<td data-col-size=\"sm\" data-start=\"937\" data-end=\"979\">कला &ndash; शास्त्रीय संगीत <br />उत्तर प्रदेश</td>\n<td data-col-size=\"xl\" data-start=\"979\" data-end=\"1239\">&bull; हिंदुस्तानी शास्त्रीय संगीत की प्रसिद्ध वायलिन वादक। <br />&bull; &ldquo;गायकी अंग&rdquo; शैली की अग्रणी। <br />&bull; पूर्व प्रोफेसर एवं डीन, बनारस हिंदू विश्वविद्यालय (BHU)। <br />&bull; &ldquo;सिंगिंग वायलिनिस्ट&rdquo; के नाम से प्रसिद्ध। <br />&bull; तीनों पद्म पुरस्कार प्राप्त (1984, 2004, 2026)।</td>\n</tr>\n<tr data-start=\"1240\" data-end=\"1461\">\n<td data-start=\"1240\" data-end=\"1263\" data-col-size=\"sm\"><strong data-start=\"1242\" data-end=\"1262\">श्री पी. नारायणन</strong></td>\n<td data-col-size=\"sm\" data-start=\"1263\" data-end=\"1294\">साहित्य एवं शिक्षा <br />केरल</td>\n<td data-col-size=\"xl\" data-start=\"1294\" data-end=\"1461\">&bull; प्रख्यात पत्रकार; &lsquo;जनमभूमि&rsquo; के पूर्व संपादक। <br />&bull; 40 से अधिक पुस्तकों का मलयालम में अनुवाद। <br />&bull; राष्ट्रीय संस्कृति एवं सामाजिक सुधार पर कार्य हेतु प्रसिद्ध।</td>\n</tr>\n<tr data-start=\"1462\" data-end=\"1745\">\n<td data-start=\"1462\" data-end=\"1505\" data-col-size=\"sm\"><strong data-start=\"1464\" data-end=\"1504\">श्री वी. एस. अच्युतानंदन (मरणोपरांत)</strong></td>\n<td data-col-size=\"sm\" data-start=\"1505\" data-end=\"1537\">लोक कार्य &ndash; राजनीति <br />केरल</td>\n<td data-col-size=\"xl\" data-start=\"1537\" data-end=\"1745\">&bull; CPI(M) के संस्थापक सदस्य। <br />&bull; केरल के 20वें मुख्यमंत्री (2006&ndash;2011)। <br />&bull; पुन्नप्रा-वायलार आंदोलन में भूमिका। <br />&bull; &ldquo;केरल के फिदेल कास्त्रो&rdquo; के नाम से प्रसिद्ध। <br />&bull; 2026 में मरणोपरांत सम्मानित।</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"110\" data-end=\"329\">Who among the following Padma Vibhushan 2026 awardees was popularly known as the <strong data-start=\"191\" data-end=\"219\">&ldquo;Fidel Castro of Kerala&rdquo;</strong>?<br data-start=\"220\" data-end=\"223\" />निम्नलिखित में से किस पद्म विभूषण 2026 पुरस्कार विजेता को &ldquo;केरल के फिदेल कास्त्रो&rdquo; के नाम से जाना जाता था?</p>\n<p data-start=\"331\" data-end=\"443\">(a) Shri P. Narayanan<br data-start=\"352\" data-end=\"355\" />(b) Shri K. T. Thomas<br data-start=\"376\" data-end=\"379\" />(c) Shri V. S. Achuthanandhan<br data-start=\"408\" data-end=\"411\" />(d) Shri Dharmendra Singh Deol</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"517\" data-end=\"726\">Which Padma Vibhushan 2026 awardee was known for pioneering the <strong data-start=\"581\" data-end=\"597\">&ldquo;Gayaki Ang&rdquo;</strong> style on the violin?<br data-start=\"618\" data-end=\"621\" />निम्नलिखित में से किस पद्म विभूषण 2026 पुरस्कार विजेता को वायलिन पर &ldquo;गायकी अंग&rdquo; शैली के लिए जाना जाता है?</p>\n<p></p>\n<p data-start=\"728\" data-end=\"827\">(a) Ms. N. Rajam<br data-start=\"744\" data-end=\"747\" />(b) Shri K. T. Thomas<br data-start=\"768\" data-end=\"771\" />(c) Shri P. Narayanan<br data-start=\"792\" data-end=\"795\" />(d) Shri Dharmendra Singh Deol</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"888\" data-end=\"1117\">Who played the role of &lsquo;Veeru&rsquo; in the film <em data-start=\"931\" data-end=\"946\">Sholay (1975)</em> and was awarded Padma Vibhushan posthumously in 2026?<br data-start=\"1000\" data-end=\"1003\" />फिल्म <em data-start=\"1009\" data-end=\"1022\">शोले (1975)</em> में &lsquo;वीरू&rsquo; की भूमिका निभाने वाले और 2026 में मरणोपरांत पद्म विभूषण से सम्मानित व्यक्ति कौन थे?</p>\n<p></p>\n<p data-start=\"1119\" data-end=\"1231\">(a) Shri V. S. Achuthanandhan<br data-start=\"1148\" data-end=\"1151\" />(b) Shri Dharmendra Singh Deol<br data-start=\"1181\" data-end=\"1184\" />(c) Shri K. T. Thomas<br data-start=\"1205\" data-end=\"1208\" />(d) Shri P. Narayanan</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"142\" data-end=\"316\">Which of the following Padma Bhushan 2026 awardees was honoured in the field of <strong data-start=\"222\" data-end=\"232\">Sports</strong>?<br data-start=\"233\" data-end=\"236\" />निम्नलिखित में से किसे पद्म भूषण 2026 में <strong data-start=\"278\" data-end=\"285\">खेल</strong> क्षेत्र में सम्मानित किया गया?</p>\n<p></p>\n<p data-start=\"318\" data-end=\"409\">(a) Shri Uday Kotak<br data-start=\"337\" data-end=\"340\" />(b) Shri Vijay Amritraj<br data-start=\"363\" data-end=\"366\" />(c) Shri Mammootty<br data-start=\"384\" data-end=\"387\" />(d) Shri Shibu Soren</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"484\" data-end=\"642\">Which of the following Padma Bhushan 2026 awardees was honoured <strong data-start=\"548\" data-end=\"564\">posthumously</strong>?<br data-start=\"565\" data-end=\"568\" />निम्नलिखित में से किसे पद्म भूषण 2026 में <strong data-start=\"610\" data-end=\"623\">मरणोपरांत</strong> सम्मानित किया गया?</p>\n<ol data-start=\"644\" data-end=\"712\">\n<li data-start=\"644\" data-end=\"667\">\n<p data-start=\"647\" data-end=\"667\">Shri Piyush Pandey</p>\n</li>\n<li data-start=\"668\" data-end=\"689\">\n<p data-start=\"671\" data-end=\"689\">Shri Shibu Soren</p>\n</li>\n<li data-start=\"690\" data-end=\"712\">\n<p data-start=\"693\" data-end=\"712\">Shri V K Malhotra</p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>&nbsp;1 and 2 only</p>",
+      "<p>1, 2 and 3</p>",
+      "<p>2 and 3 only</p>",
+      "<p>1 only</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"847\" data-end=\"924\">Match the following Padma Bhushan 2026 awardees with their respective fields:</p>\n<p data-start=\"926\" data-end=\"996\">निम्नलिखित पद्म भूषण 2026 पुरस्कार विजेताओं को उनके क्षेत्र से मिलाइए:</p>\n<p data-start=\"998\" data-end=\"1108\">A. Ms. Alka Yagnik<br data-start=\"1016\" data-end=\"1019\" />B. Dr. Nori Dattatreyudu<br data-start=\"1043\" data-end=\"1046\" />C. Shri Uday Kotak<br data-start=\"1064\" data-end=\"1067\" />D. Shri Kallipatti Ramasamy Palaniswamy</p>\n<ol data-start=\"1110\" data-end=\"1168\">\n<li data-start=\"1110\" data-end=\"1123\">\n<p data-start=\"1113\" data-end=\"1123\">Medicine</p>\n</li>\n<li data-start=\"1124\" data-end=\"1132\">\n<p data-start=\"1127\" data-end=\"1132\">Art</p>\n</li>\n<li data-start=\"1133\" data-end=\"1154\">\n<p data-start=\"1136\" data-end=\"1154\">Trade &amp; Industry</p>\n</li>\n<li data-start=\"1155\" data-end=\"1168\">\n<p data-start=\"1158\" data-end=\"1168\">Medicine</p>\n</li>\n</ol>\n<p data-start=\"1170\" data-end=\"1178\">Codes:</p>\n<p data-start=\"1180\" data-end=\"1279\">(a) A-2, B-1, C-3, D-4<br data-start=\"1202\" data-end=\"1205\" />(b) A-1, B-2, C-3, D-4<br data-start=\"1227\" data-end=\"1230\" />(c) A-2, B-3, C-1, D-4<br data-start=\"1252\" data-end=\"1255\" />(d) A-3, B-1, C-2, D-4</p>\n<p data-start=\"1281\" data-end=\"1327\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-path-to-node=\"3\"><strong data-path-to-node=\"3\" data-index-in-node=\"0\">&nbsp;Consider the following pairs of 2026 Padma Bhushan recipients and their respective fields. Which of the following are CORRECTLY matched?</strong> <strong data-path-to-node=\"3\" data-index-in-node=\"141\">(2026 के पद्म भूषण प्राप्तकर्ताओं और उनके संबंधित क्षेत्रों के निम्नलिखित युग्मों पर विचार करें। निम्नलिखित में से कौन सा सही सुमेलित है?)</strong></p>\n<ol start=\"1\" data-path-to-node=\"4\">\n<li>\n<p data-path-to-node=\"4,0,0\"><strong data-path-to-node=\"4,0,0\" data-index-in-node=\"0\">Ms. Alka Yagnik:</strong> Art (Maharashtra)</p>\n</li>\n<li>\n<p data-path-to-node=\"4,1,0\"><strong data-path-to-node=\"4,1,0\" data-index-in-node=\"0\">Shri Mammootty:</strong> Art (Kerala)</p>\n</li>\n<li>\n<p data-path-to-node=\"4,2,0\"><strong data-path-to-node=\"4,2,0\" data-index-in-node=\"0\">Shri Uday Kotak:</strong> Trade and Industry (Maharashtra)</p>\n</li>\n<li>\n<p data-path-to-node=\"4,3,0\"><strong>Shri Vijay Amritraj</strong> &ndash; Sports (NRI/USA</p>\n</li>\n<li>\n<p data-path-to-node=\"4,4,0\"><strong data-path-to-node=\"4,4,0\" data-index-in-node=\"0\">Shri Shibu Soren:</strong> Social Work (Jharkhand)</p>\n</li>\n</ol>\n<p data-path-to-node=\"5\"><strong data-path-to-node=\"5\" data-index-in-node=\"0\">Options (विकल्प):</strong> (a) 1, 2, and 3 only (b) 2, 3, and 4 only (c) 1, 2, 3, and 4 only (d) All of the above (1, 2, 3, 4, and 5)</p>\n<p data-path-to-node=\"6\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><strong data-path-to-node=\"6\" data-index-in-node=\"0\">Answer:</strong>&nbsp;<strong data-path-to-node=\"6\" data-index-in-node=\"8\">(c)</strong>&nbsp;<strong data-path-to-node=\"6\" data-index-in-node=\"12\">Explanation:</strong>&nbsp;Statement 5 is incorrect because&nbsp;<strong data-path-to-node=\"6\" data-index-in-node=\"58\">Shri Shibu Soren</strong>&nbsp;was awarded in the field of&nbsp;<strong data-path-to-node=\"6\" data-index-in-node=\"103\">Public Affairs</strong>, not Social Work.</p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-path-to-node=\"8\"><strong data-path-to-node=\"8\" data-index-in-node=\"0\">Which of the following Padma Bhushan 2026 awardees has/have been honored POSTHUMOUSLY (after death)?</strong></p>\n<p data-path-to-node=\"8\"><strong data-path-to-node=\"8\" data-index-in-node=\"105\">(निम्नलिखित में से किस पद्म भूषण 2026 पुरस्कार विजेता को मरणोपरांत सम्मानित किया गया है?)</strong></p>\n<p data-path-to-node=\"9\">I. <strong data-path-to-node=\"9\" data-index-in-node=\"4\">Shri Piyush Pandey</strong> (Art - Maharashtra)</p>\n<p data-path-to-node=\"9\">II. <strong data-path-to-node=\"9\" data-index-in-node=\"47\">Shri Shibu Soren</strong> (Public Affairs - Jharkhand)</p>\n<p data-path-to-node=\"9\">III. <strong data-path-to-node=\"9\" data-index-in-node=\"98\">Shri V K Malhotra</strong> (Public Affairs - Delhi)</p>\n<p data-path-to-node=\"9\">IV. <strong data-path-to-node=\"9\" data-index-in-node=\"145\">Shri Bhagat Singh Koshyari</strong> (Public Affairs - Uttarakhand)</p>\n<p data-path-to-node=\"9\"></p>\n<p data-path-to-node=\"10\"><strong data-path-to-node=\"10\" data-index-in-node=\"0\">Options (विकल्प):</strong> (a) I and III only</p>\n<p data-path-to-node=\"10\">(b) I, II, and III only</p>\n<p data-path-to-node=\"10\">(c) II, III, and IV only</p>\n<p data-path-to-node=\"10\">(d) All of the above</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong data-path-to-node=\"11\" data-index-in-node=\"0\">Answer:</strong>&nbsp;<strong data-path-to-node=\"11\" data-index-in-node=\"8\">(b)</strong>&nbsp;<strong data-path-to-node=\"11\" data-index-in-node=\"12\">Explanation:</strong>&nbsp;Piyush Pandey, Shibu Soren, and V K Malhotra are the three posthumous awardees in this list. Bhagat Singh Koshyari is a living recipient.</p>\n<h3 data-start=\"123\" data-end=\"159\">PADMA BHUSHAN AWARDEE</h3>\n<p></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"161\" data-end=\"1205\">\n<thead data-start=\"161\" data-end=\"241\">\n<tr data-start=\"161\" data-end=\"241\">\n<th class=\"\" data-start=\"161\" data-end=\"185\" data-col-size=\"sm\"><strong data-start=\"163\" data-end=\"184\">Category (श्रेणी)</strong></th>\n<th class=\"\" data-start=\"185\" data-end=\"202\" data-col-size=\"md\"><strong data-start=\"187\" data-end=\"201\">Name (नाम)</strong></th>\n<th class=\"\" data-start=\"202\" data-end=\"241\" data-col-size=\"md\"><strong data-start=\"204\" data-end=\"239\">Field / State (क्षेत्र / राज्य)</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"325\" data-end=\"1205\">\n<tr data-start=\"325\" data-end=\"481\">\n<td data-start=\"325\" data-end=\"363\" data-col-size=\"sm\"><strong data-start=\"327\" data-end=\"362\">Cinema / Music (सिनेमा / संगीत)</strong></td>\n<td data-col-size=\"md\" data-start=\"363\" data-end=\"420\">Alka Yagnik &amp; Mammootty <br />(अलका याज्ञनिक एवं ममूटी)</td>\n<td data-col-size=\"md\" data-start=\"420\" data-end=\"481\">Art &ndash; Maharashtra / Kerala <br />(कला &ndash; महाराष्ट्र / केरल)</td>\n</tr>\n<tr data-start=\"482\" data-end=\"645\">\n<td data-start=\"482\" data-end=\"508\" data-col-size=\"sm\"><strong data-start=\"484\" data-end=\"507\">Medicine (चिकित्सा)</strong></td>\n<td data-col-size=\"md\" data-start=\"508\" data-end=\"599\">K. R. Palaniswamy &amp; Nori Dattatreyudu <br />(के. आर. पलानीस्वामी एवं नो&zwj;री दत्तात्रेयुडु)</td>\n<td data-col-size=\"md\" data-start=\"599\" data-end=\"645\">Tamil Nadu / USA <br />(तमिलनाडु / अमेरिका)</td>\n</tr>\n<tr data-start=\"646\" data-end=\"773\">\n<td data-start=\"646\" data-end=\"671\" data-col-size=\"sm\"><strong data-start=\"648\" data-end=\"670\">Business (व्यवसाय)</strong></td>\n<td data-col-size=\"md\" data-start=\"671\" data-end=\"700\">Uday Kotak <br />(उदय कोटक)</td>\n<td data-col-size=\"md\" data-start=\"700\" data-end=\"773\">Trade &amp; Industry &ndash; Maharashtra <br />(व्यापार एवं उद्योग &ndash; महाराष्ट्र)</td>\n</tr>\n<tr data-start=\"774\" data-end=\"937\">\n<td data-start=\"774\" data-end=\"803\" data-col-size=\"sm\"><strong data-start=\"776\" data-end=\"802\">Posthumous (मरणोपरांत)</strong></td>\n<td data-col-size=\"md\" data-start=\"803\" data-end=\"890\">P. Pandey, S. Soren, V. K. Malhotra <br />(पी. पांडेय, शिबू सोरेन, वी. के. मल्होत्रा)</td>\n<td data-col-size=\"md\" data-start=\"890\" data-end=\"937\">Art / Public Affairs <br />(कला / लोक कार्य)</td>\n</tr>\n<tr data-start=\"938\" data-end=\"1097\">\n<td data-start=\"938\" data-end=\"963\" data-col-size=\"sm\"><strong data-start=\"940\" data-end=\"962\">Politics (राजनीति)</strong></td>\n<td data-col-size=\"md\" data-start=\"963\" data-end=\"1049\">B. S. Koshyari &amp; Vellappally Natesan <br />(बी. एस. कोश्यारी एवं वेल्लप्पल्ली नटेशन)</td>\n<td data-col-size=\"md\" data-start=\"1049\" data-end=\"1097\">Uttarakhand / Kerala <br />(उत्तराखंड / केरल)</td>\n</tr>\n<tr data-start=\"1098\" data-end=\"1205\">\n<td data-start=\"1098\" data-end=\"1117\" data-col-size=\"sm\"><strong data-start=\"1100\" data-end=\"1116\">Sports (खेल)</strong></td>\n<td data-col-size=\"md\" data-start=\"1117\" data-end=\"1154\">Vijay Amritraj <br />(विजय अमृतराज)</td>\n<td data-col-size=\"md\" data-start=\"1154\" data-end=\"1205\">Sports &ndash; USA (NRI) <br />(खेल &ndash; अमेरिका, एनआरआई)</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"162\" data-end=\"357\">Which of the following Padma Bhushan 2026 awardees is correctly matched with his/her contribution?<br data-start=\"260\" data-end=\"263\" />निम्नलिखित में से कौन-सा पद्म भूषण 2026 पुरस्कार विजेता सही रूप से उनके योगदान से मेल खाता है?</p>\n<p data-start=\"359\" data-end=\"520\">(a) Piyush Pandey &ndash; Founder of Kotak Mahindra Bank<br data-start=\"409\" data-end=\"412\" />(b) Uday Kotak &ndash; Trade &amp; Industry<br data-start=\"445\" data-end=\"448\" />(c) Shatavadhani R. Ganesh &ndash; Sports<br data-start=\"483\" data-end=\"486\" />(d) Vijay Amritraj &ndash; Advertising</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>✅&nbsp;<strong data-start=\"524\" data-end=\"543\">Correct Answer:</strong>&nbsp;(b) Uday Kotak &ndash; Trade &amp; Industry</p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"605\" data-end=\"801\">Which of the following Padma Bhushan 2026 awardees was associated with the <strong data-start=\"680\" data-end=\"712\">Jharkhand statehood movement</strong>?<br data-start=\"713\" data-end=\"716\" />निम्नलिखित में से कौन पद्म भूषण 2026 पुरस्कार विजेता झारखंड राज्य आंदोलन से जुड़े थे?</p>\n<p data-start=\"803\" data-end=\"893\">(a) Bhagat Singh Koshyari<br data-start=\"828\" data-end=\"831\" />(b) Vellappally Natesan<br data-start=\"854\" data-end=\"857\" />(c) Shibu Soren<br data-start=\"872\" data-end=\"875\" />(d) V K Malhotra</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>✅&nbsp;<strong data-start=\"897\" data-end=\"916\">Correct Answer:</strong>&nbsp;(c) Shibu Soren</p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"960\" data-end=\"1059\">Which of the following pairs is correctly matched?<br data-start=\"1010\" data-end=\"1013\" />निम्नलिखित में से कौन-सा युग्म सही सुमेलित है?</p>\n<p data-start=\"1061\" data-end=\"1270\">(a) Alka Yagnik &ndash; 3-time National Film Award winner<br data-start=\"1112\" data-end=\"1115\" />(b) Mammootty &ndash; Malayalam cinema legend<br data-start=\"1154\" data-end=\"1157\" />(c) Nori Dattatreyudu &ndash; Gastroenterologist from Tamil Nadu<br data-start=\"1215\" data-end=\"1218\" />(d) K. R. Palaniswamy &ndash; Radiation Oncologist (USA)</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>&nbsp;<strong data-start=\"1274\" data-end=\"1293\">Correct Answer:</strong>&nbsp;(b) Mammootty &ndash; Malayalam cinema legend</p>\n<p data-start=\"58\" data-end=\"206\">(a) <strong data-start=\"62\" data-end=\"77\">Alka Yagnik</strong> &ndash; Legendary playback singer; 7 Filmfare Awards winner.<br data-start=\"132\" data-end=\"135\" />(अलका याज्ञनिक &ndash; प्रसिद्ध पार्श्व गायिका; 7 फिल्मफेयर पुरस्कार विजेता।)</p>\n<p data-start=\"208\" data-end=\"363\">(b) <strong data-start=\"212\" data-end=\"225\">Mammootty</strong> &ndash; Malayalam cinema legend; 3-time National Film Award winner.<br data-start=\"287\" data-end=\"290\" />(ममूटी &ndash; मलयालम सिनेमा के दिग्गज; 3 बार राष्ट्रीय फिल्म पुरस्कार विजेता।)</p>\n<p data-start=\"365\" data-end=\"517\">(c) <strong data-start=\"369\" data-end=\"390\">Nori Dattatreyudu</strong> &ndash; World-renowned Radiation Oncologist (USA/NRI).<br data-start=\"439\" data-end=\"442\" />(नोरी दत्तात्रेयुडु &ndash; विश्व प्रसिद्ध रेडिएशन ऑन्कोलॉजिस्ट, अमेरिका/एनआरआई।)</p>\n<p></p>\n<p data-start=\"519\" data-end=\"685\" data-is-last-node=\"\" data-is-only-node=\"\">(d) <strong data-start=\"523\" data-end=\"558\">Kallipatti Ramasamy Palaniswamy</strong> &ndash; Eminent Gastroenterologist from Tamil Nadu.<br data-start=\"604\" data-end=\"607\" />(कल्लिपट्टी रामासामी पलानीस्वामी &ndash; तमिलनाडु के प्रख्यात गैस्ट्रोएंटरोलॉजिस्ट।)</p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"128\" data-end=\"267\">With reference to Padma Awards 2026, consider the following statements:<br data-start=\"199\" data-end=\"202\" />पद्म पुरस्कार 2026 के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"269\" data-end=\"534\">\n<li data-start=\"269\" data-end=\"392\">\n<p data-start=\"272\" data-end=\"392\">Total awards were 131 (5 Vibhushan, 13 Bhushan, 113 Shri).<br data-start=\"330\" data-end=\"333\" />कुल 131 पुरस्कार दिए गए (5 विभूषण, 13 भूषण, 113 श्री)।</p>\n</li>\n<li data-start=\"394\" data-end=\"534\">\n<p data-start=\"397\" data-end=\"534\">There were 19 women, 16 posthumous and 6 Foreigners/NRI awardees.<br data-start=\"462\" data-end=\"465\" />19 महिलाएं, 16 मरणोपरांत तथा 6 विदेशी/एनआरआई पुरस्कार विजेता थे।</p>\n</li>\n</ol>\n<p data-start=\"536\" data-end=\"624\">Which of the above statements is/are correct?<br data-start=\"581\" data-end=\"584\" />उपरोक्त में से कौन-सा/से कथन सही है/हैं?</p>\n<p data-start=\"626\" data-end=\"741\">(a) 1 only / केवल 1<br data-start=\"645\" data-end=\"648\" />(b) 2 only / केवल 2<br data-start=\"667\" data-end=\"670\" />(c) Both 1 and 2 / 1 और 2 दोनों<br data-start=\"701\" data-end=\"704\" />(d) Neither 1 nor 2 / न तो 1 न ही 2</p>\n<p data-start=\"743\" data-end=\"788\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>✅&nbsp;<strong data-start=\"745\" data-end=\"788\">Answer: (c) Both 1 and 2 / 1 और 2 दोनों</strong></p>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"814\" data-end=\"1067\">Who among the following was awarded Padma Shri 2026 for leading India to the <strong data-start=\"891\" data-end=\"946\">T20 World Cup 2024 and Champions Trophy 2025 titles</strong>?<br data-start=\"947\" data-end=\"950\" />निम्नलिखित में से किसे टी20 विश्व कप 2024 और चैंपियंस ट्रॉफी 2025 में भारत की कप्तानी के लिए पद्म श्री 2026 दिया गया?</p>\n<p data-start=\"1069\" data-end=\"1205\">(a) Rohit Sharma / रोहित शर्मा<br data-start=\"1099\" data-end=\"1102\" />(b) Harmanpreet Kaur / हरमनप्रीत कौर<br data-start=\"1138\" data-end=\"1141\" />(c) Savita Punia / सविता पुनिया<br data-start=\"1172\" data-end=\"1175\" />(d) Vijay Kumar / विजय कुमार</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>✅&nbsp;<strong data-start=\"1209\" data-end=\"1251\">Answer: (a) Rohit Sharma / रोहित शर्मा</strong></p>\n<h1 data-start=\"102\" data-end=\"153\">Padma Shri 2026 &ndash; Quick Revision Cheat Sheet</h1>\n<hr data-start=\"204\" data-end=\"207\" />\n<h2 data-start=\"209\" data-end=\"253\">&nbsp;2026 Overall Statistics&nbsp;</h2>\n<ul data-start=\"255\" data-end=\"507\">\n<li data-start=\"255\" data-end=\"370\">\n<p data-start=\"257\" data-end=\"370\"><strong data-start=\"257\" data-end=\"274\">Total Awards:</strong> 131 (5 Vibhushan, 13 Bhushan, 113 Shri)<br data-start=\"314\" data-end=\"317\" /><strong data-start=\"319\" data-end=\"336\">कुल पुरस्कार:</strong> 131 (5 विभूषण, 13 भूषण, 113 श्री)</p>\n</li>\n<li data-start=\"372\" data-end=\"409\">\n<p data-start=\"374\" data-end=\"409\"><strong data-start=\"374\" data-end=\"384\">Women:</strong> 19<br data-start=\"387\" data-end=\"390\" /><strong data-start=\"392\" data-end=\"404\">महिलाएँ:</strong> 19</p>\n</li>\n<li data-start=\"411\" data-end=\"455\">\n<p data-start=\"413\" data-end=\"455\"><strong data-start=\"413\" data-end=\"428\">Posthumous:</strong> 16<br data-start=\"431\" data-end=\"434\" /><strong data-start=\"436\" data-end=\"450\">मरणोपरांत:</strong> 16</p>\n</li>\n<li data-start=\"457\" data-end=\"507\">\n<p data-start=\"459\" data-end=\"507\"><strong data-start=\"459\" data-end=\"478\">Foreigners/NRI:</strong> 6<br data-start=\"480\" data-end=\"483\" /><strong data-start=\"485\" data-end=\"503\">विदेशी/एनआरआई:</strong> 6</p>\n</li>\n</ul>\n<hr data-start=\"509\" data-end=\"512\" />\n<h2 data-start=\"514\" data-end=\"564\">&nbsp;Celebrities &amp; Sports Icons (प्रमुख हस्तियाँ)</h2>\n<ul data-start=\"566\" data-end=\"1075\">\n<li data-start=\"566\" data-end=\"694\">\n<p data-start=\"568\" data-end=\"694\"><strong data-start=\"568\" data-end=\"603\">R. Madhavan (Maharashtra | Art)</strong> &ndash; Cinema &amp; film <em data-start=\"620\" data-end=\"630\">Rocketry</em><br data-start=\"630\" data-end=\"633\" /><strong data-start=\"635\" data-end=\"648\">आर. माधवन</strong> &ndash; सिनेमा व फिल्म <em data-start=\"666\" data-end=\"676\">रॉकेट्री</em> के लिए सम्मानित</p>\n</li>\n<li data-start=\"696\" data-end=\"849\">\n<p data-start=\"698\" data-end=\"849\"><strong data-start=\"698\" data-end=\"737\">Rohit Sharma (Maharashtra | Sports)</strong> &ndash; T20 WC 2024 &amp; CT 2025 Captain<br data-start=\"769\" data-end=\"772\" /><strong data-start=\"774\" data-end=\"789\">रोहित शर्मा</strong> &ndash; टी20 विश्व कप 2024 व चैंपियंस ट्रॉफी 2025 विजेता कप्तान</p>\n</li>\n<li data-start=\"851\" data-end=\"964\">\n<p data-start=\"853\" data-end=\"964\"><strong data-start=\"853\" data-end=\"891\">Harmanpreet Kaur (Punjab | Sports)</strong> &ndash; Women&rsquo;s ODI WC 2025<br data-start=\"913\" data-end=\"916\" /><strong data-start=\"918\" data-end=\"935\">हरमनप्रीत कौर</strong> &ndash; महिला वनडे विश्व कप 2025</p>\n</li>\n<li data-start=\"966\" data-end=\"1075\">\n<p data-start=\"968\" data-end=\"1075\"><strong data-start=\"968\" data-end=\"1003\">Savita Punia (Haryana | Sports)</strong> &ndash; Women&rsquo;s Hockey Goalkeeper<br data-start=\"1031\" data-end=\"1034\" /><strong data-start=\"1036\" data-end=\"1052\">सविता पुनिया</strong> &ndash; महिला हॉकी गोलकीपर</p>\n</li>\n</ul>\n<hr data-start=\"1077\" data-end=\"1080\" />\n<h2 data-start=\"1082\" data-end=\"1128\">&nbsp;Constitutional / Institutional Leaders</h2>\n<p data-start=\"1129\" data-end=\"1156\">(संवैधानिक व संस्थागत नेता)</p>\n<ul data-start=\"1158\" data-end=\"1533\">\n<li data-start=\"1158\" data-end=\"1283\">\n<p data-start=\"1160\" data-end=\"1283\"><strong data-start=\"1160\" data-end=\"1220\">Mamidala Jagadesh Kumar (Delhi | Literature &amp; Education)</strong> &ndash; Chairman, UGC<br data-start=\"1236\" data-end=\"1239\" /><strong data-start=\"1241\" data-end=\"1264\">ममिडाला जगदीश कुमार</strong> &ndash; यूजीसी अध्यक्ष</p>\n</li>\n<li data-start=\"1285\" data-end=\"1405\">\n<p data-start=\"1287\" data-end=\"1405\"><strong data-start=\"1287\" data-end=\"1334\">K. Vijay Kumar (Tamil Nadu | Civil Service)</strong> &ndash; IPS; Veerappan STF<br data-start=\"1355\" data-end=\"1358\" /><strong data-start=\"1360\" data-end=\"1378\">के. विजय कुमार</strong> &ndash; आईपीएस; वीरप्पन अभियान</p>\n</li>\n<li data-start=\"1407\" data-end=\"1533\">\n<p data-start=\"1409\" data-end=\"1533\"><strong data-start=\"1409\" data-end=\"1448\">R.V.S. Mani (Delhi | Civil Service)</strong> &ndash; Former Home Ministry Official<br data-start=\"1480\" data-end=\"1483\" /><strong data-start=\"1485\" data-end=\"1502\">आर.वी.एस. मणि</strong> &ndash; पूर्व गृह मंत्रालय अधिकारी</p>\n</li>\n</ul>\n<hr data-start=\"1535\" data-end=\"1538\" />\n<h2 data-start=\"1540\" data-end=\"1580\">&nbsp;Foreigners / NRI (विदेशी / एनआरआई)</h2>\n<ul data-start=\"1582\" data-end=\"2029\">\n<li data-start=\"1582\" data-end=\"1698\">\n<p data-start=\"1584\" data-end=\"1698\"><strong data-start=\"1584\" data-end=\"1623\">Lars-Christian Koch (Germany | Art)</strong> &ndash; Ethnomusicologist<br data-start=\"1643\" data-end=\"1646\" /><strong data-start=\"1648\" data-end=\"1672\">लार्स-क्रिश्चियन कोच</strong> &ndash; भारतीय संगीत विशेषज्ञ</p>\n</li>\n<li data-start=\"1700\" data-end=\"1800\">\n<p data-start=\"1702\" data-end=\"1800\"><strong data-start=\"1702\" data-end=\"1746\">Liudmila Khokhlova (Russia | Literature)</strong><br data-start=\"1746\" data-end=\"1749\" /><strong data-start=\"1751\" data-end=\"1772\">लियुडमिला खोखलोवा</strong> &ndash; भारतीय भाषाओं की विदुषी</p>\n</li>\n<li data-start=\"1802\" data-end=\"1923\">\n<p data-start=\"1804\" data-end=\"1923\"><strong data-start=\"1804\" data-end=\"1862\">Vladimer Mestvirishvili (Georgia | Sports, Posthumous)</strong><br data-start=\"1862\" data-end=\"1865\" /><strong data-start=\"1867\" data-end=\"1896\">व्लादिमेर मेस्तवीरिश्विली</strong> &ndash; कुश्ती कोच (मरणोपरांत)</p>\n</li>\n<li data-start=\"1925\" data-end=\"2029\">\n<p data-start=\"1927\" data-end=\"2029\"><strong data-start=\"1927\" data-end=\"1962\">Prateek Sharma (USA | Medicine)</strong> &ndash; Gastroenterologist<br data-start=\"1983\" data-end=\"1986\" /><strong data-start=\"1988\" data-end=\"2004\">प्रतीक शर्मा</strong> &ndash; गैस्ट्रोएंटरोलॉजिस्ट</p>\n</li>\n</ul>\n<hr data-start=\"2031\" data-end=\"2034\" />\n<h2 data-start=\"2036\" data-end=\"2064\">&nbsp;Posthumous (मरणोपरांत)</h2>\n<ul data-start=\"2066\" data-end=\"2218\">\n<li data-start=\"2066\" data-end=\"2097\">\n<p data-start=\"2068\" data-end=\"2097\">Bishwa Bandhu (Bihar | Art)</p>\n</li>\n<li data-start=\"2098\" data-end=\"2132\">\n<p data-start=\"2100\" data-end=\"2132\">R. Krishnan (Tamil Nadu | Art)</p>\n</li>\n<li data-start=\"2133\" data-end=\"2168\">\n<p data-start=\"2135\" data-end=\"2168\">Satish Shah (Maharashtra | Art)</p>\n</li>\n<li data-start=\"2169\" data-end=\"2218\">\n<p data-start=\"2171\" data-end=\"2218\">Kabindra Purkayastha (Assam | Public Affairs)</p>\n</li>\n</ul>\n<hr data-start=\"2220\" data-end=\"2223\" />\n<h2 data-start=\"2225\" data-end=\"2269\">Culture &amp; Science (संस्कृति व विज्ञान)</h2>\n<ul data-start=\"2271\" data-end=\"2706\">\n<li data-start=\"2271\" data-end=\"2381\">\n<p data-start=\"2273\" data-end=\"2381\"><strong data-start=\"2273\" data-end=\"2313\">Gayatri &amp; Ranjani (Tamil Nadu | Art)</strong> &ndash; Duo (Carnatic Music)<br data-start=\"2336\" data-end=\"2339\" /><strong data-start=\"2341\" data-end=\"2358\">गायत्री-रंजनी</strong> &ndash; युगल (कर्नाटक संगीत)</p>\n</li>\n<li data-start=\"2383\" data-end=\"2476\">\n<p data-start=\"2385\" data-end=\"2476\"><strong data-start=\"2385\" data-end=\"2427\">Tarun Bhattacharya (West Bengal | Art)</strong> &ndash; Santoor<br data-start=\"2437\" data-end=\"2440\" /><strong data-start=\"2442\" data-end=\"2461\">तरुण भट्टाचार्य</strong> &ndash; संतूर वादक</p>\n</li>\n<li data-start=\"2478\" data-end=\"2595\">\n<p data-start=\"2480\" data-end=\"2595\"><strong data-start=\"2480\" data-end=\"2520\">A.E. Muthunayagam (Kerala | Science)</strong> &ndash; ISRO Liquid Propulsion<br data-start=\"2545\" data-end=\"2548\" /><strong data-start=\"2550\" data-end=\"2568\">ए.ई. मुथुनायगम</strong> &ndash; इसरो लिक्विड प्रोपल्शन</p>\n</li>\n<li data-start=\"2597\" data-end=\"2706\">\n<p data-start=\"2599\" data-end=\"2706\"><strong data-start=\"2599\" data-end=\"2637\">V. Kamakoti (Tamil Nadu | Science)</strong> &ndash; Director, IIT Madras<br data-start=\"2660\" data-end=\"2663\" /><strong data-start=\"2665\" data-end=\"2680\">वी. कामकोटी</strong> &ndash; निदेशक, आईआईटी मद्रास</p>\n</li>\n</ul>\n<hr data-start=\"2708\" data-end=\"2711\" />\n<h2 data-start=\"2713\" data-end=\"2753\">&nbsp;Unsung Heroes (&ldquo;People&rsquo;s Padma&rdquo;)</h2>\n<p data-start=\"2754\" data-end=\"2767\">(अनसुने नायक)</p>\n<ul data-start=\"2769\" data-end=\"3010\">\n<li data-start=\"2769\" data-end=\"2831\">\n<p data-start=\"2771\" data-end=\"2831\"><strong data-start=\"2771\" data-end=\"2797\">Anke Gowda (Karnataka)</strong> &ndash; 10 लाख+ पुस्तकों का पुस्तकालय</p>\n</li>\n<li data-start=\"2832\" data-end=\"2889\">\n<p data-start=\"2834\" data-end=\"2889\"><strong data-start=\"2834\" data-end=\"2868\">Dr. Budhri Tati (Chhattisgarh)</strong> &ndash; जनजातीय चिकित्सक</p>\n</li>\n<li data-start=\"2890\" data-end=\"2945\">\n<p data-start=\"2892\" data-end=\"2945\"><strong data-start=\"2892\" data-end=\"2922\">Shrirang Lad (Maharashtra)</strong> &ndash; जैविक खेती अग्रदूत</p>\n</li>\n<li data-start=\"2946\" data-end=\"3010\">\n<p data-start=\"2948\" data-end=\"3010\"><strong data-start=\"2948\" data-end=\"2977\">Libia Lobo Sardesai (Goa)</strong> &ndash; 100 वर्षीय स्वतंत्रता सेनानी</p>\n</li>\n</ul>\n<hr data-start=\"3012\" data-end=\"3015\" />\n<h2 data-start=\"3017\" data-end=\"3073\">&nbsp;Final Must-Remember Points (अंतिम महत्वपूर्ण तथ्य)</h2>\n<p></p>\n<ul data-start=\"3075\" data-end=\"3422\">\n<li data-start=\"3075\" data-end=\"3180\">\n<p data-start=\"3077\" data-end=\"3180\"><strong data-start=\"3077\" data-end=\"3095\">Article 18(1):</strong> Padma awards are not titles.<br data-start=\"3124\" data-end=\"3127\" /><strong data-start=\"3129\" data-end=\"3148\">अनुच्छेद 18(1):</strong> पद्म पुरस्कार उपाधि नहीं हैं।</p>\n</li>\n<li data-start=\"3182\" data-end=\"3229\">\n<p data-start=\"3184\" data-end=\"3229\"><strong data-start=\"3184\" data-end=\"3203\">Duo Cases 2026:</strong> 2<br data-start=\"3205\" data-end=\"3208\" /><strong data-start=\"3210\" data-end=\"3225\">युगल मामले:</strong> 2</p>\n</li>\n<li data-start=\"3231\" data-end=\"3345\">\n<p data-start=\"3233\" data-end=\"3345\"><strong data-start=\"3233\" data-end=\"3256\">Maharashtra Factor:</strong> Highest Padma Bhushan (3) + High Shri count<br data-start=\"3300\" data-end=\"3303\" /><strong data-start=\"3305\" data-end=\"3320\">महाराष्ट्र:</strong> सर्वाधिक पद्म भूषण (3)</p>\n</li>\n<li data-start=\"3347\" data-end=\"3422\">\n<p data-start=\"3349\" data-end=\"3422\"><strong data-start=\"3349\" data-end=\"3367\">Unsung Heroes:</strong> ~45 grassroots awardees<br data-start=\"3391\" data-end=\"3394\" /><strong data-start=\"3396\" data-end=\"3412\">अनसुने नायक:</strong> लगभग 45</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"1277\" data-end=\"1376\">Which of the following pairs is correctly matched?<br data-start=\"1327\" data-end=\"1330\" />निम्नलिखित में से कौन-सा युग्म सही सुमेलित है?</p>\n<p data-start=\"1378\" data-end=\"1492\">(a) A.E. Muthunayagam &ndash; ISRO Liquid Propulsion Systems<br data-start=\"1432\" data-end=\"1435\" />ए. ई. मुथुनायगम &ndash; इसरो के लिक्विड प्रोपल्शन सिस्टम</p>\n<p data-start=\"1494\" data-end=\"1578\">(b) V. Kamakoti &ndash; Governor of Tamil Nadu<br data-start=\"1534\" data-end=\"1537\" />वी. कामकोटी &ndash; तमिलनाडु के राज्यपाल</p>\n<p data-start=\"1580\" data-end=\"1651\">(c) Mamidala Jagadesh Kumar &ndash; Sports<br data-start=\"1616\" data-end=\"1619\" />ममिडाला जगदीश कुमार &ndash; खेल</p>\n<p data-start=\"1653\" data-end=\"1716\">(d) R. Madhavan &ndash; Civil Service<br data-start=\"1684\" data-end=\"1687\" />आर. माधवन &ndash; सिविल सेवा</p>\n<p data-start=\"1718\" data-end=\"1786\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<div class=\"pointer-events-none h-px w-px absolute bottom-0\" aria-hidden=\"true\" data-edge=\"true\"></div>\n<div class=\"flex flex-col text-sm pb-25\">\n<article class=\"text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]\" dir=\"auto\" tabindex=\"-1\" data-turn-id=\"request-WEB:264f428e-8028-49aa-977c-a1d011789717-28\" data-testid=\"conversation-turn-58\" data-scroll-anchor=\"true\" data-turn=\"assistant\">\n<div class=\"text-base my-auto mx-auto pb-10 [--thread-content-margin:--spacing(4)] @w-sm/main:[--thread-content-margin:--spacing(6)] @w-lg/main:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)\">\n<div class=\"[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn\">\n<div class=\"flex max-w-full flex-col grow\">\n<div class=\"min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1\" data-message-author-role=\"assistant\" data-message-id=\"f27aa16b-395f-4c8d-8969-c9e30d02b7af\" data-message-model-slug=\"gpt-5-2\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[1px]\">\n<div class=\"markdown prose dark:prose-invert w-full wrap-break-word light markdown-new-styling\">\n<p data-start=\"58\" data-end=\"241\">(a) <strong data-start=\"62\" data-end=\"84\">A. E. Muthunayagam</strong> &ndash; Architect of ISRO&rsquo;s Liquid Propulsion Systems (Science | Kerala)<br data-start=\"151\" data-end=\"154\" />ए. ई. मुथुनायगम &ndash; इसरो के लिक्विड प्रोपल्शन सिस्टम के प्रमुख वास्तुकार (विज्ञान | केरल)</p>\n<p data-start=\"243\" data-end=\"367\">(b) <strong data-start=\"247\" data-end=\"262\">V. Kamakoti</strong> &ndash; Director, IIT Madras (Science | Tamil Nadu)<br data-start=\"308\" data-end=\"311\" />वी. कामकोटी &ndash; निदेशक, आईआईटी मद्रास (विज्ञान | तमिलनाडु)</p>\n<p data-start=\"369\" data-end=\"572\">(c) <strong data-start=\"373\" data-end=\"400\">Mamidala Jagadesh Kumar</strong> &ndash; Chairman, UGC; Former Vice-Chancellor, JNU (Literature &amp; Education | Delhi)<br data-start=\"478\" data-end=\"481\" />ममिडाला जगदीश कुमार &ndash; यूजीसी के अध्यक्ष; पूर्व कुलपति, जेएनयू (साहित्य एवं शिक्षा | दिल्ली)</p>\n<p data-start=\"574\" data-end=\"811\" data-is-last-node=\"\" data-is-only-node=\"\">(d) <strong data-start=\"578\" data-end=\"616\">R. Madhavan (Madhavan Ranganathan)</strong> &ndash; Indian Actor &amp; Director; Recognised for contribution to Cinema (Art | Maharashtra)<br data-start=\"701\" data-end=\"704\" />आर. माधवन (माधवन रंगनाथन) &ndash; भारतीय अभिनेता एवं निर्देशक; सिनेमा में योगदान हेतु सम्मानित (कला | महाराष्ट्र)</p>\n</div>\n</div>\n</div>\n</div>\n<div class=\"z-0 flex min-h-[46px] justify-start\"></div>\n<div class=\"mt-3 w-full empty:hidden\">\n<div class=\"text-center\"></div>\n</div>\n</div>\n</div>\n</article>\n</div>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  },
+  {
+    "question": "<p data-start=\"64\" data-end=\"232\">With reference to <strong data-start=\"82\" data-end=\"110\">Padma Shri 2026 awardees</strong>, consider the following statements:<br data-start=\"146\" data-end=\"149\" /><strong data-start=\"149\" data-end=\"232\">पद्म श्री 2026 पुरस्कार विजेताओं के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</strong></p>\n<ol data-start=\"234\" data-end=\"1650\">\n<li data-start=\"234\" data-end=\"380\">\n<p data-start=\"237\" data-end=\"380\">Rohit Sharma was awarded in Sports and belongs to Maharashtra.<br data-start=\"299\" data-end=\"302\" />रोहित शर्मा को खेल क्षेत्र में सम्मानित किया गया और वे महाराष्ट्र से हैं।</p>\n</li>\n<li data-start=\"382\" data-end=\"618\">\n<p data-start=\"385\" data-end=\"618\">A. E. Muthunayagam was honoured in Science &amp; Engineering and is known for ISRO&rsquo;s Liquid Propulsion Systems.<br data-start=\"492\" data-end=\"495\" />ए. ई. मुथुनायगम को विज्ञान एवं अभियांत्रिकी में सम्मानित किया गया और वे इसरो के लिक्विड प्रोपल्शन सिस्टम से जुड़े हैं।</p>\n</li>\n<li data-start=\"620\" data-end=\"833\">\n<p data-start=\"623\" data-end=\"833\">Mamidala Jagadesh Kumar, Chairman of UGC, was awarded in Literature &amp; Education and belongs to Delhi.<br data-start=\"724\" data-end=\"727\" />ममिडाला जगदीश कुमार, यूजीसी अध्यक्ष, को साहित्य एवं शिक्षा में सम्मानित किया गया और वे दिल्ली से हैं।</p>\n</li>\n<li data-start=\"835\" data-end=\"1030\">\n<p data-start=\"838\" data-end=\"1030\">Gayatri &amp; Ranjani (Tamil Nadu) and R. Godbole &amp; S. Godbole (Chhattisgarh) were Duo cases in 2026.<br data-start=\"935\" data-end=\"938\" />गायत्री-रंजनी (तमिलनाडु) तथा आर. गोडबोले&ndash;एस. गोडबोले (छत्तीसगढ़) 2026 के युगल मामले थे।</p>\n</li>\n<li data-start=\"1032\" data-end=\"1219\">\n<p data-start=\"1035\" data-end=\"1219\">Satish Shah (Maharashtra) and Bishwa Bandhu (Bihar) were posthumous awardees in Art.<br data-start=\"1119\" data-end=\"1122\" />सतीश शाह (महाराष्ट्र) और बिश्वा बंधु (बिहार) को कला क्षेत्र में मरणोपरांत सम्मानित किया गया।</p>\n</li>\n<li data-start=\"1221\" data-end=\"1424\">\n<p data-start=\"1224\" data-end=\"1424\">Prateek Sharma (USA) and Lars-Christian Koch (Germany) were among the foreign/NRI awardees.<br data-start=\"1315\" data-end=\"1318\" />प्रतीक शर्मा (अमेरिका) और लार्स-क्रिश्चियन कोच (जर्मनी) विदेशी/एनआरआई पुरस्कार विजेताओं में शामिल थे।</p>\n</li>\n<li data-start=\"1426\" data-end=\"1650\">\n<p data-start=\"1429\" data-end=\"1650\">Shrirang Devaba Lad (Maharashtra) was honoured for Agriculture and Anke Gowda (Karnataka) for Social Work.<br data-start=\"1535\" data-end=\"1538\" />श्रीरंग देवाबा लाड (महाराष्ट्र) को कृषि तथा अंके गौड़ा (कर्नाटक) को सामाजिक कार्य के लिए सम्मानित किया गया।</p>\n</li>\n</ol>\n<p data-start=\"1652\" data-end=\"1731\">Which of the above statements are correct?<br data-start=\"1694\" data-end=\"1697\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p></p>\n<p data-start=\"1733\" data-end=\"1845\">(a) 1, 2, 3 and 4 only<br data-start=\"1755\" data-end=\"1758\" />(b) 1, 2, 3, 4 and 5 only<br data-start=\"1783\" data-end=\"1786\" />(c) 1, 2, 3, 4, 5 and 6 only<br data-start=\"1814\" data-end=\"1817\" />(d) 1, 2, 3, 4, 5, 6 and 7</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<h2 style=\"text-align: center;\" data-start=\"84\" data-end=\"132\">PADMA SHREE \"Personality Focus\" Exam Table</h2>\n<p></p>\n<div class=\"TyagGW_tableContainer\">\n<div class=\"group TyagGW_tableWrapper flex flex-col-reverse w-fit\">\n<table class=\"w-fit min-w-(--thread-content-width)\" data-start=\"171\" data-end=\"1581\">\n<thead data-start=\"171\" data-end=\"269\">\n<tr data-start=\"171\" data-end=\"269\">\n<th class=\"\" data-start=\"171\" data-end=\"188\" data-col-size=\"md\"><strong data-start=\"173\" data-end=\"187\">Name (नाम)</strong></th>\n<th class=\"\" data-start=\"188\" data-end=\"210\" data-col-size=\"md\"><strong data-start=\"190\" data-end=\"209\">Field (क्षेत्र)</strong></th>\n<th class=\"\" data-start=\"210\" data-end=\"230\" data-col-size=\"sm\"><strong data-start=\"212\" data-end=\"229\">State (राज्य)</strong></th>\n<th class=\"\" data-start=\"230\" data-end=\"269\" data-col-size=\"lg\"><strong data-start=\"232\" data-end=\"267\">Key Achievement (मुख्य उपलब्धि)</strong></th>\n</tr>\n</thead>\n<tbody data-start=\"367\" data-end=\"1581\">\n<tr data-start=\"367\" data-end=\"534\">\n<td data-start=\"367\" data-end=\"400\" data-col-size=\"md\"><strong data-start=\"369\" data-end=\"399\">Rohit Sharma (रोहित शर्मा)</strong></td>\n<td data-col-size=\"md\" data-start=\"400\" data-end=\"415\">Sports (खेल)</td>\n<td data-col-size=\"sm\" data-start=\"415\" data-end=\"442\">Maharashtra (महाराष्ट्र)</td>\n<td data-col-size=\"lg\" data-start=\"442\" data-end=\"534\">Captain of the World Cup-winning Indian team. <br />विश्व कप विजेता भारतीय टीम के कप्तान।</td>\n</tr>\n<tr data-start=\"535\" data-end=\"680\">\n<td data-start=\"535\" data-end=\"565\" data-col-size=\"md\"><strong data-start=\"537\" data-end=\"564\">R. Madhavan (आर. माधवन)</strong></td>\n<td data-col-size=\"md\" data-start=\"565\" data-end=\"577\">Art (कला)</td>\n<td data-col-size=\"sm\" data-start=\"577\" data-end=\"604\">Maharashtra (महाराष्ट्र)</td>\n<td data-col-size=\"lg\" data-start=\"604\" data-end=\"680\">Legendary actor and filmmaker. <br />प्रसिद्ध अभिनेता एवं फिल्म निर्माता।</td>\n</tr>\n<tr data-start=\"681\" data-end=\"836\">\n<td data-start=\"681\" data-end=\"720\" data-col-size=\"md\"><strong data-start=\"683\" data-end=\"719\">Harmanpreet Kaur (हरमनप्रीत कौर)</strong></td>\n<td data-col-size=\"md\" data-start=\"720\" data-end=\"735\">Sports (खेल)</td>\n<td data-col-size=\"sm\" data-start=\"735\" data-end=\"752\">Punjab (पंजाब)</td>\n<td data-col-size=\"lg\" data-start=\"752\" data-end=\"836\">Captain of Indian Women's Cricket team. <br />भारतीय महिला क्रिकेट टीम की कप्तान।</td>\n</tr>\n<tr data-start=\"837\" data-end=\"1015\">\n<td data-start=\"837\" data-end=\"889\" data-col-size=\"md\"><strong data-start=\"839\" data-end=\"888\">Mamidala Jagadesh Kumar (ममिडाला जगदीश कुमार)</strong></td>\n<td data-col-size=\"md\" data-start=\"889\" data-end=\"935\">Literature &amp; Education (साहित्य एवं शिक्षा)</td>\n<td data-col-size=\"sm\" data-start=\"935\" data-end=\"952\">Delhi (दिल्ली)</td>\n<td data-col-size=\"lg\" data-start=\"952\" data-end=\"1015\">Current Chairperson of UGC. <br />यूजीसी के वर्तमान अध्यक्ष।</td>\n</tr>\n<tr data-start=\"1016\" data-end=\"1188\">\n<td data-start=\"1016\" data-end=\"1063\" data-col-size=\"md\"><strong data-start=\"1018\" data-end=\"1062\">Prosenjit Chatterjee (प्रोसेनजीत चटर्जी)</strong></td>\n<td data-col-size=\"md\" data-start=\"1063\" data-end=\"1075\">Art (कला)</td>\n<td data-col-size=\"sm\" data-start=\"1075\" data-end=\"1104\">West Bengal (पश्चिम बंगाल)</td>\n<td data-col-size=\"lg\" data-start=\"1104\" data-end=\"1188\">Icon of Bengali Cinema (&ldquo;Bumba Da&rdquo;). <br />बंगाली सिनेमा के प्रतीक (&ldquo;बुम्बा दा&rdquo;)।</td>\n</tr>\n<tr data-start=\"1189\" data-end=\"1378\">\n<td data-start=\"1189\" data-end=\"1223\" data-col-size=\"md\"><strong data-start=\"1191\" data-end=\"1222\">Savita Punia (सविता पुनिया)</strong></td>\n<td data-col-size=\"md\" data-start=\"1223\" data-end=\"1238\">Sports (खेल)</td>\n<td data-col-size=\"sm\" data-start=\"1238\" data-end=\"1258\">Haryana (हरियाणा)</td>\n<td data-col-size=\"lg\" data-start=\"1258\" data-end=\"1378\">Former captain and goalkeeper of Indian Women&rsquo;s Hockey team. <br />भारतीय महिला हॉकी टीम की पूर्व कप्तान एवं गोलकीपर।</td>\n</tr>\n<tr data-start=\"1379\" data-end=\"1581\">\n<td data-start=\"1379\" data-end=\"1417\" data-col-size=\"md\"><strong data-start=\"1381\" data-end=\"1416\">K. Vijay Kumar (के. विजय कुमार)</strong></td>\n<td data-col-size=\"md\" data-start=\"1417\" data-end=\"1446\">Civil Service (सिविल सेवा)</td>\n<td data-col-size=\"sm\" data-start=\"1446\" data-end=\"1470\">Tamil Nadu (तमिलनाडु)</td>\n<td data-col-size=\"lg\" data-start=\"1470\" data-end=\"1581\">Former IPS officer; known for Veerappan mission. <br />पूर्व आईपीएस अधिकारी; वीरप्पन अभियान के लिए प्रसिद्ध।</td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "PADMA AWARDS 2026"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

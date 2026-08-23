@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YATRI Mock Hub - Time and Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf3e6; --paper2:#f3e8d4; --ink:#3a2f22; --muted:#8a7a5a;
+    --brown:#8a5a2b; --brown-d:#6e4620; --green:#2e7d4f; --green-d:#245f3d;
+    --red:#b23a3a; --tan:#cbb996; --line:#e4d4b3;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    width:100%;
+  }
+  .hindi{font-family:'Noto Sans Devanagari',sans-serif;}
+  h1,h2,h3,.brand{font-family:'Fraunces',serif;}
+  #app{max-width:760px;margin:0 auto;padding:14px 14px 34px;width:100%;}
+
+  /* ---------- Header ---------- */
+  .site-header{display:none;text-align:center;margin-bottom:18px;}
+  .site-header.show{display:block;}
+  .site-header h1{font-size:2rem;color:var(--brown-d);margin:0 0 10px;}
+  .eyebrow{display:block;font-size:1.15rem;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:8px;}
+  .telegram-btn{
+    display:inline-flex;align-items:center;gap:8px;background:#2481cc;color:#fff;
+    padding:9px 18px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .topic-pill{
+    display:inline-block;margin-top:12px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);padding:6px 16px;border-radius:999px;font-size:.85rem;font-weight:600;
+  }
+
+  /* ---------- Start Screen ---------- */
+  .start-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 20px;text-align:center;box-shadow:0 4px 18px rgba(90,60,20,.08);}
+  .start-card h2{font-size:1.5rem;color:var(--ink);margin:0 0 20px;}
+  .info-boxes{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+  .info-box{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:14px 22px;min-width:130px;}
+  .info-box .num{font-size:1.6rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .info-box .lbl{font-size:.8rem;color:#7a6a54;margin-top:2px;}
+  .start-btn{
+    background:var(--green);color:#fff;border:none;padding:14px 38px;border-radius:999px;
+    font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(46,125,79,.3);
+    transition:transform .15s, background .15s;
+  }
+  .start-btn:hover{background:var(--green-d);transform:translateY(-1px);}
+
+  /* ---------- Test top bar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:10px 12px;margin-bottom:14px;position:relative;z-index:20;
+  }
+  .topbar .brand{font-weight:700;color:var(--brown-d);font-size:1.05rem;white-space:nowrap;flex-shrink:0;}
+  .topbar .mid{display:flex;align-items:center;gap:10px;flex:1;justify-content:center;min-width:0;overflow:hidden;}
+  .timer{font-weight:700;color:var(--red);font-size:.95rem;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .progress-text{font-size:.85rem;color:#7a6a54;white-space:nowrap;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;}
+  .palette-wrap{position:relative;flex-shrink:0;}
+  .palette-btn{
+    background:var(--brown);color:#fff;border:none;padding:8px 12px;border-radius:10px;
+    font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .palette-dd{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);
+    width:250px;max-height:300px;overflow-y:auto;z-index:30;
+  }
+  .palette-dd.open{display:block;}
+  .palette-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .palette-num{
+    display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;
+    font-size:.78rem;font-weight:700;cursor:pointer;color:#fff;border:none;
+  }
+  .pn-green{background:var(--green);} .pn-red{background:var(--red);} .pn-grey{background:#b7a98a;}
+  .palette-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:.72rem;color:#6a5c46;}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+
+  /* ---------- Question card ---------- */
+  .qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;position:relative;margin-bottom:14px;}
+  .source-tag{
+    position:absolute;top:14px;right:14px;background:var(--paper2);border:1px solid var(--line);
+    color:var(--brown-d);font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:999px;max-width:150px;text-align:right;
+  }
+  .qmeta{font-size:.85rem;color:#7a6a54;margin-bottom:6px;padding-right:100px;}
+  .marks-note{font-size:.75rem;color:#9a8a6a;margin-bottom:14px;}
+  .qtext{font-size:1.05rem;line-height:1.55;margin-bottom:6px;}
+  .qtext-hi{font-size:1rem;line-height:1.7;color:#4a3d2c;margin-bottom:16px;}
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{
+    display:flex;align-items:center;gap:10px;background:var(--paper2);border:2px solid var(--line);
+    border-radius:12px;padding:12px 14px;cursor:pointer;font-size:.98rem;transition:all .12s;
+  }
+  .option:hover{border-color:var(--brown);}
+  .option.selected{background:#fbeecb;border-color:var(--brown);}
+  .opt-letter{
+    display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    background:#fff;border:1px solid var(--line);font-weight:700;font-size:.8rem;flex-shrink:0;
+  }
+  .option.selected .opt-letter{background:var(--brown);color:#fff;border-color:var(--brown);}
+  .option.correct{background:#e2f3e7;border-color:var(--green);}
+  .option.correct .opt-letter{background:var(--green);color:#fff;border-color:var(--green);}
+  .option.wrong{background:#fbe4e4;border-color:var(--red);}
+  .option.wrong .opt-letter{background:var(--red);color:#fff;border-color:var(--red);}
+  .mark-icon{margin-left:auto;font-weight:700;}
+
+  /* ---------- Nav rows ---------- */
+  .nav-row{display:flex;gap:8px;margin-bottom:8px;}
+  .nav-row button{
+    flex:1;padding:11px 6px;border-radius:12px;border:none;font-weight:700;cursor:pointer;
+    font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .btn-prev,.btn-next{background:var(--brown);color:#fff;}
+  .btn-clear{background:var(--paper2);color:var(--brown-d);border:1px solid var(--line) !important;}
+  .btn-prev:disabled,.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+  .submit-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--red);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+  .back-row button{
+    width:100%;padding:13px;border-radius:12px;border:none;background:var(--brown);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(30,20,10,.5);z-index:100;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:var(--card);border-radius:16px;padding:24px 20px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .modal-box h3{margin:0 0 10px;color:var(--brown-d);}
+  .modal-box p{margin:0 0 18px;font-size:.92rem;color:#5a4c38;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{flex:1;padding:11px;border-radius:10px;border:none;font-weight:700;cursor:pointer;}
+  .modal-yes{background:var(--red);color:#fff;}
+  .modal-cancel{background:var(--paper2);color:var(--brown-d);}
+
+  /* ---------- Result screen ---------- */
+  .result-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 20px;text-align:center;}
+  .result-card h2{color:var(--brown-d);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .stat-box{background:var(--paper2);border-radius:12px;padding:14px;border:1px solid var(--line);}
+  .stat-box .num{font-size:1.4rem;font-weight:700;font-family:'Fraunces',serif;}
+  .stat-box .lbl{font-size:.78rem;color:#7a6a54;}
+  .score-box{background:#fbeecb;border:2px solid var(--brown);border-radius:14px;padding:16px;margin-bottom:20px;}
+  .score-box .num{font-size:2rem;font-weight:700;color:var(--brown-d);font-family:'Fraunces',serif;}
+  .result-btns{display:flex;flex-direction:column;gap:10px;}
+  .result-btns button{padding:13px;border-radius:12px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;}
+  .btn-review{background:var(--brown);color:#fff;}
+  .btn-retake{background:var(--green);color:#fff;}
+
+  /* Review status tag */
+  .status-tag{font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .status-correct{background:#e2f3e7;color:var(--green-d);}
+  .status-wrong{background:#fbe4e4;color:var(--red);}
+  .status-unattempted{background:#eee6d4;color:#7a6a54;}
+  .ans-line{font-size:.9rem;margin:10px 0;padding:10px;background:var(--paper2);border-radius:10px;}
+  .explain{font-size:.92rem;line-height:1.6;background:#fff8ea;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;}
+  .explain-title{font-weight:700;color:var(--brown-d);margin-bottom:6px;font-size:.85rem;}
+
+  @media (max-width:400px){
+    .topbar .brand{font-size:.92rem;}
+    .timer{font-size:.82rem;}
+    .progress-text{font-size:.72rem;}
+    .palette-btn{padding:7px 9px;font-size:.72rem;}
+    .qtext,.qtext-hi{font-size:.92rem;}
+    .nav-row button{font-size:.72rem;padding:10px 4px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="site-header show" id="siteHeader">
+    <span class="eyebrow">SSC 2025 PYQs</span>
+    <h1>YATRI Mock Hub</h1>
+    <a class="telegram-btn" href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M21.5 4.5L2.7 11.9c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.8-.4l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.7-.8L23.9 5.7c.3-1.2-.5-1.7-1.4-1.2z"/></svg>
+      Join Telegram
+    </a>
+    <div><span class="topic-pill">Topic: Time and Work</span></div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Maths PYQs Topicwise Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="num">103</div><div class="lbl">Total Questions</div></div>
+        <div class="info-box"><div class="num">103 min</div><div class="lbl">Total Time</div></div>
+      </div>
+      <button class="start-btn" onclick="startTest()">▶️ Start Test</button>
+    </div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen" style="display:none;">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="mid">
+        <div class="timer" id="timerText">60:00</div>
+        <div class="progress-text" id="progressText">Question 1 / 103</div>
+      </div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('test')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_test">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Answered</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Not Answered</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Not Visited</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_test"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="sourceTag"></div>
+      <div class="qmeta" id="qMeta"></div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="qtext-hi hindi" id="qTextHi"></div>
+      <div class="options" id="optionsBox"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="btnPrev" onclick="prevQ()">⬅️ Previous</button>
+      <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()">Next ➡️</button>
+    </div>
+    <div class="submit-row">
+      <button onclick="askSubmit()">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" style="display:none;">
+    <div class="result-card">
+      <h2>Test Result</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="rTotal"></div><div class="lbl">Total Questions</div></div>
+        <div class="stat-box"><div class="num" id="rAttempted"></div><div class="lbl">Attempted</div></div>
+        <div class="stat-box"><div class="num" id="rUnattempted"></div><div class="lbl">Unattempted</div></div>
+        <div class="stat-box"><div class="num" id="rCorrect" style="color:var(--green-d)"></div><div class="lbl">Correct</div></div>
+        <div class="stat-box"><div class="num" id="rWrong" style="color:var(--red)"></div><div class="lbl">Wrong</div></div>
+        <div class="stat-box"><div class="num" id="rBlank"></div><div class="lbl">-</div></div>
+      </div>
+      <div class="score-box"><div class="num" id="rScore"></div><div class="lbl">Final Score</div></div>
+      <div class="result-btns">
+        <button class="btn-review" onclick="openReview()">🔍 Review Solutions</button>
+        <button class="btn-retake" onclick="retakeTest()">🔁 Retake Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen" style="display:none;">
+    <div class="topbar" style="z-index:20;">
+      <div id="reviewStatusTag"></div>
+      <div class="palette-wrap">
+        <button class="palette-btn" onclick="togglePalette('review')">📋 Palette</button>
+        <div class="palette-dd" id="paletteDD_review">
+          <div class="palette-legend">
+            <span><span class="legend-dot" style="background:var(--green)"></span>Correct</span>
+            <span><span class="legend-dot" style="background:var(--red)"></span>Wrong</span>
+            <span><span class="legend-dot" style="background:#b7a98a"></span>Unattempted</span>
+          </div>
+          <div class="palette-grid" id="paletteGrid_review"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <div class="source-tag" id="revSourceTag"></div>
+      <div class="qmeta" id="revQMeta"></div>
+      <div class="qtext" id="revQText"></div>
+      <div class="qtext-hi hindi" id="revQTextHi"></div>
+      <div class="options" id="revOptionsBox"></div>
+      <div class="ans-line" id="revAnsLine"></div>
+      <div class="explain">
+        <div class="explain-title">Explanation / व्याख्या</div>
+        <div id="revExplain"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-prev" id="revBtnPrev" onclick="revPrev()">⬅️ Previous</button>
+      <button class="btn-next" id="revBtnNext" onclick="revNext()">Next ➡️</button>
+    </div>
+    <div class="back-row">
+      <button onclick="backToResult()">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Submit confirmation modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <h3>Submit Test?</h3>
+    <p id="modalMsg"></p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-yes" onclick="confirmSubmit()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [{"tag": "SSC CGL 12/09/2025 (Shift-01)", "qEn": "A is able to complete a task in 15 days, while B takes 20 days to finish the same task. If they collaborate and work together for 4 days, what fraction of the work will still remain?", "qHi": "A एक कार्य को 15 दिनों में पूरा करने में सक्षम है, जबकि B को उसी कार्य को पूरा करने में 20 दिन लगते हैं। यदि वे सहयोग करते हैं और 4 दिनों तक एक साथ काम करते हैं, तो काम का कितना भाग अभी भी शेष रहेगा?", "opts": ["1/4", "7/15", "8/15", "11/15"], "ans": 2, "exp": "LCM of 15,20 = 60. Efficiency: A=4, B=3 units/day. Work done together in 4 days = (4+3)x4 = 28 units. Remaining = 60-28 = 32/60 = 8/15."}, {"tag": "SSC CGL 12/09/2025 (Shift-02)", "qEn": "A, B and C are capable of completing a job in 30, 45, and 90 days, respectively. A works every day, while B and C join A every fifth day. How long will it take to finish the task?", "qHi": "A, B और C क्रमशः 30, 45 और 90 दिनों में एक काम पूरा कर सकते हैं। A हर दिन काम करता है, जबकि B और C हर पाँचवें दिन A के साथ काम में शामिल होते हैं। काम पूरा करने में कितने दिन लगेंगे?", "opts": ["25 days", "18 days", "16 days", "12 days"], "ans": 0, "exp": "LCM of 30,45,90 = 90. Efficiency: A=3, B=2, C=1. In every 5-day cycle: A alone for 4 days + all three on the 5th day = 3x4 + 6x1 = 18 units. Since 18 units take 5 days, 90 units (full work) take 90x5/18 = 25 days."}, {"tag": "SSC CGL 12/09/2025 (Shift-02)", "qEn": "The ratio of the efficiencies of two workers, P and Q, is 5 : 2. If P can complete a project in 12 days, how many days will Q take to complete the same project alone?", "qHi": "दो कर्मचारियों, P और Q की दक्षताओं का अनुपात 5 : 2 है। यदि P किसी परियोजना को 12 दिनों में पूरा कर सकता है, तो Q को वही परियोजना अकेले पूरा करने में कितने दिन लगेंगे?", "opts": ["24 days", "30 days", "35 days", "40 days"], "ans": 1, "exp": "Time is inversely proportional to efficiency. Efficiency ratio P:Q = 5:2, so time ratio P:Q = 2:5. Since P takes 12 days (=2 units), 1 unit = 6 days, so Q's time (5 units) = 30 days."}, {"tag": "SSC CGL 13/09/2025 (Shift-01)", "qEn": "A and B together can complete a work in 12 days. B and C together can complete the same work in 15 days. C and A together can do it in 20 days. In how many days can A alone complete the job?", "qHi": "A और B मिलकर एक काम को 12 दिनों में पूरा कर सकते हैं। B और C मिलकर उसी काम को 15 दिनों में पूरा कर सकते हैं। C और A मिलकर उसी काम को 20 दिनों में पूरा कर सकते हैं। A अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["30 days", "20 days", "50 days", "15 days"], "ans": 0, "exp": "LCM of 12,15,20 = 60. Efficiency: (A+B)=5, (B+C)=4, (C+A)=3. Sum = 12 = 2x(A+B+C), so (A+B+C)=6. Efficiency of A = 6-4 = 2. Time for A alone = 60/2 = 30 days."}, {"tag": "SSC CGL 13/09/2025 (Shift-02)", "qEn": "A can lay railway track between two specified stations in 16 days, while B can complete the same task in 12 days. With the help of C, they manage to finish the job in just 4 days. How long would it take for C to complete the job on their own?", "qHi": "A दो निर्दिष्ट स्टेशनों के बीच रेलवे ट्रैक 16 दिनों में बिछा सकता है, जबकि B उसी कार्य को 12 दिनों में पूरा कर सकता है। C की मदद से, वे केवल 4 दिनों में काम पूरा कर लेते हैं। C को अकेले काम पूरा करने में कितना समय लगेगा?", "opts": ["8(1/2) days", "9(1/2) days", "9(3/5) days", "10 days"], "ans": 2, "exp": "LCM of 16,12,4 = 48. Efficiency: A=3, B=4. (A+B+C) efficiency = 48/4 = 12. Efficiency of C = 12-3-4 = 5. Time for C alone = 48/5 = 9(3/5) days."}, {"tag": "SSC CGL 13/09/2025 (Shift-02)", "qEn": "A can build up a wall in 8 days while B can break it in 3 days. A has worked for 4 days and then B joined to work with A two days more. In how many days will A alone build up the remaining part of the wall?", "qHi": "A एक दीवार को 8 दिन में बना सकता है जबकि B इसे 3 दिन में तोड़ सकता है। A ने 4 दिन काम किया और फिर B ने A के साथ मिलकर केवल 2 दिन और काम किया। A अकेले दीवार का बचा हुआ हिस्सा कितने दिन में बना लेगा?", "opts": ["7(1/3) days", "2(8/5) days", "9(1/5) days", "1(5/2) days"], "ans": 0, "exp": "LCM of 8,3 = 24. Efficiency: A(building)=3, B(breaking)=-8. A alone for 4 days = 12 units. Then A+B for 2 days = (3-8)x2 = -10 units. Net so far = 12-10 = 2 units. Remaining = 24-2 = 22 units. Time for A alone = 22/3 = 7(1/3) days."}, {"tag": "SSC CGL 13/09/2025 (Shift-03)", "qEn": "A machine fills 0.375 litres of water every second. How much does it fill in 8 seconds?", "qHi": "एक मशीन हर सेकंड 0.375 लीटर पानी भरती है। यह 8 सेकंड में कितना पानी भरती है?", "opts": ["3.0 L", "2.75 L", "3.25 L", "3.5 L"], "ans": 0, "exp": "In 8 seconds, water filled = 0.375 x 8 = 3.0 litres."}, {"tag": "SSC CGL 14/09/2025 (Shift-01)", "qEn": "A can do a work in 8 days and B in 12 days. They work together for 3 days. What part of the work is left?", "qHi": "A किसी काम को 8 दिन में पूरा कर सकता है और B, 12 दिन में। वे 3 दिन तक साथ मिलकर काम करते हैं। काम का कितना हिस्सा बचा है?", "opts": ["1/4", "5/8", "3/8", "7/24"], "ans": 2, "exp": "LCM of 8,12 = 24. Efficiency: A=3, B=2. Work done together in 3 days = (3+2)x3 = 15 units. Remaining = 24-15 = 9 units = 9/24 = 3/8."}, {"tag": "SSC CGL 14/09/2025 (Shift-01)", "qEn": "A and B can complete a task together in 12 days, while B and C can finish it in 16 days. After A works on it for 5 days and B for 7 days, C takes the remaining 13 days to finish the work. How many days would it take for C to complete the work alone?", "qHi": "A और B मिलकर एक कार्य 12 दिन में पूरा कर सकते हैं, जबकि B और C इसे 16 दिन में पूरा कर सकते हैं। A द्वारा 5 दिन और B द्वारा 7 दिन काम करने के बाद, C को कार्य पूरा करने में शेष 13 दिन लगते हैं। C को अकेले कार्य पूरा करने में कितने दिन लगेंगे?", "opts": ["24 days", "16 days", "20 days", "18 days"], "ans": 0, "exp": "LCM of 12,16 = 48. A and B work together for the first 5 days, then B and C work together for the next 2 days (making B's total 7 days), then C works alone for the remaining 11 days (making C's total 2+11=13 days). Using efficiencies: (A+B)x5 + (B+C)x2 + C x n = 48, solving gives efficiency of C = 2 units, so time for C alone = 48/2 = 24 days."}, {"tag": "SSC CGL 14/09/2025 (Shift-03)", "qEn": "A alone can complete a job in 12 days and B alone in 18 days. A and B agree to do the work for Rs.7,200. With C's help they finish it in 5 days. How much should C be paid?", "qHi": "A अकेले एक काम को 12 दिनों में पूरा कर सकता है और B अकेले 18 दिनों में। A और B, 7,200 रुपये में काम करने के लिए सहमत होते हैं। C की मदद से वे इसे 5 दिनों में पूरा कर लेते हैं। C को कितना भुगतान किया जाना चाहिए?", "opts": ["Rs.2,200", "Rs.2,400", "Rs.2,600", "Rs.2,800"], "ans": 0, "exp": "Using efficiencies scaled so all three finish together in 5 days: efficiency ratio A:B:C = 15:10:11 (sum 36). Since payment is proportional to work contributed, C's share = 7200x11/36 = Rs.2,200."}, {"tag": "SSC CGL 14/09/2025 (Shift-03)", "qEn": "The ratio of the time taken by A and B to complete a task is 3 : 2. If B can complete the task alone in 18 hours, how many hours will they take to complete the task if they work together?", "qHi": "किसी कार्य को पूरा करने में A और B द्वारा लिए गए समय का अनुपात 3 : 2 है। यदि B अकेले उस कार्य को 18 घंटे में पूरा कर सकता है, तो यदि वे दोनों एक साथ कार्य करें तो उन्हें कार्य पूरा करने में कितने घंटे लगेंगे?", "opts": ["12 hours", "10.8 hours", "9.8 hours", "10 hours"], "ans": 1, "exp": "Time ratio A:B = 3:2. Since B takes 18 hours (2 units), 1 unit = 9 hours, so A takes 27 hours. Efficiency ratio A:B = 2:3 (inverse of time). Total work = 27x2 = 54 units. Combined efficiency = 2+3=5. Time together = 54/5 = 10.8 hours."}, {"tag": "SSC CGL 15/09/2025 (Shift-02)", "qEn": "A is three times more efficient as a worker than B, which allows A to complete a job in 60 days less than B. If they work together, they can finish the job in:", "qHi": "A, B की तुलना में तीन गुना अधिक कुशल है, जिसके कारण A, B की तुलना में 60 दिन कम समय में कार्य पूरा कर सकता है। यदि वे एक साथ कार्य करें, तो वे कार्य को निम्नलिखित समय में पूरा कर सकते हैं?", "opts": ["19.2 days", "22.5 days", "16 days", "20 days"], "ans": 1, "exp": "Efficiency ratio A:B = 3:1, so time ratio A:B = 1:3. Let time A = x, time B = 3x. Difference = 2x = 60, so x=30. Time A=30, Time B=90. Total work = 90x1 = 90 (or 30x3). Combined efficiency = 3+1=4. Time together = 90/4 = 22.5 days."}, {"tag": "SSC CGL 15/09/2025 (Shift-03)", "qEn": "A and B can complete a task in 12 days and 18 days, respectively. They begin the work together, but B leaves after 4 days. How many more days will A take to finish the remaining work?", "qHi": "A और B किसी काम को क्रमशः 12 दिन और 18 दिन में पूरा कर सकते हैं। वे साथ मिलकर काम शुरू करते हैं, लेकिन B 4 दिन बाद काम छोड़ देता है। A को बचा हुआ काम पूरा करने में और कितने दिन लगेंगे?", "opts": ["5(1/3) days", "2(3/4) days", "1(1/5) days", "6(8/5) days"], "ans": 0, "exp": "LCM of 12,18 = 36. Efficiency: A=3, B=2. Work done together in 4 days = (3+2)x4 = 20 units. Remaining = 36-20 = 16 units. Time for A alone = 16/3 = 5(1/3) days."}, {"tag": "SSC CGL 15/09/2025 (Shift-03)", "qEn": "A and B can complete a certain task together in 30 days. After A works for 16 days, B is left to finish the remaining work by himself in 44 days. How many days would it take for B to complete the entire task on his own?", "qHi": "A और B एक निश्चित कार्य को 30 दिनों में पूरा कर सकते हैं। A द्वारा 16 दिनों तक काम करने के बाद, B को शेष कार्य अकेले 44 दिनों में पूरा करना है। B को अकेले पूरा कार्य पूरा करने में कितने दिन लगेंगे?", "opts": ["40 days", "50 days", "60 days", "70 days"], "ans": 2, "exp": "(A+B)x30 = Ax16 + Bx44. So 30A+30B=16A+44B, giving 14A=14B, i.e. A=B (equal efficiency). Total work = (A+B)x30 = 2Ax30 = 60A. Time for B alone = 60A/A = 60 days."}, {"tag": "SSC CGL 16/09/2025 (Shift-02)", "qEn": "A, B and C can complete a certain task in 20, 30 and 60 days, respectively. How many days will it take for A to finish the work if he receives help from B and C every third day?", "qHi": "A, B और C किसी कार्य को क्रमशः 20, 30 और 60 दिनों में पूरा कर सकते हैं। यदि A को हर तीसरे दिन B और C से मदद मिलती है, तो उसे कार्य पूरा करने में कितने दिन लगेंगे?", "opts": ["15 days", "12 days", "10 days", "9 days"], "ans": 0, "exp": "LCM of 20,30,60 = 60. Efficiency: A=3, B=2, C=1. Per 3-day cycle: Day1(A alone)=3, Day2(A alone)=3, Day3(A+B+C)=6. Total per 3 days = 12 units. In 15 days (5 cycles) = 60 units = full work."}, {"tag": "SSC CGL 18/09/2025 (Shift-02)", "qEn": "A and B can finish a certain job in 28 and 35 days, respectively. They started working together, but A left after a while, and B managed to complete the remaining work in 17 days. How many days did A work before leaving?", "qHi": "A और B एक निश्चित कार्य को क्रमशः 28 और 35 दिनों में पूरा कर सकते हैं। उन्होंने साथ मिलकर काम करना शुरू किया, लेकिन कुछ समय बाद A ने काम छोड़ दिया, और B शेष काम को 17 दिनों में पूरा करने में कामयाब रहा। जाने से पहले A ने कितने दिन काम किया?", "opts": ["8 days", "5 days", "7(6/2) days", "5(7/2) days"], "ans": 0, "exp": "LCM of 28,35 = 140. Efficiency: A=5, B=4. Work done by B alone in 17 days = 17x4=68. Remaining (worked together before A left) = 140-68=72. Combined rate = 5+4=9. Days worked together = 72/9 = 8 days."}, {"tag": "SSC CGL 19/09/2025 (Shift-03)", "qEn": "A & B together earn Rs.840 for a job. A works the whole time; B joins the job when 25% of work is done. B is twice as efficient as A. Find B's share.", "qHi": "A और B मिलकर किसी काम के लिए 840 रुपये कमाते हैं। A पूरे समय काम करता है; B काम 25% पूरा होने के बाद शामिल होता है। B, A से दोगुना कुशल है। B का हिस्सा ज्ञात कीजिए।", "opts": ["Rs.420", "Rs.300", "Rs.360", "Rs.400"], "ans": 0, "exp": "Efficiency ratio A:B = 1:2. First 25% work done by A alone. Remaining 75% done by both (combined rate=3 units). A's contribution in this phase = (1/3)x75%=25%. So A's total contribution = 25%+25%=50%, B's = 50%. B's share = 50% of 840 = Rs.420."}, {"tag": "SSC CGL 20/09/2025 (Shift-02)", "qEn": "A man and a woman are together filling a tank with water. The man pours 4 liters of water every 3 minutes, while the woman pours 3 liters every 4 minutes. How much time will it take to fill 100 liters of water in the tank?", "qHi": "एक पुरुष और एक महिला मिलकर एक टैंक में पानी भर रहे हैं। पुरुष हर 3 मिनट में 4 लीटर पानी डालता है, जबकि महिला हर 4 मिनट में 3 लीटर डालती है। टैंक में 100 लीटर पानी भरने में कितना समय लगेगा?", "opts": ["38 min", "40 min", "44 min", "48 min"], "ans": 3, "exp": "Combined rate = 4/3 + 3/4 = 16/12+9/12 = 25/12 litres per minute. Time for 100 litres = 100/(25/12) = 100x12/25 = 48 minutes."}, {"tag": "SSC CGL 20/09/2025 (Shift-03)", "qEn": "20 women can do work in 16 days. 10 men can complete the same work in 12 days. What is the ratio between the efficiency of a man and a woman?", "qHi": "20 महिलाएँ किसी काम को 16 दिन में कर सकती हैं। 10 पुरुष उसी काम को 12 दिन में पूरा कर सकते हैं। एक पुरुष और एक महिला की कार्यकुशलता के बीच अनुपात क्या है?", "opts": ["8 : 3", "5 : 4", "2 : 5", "8 : 9"], "ans": 0, "exp": "Total work is equal: 20Wx16 = 10Mx12. So M/W = (20x16)/(10x12) = 320/120 = 8/3. Ratio M:W = 8:3."}, {"tag": "SSC CGL 20/09/2025 (Shift-03)", "qEn": "A and B together can complete a task in 12 days. A is 25% more efficient than B. What percentage of the work is done by A alone?", "qHi": "A और B मिलकर एक कार्य को 12 दिनों में पूरा कर सकते हैं। A, B से 25% अधिक कुशल है। A द्वारा अकेले कितने प्रतिशत कार्य किया जा सकता है?", "opts": ["55.56%", "60.6%", "62.5%", "66.66%"], "ans": 0, "exp": "Efficiency ratio A:B = 5:4 (since 25% more = 5/4). Percentage of work done by A = 5/(5+4) x 100% = 500/9% = 55.56%."}, {"tag": "SSC CGL 20/09/2025 (Shift-03)", "qEn": "Sujit can do a piece of work in 4 days, and Rakesh can do it in 8 days. If they work together for 2 days, how much of the work will be left?", "qHi": "सुजीत एक काम को 4 दिनों में पूरा कर सकता है, और राकेश इसे 8 दिनों में पूरा कर सकता है। यदि वे दोनों मिलकर 2 दिन काम करें, तो कितना काम बचेगा?", "opts": ["20%", "30%", "25%", "21%"], "ans": 2, "exp": "LCM of 4,8 = 8. Efficiency: Sujit=2, Rakesh=1. Work done together in 2 days = (2+1)x2 = 6 units. Remaining work = 8-6=2 units. Percentage left = 2/8 x 100% = 25%."}, {"tag": "SSC CGL 21/09/2025 (Shift-01)", "qEn": "A right prism has a base in the shape of a trapezium with parallel sides 10 cm and 6 cm, and height 4 cm. If the prism height is 15 cm, what is the volume?", "qHi": "एक लंब प्रिज्म का आधार समलंब चतुर्भुज के आकार का है, जिसकी समानांतर भुजाएँ 10 सेमी और 6 सेमी हैं, तथा ऊँचाई 4 सेमी है। यदि प्रिज्म की ऊँचाई 15 सेमी है, तो इसका आयतन क्या है?", "opts": ["480 cm3", "240 cm3", "520 cm3", "680 cm3"], "ans": 0, "exp": "Area of trapezium base = (1/2)x(sum of parallel sides)xheight = (1/2)x(10+6)x4 = (1/2)x16x4 = 32 cm^2. Volume of prism = base area x prism height = 32x15 = 480 cm^3."}, {"tag": "SSC CGL 21/09/2025 (Shift-02)", "qEn": "A group of 5 men or 12 women can complete a task in 70 days. Find the time taken by 5 men and 12 women to complete the task.", "qHi": "5 पुरुषों या 12 महिलाओं का एक समूह किसी कार्य को 70 दिनों में पूरा कर सकता है। 5 पुरुषों और 12 महिलाओं द्वारा कार्य पूरा करने में लिया गया समय ज्ञात कीजिए।", "opts": ["40 days", "35 days", "30 days", "48 days"], "ans": 1, "exp": "Since 5 men alone and 12 women alone both take 70 days for the same total work, 5M=12W in total capacity, giving M:W=12:5. Using M=12,W=5: Total work=5x12x70=4200. Combined (5M+12W) rate = 5x12+12x5=120. Time = 4200/120 = 35 days."}, {"tag": "SSC CGL 21/09/2025 (Shift-02)", "qEn": "A machine can fill 120 milk bottles in 6 minutes. How many milk bottles can it fill in 14 minutes?", "qHi": "एक मशीन 6 मिनट में 120 दूध की बोतलें भर सकती है। यह 14 मिनट में कितनी दूध की बोतलें भर सकती है?", "opts": ["190 milk bottles", "250 milk bottles", "280 milk bottles", "200 milk bottles"], "ans": 2, "exp": "Rate = 120/6 = 20 bottles per minute. In 14 minutes = 20x14 = 280 bottles."}, {"tag": "SSC CGL 22/09/2025 (Shift-01)", "qEn": "35 men can do a piece of work in 8 days. Find the time required by 16 men to do four times the work.", "qHi": "35 आदमी एक काम को 8 दिनों में कर सकते हैं। 16 आदमी उस काम का चार गुना काम करने में कितना समय लेंगे?", "opts": ["70 Days", "65 Days", "60 Days", "66 Days"], "ans": 0, "exp": "Using M1D1/W1 = M2D2/W2: 35x8/1 = 16xD2/4. So D2 = 35x8x4/16 = 70 days."}, {"tag": "SSC CGL 22/09/2025 (Shift-01)", "qEn": "Dhaval and Dhiraj together can do a piece of work in 12 days. Dhaval alone can do it in 20 days. In how many days can Dhiraj alone do it?", "qHi": "ध्वल और धीरज मिलकर एक काम को 12 दिनों में कर सकते हैं। ध्वल अकेले उसी काम को 20 दिनों में कर सकता है। धीरज अकेले उसी काम को कितने दिनों में कर सकता है?", "opts": ["30", "28", "29", "27"], "ans": 0, "exp": "LCM of 12,20 = 60. Efficiency: (Dhaval+Dhiraj)=5, Dhaval=3. Efficiency of Dhiraj = 5-3=2. Time for Dhiraj alone = 60/2=30 days."}, {"tag": "SSC CGL 22/09/2025 (Shift-02)", "qEn": "Athar can do a certain work in the same time in which Baban and Chetan together can do it. If Athar and Baban together could do it in 10 days and Chetan alone in 50 days, then Baban alone could do it in:", "qHi": "अथर एक निश्चित कार्य उतने ही समय में कर सकता है जितने समय में बबन और चेतन मिलकर कर सकते हैं। यदि अथर और बबन मिलकर इसे 10 दिनों में और चेतन अकेले 50 दिनों में कर सकते हैं, तो बबन अकेले इसे कितने दिनों में कर सकता है?", "opts": ["20 days", "25 days", "30 days", "27 days"], "ans": 1, "exp": "Let total work=50 units (LCM based). Efficiency of Chetan=1. Athar's efficiency equals Baban+Chetan's combined efficiency (given). Also (Athar+Baban) efficiency=5 (since total/10=5). So (Baban+Chetan+Baban)=5, i.e. 2xBaban+1=5, giving Baban=2. Time for Baban alone = 50/2=25 days."}, {"tag": "SSC CGL 22/09/2025 (Shift-03)", "qEn": "If 15 boys can build a house in 20 days, in how many days can 20 boys complete the same work?", "qHi": "यदि 15 लड़के 20 दिनों में एक घर बना सकते हैं, तो 20 लड़के उसी काम को कितने दिनों में पूरा कर सकते हैं?", "opts": ["11", "13", "20", "15"], "ans": 3, "exp": "Using M1D1=M2D2: 15x20=20xD2. So D2 = 300/20 = 15 days."}, {"tag": "SSC CGL 23/09/2025 (Shift-02)", "qEn": "If 10 men or 15 women can complete a work in 170 days, how long will 20 men and 20 women take for completing the same work?", "qHi": "यदि 10 पुरुष या 15 महिलाएँ किसी कार्य को 170 दिनों में पूरा कर सकते हैं, तो 20 पुरुष और 20 महिलाएँ उसी कार्य को पूरा करने में कितना समय लेंगे?", "opts": ["52 days", "50 days", "51 days", "53 days"], "ans": 2, "exp": "Since 10 men and 15 women alone both take 170 days for the same work, 10M=15W in capacity, giving M:W=3:2. Using M=3,W=2: Total work=10x3x170=5100. Combined(20M+20W) rate=20x3+20x2=100. Time=5100/100=51 days."}, {"tag": "SSC CGL 25/09/2025 (Shift-02)", "qEn": "Question: If P, Q and R work together, how many days will they take to complete a project? Statement I: Q and R together can complete the project in 10 days. Statement II: P and R together can complete the project in 15 days.", "qHi": "प्रश्न: यदि P, Q और R एक साथ काम करते हैं, तो उन्हें एक परियोजना पूरी करने में कितने दिन लगेंगे? कथन I: Q और R मिलकर परियोजना को 10 दिनों में पूरा कर सकते हैं। कथन II: P और R मिलकर परियोजना को 15 दिनों में पूरा कर सकते हैं।", "opts": ["Statement I alone provides enough information to answer the question, but Statement II alone does not.", "Statement II alone provides enough information to answer the question, but Statement I alone does not.", "Both Statement I and Statement II combined are needed to answer the question, as neither statement on its own is sufficient.", "Even when combined, the information in both Statement I and Statement II is not enough to answer the question."], "ans": 3, "exp": "From the two statements, we only get the combined efficiency ratio (Q+R):(P+R) = 3:2. This does not let us separate out the individual efficiencies of P, Q and R, so we cannot determine how long all three working together would take, even using both statements combined."}, {"tag": "SSC CGL 25/09/2025 (Shift-02)", "qEn": "A can complete a task in 15 days and B can complete the same task in 20 days. How long will it take them to complete the task together?", "qHi": "A एक कार्य को 15 दिनों में पूरा कर सकता है और B उसी कार्य को 20 दिनों में पूरा कर सकता है। दोनों मिलकर उस कार्य को पूरा करने में कितना समय लेंगे?", "opts": ["5.5 days", "6.5 days", "7.5 days", "8.5 days"], "ans": 3, "exp": "LCM of 15,20=60. Efficiency: A=4, B=3. Combined time = 60/7 = 8.57 days (approx 8.5 days)."}, {"tag": "SSC CGL 26/09/25 (Shift-01)", "qEn": "The efficiency of A, B and C is 2 : 3 : 5. A alone can complete the work in 40 days. They all worked together for 5 days and then C left the work. In how many days can A and B together complete the remaining work?", "qHi": "A, B और C की दक्षता 2 : 3 : 5 है। A अकेले एक काम को 40 दिनों में पूरा कर सकता है। वे सभी 5 दिनों तक एक साथ काम करते हैं और फिर C काम छोड़ देता है। A और B मिलकर शेष काम कितने दिनों में पूरा कर सकते हैं?", "opts": ["12 days", "10 days", "8 days", "6 days"], "ans": 3, "exp": "Total work = efficiency of A x time of A = 2x40=80 units. In 5 days, all three together do (2+3+5)x5=50 units. Remaining=80-50=30 units. A+B rate=2+3=5. Time=30/5=6 days."}, {"tag": "SSC CGL 26/09/25 (Shift-01)", "qEn": "A, B and C together can complete a task in 6 days. If A alone takes 12 days and B alone takes 18 days, how long will C alone take?", "qHi": "A, B और C मिलकर एक कार्य को 6 दिनों में पूरा कर सकते हैं। यदि A अकेले 12 दिन और B अकेले 18 दिन लेता है, तो C अकेले कितना समय लेगा?", "opts": ["19 days", "30 days", "12 days", "36 days"], "ans": 3, "exp": "LCM of 6,12,18 = 36. Efficiency: (A+B+C)=6, A=3, B=2. Efficiency of C = 6-3-2=1. Time for C alone = 36/1 = 36 days."}, {"tag": "SSC CGL 26/09/2025 (Shift-03)", "qEn": "Lalit can finish a work in 15 days. Laxman can finish the same work in 25 days. They work together for 5 days. If the rest of the work is finished by Lalit and Deven in 4 days, then in how many days can Deven alone finish the work?", "qHi": "ललित एक काम को 15 दिनों में पूरा कर सकता है। लक्ष्मण उसी काम को 25 दिनों में पूरा कर सकता है। वे 5 दिनों तक एक साथ काम करते हैं। यदि बचा हुआ काम ललित और देवेन 4 दिनों में पूरा करते हैं, तो देवेन अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["30 days", "25 days", "21 days", "20 days"], "ans": 3, "exp": "LCM of 15,25=75. Efficiency: Lalit=5, Laxman=3. Lalit+Laxman(5 days)=(5+3)x5=40. Remaining=75-40=35 units, done by Lalit+Deven in 4 days, combined rate=8.75. Efficiency of Deven=8.75-5=3.75. Time for Deven alone=75/3.75=20 days."}, {"tag": "SSC CGL 26/09/2025 (Shift-03)", "qEn": "A can complete a task in 30 days, and B can complete the same task in 40 days. They work together for 10 days, and then C joins them and completes the remaining work in 5 days. How long will C alone take to complete the task?", "qHi": "A एक कार्य को 30 दिनों में पूरा कर सकता है, और B उसी कार्य को 40 दिनों में पूरा कर सकता है। वे 10 दिनों तक एक साथ काम करते हैं, और फिर C उनके साथ जुड़कर बचा हुआ काम 5 दिनों में पूरा कर देता है। C अकेले उस कार्य को पूरा करने में कितना समय लेगा?", "opts": ["25 days", "26 days", "40 days", "27 days"], "ans": 2, "exp": "LCM of 30,40=120. Efficiency: A=4, B=3. A+B(10 days)=(4+3)x10=70. Remaining=120-70=50 units, done by A+B+C in 5 days, combined rate=10. Efficiency of C=10-7=3. Time for C alone=120/3=40 days."}, {"tag": "SSC CGL 14/10/2025 (Shift-02)", "qEn": "A contractor hires 10 workers who can complete a task in 16 days. After 4 days, he fires 2 workers. How many more days will the remaining workers take to complete the task?", "qHi": "एक ठेकेदार 10 मजदूरों को काम पर रखता है जो एक काम को 16 दिनों में पूरा कर सकते हैं। 4 दिन बाद, वह 2 मजदूरों को निकाल देता है। शेष मजदूरों को काम पूरा करने में और कितने दिन लगेंगे?", "opts": ["13 days", "14 days", "15 days", "16 days"], "ans": 2, "exp": "Total work = 10x16=160 worker-days. Work done in 4 days by 10 workers=40. Remaining=120. Now 8 workers remain. Time = 120/8=15 days."}, {"tag": "SSC CGL Tier-II (19/01/2026)", "qEn": "P and Q can do a piece of work in 20 days and 30 days, respectively. They work together for 6 days, and then Q is replaced by R. If the rest of the work is completed by P and R in 8 more days, in how many days can R alone complete 60% of the work?", "qHi": "P और Q एक काम को क्रमशः 20 दिन और 30 दिन में कर सकते हैं। वे 6 दिनों तक साथ काम करते हैं, और फिर Q की जगह R आ जाता है। यदि बचा हुआ काम P और R मिलकर 8 और दिनों में पूरा करते हैं, तो R अकेला उस काम का 60% कितने दिनों में पूरा कर सकता है?", "opts": ["28 days", "34 days", "48 days", "64 days"], "ans": 2, "exp": "LCM of 20,30=60. Efficiency: P=3, Q=2. P+Q(6 days)=(3+2)x6=30. Remaining=60-30=30, done by P+R in 8 days, combined rate=3.75. Efficiency of R=3.75-3=0.75. Time for R to complete 60% of work = (0.6x60)/0.75 = 48 days."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "A contractor employs 15 men to complete a work in 24 days, working 8 hours per day. After six days, he adds five more men but also reduces the working hours to six per day from the seventh day onwards. If all men work with the same efficiency throughout, how many more days will be required to finish the remaining work?", "qHi": "एक ठेकेदार 15 आदमियों को एक काम 24 दिनों में पूरा करने के लिए नियुक्त करता है, जो प्रतिदिन 8 घंटे काम करते हैं। छह दिनों बाद, वह पाँच और आदमियों को जोड़ता है, लेकिन सातवें दिन से काम के घंटे भी घटाकर प्रतिदिन छह कर देता है। यदि सभी आदमी पूरे समय समान दक्षता से काम करते हैं, तो शेष काम को पूरा करने के लिए कितने और दिनों की आवश्यकता होगी?", "opts": ["20", "18", "21", "22"], "ans": 1, "exp": "Total work = 15x8x24=2880 man-hours. Work done in first 6 days=15x8x6=720. Remaining=2160 man-hours. Now 20 men work 6 hours/day = 120 man-hours/day. Days needed = 2160/120 = 18 days."}, {"tag": "SSC CGL 20/09/2025 (Shift-01)", "qEn": "6 women and 4 men can complete a work in 10 days, while 4 women and 5 men complete it in 10 days. In how many days will 8 women complete it?", "qHi": "6 महिलाएँ और 4 पुरुष एक काम को 10 दिनों में पूरा कर सकते हैं, जबकि 4 महिलाएँ और 5 पुरुष इसे 10 दिनों में पूरा करते हैं। 8 महिलाएँ इसे कितने दिनों में पूरा करेंगी?", "opts": ["12 days", "14 days", "17.5 days", "15 days"], "ans": 2, "exp": "Since both groups take equal time (10 days) for the same work, (6W+4M) = (4W+5M) in capacity, giving 2W=M. Total work = (6W+4x2W)x10 = 140W. Time for 8 women = 140W/8W = 17.5 days."}, {"tag": "SSC CGL 21/09/2025 (Shift-02)", "qEn": "You earn $52.50 in 3.5 hours. Find your hourly wage as a fraction.", "qHi": "आप 3.5 घंटे में $52.50 कमाते हैं। अपनी प्रति घंटा मजदूरी भिन्न के रूप में ज्ञात कीजिए।", "opts": ["15/1", "12/1", "15/4", "17/4"], "ans": 0, "exp": "Hourly wage = 52.50/3.5 = 15. As a fraction, this is 15/1."}, {"tag": "SSC CGL 22/09/2025 (Shift-01)", "qEn": "You earn $52.50 in 3.5 hours. Find your hourly wage as a fraction.", "qHi": "आप 3.5 घंटे में $52.50 कमाते हैं। अपनी प्रति घंटा मजदूरी भिन्न के रूप में ज्ञात कीजिए।", "opts": ["15/1", "12/1", "15/4", "17/4"], "ans": 0, "exp": "Hourly wage = 52.50/3.5 = 15. As a fraction, this is 15/1."}, {"tag": "SSC CGL 22/09/2025 (Shift-03)", "qEn": "20 men can do a piece of work in 45 days. Find the percentage amount of work done by 60 men in 6 days.", "qHi": "20 आदमी एक काम को 45 दिनों में कर सकते हैं। 60 आदमियों द्वारा 6 दिनों में किए गए काम का प्रतिशत ज्ञात कीजिए।", "opts": ["35.32%", "31.21%", "40%", "33.33%"], "ans": 2, "exp": "Total work = 20x45=900 man-days. Work done by 60 men in 6 days = 60x6=360 man-days. Percentage = 360/900x100 = 40%."}, {"tag": "SSC CGL 26/09/25 (Shift-02)", "qEn": "66 women can do a piece of work in 79 days. Find the number of days required by 6 women to complete 1/11th of the work.", "qHi": "66 महिलाएँ एक काम को 79 दिनों में कर सकती हैं। 6 महिलाओं को उस काम का 1/11 भाग पूरा करने में कितने दिन लगेंगे?", "opts": ["75", "77", "78", "79"], "ans": 3, "exp": "Total work = 66Wx79. Time for 6 women to complete 1/11th of total work = (66x79)/(11x6) = 5214/66 = 79 days."}, {"tag": "SSC CHSL 12/11/2025 (Shift-02)", "qEn": "A can complete a task in 10 days and, B can finish a task in 15 days respectively. A start the work and works for 4 days, after which B joins A. How many more days will they take to complete the task?", "qHi": "A एक कार्य को 10 दिनों में पूरा कर सकता है और B उसी कार्य को 15 दिनों में पूरा कर सकता है। A कार्य शुरू करता है और 4 दिनों तक काम करता है, जिसके बाद B, A के साथ शामिल हो जाता है। उन्हें कार्य पूरा करने में और कितने दिन लगेंगे?", "opts": ["3.6 days", "2.8 days", "7.8 days", "1.4 days"], "ans": 0, "exp": "LCM of 10,15=30. Efficiency: A=3, B=2. A's 4 days alone = 12 units. Remaining = 30-12=18 units. Combined rate=5. Additional days = 18/5 = 3.6 days."}, {"tag": "SSC CHSL 12/11/2025 (Shift-03)", "qEn": "A and B together can do a piece of work in 10 days. B alone can do it in 15 days. How long will A alone take to complete the work?", "qHi": "A और B मिलकर एक कार्य को 10 दिनों में कर सकते हैं। B अकेला उसी कार्य को 15 दिनों में कर सकता है। A अकेले उस कार्य को पूरा करने में कितना समय लेगा?", "opts": ["20 days", "25 days", "30 days", "35 days"], "ans": 2, "exp": "LCM of 10,15=30. Efficiency: (A+B)=3, B=2. Efficiency of A = 3-2=1. Time for A alone = 30/1=30 days."}, {"tag": "SSC CHSL 13/11/2025 (Shift-01)", "qEn": "A takes 12 days to finish a job, while B takes 36 days to complete the same job. If they collaborate, how many days they take to complete the work together?", "qHi": "A को एक काम पूरा करने में 12 दिन लगते हैं, जबकि B को उसी काम को पूरा करने में 36 दिन लगते हैं। यदि वे दोनों मिलकर काम करें, तो उन्हें काम पूरा करने में कितने दिन लगेंगे?", "opts": ["7 days", "8 days", "9 days", "10 days"], "ans": 2, "exp": "LCM of 12,36=36. Efficiency: A=3, B=1. Combined=4. Time = 36/4=9 days."}, {"tag": "SSC CHSL 13/11/2025 (Shift-02)", "qEn": "A can do a work in 15 days, B in 30 days. They start together but A leaves after 5 days. In how more days will B complete the remaining work?", "qHi": "A एक काम को 15 दिनों में और B, 30 दिनों में कर सकता है। वे दोनों साथ मिलकर काम शुरू करते हैं, लेकिन A 5 दिन बाद काम छोड़ देता है। B बचा हुआ काम कितने दिनों में पूरा करेगा?", "opts": ["15 days", "6 days", "7 days", "8 days"], "ans": 0, "exp": "LCM of 15,30=30. Efficiency: A=2, B=1. A+B(5 days)=(2+1)x5=15. Remaining=30-15=15. Time for B alone = 15/1=15 days."}, {"tag": "SSC CHSL 13/11/2025 (Shift-03)", "qEn": "A, B, C together finish a job in 8 days. A and B together take 12 days, while B and C together take 16 days. In how many days can C alone finish the job?", "qHi": "A, B, C मिलकर एक काम 8 दिनों में पूरा करते हैं। A और B मिलकर 12 दिन लेते हैं, जबकि B और C मिलकर 16 दिन लेते हैं। C अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["18 days", "20 days", "24 days", "30 days"], "ans": 2, "exp": "LCM of 8,12,16=48. Efficiency: (A+B+C)=6, (A+B)=4. Efficiency of C=(A+B+C)-(A+B)=6-4=2. Time for C alone = 48/2=24 days."}, {"tag": "SSC CHSL 14/11/2025 (Shift-01)", "qEn": "A can complete a work in 30 days. How much work will he complete in 6 days?", "qHi": "A एक काम को 30 दिनों में पूरा कर सकता है। वह 6 दिनों में कितना काम पूरा करेगा?", "opts": ["3/5", "2/5", "1/5", "7/5"], "ans": 2, "exp": "Work done in 6 days = 6/30 = 1/5."}, {"tag": "SSC CHSL 14/11/2025 (Shift-02)", "qEn": "A alone can do a job in 12 days, B alone in 24 days. They work together for 4 days, then A leaves. In how many more days will B finish the job?", "qHi": "A अकेले एक काम को 12 दिनों में पूरा कर सकता है, B अकेले 24 दिनों में। वे 4 दिनों तक साथ मिलकर काम करते हैं, फिर A काम छोड़ देता है। B उस काम को कितने और दिनों में पूरा करेगा?", "opts": ["12 days", "7 days", "8 days", "9 days"], "ans": 0, "exp": "LCM of 12,24=24. Efficiency: A=2, B=1. A+B(4 days)=(2+1)x4=12. Remaining=24-12=12. Time for B alone = 12/1=12 days."}, {"tag": "SSC CHSL 14/11/2025 (Shift-03)", "qEn": "A can do a work in 18 days, B in 27 days. They start together, but after 6 days A leaves. In how many more days will B finish the remaining work?", "qHi": "A एक काम को 18 दिनों में और B, 27 दिनों में कर सकता है। वे दोनों साथ मिलकर काम शुरू करते हैं, लेकिन 6 दिन बाद A काम छोड़ देता है। B बचा हुआ काम कितने और दिनों में पूरा करेगा?", "opts": ["10 days", "11 days", "12 days", "13 days"], "ans": 2, "exp": "LCM of 18,27=54. Efficiency: A=3, B=2. A+B(6 days)=(3+2)x6=30. Remaining=54-30=24. Time for B alone = 24/2=12 days."}, {"tag": "SSC CHSL 15/11/2025 (Shift-01)", "qEn": "A man and a boy received Rs. 600 as wages for 5 days for the work they did together. The man's efficiency in the work was twice that of the boy. What are the daily wages of the boy?", "qHi": "एक आदमी और एक लड़के को 5 दिनों में साथ मिलकर किए गए काम के लिए 600 रुपये मजदूरी मिली। काम में आदमी की दक्षता लड़के से दोगुनी थी। लड़के की दैनिक मजदूरी क्या है?", "opts": ["Rs.45", "Rs.25", "Rs.52", "Rs.40"], "ans": 3, "exp": "Efficiency ratio Man:Boy = 2:1, total 3 units. Daily total pay = 600/5=120. Boy's daily share = 120x(1/3)=Rs.40."}, {"tag": "SSC CHSL 15/11/2025 (Shift-03)", "qEn": "Amit can finish the work in 15 days and Baban can finish the same work in 25 days. They work together for 5 days. The rest of the work was finished by Amit and Chetan in 4 days. How much time is required for Chetan to finish this work?", "qHi": "अमित एक काम को 15 दिनों में पूरा कर सकता है और बबन उसी काम को 25 दिनों में पूरा कर सकता है। वे 5 दिनों तक साथ काम करते हैं। बचा हुआ काम अमित और चेतन ने 4 दिनों में पूरा किया। चेतन को यह काम पूरा करने में कितना समय लगेगा?", "opts": ["21 days", "20 days", "18 days", "17 days"], "ans": 1, "exp": "LCM of 15,25=75. Efficiency: Amit=5, Baban=3. Amit+Baban(5 days)=(5+3)x5=40. Remaining=75-40=35, done by Amit+Chetan in 4 days, combined rate=8.75. Efficiency of Chetan=8.75-5=3.75. Time for Chetan alone=75/3.75=20 days."}, {"tag": "SSC CHSL 15/11/2025 (Shift-03)", "qEn": "A can do a piece of work in the same time as B and C. If A and B together can do it in 10 days and C alone can do it in 40 days, in how many days can A do it alone?", "qHi": "A किसी काम को उतने ही समय में कर सकता है जितने समय में B और C मिलकर करते हैं। यदि A और B मिलकर उसे 10 दिनों में और C अकेले 40 दिनों में कर सकते हैं, तो A अकेले उसे कितने दिनों में कर सकता है?", "opts": ["16 days", "19 days", "14 days", "13 days"], "ans": 0, "exp": "Let total work=40 units. Efficiency of C=1. Given A's efficiency equals (B+C)'s combined efficiency. Also (A+B) efficiency=4 (since 40/10=4). So (B+C+B)=4, i.e. 2B+1=4, giving B=1.5, so A=B+C=1.5+1=2.5. Time for A alone=40/2.5=16 days."}, {"tag": "SSC CHSL 15/11/2025 (Shift-03)", "qEn": "A can finish the work in 16 days and B can do the same work in 12 days, B worked for 8 days and left the job. In how many days, A alone finish the remaining work?", "qHi": "A एक काम को 16 दिनों में पूरा कर सकता है और B उसी काम को 12 दिनों में कर सकता है, B ने 8 दिन काम किया और काम छोड़ दिया। A अकेले बचा हुआ काम कितने दिनों में पूरा करेगा?", "opts": ["5 days 8 hr", "7 days", "4 days 10 hr", "6 days"], "ans": 0, "exp": "LCM of 16,12=48. Efficiency: A=3, B=4. B's work in 8 days=32. Remaining=48-32=16. Time for A alone=16/3=5(1/3) days = 5 days 8 hours."}, {"tag": "SSC CHSL 15/11/2025 (Shift-03)", "qEn": "A can complete the work in 12 days, B in 15 days and C in 20 days. They work in the following manner: On the first day A works, on the second day, B works, on the third day, C works. The cycle repeats in the same order. In how many days will the work be completed?", "qHi": "A एक काम को 12 दिनों में, B 15 दिनों में और C 20 दिनों में पूरा कर सकता है। वे इस प्रकार काम करते हैं: पहले दिन A काम करता है, दूसरे दिन B काम करता है, तीसरे दिन C काम करता है। यही क्रम दोहराया जाता है। काम कितने दिनों में पूरा होगा?", "opts": ["5 days", "10 days", "15 days", "20 days"], "ans": 2, "exp": "LCM of 12,15,20=60. Efficiency: A=5, B=4, C=3. Per 3-day cycle = 5+4+3=12 units. In 15 days (5 cycles) = 60 units = full work."}, {"tag": "SSC CHSL 17/11/2025 (Shift-03)", "qEn": "4 boys and 6 girls can complete the work in 8 days, while 3 boys and 7 girls can complete it in 10 days. In how many days will 10 girls complete it?", "qHi": "4 लड़के और 6 लड़कियाँ एक काम को 8 दिनों में पूरा कर सकते हैं, जबकि 3 लड़के और 7 लड़कियाँ इसे 10 दिनों में पूरा कर सकते हैं। 10 लड़कियाँ इसे कितने दिनों में पूरा करेंगी?", "opts": ["10 days", "42 days", "45 days", "40 days"], "ans": 3, "exp": "(4B+6G)x8 = (3B+7G)x10. So 32B+48G=30B+70G, giving 2B=22G, B=11G. Total work = (4x11G+6G)x8 = 50Gx8=400G. Time for 10 girls = 400G/10G = 40 days."}, {"tag": "SSC CHSL 18/11/2025 (Shift-01)", "qEn": "8 men can complete a piece of work in 14 days. Find the number of days required by 12 men to do the same work.", "qHi": "8 आदमी एक काम को 14 दिनों में पूरा कर सकते हैं। उसी काम को 12 आदमियों द्वारा पूरा करने में लगने वाले दिनों की संख्या ज्ञात कीजिए।", "opts": ["9.33 days", "10.33 days", "8.33 days", "11.33 days"], "ans": 0, "exp": "Using M1D1=M2D2: 8x14=12xD2. So D2 = 112/12 = 9.33 days."}, {"tag": "SSC CHSL 18/11/2025 (Shift-01)", "qEn": "A can do 60% of a work in 18 days. He then calls in B, and they together finish the remaining work in 4 days. How long would B alone take to do the whole work?", "qHi": "A एक काम का 60% भाग 18 दिनों में कर सकता है। फिर वह B को बुलाता है, और वे मिलकर बचा हुआ काम 4 दिनों में पूरा करते हैं। B अकेले पूरा काम करने में कितना समय लेगा?", "opts": ["12 days", "10 days", "20 days", "15 days"], "ans": 3, "exp": "A's rate for 60% work in 18 days means A alone would take 18/0.6=30 days for the full work. Total work=30 units (A's efficiency=1). Remaining 40%=12 units, done by A+B together in 4 days, combined rate=3. Efficiency of B=3-1=2. Time for B alone = 30/2=15 days."}, {"tag": "SSC CHSL 18/11/2025 (Shift-02)", "qEn": "A and B together can finish a work in 8 days. If A alone can finish it in 16 days, how long would B alone take to finish the work?", "qHi": "A और B मिलकर एक काम को 8 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 16 दिनों में पूरा कर सकता है, तो B अकेले काम पूरा करने में कितना समय लेगा?", "opts": ["18 days", "16 days", "20 days", "24 days"], "ans": 1, "exp": "LCM of 8,16=16. Efficiency: (A+B)=2, A=1. Efficiency of B=1. Time for B alone = 16/1=16 days."}, {"tag": "SSC CHSL 18/11/2025 (Shift-03)", "qEn": "Sonu and Monu together can complete a work in 30 days. Sonu is 20% less efficient than Monu. In how many days can Sonu alone complete 40% of the work?", "qHi": "सोनू और मोनू मिलकर एक काम को 30 दिनों में पूरा कर सकते हैं। सोनू, मोनू से 20% कम कुशल है। सोनू अकेले उस काम का 40% कितने दिनों में पूरा कर सकता है?", "opts": ["24 days", "25 days", "26 days", "27 days"], "ans": 3, "exp": "Efficiency ratio Sonu:Monu = 4:5 (since Sonu is 20% less efficient). Total work = 30x(4+5) = 270 units. Sonu completes 40% = 0.4x270=108 units. Time = 108/4=27 days."}, {"tag": "SSC CHSL 19/11/2025 (Shift-01)", "qEn": "18 men can complete a work in 20 days. After 10 days, 6 men leave the work. In how many more days will the remaining work be completed?", "qHi": "18 आदमी एक काम को 20 दिनों में पूरा कर सकते हैं। 10 दिनों बाद, 6 आदमी काम छोड़ देते हैं। बचा हुआ काम कितने और दिनों में पूरा होगा?", "opts": ["13 days", "14 days", "15 days", "16 days"], "ans": 2, "exp": "Total work = 18x20=360 man-days. Work done in 10 days=18x10=180. Remaining=180. Remaining men=12. Time = 180/12=15 days."}, {"tag": "SSC CHSL 19/11/2025 (Shift-01)", "qEn": "A and B together can complete a work in 6 days. If A alone can do it in 12 days, how many days will B alone take to complete it?", "qHi": "A और B मिलकर एक काम को 6 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 12 दिनों में कर सकता है, तो B अकेले इसे पूरा करने में कितने दिन लगेंगे?", "opts": ["10 days", "11 days", "12 days", "13 days"], "ans": 2, "exp": "LCM of 6,12=12. Efficiency: (A+B)=2, A=1. Efficiency of B=1. Time for B alone=12/1=12 days."}, {"tag": "SSC CHSL 20/11/2025 (Shift-01)", "qEn": "A can complete a work in 8 days, and B can complete the same work in 16 days. In how many days can they complete the work together?", "qHi": "A एक काम को 8 दिनों में पूरा कर सकता है, और B उसी काम को 16 दिनों में पूरा कर सकता है। वे मिलकर उस काम को कितने दिनों में पूरा कर सकते हैं?", "opts": ["6(2/3) days", "5(1/3) days", "4(1/2) days", "3(1/4) days"], "ans": 1, "exp": "LCM of 8,16=16. Efficiency: A=2, B=1. Combined=3. Time = 16/3 = 5(1/3) days."}, {"tag": "SSC CHSL 20/11/2025 (Shift-01)", "qEn": "A and B together can complete a work in 15 days. If A alone can do it in 25 days, how long will B alone take?", "qHi": "A और B मिलकर एक काम को 15 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 25 दिनों में कर सकता है, तो B अकेले इसमें कितना समय लेगा?", "opts": ["36.5 days", "37.5 days", "38.5 days", "39.5 days"], "ans": 1, "exp": "LCM of 15,25=75. Efficiency: (A+B)=5, A=3. Efficiency of B=2. Time for B alone=75/2=37.5 days."}, {"tag": "SSC CHSL 20/11/2025 (Shift-02)", "qEn": "6 men+8 boys can do a piece of work in 10 days while 26 men+48 boys can do the same work in 2 days. Find the time taken by 15 men+20 boys to do the same work.", "qHi": "6 पुरुष+8 लड़के एक काम को 10 दिनों में कर सकते हैं जबकि 26 पुरुष+48 लड़के उसी काम को 2 दिनों में कर सकते हैं। 15 पुरुष+20 लड़कों द्वारा उसी काम को करने में लिया गया समय ज्ञात कीजिए।", "opts": ["4 days", "5 days", "6 days", "3 days"], "ans": 0, "exp": "(6M+8B)x10 = (26M+48B)x2. So 60M+80B=52M+96B, giving 8M=16B, M=2B. Total work = (6x2B+8B)x10=200B. Combined (15M+20B) = 15x2B+20B=50B. Time = 200B/50B = 4 days."}, {"tag": "SSC CHSL 20/11/2025 (Shift-03)", "qEn": "A and B can complete a task in 15 days and 20 days, respectively. They begin the work together. What fraction of the work remains after they work together for 5 days?", "qHi": "A और B एक कार्य को क्रमशः 15 दिन और 20 दिन में पूरा कर सकते हैं। वे साथ मिलकर कार्य शुरू करते हैं। 5 दिन साथ काम करने के बाद कार्य का कितना भाग शेष रहेगा?", "opts": ["1/2", "5/12", "1/3", "1/4"], "ans": 1, "exp": "LCM of 15,20=60. Efficiency: A=4, B=3. Work done together in 5 days=(4+3)x5=35. Remaining=60-35=25/60=5/12."}, {"tag": "SSC CHSL 20/11/2025 (Shift-03)", "qEn": "A and B together can complete a work in 12 days. If A alone can do it in 20 days, how many days will B alone take to complete it?", "qHi": "A और B मिलकर एक काम को 12 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 20 दिनों में कर सकता है, तो B अकेले उसे पूरा करने में कितने दिन लेगा?", "opts": ["24 days", "28 days", "30 days", "32 days"], "ans": 2, "exp": "LCM of 12,20=60. Efficiency: (A+B)=5, A=3. Efficiency of B=5-3=2. Time for B alone=60/2=30 days."}, {"tag": "SSC CHSL 21/11/2025 (Shift-01)", "qEn": "A and B together can complete a work in 9 days. If A alone can do it in 18 days, how long will B alone take?", "qHi": "A और B मिलकर एक काम को 9 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 18 दिनों में कर सकता है, तो B अकेले इसमें कितना समय लेगा?", "opts": ["16 days", "17 days", "18 days", "19 days"], "ans": 2, "exp": "LCM of 9,18=18. Efficiency: (A+B)=2, A=1. Efficiency of B=1. Time for B alone=18/1=18 days."}, {"tag": "SSC CHSL 21/11/2025 (Shift-02)", "qEn": "Mohit and Rohit undertake to do a piece of work for Rs.6,600. Mohit alone can do it in 25 days while Rohit alone can do it in 30 days. With the help of each other they finish it. Find the difference in the amount they receive.", "qHi": "मोहित और रोहित एक काम 6,600 रुपये में करने का बीड़ा उठाते हैं। मोहित अकेले इसे 25 दिनों में कर सकता है जबकि रोहित अकेले इसे 30 दिनों में कर सकता है। एक-दूसरे की मदद से वे इसे पूरा करते हैं। उनके द्वारा प्राप्त राशि में अंतर ज्ञात कीजिए।", "opts": ["Rs.700", "Rs.500", "Rs.600", "Rs.800"], "ans": 2, "exp": "LCM of 25,30=150. Efficiency: Mohit=6, Rohit=5. Ratio 6:5, total 11 units = 6600, so 1 unit = 600. Mohit's share=6x600=3600, Rohit's=5x600=3000. Difference=600."}, {"tag": "SSC CHSL 21/11/2025 (Shift-02)", "qEn": "P can do a work in 5 days and Q can do the same work in 15 days. If they work on alternate days starting with P on the first day, in how many days will the work be completed?", "qHi": "P एक काम को 5 दिनों में और Q उसी काम को 15 दिनों में कर सकता है। यदि वे बारी-बारी से दिनों में काम करते हैं, पहले दिन P से शुरुआत करते हुए, तो काम कितने दिनों में पूरा होगा?", "opts": ["6 days", "7 days", "8 days", "9 days"], "ans": 1, "exp": "LCM of 5,15=15. Efficiency: P=3, Q=1. Day1(P)=3, Day2(Q)=1, per 2-day cycle=4 units. In 6 days (3 cycles)=12 units. Remaining=15-12=3 units. Day7 (P's turn) completes exactly 3 units, finishing the work. Total=7 days."}, {"tag": "SSC CHSL 22/11/2025 (Shift-01)", "qEn": "38 men can do a piece of work in 10 days. Find the time needed by 10 men to do thrice the work.", "qHi": "38 आदमी एक काम को 10 दिनों में कर सकते हैं। 10 आदमियों को उस काम का तीन गुना काम करने में कितना समय लगेगा?", "opts": ["112 days", "114 days", "116 days", "118 days"], "ans": 1, "exp": "Using M1D1/W1=M2D2/W2: 38x10/1 = 10xD2/3. So D2 = 38x10x3/10 = 114 days."}, {"tag": "SSC CHSL 22/11/2025 (Shift-02)", "qEn": "P and Q together can complete a work in 24 days. They work together for 8 days, then P leaves. Q completes the remaining work alone in 20 more days. In how many days can P alone complete the work?", "qHi": "P और Q मिलकर एक काम को 24 दिनों में पूरा कर सकते हैं। वे 8 दिनों तक साथ काम करते हैं, फिर P काम छोड़ देता है। Q बचा हुआ काम अकेले 20 और दिनों में पूरा करता है। P अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["100 days", "110 days", "120 days", "130 days"], "ans": 2, "exp": "(P+Q)x24 = (P+Q)x8 + Qx20. So (P+Q)x16=Qx20, giving 16P+16Q=20Q, so 16P=4Q, Q=4P. Ratio P:Q=1:4. Total work=(1+4)x24=120. Time for P alone=120/1=120 days."}, {"tag": "SSC CHSL 22/11/2025 (Shift-03)", "qEn": "P and Q can complete a work alone in 12 days and 24 days, respectively. They work on alternate days starting with P. In how many days will the work be completed?", "qHi": "P और Q अकेले एक काम को क्रमशः 12 दिनों और 24 दिनों में पूरा कर सकते हैं। वे बारी-बारी से दिनों में काम करते हैं, P से शुरुआत करते हुए। काम कितने दिनों में पूरा होगा?", "opts": ["16 days", "17 days", "18 days", "19 days"], "ans": 0, "exp": "LCM of 12,24=24. Efficiency: P=2, Q=1. Day1(P)=2, Day2(Q)=1, per 2-day cycle=3 units. In 16 days (8 cycles)=24 units=full work exactly."}, {"tag": "SSC CHSL 24/11/2025 (Shift-1)", "qEn": "A and B together can complete a work in 6 days. If A alone can do it in 9 days, how long will B alone take?", "qHi": "A और B मिलकर एक काम को 6 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 9 दिनों में कर सकता है, तो B अकेले इसमें कितना समय लेगा?", "opts": ["18 days", "19 days", "20 days", "21 days"], "ans": 0, "exp": "LCM of 6,9=18. Efficiency: (A+B)=3, A=2. Efficiency of B=1. Time for B alone=18/1=18 days."}, {"tag": "SSC CHSL 24/11/2025 (Shift-2)", "qEn": "A can complete a task in 24 days. After 6 days, his sister joins him, and together they complete the remaining work in 10 more days. In how many days can the sister complete the work alone?", "qHi": "A एक कार्य को 24 दिनों में पूरा कर सकता है। 6 दिनों बाद, उसकी बहन उसके साथ शामिल हो जाती है, और वे मिलकर बचा हुआ कार्य 10 और दिनों में पूरा करते हैं। बहन अकेले उस कार्य को कितने दिनों में पूरा कर सकती है?", "opts": ["30 days", "28 days", "26 days", "24 days"], "ans": 0, "exp": "Let A's total work=24 units (rate=1/day). After A's first 6 days, work done=6 units, remaining=18 units. This remaining work is completed by (A+sister) together in 10 days, so their combined rate=18/10=1.8. Sister's rate=1.8-1=0.8. Time for sister alone=24/0.8=30 days."}, {"tag": "SSC CHSL 24/11/2025 (Shift-3)", "qEn": "A and B together can complete a task in 8 days. If B and C together can complete it in 12 days, and C and A together can complete it in 16 days, how long will A alone take to complete the task?", "qHi": "A और B मिलकर एक कार्य को 8 दिनों में पूरा कर सकते हैं। यदि B और C मिलकर इसे 12 दिनों में और C और A मिलकर इसे 16 दिनों में पूरा कर सकते हैं, तो A अकेले उस कार्य को पूरा करने में कितना समय लेगा?", "opts": ["18.4 days", "19.2 days", "20.2 days", "21.2 days"], "ans": 1, "exp": "LCM of 8,12,16=48. Efficiency: (A+B)=6, (B+C)=4, (C+A)=3. Sum of all pairs=13=2x(A+B+C), so (A+B+C)=6.5. Efficiency of A=6.5-4=2.5. Time for A alone=48/2.5=19.2 days."}, {"tag": "SSC CHSL 25/11/2025 (Shift-02)", "qEn": "Prakash can complete a task in 15 days. Jayesh is twice as fast as Prakash. How long will they take to complete the task together?", "qHi": "प्रकाश एक कार्य को 15 दिनों में पूरा कर सकता है। जयेश, प्रकाश से दोगुना तेज़ है। दोनों मिलकर उस कार्य को पूरा करने में कितना समय लेंगे?", "opts": ["5 days", "6 days", "7 days", "8 days"], "ans": 0, "exp": "Efficiency ratio Prakash:Jayesh = 1:2. Total work=1x15=15 units. Combined efficiency=1+2=3. Time = 15/3=5 days."}, {"tag": "SSC CHSL 25/11/2025 (Shift-03)", "qEn": "A and B together can complete a work in 20 days. A works alone for 15 days, then leaves. B finishes the remaining work alone in 42 more days. In how many days can B alone complete the whole work?", "qHi": "A और B मिलकर एक काम को 20 दिनों में पूरा कर सकते हैं। A अकेले 15 दिनों तक काम करता है, फिर काम छोड़ देता है। B बचा हुआ काम अकेले 42 और दिनों में पूरा करता है। B अकेले पूरा काम कितने दिनों में पूरा कर सकता है?", "opts": ["104 days", "106 days", "108 days", "110 days"], "ans": 2, "exp": "(A+B)x20 = Ax15 + Bx42. So 20A+20B=15A+42B, giving 5A=22B, A/B=22/5. Total work=(22+5)x20=540 (using A=22,B=5 as scaled efficiency units). Time for B alone=540/5=108 days."}, {"tag": "SSC CHSL 26/11/2025 (Shift-01)", "qEn": "A and B together can complete a work in 12 days. A is 25% more efficient than B. What percentage of work is done by A?", "qHi": "A और B मिलकर एक काम को 12 दिनों में पूरा कर सकते हैं। A, B से 25% अधिक कुशल है। A द्वारा कितने प्रतिशत काम किया जाता है?", "opts": ["55.56%", "60%", "62.5%", "66.67%"], "ans": 0, "exp": "Efficiency ratio A:B = 5:4 (since A is 25% more efficient). Percentage of work by A = 5/9 x 100% = 55.56%."}, {"tag": "SSC CHSL 26/11/2025 (Shift-01)", "qEn": "A, B and C together can complete a task in 10 days. A alone can do it in 20 days, and B alone can do it in 30 days. In how many days can C alone do the task?", "qHi": "A, B और C मिलकर एक कार्य को 10 दिनों में पूरा कर सकते हैं। A अकेले इसे 20 दिनों में और B अकेले 30 दिनों में कर सकता है। C अकेले उस कार्य को कितने दिनों में कर सकता है?", "opts": ["50 days", "55 days", "60 days", "65 days"], "ans": 2, "exp": "LCM of 10,20,30=60. Efficiency: (A+B+C)=6, A=3, B=2. Efficiency of C=6-3-2=1. Time for C alone=60/1=60 days."}, {"tag": "SSC CHSL 26/11/2025 (Shift-02)", "qEn": "X can complete a work in 2 days and Y can complete the same work in 4 days. How long will they take working together?", "qHi": "X एक काम को 2 दिनों में पूरा कर सकता है और Y उसी काम को 4 दिनों में पूरा कर सकता है। दोनों मिलकर काम करने में कितना समय लेंगे?", "opts": ["4/3 days", "5/3 days", "2/3 days", "1/3 days"], "ans": 0, "exp": "LCM of 2,4=4. Efficiency: X=2, Y=1. Combined=3. Time=4/3 days = 1(1/3) days."}, {"tag": "SSC CHSL 26/11/2025 (Shift-02)", "qEn": "6 workers can complete a job in 8 days. If 4 more workers are added, how long will it take to finish the job?", "qHi": "6 मजदूर एक काम को 8 दिनों में पूरा कर सकते हैं। यदि 4 और मजदूर जोड़ दिए जाएं, तो काम पूरा करने में कितना समय लगेगा?", "opts": ["4.6 days", "4.8 days", "5.0 days", "5.2 days"], "ans": 1, "exp": "Total work = 6x8=48 worker-days. With 10 workers, time = 48/10 = 4.8 days."}, {"tag": "SSC CHSL 26/11/2025 (Shift-03)", "qEn": "5 men or 8 women can complete a work in 12 days. In how many days will 10 men and 4 women complete the same work?", "qHi": "5 पुरुष या 8 महिलाएँ एक काम को 12 दिनों में पूरा कर सकते हैं। 10 पुरुष और 4 महिलाएँ उसी काम को कितने दिनों में पूरा करेंगे?", "opts": ["4.8 days", "5.5 days", "6 days", "6.5 days"], "ans": 0, "exp": "Since 5 men and 8 women both take 12 days for the same total work, 5M=8W, giving M:W=8:5. Using M=8,W=5: Total work=5x8x12=480. Combined (10M+4W) = 10x8+4x5=80+20=100. Time=480/100=4.8 days."}, {"tag": "SSC PHASE XIII 24/07/2025 (Shift-03)", "qEn": "P, Q and R can complete a work in 24, 30 and 40 days, respectively. All three start together, but P leaves after 8 days. Q leaves 6 days before the work is completed, and R works alone to finish the remaining work. Find the total number of days taken to complete the work.", "qHi": "P, Q और R एक काम को क्रमशः 24, 30 और 40 दिनों में पूरा कर सकते हैं। तीनों साथ मिलकर काम शुरू करते हैं, लेकिन P 8 दिन बाद काम छोड़ देता है। काम पूरा होने से 6 दिन पहले Q भी काम छोड़ देता है, और R अकेले बचा हुआ काम पूरा करता है। काम पूरा करने में लिया गया कुल दिनों की संख्या ज्ञात कीजिए।", "opts": ["102/7 days", "104/7 days", "106/7 days", "108/7 days"], "ans": 1, "exp": "LCM of 24,30,40=120. Efficiency: P=5, Q=4, R=3. In the first 8 days (P+Q+R): (5+4+3)x8=96. Remaining=120-96=24. Let T be additional days needed; Q works (T-6) days and R works T days (since Q leaves 6 days before completion). (Q+R)(T-6) + Rx6 = 24: (4+3)(T-6)+3x6=24, so 7(T-6)=6, T-6=6/7, T=48/7. Total time=8+48/7=(56+48)/7=104/7 days."}, {"tag": "SSC PHASE XIII 25/07/2025 (Shift-03)", "qEn": "A is twice as efficient as B. A and B together can complete a work in 12 days. In how many days can A alone complete the work?", "qHi": "A, B से दोगुना कुशल है। A और B मिलकर एक काम को 12 दिनों में पूरा कर सकते हैं। A अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["16 days", "17 days", "18 days", "19 days"], "ans": 2, "exp": "Efficiency ratio A:B=2:1. Total work=12x(2+1)=36. Time for A alone=36/2=18 days."}, {"tag": "SSC PHASE XIII 26/07/2025 (Shift-03)", "qEn": "P, Q and R can complete a work in 15, 20 and 30 days, respectively. All three start together, but P leaves after 4 days. Q leaves 6 days before the work is completed, and R works alone to finish the remaining work. Find the total number of days taken to complete the work.", "qHi": "P, Q और R एक काम को क्रमशः 15, 20 और 30 दिनों में पूरा कर सकते हैं। तीनों साथ मिलकर काम शुरू करते हैं, लेकिन P 4 दिन बाद काम छोड़ देता है। काम पूरा होने से 6 दिन पहले Q भी काम छोड़ देता है, और R अकेले बचा हुआ काम पूरा करता है। काम पूरा करने में लिया गया कुल दिनों की संख्या ज्ञात कीजिए।", "opts": ["58/5 days", "60/5 days", "62/5 days", "64/5 days"], "ans": 2, "exp": "LCM of 15,20,30=60. Efficiency: P=4, Q=3, R=2. In the first 4 days (P+Q+R): (4+3+2)x4=36. Remaining=60-36=24. Let T be additional days; Q works (T-6) days and R works T days. (Q+R)(T-6)+Rx6=24: (3+2)(T-6)+2x6=24, so 5(T-6)=12, T-6=12/5, T=42/5. Total time=4+42/5=(20+42)/5=62/5 days."}, {"tag": "SSC PHASE XIII 28/07/2025 (Shift-03)", "qEn": "A and B can complete a work in 20 and 30 days, respectively. They work together for 6 days, and then A leaves. In how many more days will B alone complete the remaining work?", "qHi": "A और B एक काम को क्रमशः 20 और 30 दिनों में पूरा कर सकते हैं। वे 6 दिनों तक साथ काम करते हैं, फिर A काम छोड़ देता है। B अकेले बचा हुआ काम कितने और दिनों में पूरा करेगा?", "opts": ["13 days", "14 days", "15 days", "16 days"], "ans": 2, "exp": "LCM of 20,30=60. Efficiency: A=3, B=2. A+B(6 days)=(3+2)x6=30. Remaining=60-30=30. Time for B alone=30/2=15 days."}, {"tag": "SSC PHASE XIII 30/07/2025 (Shift-03)", "qEn": "A can complete a work in 10 days. A works alone for the first 4 days, then B joins him. Together they complete the remaining work. If B alone can do the work in 15 days, find the total number of days taken to complete the work.", "qHi": "A एक काम को 10 दिनों में पूरा कर सकता है। A पहले 4 दिन अकेले काम करता है, फिर B उसके साथ शामिल हो जाता है। साथ मिलकर वे बचा हुआ काम पूरा करते हैं। यदि B अकेले उस काम को 15 दिनों में कर सकता है, तो काम पूरा करने में लिया गया कुल दिनों की संख्या ज्ञात कीजिए।", "opts": ["7.2 days", "7.6 days", "8.2 days", "8.6 days"], "ans": 1, "exp": "LCM of 10,15=30. Efficiency: A=3, B=2. A's first 4 days=12. Remaining=30-12=18. Combined rate=5. Additional days=18/5=3.6. Total time=4+3.6=7.6 days."}, {"tag": "SSC PHASE XIII 31/07/2025 (Shift-03)", "qEn": "Sudhir can type 40 pages of a manuscript in 8 hours. Sudhir and Prakash together can type 350 pages in 35 hours. How much time will Prakash take to type 40 pages alone?", "qHi": "सुधीर एक पांडुलिपि के 40 पृष्ठ 8 घंटे में टाइप कर सकता है। सुधीर और प्रकाश मिलकर 350 पृष्ठ 35 घंटे में टाइप कर सकते हैं। प्रकाश अकेले 40 पृष्ठ टाइप करने में कितना समय लेगा?", "opts": ["7 hours", "7.5 hours", "8 hours", "8.5 hours"], "ans": 2, "exp": "Sudhir's rate = 40/8=5 pages/hour. Combined rate = 350/35=10 pages/hour. Prakash's rate = 10-5=5 pages/hour. Time for Prakash to type 40 pages = 40/5=8 hours."}, {"tag": "SSC DP & MTS 2025", "qEn": "8 workers can build a wall in 10 days. How many days will 4 workers take to build the same wall?", "qHi": "8 मजदूर एक दीवार 10 दिनों में बना सकते हैं। 4 मजदूर उसी दीवार को कितने दिनों में बनाएंगे?", "opts": ["20 days", "18 days", "16 days", "22 days"], "ans": 0, "exp": "Using M1D1=M2D2: 8x10=4xD2. So D2 = 80/4 = 20 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A can do a piece of work in the same time as B and C together. A and B together can complete it in 10 days, and B alone can do it in 25 days. In how many days can C alone complete the work?", "qHi": "A किसी काम को उतने ही समय में कर सकता है जितने समय में B और C मिलकर करते हैं। A और B मिलकर उसे 10 दिनों में पूरा कर सकते हैं, और B अकेला उसे 25 दिनों में कर सकता है। C अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["45 days", "50 days", "55 days", "60 days"], "ans": 1, "exp": "Let total work = LCM(10,25) = 50 units. Efficiency: (A+B)=5, B=2. Efficiency of A=5-2=3. Given A's efficiency equals (B+C)'s combined efficiency: 3=2+C, so C=1. Time for C alone=50/1=50 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A is twice as fast as B and completes a piece of work in 10 days less than B. In how many days can B alone complete the work?", "qHi": "A, B से दोगुना तेज़ है और एक काम को B से 10 दिन कम में पूरा करता है। B अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["10 days", "15 days", "20 days", "25 days"], "ans": 2, "exp": "Efficiency ratio A:B=2:1, so time ratio A:B=1:2. Let time A=x, time B=2x. Difference=2x-x=x=10 days. So time A=10 days, time B=20 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A can complete a piece of work in 6 days and B can complete it in 8 days. With the help of C, they finish the work in 3 days and earn Rs.3,200. What is C's share?", "qHi": "A एक काम को 6 दिनों में पूरा कर सकता है और B उसे 8 दिनों में पूरा कर सकता है। C की मदद से, वे काम 3 दिनों में पूरा करते हैं और 3,200 रुपये कमाते हैं। C का हिस्सा क्या है?", "opts": ["Rs.300", "Rs.400", "Rs.500", "Rs.600"], "ans": 1, "exp": "LCM of 6,8,3=24. Efficiency: A=4, B=3. (A+B+C) efficiency=24/3=8. Efficiency of C=8-4-3=1. C's share=(1/8)x3200=Rs.400."}, {"tag": "SSC DP & MTS 2025", "qEn": "A is four times as efficient as B, which allows A to complete a certain work 45 days before B. In how many days can they complete the work together?", "qHi": "A, B से चार गुना कुशल है, जिसके कारण A एक निश्चित काम B से 45 दिन पहले पूरा कर लेता है। वे एक साथ मिलकर उस काम को कितने दिनों में पूरा कर सकते हैं?", "opts": ["10 days", "11 days", "12 days", "13 days"], "ans": 2, "exp": "Efficiency ratio A:B=4:1, so time ratio A:B=1:4. Let time A=x, time B=4x. Difference=4x-x=3x=45, so x=15. Time A=15, time B=60. Total work=15x4=60 units. Combined efficiency=4+1=5. Time together=60/5=12 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "5 packers (men) and 2 helpers (boys) together pack 3 times as many boxes per day as 1 packer and 1 helper together. Find the ratio of the capacity of a packer to a helper.", "qHi": "5 पैकर (पुरुष) और 2 सहायक (लड़के) मिलकर प्रतिदिन उतने बक्से पैक करते हैं जितने 1 पैकर और 1 सहायक मिलकर पैक करने वाले बक्सों से 3 गुना हैं। एक पैकर और एक सहायक की क्षमता का अनुपात ज्ञात कीजिए।", "opts": ["1:2", "2:1", "1:3", "3:1"], "ans": 0, "exp": "5M+2B = 3(M+B). So 5M+2B=3M+3B, giving 2M=B, meaning M:B=1:2."}, {"tag": "SSC DP & MTS 2025", "qEn": "A sports goods store arranges 30 items per row across 45 rows. If the store rearranges the items to 25 items per row, how many rows will there be?", "qHi": "एक स्पोर्ट्स गुड्स स्टोर 45 पंक्तियों में प्रति पंक्ति 30 वस्तुएँ व्यवस्थित करता है। यदि स्टोर वस्तुओं को प्रति पंक्ति 25 वस्तुओं में पुनर्व्यवस्थित करता है, तो कितनी पंक्तियाँ होंगी?", "opts": ["Forty rows", "Fifty-four rows", "Sixty rows", "Forty-five rows"], "ans": 1, "exp": "Total items = 30x45=1350. New number of rows = 1350/25 = 54."}, {"tag": "SSC DP & MTS 2025", "qEn": "A and B together can complete a work in 18 days. If A alone can do it in 30 days, how long will B alone take?", "qHi": "A और B मिलकर एक काम को 18 दिनों में पूरा कर सकते हैं। यदि A अकेले इसे 30 दिनों में कर सकता है, तो B अकेले उसमें कितना समय लेगा?", "opts": ["40 days", "45 days", "50 days", "55 days"], "ans": 1, "exp": "LCM of 18,30=90. Efficiency: (A+B)=5, A=3. Efficiency of B=2. Time for B alone=90/2=45 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A is twice as efficient as B. A and B together complete a work in 12 days. In how many days can B alone complete the work?", "qHi": "A, B से दोगुना कुशल है। A और B मिलकर एक काम को 12 दिनों में पूरा करते हैं। B अकेले उस काम को कितने दिनों में पूरा कर सकता है?", "opts": ["32 days", "34 days", "36 days", "38 days"], "ans": 2, "exp": "Efficiency ratio A:B=2:1. Total work=12x(2+1)=36. Time for B alone=36/1=36 days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A and B can complete a work in 15 days and 20 days, respectively. They start together, but every 3rd day B is absent. In how many days will the work be completed?", "qHi": "A और B एक काम को क्रमशः 15 दिनों और 20 दिनों में पूरा कर सकते हैं। वे साथ काम शुरू करते हैं, लेकिन हर तीसरे दिन B अनुपस्थित रहता है। काम कितने दिनों में पूरा होगा?", "opts": ["9(6/7) days", "10(6/7) days", "11(6/7) days", "12(6/7) days"], "ans": 0, "exp": "LCM of 15,20=60. Efficiency: A=4, B=3. Days 1,2 (A+B together)=(4+3)x2=14; Day 3 (A alone, since B is absent)=4. Total per 3-day cycle=18 units. In 9 days (3 cycles)=54 units. Remaining=60-54=6. Day 10 is an (A+B) day at combined rate 7; time needed = 6/7 of a day. Total=9+6/7 = 9(6/7) days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A, B and C can complete a job in 12, 15 and 20 days, respectively. All three work together for 4 days, then A leaves. B and C continue at 3/4 of their normal combined rate. How many more days will they need to finish the remaining work?", "qHi": "A, B और C एक काम को क्रमशः 12, 15 और 20 दिनों में पूरा कर सकते हैं। तीनों साथ मिलकर 4 दिन काम करते हैं, फिर A काम छोड़ देता है। B और C अपनी सामान्य संयुक्त दर के 3/4 पर काम जारी रखते हैं। बचा हुआ काम पूरा करने के लिए उन्हें और कितने दिन चाहिए?", "opts": ["2(1/7) days", "2(2/7) days", "2(3/7) days", "2(4/7) days"], "ans": 1, "exp": "LCM of 12,15,20=60. Efficiency: A=5, B=4, C=3. In 4 days (A+B+C): (5+4+3)x4=48. Remaining=60-48=12. B+C's normal combined rate=4+3=7; at 3/4 rate = 21/4=5.25. Additional days=12/5.25 = 48/21 = 16/7 = 2(2/7) days."}, {"tag": "SSC DP & MTS 2025", "qEn": "A and B were employed for a certain work at a daily rate. A worked for 7 days doing 2 units of work per day, while B worked for 5 days doing 4 units of work per day. If A's share of the wages is Rs.4,900, what is B's share?", "qHi": "A और B को एक निश्चित दैनिक दर पर एक काम के लिए नियुक्त किया गया था। A ने 7 दिनों तक प्रतिदिन 2 इकाई काम करते हुए काम किया, जबकि B ने 5 दिनों तक प्रतिदिन 4 इकाई काम करते हुए काम किया। यदि A की मजदूरी का हिस्सा 4,900 रुपये है, तो B का हिस्सा क्या है?", "opts": ["Rs.7,000", "Rs.6,500", "Rs.6,000", "Rs.5,500"], "ans": 0, "exp": "A's total work units = 7x2=14. B's total work units = 5x4=20. Ratio A:B=14:20=7:10. Since A's share (7 parts) = 4900, 1 part = 700. B's share (10 parts) = 10x700 = Rs.7,000."}, {"tag": "SSC DP & MTS 2025", "qEn": "16 men can complete 3/4 of a work in 12 days. How many men are needed to complete 1/2 of the work in 8 days?", "qHi": "16 आदमी एक काम का 3/4 भाग 12 दिनों में पूरा कर सकते हैं। काम का 1/2 भाग 8 दिनों में पूरा करने के लिए कितने आदमियों की आवश्यकता है?", "opts": ["12", "14", "16", "18"], "ans": 2, "exp": "Using M1D1/W1 = M2D2/W2: 16x12/(3/4) = M2x8/(1/2). So 256 = M2x16, giving M2=16."}];
+const TOTAL = QUESTIONS.length;
+const TEST_SECONDS = TOTAL * 60;
+
+let current = 0;
+let answers = new Array(TOTAL).fill(null);
+let visited = new Array(TOTAL).fill(false);
+let timeLeft = TEST_SECONDS;
+let timerInterval = null;
+let reviewIndex = 0;
+
+function startTest(){
+  document.getElementById('siteHeader').classList.remove('show');
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  buildPalette('test');
+  startTimer();
+}
+
+function startTimer(){
+  updateTimerText();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerText();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest();
+    }
+  },1000);
+}
+function updateTimerText(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  document.getElementById('timerText').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  document.getElementById('sourceTag').textContent = q.tag;
+  document.getElementById('qMeta').textContent = 'Question '+(current+1)+' of '+TOTAL;
+  document.getElementById('qText').textContent = q.qEn;
+  document.getElementById('qTextHi').textContent = q.qHi;
+  document.getElementById('progressText').textContent = 'Question '+(current+1)+' / '+TOTAL;
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[current]===i ? ' selected' : '');
+    div.onclick = ()=>selectOption(i);
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>';
+    box.appendChild(div);
+  });
+
+  document.getElementById('btnPrev').disabled = (current===0);
+  document.getElementById('btnNext').disabled = (current===TOTAL-1);
+  visited[current] = true;
+  buildPalette('test');
+}
+
+function selectOption(i){
+  answers[current] = i;
+  renderQuestion();
+}
+function clearResponse(){
+  answers[current] = null;
+  renderQuestion();
+}
+function prevQ(){ if(current>0){ current--; renderQuestion(); } }
+function nextQ(){ if(current<TOTAL-1){ current++; renderQuestion(); } }
+
+function buildPalette(which){
+  const grid = document.getElementById('paletteGrid_'+which);
+  if(!grid) return;
+  grid.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const btn = document.createElement('button');
+    let cls = 'pn-grey';
+    if(which==='test'){
+      if(answers[i]!==null) cls='pn-green';
+      else if(visited[i]) cls='pn-red';
+    } else {
+      if(answers[i]===null) cls='pn-grey';
+      else if(answers[i]===QUESTIONS[i].ans) cls='pn-green';
+      else cls='pn-red';
+    }
+    btn.className = 'palette-num ' + cls;
+    btn.textContent = i+1;
+    btn.onclick = ()=>{
+      if(which==='test'){ current = i; visited[i]=true; renderQuestion(); }
+      else { reviewIndex = i; renderReview(); }
+      togglePalette(which,true);
+    };
+    grid.appendChild(btn);
+  }
+}
+
+function togglePalette(which, forceClose){
+  const dd = document.getElementById('paletteDD_'+which);
+  if(forceClose){ dd.classList.remove('open'); return; }
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  ['test','review'].forEach(w=>{
+    const dd = document.getElementById('paletteDD_'+w);
+    const btn = e.target.closest('.palette-wrap');
+    if(dd && dd.classList.contains('open') && !btn){
+      dd.classList.remove('open');
+    }
+  });
+});
+
+function askSubmit(){
+  const unattempted = answers.filter(a=>a===null).length;
+  document.getElementById('modalMsg').textContent = 'You have '+unattempted+' unattempted question(s). Are you sure you want to submit the test?';
+  document.getElementById('submitModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('submitModal').classList.remove('open'); }
+document.getElementById('submitModal').addEventListener('click',function(e){
+  if(e.target === this) closeModal();
+});
+function confirmSubmit(){ closeModal(); submitTest(); }
+
+function submitTest(){
+  clearInterval(timerInterval);
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+
+  let correct=0, wrong=0, attempted=0;
+  answers.forEach((a,i)=>{
+    if(a!==null){
+      attempted++;
+      if(a===QUESTIONS[i].ans) correct++; else wrong++;
+    }
+  });
+  const unattempted = TOTAL - attempted;
+  const score = (correct*1 - wrong*0.25);
+
+  document.getElementById('rTotal').textContent = TOTAL;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rBlank').textContent = '';
+  document.getElementById('rScore').textContent = score.toFixed(2);
+}
+
+function retakeTest(){
+  answers = new Array(TOTAL).fill(null);
+  visited = new Array(TOTAL).fill(false);
+  current = 0;
+  timeLeft = TEST_SECONDS;
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('siteHeader').classList.add('show');
+  document.getElementById('startScreen').style.display = 'block';
+}
+
+function openReview(){
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  reviewIndex = 0;
+  renderReview();
+  buildPalette('review');
+}
+
+function renderReview(){
+  const q = QUESTIONS[reviewIndex];
+  const userAns = answers[reviewIndex];
+  const letters = ['A','B','C','D'];
+
+  document.getElementById('revSourceTag').textContent = q.tag;
+  document.getElementById('revQMeta').textContent = 'Question '+(reviewIndex+1)+' of '+TOTAL;
+  document.getElementById('revQText').textContent = q.qEn;
+  document.getElementById('revQTextHi').textContent = q.qHi;
+
+  let statusHtml = '';
+  if(userAns === null){
+    statusHtml = '<span class="status-tag status-unattempted">Unattempted</span>';
+  } else if(userAns === q.ans){
+    statusHtml = '<span class="status-tag status-correct">Correct</span>';
+  } else {
+    statusHtml = '<span class="status-tag status-wrong">Wrong</span>';
+  }
+  document.getElementById('reviewStatusTag').innerHTML = statusHtml;
+
+  const box = document.getElementById('revOptionsBox');
+  box.innerHTML = '';
+  q.opts.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    let cls = 'option';
+    let markIcon = '';
+    if(i===q.ans){ cls+=' correct'; markIcon='<span class="mark-icon">✓</span>'; }
+    else if(i===userAns){ cls+=' wrong'; markIcon='<span class="mark-icon">✗</span>'; }
+    div.className = cls;
+    div.innerHTML = '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>'+markIcon;
+    box.appendChild(div);
+  });
+
+  const userAnsText = userAns===null ? 'Not Attempted' : letters[userAns]+'. '+q.opts[userAns];
+  const correctAnsText = letters[q.ans]+'. '+q.opts[q.ans];
+  document.getElementById('revAnsLine').innerHTML =
+    '<b>Your Answer:</b> '+userAnsText+'<br><b>Correct Answer:</b> '+correctAnsText;
+
+  document.getElementById('revExplain').textContent = q.exp;
+
+  document.getElementById('revBtnPrev').disabled = (reviewIndex===0);
+  document.getElementById('revBtnNext').disabled = (reviewIndex===TOTAL-1);
+  buildPalette('review');
+}
+
+function revPrev(){ if(reviewIndex>0){ reviewIndex--; renderReview(); } }
+function revNext(){ if(reviewIndex<TOTAL-1){ reviewIndex++; renderReview(); } }
+function backToResult(){
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+}
+</script>
+</body>
+</html>

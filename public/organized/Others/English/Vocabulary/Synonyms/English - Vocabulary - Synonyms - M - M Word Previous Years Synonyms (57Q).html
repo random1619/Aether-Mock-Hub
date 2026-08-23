@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRI Mock Hub — Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+    --tan:#e9e1cf;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px 40px;}
+
+  /* ---------- HEADER (start screen only) ---------- */
+  header{
+    text-align:center;
+    padding:28px 16px 20px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 14px;letter-spacing:-0.01em;
+  }
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    background:#29a9eb;color:#fff;text-decoration:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:9px 20px;border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #topicLine{
+    margin-top:14px;font-family:'Fraunces',serif;font-weight:700;font-size:15px;
+    color:var(--accent);background:var(--card);display:inline-block;
+    padding:6px 18px;border:1px solid var(--rule);border-radius:20px;
+  }
+
+  /* ---------- START SCREEN ---------- */
+  .divider{
+    max-width:720px;margin:0 auto;border-top:3px double var(--rule);
+  }
+  #startScreen{text-align:center;padding:28px 16px 0;}
+  .start-card{
+    background:var(--card);border:1px solid var(--rule);border-radius:18px;
+    padding:32px 20px;margin:24px 0;
+  }
+  .start-card h2{
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;margin:0 0 24px;line-height:1.3;
+  }
+  .info-boxes{display:flex;gap:12px;justify-content:center;margin-bottom:26px;flex-wrap:nowrap;}
+  .info-box{
+    background:var(--tan);border-radius:12px;
+    padding:14px 16px;flex:1;min-width:0;text-align:left;
+  }
+  .info-box .lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;white-space:nowrap;}
+  .info-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--accent);}
+  #startBtn{
+    background:var(--accent);color:#fff;border:none;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:16px;
+    padding:15px 36px;border-radius:10px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(138,90,43,0.35);
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  #startBtn:hover{transform:translateY(-1px);}
+  #startBtn .playIcon{
+    background:#e8912f;border-radius:6px;width:26px;height:26px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+  }
+  .start-footnote{
+    text-align:center;font-size:13.5px;color:var(--muted);line-height:1.6;
+    padding:0 20px 30px;max-width:600px;margin:0 auto;
+  }
+
+  /* ---------- TOP BAR (test + review) ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--card);border-bottom:1px solid var(--rule);
+    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+  }
+  .topbar .brand{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;flex-shrink:0;}
+  .topbar .center-info{
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink);
+    flex:1;justify-content:center;min-width:0;
+  }
+  .topbar .timer{
+    font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--wrong);
+    white-space:nowrap;
+  }
+  .topbar .progress{white-space:nowrap;color:var(--muted);}
+  .paletteWrap{position:relative;flex-shrink:0;}
+  .paletteBtn{
+    background:var(--paper);border:1px solid var(--rule);border-radius:8px;
+    padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;
+    white-space:nowrap;
+  }
+  .paletteDropdown{
+    display:none;position:absolute;right:0;top:calc(100% + 6px);
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:12px;
+    width:240px;max-height:320px;overflow-y:auto;z-index:30;
+  }
+  .paletteDropdown.show{display:block;}
+  .paletteLegend{display:flex;gap:10px;font-size:11px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;}
+  .legendDot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;}
+  .paletteGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .paletteNum{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;
+    border:1px solid transparent;
+  }
+  .paletteNum.answered{background:var(--correct-bg);color:var(--correct);border-color:var(--correct);}
+  .paletteNum.notanswered{background:var(--wrong-bg);color:var(--wrong);border-color:var(--wrong);}
+  .paletteNum.notvisited{background:var(--tan);color:var(--muted);}
+  .paletteNum.current{outline:2px solid var(--accent);outline-offset:1px;}
+
+  /* ---------- TEST SCREEN ---------- */
+  #testScreen{display:none;}
+  .qcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;
+    padding:20px 18px;margin:18px 0;position:relative;
+  }
+  .qcard .tag{
+    float:right;font-size:10.5px;color:var(--muted);background:var(--paper);
+    border:1px solid var(--rule);padding:2px 8px;border-radius:20px;
+  }
+  .qcard .qmeta{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .qcard .marks-note{font-size:11.5px;color:var(--accent);margin-bottom:10px;font-weight:600;}
+  .qcard .qtext{font-size:17px;line-height:1.55;margin:6px 0 16px;clear:both;}
+  .qcard .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;text-align:left;
+    background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;
+    padding:11px 14px;font-size:15px;cursor:pointer;
+    transition:border-color .15s, background .15s;font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .opt:hover{border-color:var(--accent);background:#fff;}
+  .opt .lab{font-weight:700;color:var(--accent);min-width:18px;}
+  .opt.selected{background:#efe3cf;border-color:var(--accent);}
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .navrow{
+    display:flex;gap:8px;margin-top:16px;flex-wrap:nowrap;
+  }
+  .navrow button{
+    flex:1;min-width:0;
+    border:1px solid var(--rule);background:var(--card);
+    border-radius:8px;padding:10px 6px;font-size:12.5px;font-weight:600;
+    cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .navrow button:hover{border-color:var(--accent);}
+  .navrow button:disabled{opacity:.4;cursor:not-allowed;}
+  .submitRow{margin-top:10px;}
+  .submitRow button{
+    width:100%;background:var(--accent);color:#fff;border:none;
+    border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ---------- MODAL ---------- */
+  .modalOverlay{
+    display:none;position:fixed;inset:0;background:rgba(27,26,23,0.5);
+    z-index:50;align-items:center;justify-content:center;padding:20px;
+  }
+  .modalOverlay.show{display:flex;}
+  .modalBox{
+    background:var(--card);border-radius:14px;padding:24px 22px;max-width:340px;width:100%;
+    text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.25);
+  }
+  .modalBox h3{font-family:'Fraunces',serif;font-size:19px;margin:0 0 10px;}
+  .modalBox p{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5;}
+  .modalBtns{display:flex;gap:10px;}
+  .modalBtns button{
+    flex:1;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .modalBtns .yesBtn{background:var(--accent);color:#fff;border:none;}
+  .modalBtns .cancelBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- RESULT SCREEN ---------- */
+  #resultScreen{display:none;text-align:center;padding:30px 16px;}
+  #resultScreen h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 24px;}
+  .result-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;
+  }
+  .result-box{
+    background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 10px;
+  }
+  .result-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:24px;}
+  .result-box .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .result-box.correct .num{color:var(--correct);}
+  .result-box.wrong .num{color:var(--wrong);}
+  .score-box{
+    background:var(--accent);color:#fff;border-radius:14px;padding:20px;margin-bottom:26px;
+  }
+  .score-box .num{font-family:'Fraunces',serif;font-weight:700;font-size:36px;}
+  .score-box .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.1em;opacity:.85;margin-top:2px;}
+  .resultBtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .resultBtns button{
+    padding:12px 22px;border-radius:30px;font-size:14px;font-weight:700;cursor:pointer;
+    border:1px solid var(--rule);font-family:'Inter',sans-serif;
+  }
+  .resultBtns .reviewBtn{background:var(--accent);color:#fff;border:none;}
+  .resultBtns .retakeBtn{background:var(--card);color:var(--ink);}
+
+  /* ---------- REVIEW SCREEN ---------- */
+  #reviewScreen{display:none;}
+  .statustag{
+    font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;
+  }
+  .statustag.correct{background:var(--correct-bg);color:var(--correct);}
+  .statustag.wrong{background:var(--wrong-bg);color:var(--wrong);}
+  .statustag.unattempted{background:var(--tan);color:var(--muted);}
+  .review-topbar-title{font-family:'Fraunces',serif;font-weight:700;color:var(--accent);font-size:15px;}
+  .yourans{font-size:13px;margin:10px 0 2px;color:var(--muted);}
+  .yourans b{color:var(--ink);}
+  .solution{
+    margin-top:14px;padding:14px 16px;background:#fbf7ee;
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    font-size:14.5px;line-height:1.65;
+  }
+  .solution .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+  <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+  <h1>YATRI Mock Hub</h1>
+  <a href="https://t.me/ssc_cgl_chsl_guidance_mocks_quiz" target="_blank" rel="noopener" id="tgBtn">
+    <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+      <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+    </svg>
+    <span>Join Telegram</span>
+  </a>
+  <div id="topicLine">Topic: M Words — Previous Years Synonyms</div>
+</header>
+
+<div class="divider"></div>
+
+<div class="wrap">
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <div class="start-card">
+      <h2>Vocabulary Synonyms Mock Test</h2>
+      <div class="info-boxes">
+        <div class="info-box"><div class="lbl">Total Questions</div><div class="num" id="totalQCount">0</div></div>
+        <div class="info-box"><div class="lbl">Total Time</div><div class="num" id="totalTimeDisplay">0 Min</div></div>
+      </div>
+      <button id="startBtn"><span class="playIcon">▶</span> Start Test</button>
+    </div>
+    <div class="start-footnote">Submit ke baad hi answers, score aur explanation dikhenge — pura test pehle imandari se attempt karein.</div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="testScreen">
+    <div class="topbar">
+      <div class="brand">YATRI</div>
+      <div class="center-info">
+        <span class="timer" id="timerDisplay">00:00</span>
+        <span class="progress" id="progressDisplay">Question 1 / 1</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnTest">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownTest">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Answered</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Not Answered</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Not Visited</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridTest"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="qTag"></span>
+      <div class="qmeta" id="qMeta">Question 1 of 1</div>
+      <div class="marks-note">+1 for correct, −0.25 for wrong</div>
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="qOpts"></div>
+    </div>
+
+    <div class="navrow">
+      <button id="prevBtn">⬅️ Previous</button>
+      <button id="clearBtn">Clear Response</button>
+      <button id="nextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="submitBtn">📤 Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen">
+    <h2>Test Complete!</h2>
+    <div class="result-grid">
+      <div class="result-box"><div class="num" id="rTotal">0</div><div class="lbl">Total Questions</div></div>
+      <div class="result-box"><div class="num" id="rAttempted">0</div><div class="lbl">Attempted</div></div>
+      <div class="result-box"><div class="num" id="rUnattempted">0</div><div class="lbl">Unattempted</div></div>
+      <div class="result-box correct"><div class="num" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="result-box wrong"><div class="num" id="rWrong">0</div><div class="lbl">Wrong</div></div>
+    </div>
+    <div class="score-box">
+      <div class="num" id="rScore">0</div>
+      <div class="lbl">Final Score</div>
+    </div>
+    <div class="resultBtns">
+      <button class="reviewBtn" id="reviewBtn">🔍 Review Solutions</button>
+      <button class="retakeBtn" id="retakeBtn">🔁 Retake Test</button>
+    </div>
+  </div>
+
+  <!-- REVIEW SCREEN -->
+  <div id="reviewScreen">
+    <div class="topbar" style="z-index:20;">
+      <div class="review-topbar-title">Review Solutions</div>
+      <div class="center-info" style="justify-content:flex-end;">
+        <span class="statustag" id="reviewStatusTag">—</span>
+      </div>
+      <div class="paletteWrap">
+        <button class="paletteBtn" id="paletteBtnReview">📋 Palette</button>
+        <div class="paletteDropdown" id="paletteDropdownReview">
+          <div class="paletteLegend">
+            <span><span class="legendDot" style="background:var(--correct-bg);border:1px solid var(--correct);"></span>Correct</span>
+            <span><span class="legendDot" style="background:var(--wrong-bg);border:1px solid var(--wrong);"></span>Wrong</span>
+            <span><span class="legendDot" style="background:var(--tan);"></span>Unattempted</span>
+          </div>
+          <div class="paletteGrid" id="paletteGridReview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <span class="tag" id="rvTag"></span>
+      <div class="qmeta" id="rvMeta">Question 1 of 1</div>
+      <div class="qtext" id="rvText"></div>
+      <div class="options" id="rvOpts"></div>
+      <div class="yourans" id="rvYourAns"></div>
+      <div class="solution" id="rvSolution">
+        <div class="lbl">Solution</div>
+        <div id="rvSolutionText"></div>
+      </div>
+    </div>
+
+    <div class="navrow">
+      <button id="rvPrevBtn">⬅️ Previous</button>
+      <button id="rvNextBtn">Next ➡️</button>
+    </div>
+    <div class="submitRow">
+      <button id="backToResultBtn">📊 Back to Result</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUBMIT CONFIRMATION MODAL -->
+<div class="modalOverlay" id="submitModal">
+  <div class="modalBox">
+    <h3>Submit Test?</h3>
+    <p id="submitModalText">Aap sure hain ki test submit karna chahte hain?</p>
+    <div class="modalBtns">
+      <button class="cancelBtn" id="modalCancelBtn">Cancel</button>
+      <button class="yesBtn" id="modalYesBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Mellifluous",
+"tag": "SSC CGL 18/09/2024 (Shift-III)",
+"opts": [
+"Loud",
+"Cacophonous",
+"Musical",
+"Distinct"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Mellifluous' का अर्थ है <b>मधुर/सुरीला</b>। Synonym 'Musical' (<b>संगीतमय</b>) है।</span><br>Loud – तेज़ आवाज़ वाला, Cacophonous – कर्कश, Distinct – स्पष्ट।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Magnificent",
+"tag": "SSC CGL 19/09/2024 (Shift-III)",
+"opts": [
+"Slow",
+"Sacred",
+"Scared",
+"Splendid"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Magnificent' का अर्थ है <b>शानदार</b>। Synonym 'Splendid' (<b>भव्य</b>) है।</span><br>Slow – धीमा, Sacred – पवित्र, Scared – डरा हुआ।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Miraculous",
+"tag": "SSC CGL 19/09/2024 (Shift-III)",
+"opts": [
+"Draining",
+"Average",
+"Expected",
+"Incredible"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Miraculous' का अर्थ है <b>चमत्कारी</b>। Synonym 'Incredible' (<b>अविश्वसनीय</b>) है।</span><br>Draining – थका देने वाला, Average – औसत, Expected – अपेक्षित।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Merit",
+"tag": "SSC CGL 11/09/2024 (Shift-II)",
+"opts": [
+"Residue",
+"Fatigue",
+"Virtue",
+"Oblique"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Merit' का अर्थ है <b>गुण/योग्यता</b>। Synonym 'Virtue' (<b>सद्गुण</b>) है।</span><br>Residue – अवशेष, Fatigue – थकान, Oblique – तिरछा।"
+},
+{
+"q": "Identify from the given options the word which is similar in meaning to the following word. Morbid",
+"tag": "SSC CGL 19/09/2024 (Shift-II)",
+"opts": [
+"Blithe",
+"Gloomy",
+"Grand",
+"Bet"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Morbid' का अर्थ है <b>रुग्ण/निराशाजनक</b>। Synonym 'Gloomy' (<b>उदास/निराशाजनक</b>) है।</span><br>Blithe – प्रसन्नचित्त, Grand – भव्य, Bet – शर्त।"
+},
+{
+"q": "Select the most appropriate synonym of the underlined word in the given sentence, I was completely mesmerized by the performance.",
+"tag": "SSC CGL 17/09/2024 (Shift-III)",
+"opts": [
+"Fascinated",
+"Irritated",
+"Annoyed",
+"Bored"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Mesmerized' का अर्थ है <b>मंत्रमुग्ध</b>। Synonym 'Fascinated' (<b>मंत्रमुग्ध</b>) है।</span><br>Irritated – चिड़चिड़ा, Annoyed – नाराज़, Bored – ऊबा हुआ।"
+},
+{
+"q": "MIRACULOUS Choose the word similar in meaning to the one given above.",
+"tag": "KVS PRT 22-02-2023 (Shift-I)",
+"opts": [
+"Fervent",
+"Extraordinary",
+"Reverend",
+"Odd"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Miraculous' का अर्थ है <b>चमत्कारी</b>। Synonym 'Extraordinary' (<b>असाधारण</b>) है।</span><br>Fervent – उत्साही, Reverend – आदरणीय, Odd – अजीब।"
+},
+{
+"q": "Operating on a child with cancer needs meticulous planning and teamwork.",
+"tag": "UPSC NDA & NA 16/04/2023 (Shift-I) UPSC NDA and NA 10/09/2017 (Shift-II)",
+"opts": [
+"strong",
+"long",
+"playful",
+"scrupulous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Meticulous' का अर्थ है <b>सूक्ष्म/सावधानीपूर्ण</b>। Synonym 'Scrupulous' (<b>सावधानीपूर्ण</b>) है।</span><br>Strong – मजबूत, Long – लंबा, Playful – खिलंदड़।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Manifest",
+"tag": "SSC GD 16/01/2023 (Shift-III)",
+"opts": [
+"Apparent",
+"Cryptic",
+"Natural",
+"Concealed"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Manifest' का अर्थ है <b>स्पष्ट</b>। Synonym 'Apparent' (<b>स्पष्ट</b>) है।</span><br>Cryptic – रहस्यमय, Natural – प्राकृतिक, Concealed – छिपा हुआ।"
+},
+{
+"q": "Select the most appropriate synonym for the highlighted word. His modest nature made all the difference.",
+"tag": "SSC MTS 06/07/2022 (Shift-I) / SSC CGL (Tier-I) 26/07/2023 (Shift-II)",
+"opts": [
+"dry",
+"courageous",
+"horrific",
+"shy"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Modest' का अर्थ है <b>विनम्र/संकोची</b>। Synonym 'Shy' (<b>शर्मीला</b>) है।</span><br>Dry – शुष्क, Courageous – साहसी, Horrific – भयानक।"
+},
+{
+"q": "Select the word that is similar in meaning (synonym) to the given below \\'Malign\\'",
+"tag": "SSC MTS 05/07/2022 (Shift-III) BSSC J.E. 30/09/2012 UPSE NDA and NA 04/09/2022 (Shift-II) SSC CHSL (Tier-I) 15/03/2023 (Shift-III)",
+"opts": [
+"Nihilistic",
+"Insurgent",
+"Baleful",
+"Radical"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Malign' का अर्थ है <b>निंदा करना/हानिकारक</b>। Synonym 'Baleful' (<b>अशुभ/हानिकारक</b>) है।</span><br>Nihilistic – शून्यवादी, Insurgent – विद्रोही, Radical – क्रांतिकारी।"
+},
+{
+"q": "All mortal elements are impermanent.",
+"tag": "UPSC NDA & NA 04/09/2022 (Shift-II)",
+"opts": [
+"Temporal",
+"Immortal",
+"Never-ending",
+"Divinely"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Mortal' का अर्थ है <b>नश्वर</b>। Synonym 'Temporal' (<b>सांसारिक/नश्वर</b>) है।</span><br>Immortal – अमर, Never-ending – अनंत, Divinely – दैवीय रूप से।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Monotonous",
+"tag": "SSC CGL (Tier-I) 19/04/2022 Shift-II",
+"opts": [
+"Eventful",
+"Boring",
+"Momentous",
+"Compulsory"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Monotonous' का अर्थ है <b>नीरस</b>। Synonym 'Boring' (<b>उबाऊ</b>) है।</span><br>Eventful – घटनापूर्ण, Momentous – महत्वपूर्ण, Compulsory – अनिवार्य।"
+},
+{
+"q": "He is a maleficent person.",
+"tag": "UPSC NDA & NA 05/09/2021 (Shift-II)",
+"opts": [
+"generous",
+"cunning",
+"criminal",
+"friendly"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Maleficent' का अर्थ है <b>हानिकारक/दुष्ट</b>। Synonym 'Criminal' (<b>अपराधी</b>) है।</span><br>Generous – उदार, Cunning – धूर्त, Friendly – मित्रवत।"
+},
+{
+"q": "He could not muster courage to speak the truth before his friend.",
+"tag": "UPSC NDA & NA 17/11/2019 (Shift-II)",
+"opts": [
+"injure",
+"spoil",
+"gather",
+"maim"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Muster (courage)' का अर्थ है <b>जुटाना</b>। Synonym 'Gather' (<b>इकट्ठा करना</b>) है।</span><br>Injure – घायल करना, Spoil – बिगाड़ना, Maim – अपंग करना।"
+},
+{
+"q": "The Industrial Revolution saw a massive rise in the population of Europe.",
+"tag": "UPSC NDA & NA 09/09/2018 (Shift-II)",
+"opts": [
+"enormous",
+"erroneous",
+"hazardous",
+"perilous"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Massive' का अर्थ है <b>विशाल</b>। Synonym 'Enormous' (<b>विशाल</b>) है।</span><br>Erroneous – त्रुटिपूर्ण, Hazardous – खतरनाक, Perilous – जोखिम भरा।"
+},
+{
+"q": "This is his maiden appearance on the screen.",
+"tag": "UPSC NDA & NA 10/09/2017 (Shift-II)",
+"opts": [
+"first",
+"last",
+"girlish",
+"shy"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Maiden (first)' का अर्थ है <b>पहला</b>। Synonym 'First' (<b>प्रथम</b>) है।</span><br>Last – अंतिम, Girlish – लड़कियों जैसा, Shy – शर्मीला।"
+},
+{
+"q": "The experts\\' minute examination brought to light some important clues.",
+"tag": "UPSC NDA & NA 10/09/2017 (Shift-II)",
+"opts": [
+"quick",
+"detailed",
+"superficial",
+"prolonged"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Minute (detailed)' का अर्थ है <b>सूक्ष्म/विस्तृत</b>। Synonym 'Detailed' (<b>विस्तृत</b>) है।</span><br>Quick – तेज़, Superficial – सतही, Prolonged – लंबा।"
+},
+{
+"q": "In spite of hard work, the farmers could only get a meagre yield.",
+"tag": "UPSC NDA & NA 27/09/2015 (Shift-II)",
+"opts": [
+"satisfactory",
+"scanty",
+"plenty",
+"normal"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Meagre' का अर्थ है <b>अल्प/कम</b>। Synonym 'Scanty' (<b>कम/अपर्याप्त</b>) है।</span><br>Satisfactory – संतोषजनक, Plenty – प्रचुर, Normal – सामान्य।"
+},
+{
+"q": "MOMENTOUS changes are taking place in the social and economic life of India.",
+"tag": "UPSC NDA & NA 19/08/2012 (Shift-II)",
+"opts": [
+"notorious",
+"momentary",
+"official",
+"enormous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Momentous' का अर्थ है <b>महत्वपूर्ण</b>। Synonym 'Enormous' (<b>अत्यधिक/विशाल</b>) है।</span><br>Notorious – कुख्यात, Momentary – क्षणिक, Official – आधिकारिक।"
+},
+{
+"q": "The newspaper reports were MENDACIOUS.",
+"tag": "UPSC NDA & NA 21/08/2011 (Shift-II)",
+"opts": [
+"mischievous",
+"truthful",
+"provocative",
+"false"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Mendacious' का अर्थ है <b>झूठा</b>। Synonym 'False' (<b>झूठा</b>) है।</span><br>Mischievous – शरारती, Truthful – सत्यवादी, Provocative – उकसाने वाला।"
+},
+{
+"q": "MUTUAL",
+"tag": "UPSC NDA & NA 19/04/2009 (Shift-I)",
+"opts": [
+"Reciprocal",
+"Agreed",
+"Common",
+"Conjugal"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Mutual' का अर्थ है <b>पारस्परिक</b>। Synonym 'Reciprocal' (<b>पारस्परिक</b>) है।</span><br>Agreed – सहमत, Common – सामान्य, Conjugal – वैवाहिक।"
+},
+{
+"q": "MODICUM",
+"tag": "UPSC NDA & NA 20/04/2008 (Shift-I)",
+"opts": [
+"Basic",
+"Pertaining to earlier times",
+"Small quantity",
+"Annoying weather"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Modicum' का अर्थ है <b>थोड़ी मात्रा</b>। Synonym 'Small quantity' (<b>थोड़ी मात्रा</b>) है।</span><br>Basic – मौलिक, Pertaining to earlier times – पूर्वकाल से संबंधित, Annoying weather – परेशान करने वाला मौसम।"
+},
+{
+"q": "Magnanimous",
+"tag": "DSSSB Primary Teacher Exam (02-02-2018)",
+"opts": [
+"luxurious",
+"generous",
+"low-minded",
+"vindictiveness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Magnanimous' का अर्थ है <b>उदार</b>। Synonym 'Generous' (<b>उदार</b>) है।</span><br>Luxurious – विलासी, Low-minded – क्षुद्र, Vindictiveness – प्रतिशोध की भावना।"
+},
+{
+"q": "MEDITATE",
+"tag": "DSSSB Matron & Warder Recruitment Exam (29-06-2014)",
+"opts": [
+"mediate",
+"contemplate",
+"celebrate",
+"manage"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Meditate' का अर्थ है <b>ध्यान करना</b>। Synonym 'Contemplate' (<b>गहराई से सोचना</b>) है।</span><br>Mediate – मध्यस्थता करना, Celebrate – जश्न मनाना, Manage – प्रबंधन करना।"
+},
+{
+"q": "Select the synonym of the given word. \"MEDIOCRE\"",
+"tag": "DSSSB TGT (Hindi) Exam 28/08/2018 Shift-III",
+"opts": [
+"medieval",
+"average",
+"bitter",
+"religious"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Mediocre' का अर्थ है <b>औसत दर्जे का</b>। Synonym 'Average' (<b>औसत</b>) है।</span><br>Medieval – मध्यकालीन, Bitter – कड़वा, Religious – धार्मिक।"
+},
+{
+"q": "Select the synonym of the given word. \\'MISERY\\'",
+"tag": "DSSSB TGT (Hindi) Exam 15/09/2018 Shift-III UPSC NDA and NA 21/04/2019 (Shift-I)",
+"opts": [
+"nervousness",
+"anger",
+"sorrow",
+"confusion"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Misery' का अर्थ है <b>दुख</b>। Synonym 'Sorrow' (<b>शोक/दुख</b>) है।</span><br>Nervousness – घबराहट, Anger – क्रोध, Confusion – भ्रम।"
+},
+{
+"q": "Choose the word that means the same as the given word. Miserable",
+"tag": "DSSSB LDC Exam. 23-08-2019 Shift-II",
+"opts": [
+"Allowed",
+"Contended",
+"Accepted",
+"Dejected"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Miserable' का अर्थ है <b>दुखी</b>। Synonym 'Dejected' (<b>निराश</b>) है।</span><br>Allowed – अनुमत, Contended – संतुष्ट, Accepted – स्वीकृत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Melancholy",
+"tag": "DSSSB Junior Stenographer Exam 26/11/2021 Shift-II",
+"opts": [
+"Assurance",
+"Advantage",
+"Excitement",
+"Despondency"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Melancholy' का अर्थ है <b>उदासी</b>। Synonym 'Despondency' (<b>निराशा</b>) है।</span><br>Assurance – आश्वासन, Advantage – लाभ, Excitement – उत्साह।"
+},
+{
+"q": "Select the synonym of the given word \\'MOTLEY\\'",
+"tag": "DSSSB TGT (Hindi) Exam 15/09/2018 Shift-II",
+"opts": [
+"plain",
+"diverse",
+"similar",
+"uniform"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Motley' का अर्थ है <b>विविध रंगों का/मिश्रित</b>। Synonym 'Diverse' (<b>विविध</b>) है।</span><br>Plain – सादा, Similar – समान, Uniform – एकसमान।"
+},
+{
+"q": "She deftly masked her feelings.",
+"tag": "CDS 2018 (Shift-I)",
+"opts": [
+"hid",
+"flaunted",
+"oblique",
+"obscured"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Masked' का अर्थ है <b>छिपाया</b>। Synonym 'Hid' (<b>छिपाया</b>) है।</span><br>Flaunted – दिखावा किया, Oblique – तिरछा, Obscured – अस्पष्ट किया।"
+},
+{
+"q": "The sage did not want to be bothered with mundane concerns.",
+"tag": "CDS 2015 (Shift-II)",
+"opts": [
+"worldly",
+"meaningless",
+"trivial",
+"superfluous"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Mundane' का अर्थ है <b>सांसारिक/साधारण</b>। Synonym 'Worldly' (<b>सांसारिक</b>) है।</span><br>Meaningless – निरर्थक, Trivial – तुच्छ, Superfluous – अनावश्यक।"
+},
+{
+"q": "He fought the demon with all his might.",
+"tag": "CDS 2015 (Shift-II)",
+"opts": [
+"heaviness",
+"strength",
+"density",
+"popularity"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Might (strength)' का अर्थ है <b>शक्ति</b>। Synonym 'Strength' (<b>शक्ति</b>) है।</span><br>Heaviness – भारीपन, Density – घनत्व, Popularity – लोकप्रियता।"
+},
+{
+"q": "All these items have been marked down.",
+"tag": "CDS 2015 (Shift-II)",
+"opts": [
+"reserved",
+"packed up",
+"reduced in price",
+"entered"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Marked down' का अर्थ है <b>कम दाम पर किया गया</b>। Synonym 'Reduced in price' (<b>कीमत में कमी</b>) है।</span><br>Reserved – आरक्षित, Packed up – पैक किया गया, Entered – दर्ज किया गया।"
+},
+{
+"q": "Mass murder is very often a result of communal frenzy.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"patricide",
+"fratricide",
+"regicide",
+"genocide"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Mass murder' का अर्थ है <b>सामूहिक हत्या</b>। Synonym 'Genocide' (<b>नरसंहार</b>) है।</span><br>Patricide – पितृ हत्या, Fratricide – भ्रातृ हत्या, Regicide – राजहत्या।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Maintain",
+"tag": "SSC Constable GD-30/11/2021 Shift-III",
+"opts": [
+"Neglect",
+"Ignore",
+"Care",
+"Release"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Maintain' का अर्थ है <b>बनाए रखना</b>। Synonym 'Care' (<b>देखभाल करना</b>) है।</span><br>Neglect – उपेक्षा करना, Ignore – अनदेखा करना, Release – छोड़ना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MALIGNANT",
+"tag": "SSC CHSL (Tier-I) –04/08/2021 (Shift-I)",
+"opts": [
+"vicious",
+"beneficial",
+"loving",
+"healthy"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Malignant' का अर्थ है <b>घातक/द्वेषपूर्ण</b>। Synonym 'Vicious' (<b>क्रूर/घातक</b>) है।</span><br>Beneficial – लाभदायक, Loving – प्रेमपूर्ण, Healthy – स्वस्थ।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Mandatory",
+"tag": "SSC CHSL (Tier-I) –19/04/2021 (Shift-I) SSC Sel. Post Phase VII (M.L.) 15/10/2019 (ShiftI)",
+"opts": [
+"Unnecessary",
+"Optional",
+"Imperative",
+"Impervious"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Mandatory' का अर्थ है <b>अनिवार्य</b>। Synonym 'Imperative' (<b>अनिवार्य</b>) है।</span><br>Unnecessary – अनावश्यक, Optional – वैकल्पिक, Impervious – अभेद्य।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Munch",
+"tag": "SSC CGL (Tier-I) –17/08/2021 (Shift-I)",
+"opts": [
+"Drew",
+"Flew",
+"Chew",
+"Burp"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Munch' का अर्थ है <b>चबाना</b>। Synonym 'Chew' (<b>चबाना</b>) है।</span><br>Drew – खींचा, Flew – उड़ा, Burp – डकार लेना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MAGNIFY",
+"tag": "SSC CPO-SI (Tier-II) 27/09/2019 (3 pm - 5 pm)",
+"opts": [
+"enlarge",
+"withdraw",
+"shrink",
+"decrease"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Magnify' का अर्थ है <b>बड़ा करना</b>। Synonym 'Enlarge' (<b>बड़ा करना</b>) है।</span><br>Withdraw – वापस लेना, Shrink – सिकोड़ना, Decrease – घटाना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MASSIVE",
+"tag": "SSC MTS 13/08/2019 (Shift-III) SSC Stenographer Grade C&D –05/02/2019 (3:5pm) UPSC NDA & NA 09/09/2012 (Shift–I)",
+"opts": [
+"honour",
+"majority",
+"muscular",
+"huge"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Massive' का अर्थ है <b>विशाल</b>। Synonym 'Huge' (<b>विशाल</b>) है।</span><br>Honour – सम्मान, Majority – बहुमत, Muscular – मांसल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MAMMOTH",
+"tag": "SSC CGL (Tier-I) – 11/06/2019 (Shift-II)",
+"opts": [
+"magnificent",
+"miniscule",
+"perilous",
+"gigantic"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Mammoth' का अर्थ है <b>विशालकाय</b>। Synonym 'Gigantic' (<b>विशालकाय</b>) है।</span><br>Magnificent – शानदार, Miniscule – अत्यंत छोटा, Perilous – जोखिम भरा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MALADY",
+"tag": "SSC CPO-SI – 13/12/2019 (Shift-II)",
+"opts": [
+"mischief",
+"disturbance",
+"wickedness",
+"illness"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Malady' का अर्थ है <b>बीमारी</b>। Synonym 'Illness' (<b>बीमारी</b>) है।</span><br>Mischief – शरारत, Disturbance – गड़बड़ी, Wickedness – दुष्टता।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Miniature",
+"tag": "SSC CHSL (Tier-I) –11/07/2019 (Shift-II)",
+"opts": [
+"Diminutive",
+"Mammoth",
+"Colossal",
+"Gigantic"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Miniature' का अर्थ है <b>लघु</b>। Synonym 'Diminutive' (<b>बहुत छोटा</b>) है।</span><br>Mammoth – विशालकाय, Colossal – विशाल, Gigantic – विशालकाय।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MANUAL",
+"tag": "SSC CHSL (Tier-I) –11/07/2019 (Shift-III)",
+"opts": [
+"thesaurus",
+"handbook",
+"directory",
+"dictionary"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Manual (book)' का अर्थ है <b>पुस्तिका/हस्तपुस्तिका</b>। Synonym 'Handbook' (<b>निर्देशिका</b>) है।</span><br>Thesaurus – पर्यायकोश, Directory – निर्देशिका, Dictionary – शब्दकोश।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Meddle",
+"tag": "SSC CHSL (Tier-I) –09/07/2019 (Shift-II)",
+"opts": [
+"manage",
+"interfere",
+"repair",
+"elaborate"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Meddle' का अर्थ है <b>हस्तक्षेप करना</b>। Synonym 'Interfere' (<b>हस्तक्षेप करना</b>) है।</span><br>Manage – प्रबंधन करना, Repair – मरम्मत करना, Elaborate – विस्तार से बताना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MASQUERADED",
+"tag": "SSC CHSL (Tier-I) 15/10/2020 (Shift-III)",
+"opts": [
+"Managed",
+"Dropped",
+"Acted",
+"Disappeared"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Masqueraded' का अर्थ है <b>भेस बदलकर व्यवहार करना</b>। Synonym 'Acted' (<b>अभिनय किया/नाटक किया</b>) है।</span><br>Managed – प्रबंधित किया, Dropped – छोड़ दिया, Disappeared – गायब हो गया।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MOTIF",
+"tag": "SSC CHSL (Tier-I) 20/10/2020 (Shift-II)",
+"opts": [
+"Creation",
+"Reason",
+"Purpose",
+"Design"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Motif' का अर्थ है <b>प्रतिमान/मूल विचार</b>। Synonym 'Design' (<b>डिज़ाइन</b>) है।</span><br>Creation – सृजन, Reason – कारण, Purpose – उद्देश्य।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MOROSE",
+"tag": "SSC CHSL (Tier-I) 19/10/2020 (Shift-II) NDA/NA 10/04/2022 (Shift–I)",
+"opts": [
+"Sullen",
+"Cheerful",
+"Optimistic",
+"Friendly"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Morose' का अर्थ है <b>चिड़चिड़ा/उदास</b>। Synonym 'Sullen' (<b>चिड़चिड़ा/रूठा हुआ</b>) है।</span><br>Cheerful – प्रसन्न, Optimistic – आशावादी, Friendly – मित्रवत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MANDIBLE",
+"tag": "SSC CHSL (Tier-I) 14/10/2020 (Shift-I)",
+"opts": [
+"Human",
+"Praise",
+"Glory",
+"Jaw"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Mandible' का अर्थ है <b>जबड़ा</b>। Synonym 'Jaw' (<b>जबड़ा</b>) है।</span><br>Human – मानव, Praise – प्रशंसा, Glory – गौरव।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. MANDATE",
+"tag": "SSC CHSL (Tier-I) 14/10/2020 (Shift-III) / SSC MTS 14/07/2022 (Shift-III)",
+"opts": [
+"Official order",
+"Last trip",
+"Broken promise",
+"Man-made"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Mandate' का अर्थ है <b>आदेश/जनादेश</b>। Synonym 'Official order' (<b>आधिकारिक आदेश</b>) है।</span><br>Last trip – अंतिम यात्रा, Broken promise – तोड़ा गया वादा, Man-made – मानव निर्मित।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Mince",
+"tag": "SSC MTS 11-10-2017 (Shift-I)",
+"opts": [
+"Reveal",
+"Enlarge",
+"Crumble",
+"Maximize"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Mince (words)' का अर्थ है <b>संकोच के साथ बोलना/काटना</b>। Synonym 'Crumble' (<b>टुकड़े-टुकड़े करना</b>) है।</span><br>Reveal – प्रकट करना, Enlarge – बड़ा करना, Maximize – अधिकतम करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Misfortune",
+"tag": "SSC MTS – 02/08/2019 (Shift-II)",
+"opts": [
+"Benefit",
+"Calamity",
+"Support",
+"Miracle"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Misfortune' का अर्थ है <b>दुर्भाग्य</b>। Synonym 'Calamity' (<b>आपदा</b>) है।</span><br>Benefit – लाभ, Support – समर्थन, Miracle – चमत्कार।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Morbid",
+"tag": "SSC MTS – 20/08/2019 (Shift-III)",
+"opts": [
+"Nasty",
+"Prompt",
+"Pretty",
+"Lively"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Morbid' का अर्थ है <b>रुग्ण/भयावह</b>। Synonym 'Nasty' (<b>घिनौना</b>) है।</span><br>Prompt – तत्पर, Pretty – सुंदर, Lively – जीवंत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Mock",
+"tag": "SSC MTS – 22/08/2019 (Shift-I)",
+"opts": [
+"Cheer",
+"Taunt",
+"Praise",
+"Amuse"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Mock' का अर्थ है <b>उपहास करना</b>। Synonym 'Taunt' (<b>ताना मारना</b>) है।</span><br>Cheer – उत्साहवर्धन करना, Praise – प्रशंसा करना, Amuse – मनोरंजन करना।"
+},
+{
+"q": "Select the synonym of the given word. MITIGATE",
+"tag": "SSC GD 18/02/2019 (Shift-II)",
+"opts": [
+"Excuse",
+"Improve",
+"Moderate",
+"Lessen"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Mitigate' का अर्थ है <b>कम करना</b>। Synonym 'Lessen' (<b>कम करना</b>) है।</span><br>Excuse – बहाना, Improve – सुधारना, Moderate – संयमित करना।"
+},
+{
+"q": "Select the synonym of the given word. MELODIOUS",
+"tag": "SSC GD – 14/02/2019 (Shift-II)",
+"opts": [
+"Rhythmic",
+"Rattling",
+"Tuneful",
+"Doleful"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Melodious' का अर्थ है <b>मधुर/सुरीला</b>। Synonym 'Tuneful' (<b>सुरीला</b>) है।</span><br>Rhythmic – लयबद्ध, Rattling – खड़खड़ाहट वाला, Doleful – शोकाकुल।"
+}
+];
+
+const TEST_MINUTES = 30;
+const TOTAL_SECONDS = TEST_MINUTES * 60;
+const labels = ['A','B','C','D'];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null); // null = not answered
+let visited = new Array(questions.length).fill(false);
+let timeLeft = TOTAL_SECONDS;
+let timerInterval = null;
+let testSubmitted = false;
+
+document.getElementById('totalQCount').textContent = questions.length;
+document.getElementById('totalTimeDisplay').textContent = TEST_MINUTES + ' Min';
+
+// ---------- START ----------
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('mainHeader').style.display = 'none';
+  document.querySelector('.divider').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('testScreen').style.display = 'block';
+  visited[0] = true;
+  renderQuestion();
+  startTimer();
+});
+
+function startTimer(){
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      submitTest(true);
+    }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s = (timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = m+':'+s;
+}
+updateTimerDisplay();
+
+// ---------- TEST SCREEN RENDER ----------
+function renderQuestion(){
+  const q = questions[currentQ];
+  document.getElementById('qTag').textContent = q.tag || '';
+  document.getElementById('qMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('progressDisplay').textContent = `Question ${currentQ+1} / ${questions.length}`;
+  document.getElementById('qText').innerHTML = q.q;
+
+  const optsDiv = document.getElementById('qOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(userAnswers[currentQ] === oi) btn.classList.add('selected');
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectOption(oi);
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('prevBtn').disabled = currentQ === 0;
+  document.getElementById('nextBtn').textContent = currentQ === questions.length-1 ? 'Next ➡️' : 'Next ➡️';
+  renderPalette('Test');
+}
+
+function selectOption(oi){
+  userAnswers[currentQ] = oi;
+  renderQuestion();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; visited[currentQ]=true; renderQuestion(); window.scrollTo(0,0);}
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  userAnswers[currentQ] = null;
+  renderQuestion();
+});
+
+// ---------- PALETTE ----------
+function renderPalette(which){
+  const grid = document.getElementById('paletteGrid' + which);
+  grid.innerHTML = '';
+  questions.forEach((q, i) => {
+    const cell = document.createElement('div');
+    let cls = 'notvisited';
+    if(which === 'Test'){
+      if(userAnswers[i] !== null) cls = 'answered';
+      else if(visited[i]) cls = 'notanswered';
+      else cls = 'notvisited';
+    } else {
+      if(userAnswers[i] === null) cls = 'notvisited';
+      else if(userAnswers[i] === q.ans) cls = 'answered';
+      else cls = 'notanswered';
+    }
+    cell.className = 'paletteNum ' + cls + (i===currentQ ? ' current' : '');
+    cell.textContent = i+1;
+    cell.onclick = () => {
+      currentQ = i;
+      visited[i] = true;
+      if(which === 'Test'){
+        renderQuestion();
+        document.getElementById('paletteDropdownTest').classList.remove('show');
+      } else {
+        renderReview();
+        document.getElementById('paletteDropdownReview').classList.remove('show');
+      }
+      window.scrollTo(0,0);
+    };
+    grid.appendChild(cell);
+  });
+}
+
+document.getElementById('paletteBtnTest').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownTest').classList.toggle('show');
+});
+document.getElementById('paletteBtnReview').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('paletteDropdownReview').classList.toggle('show');
+});
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.paletteWrap')){
+    document.getElementById('paletteDropdownTest').classList.remove('show');
+    document.getElementById('paletteDropdownReview').classList.remove('show');
+  }
+});
+
+// ---------- SUBMIT ----------
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const unattempted = userAnswers.filter(a => a === null).length;
+  document.getElementById('submitModalText').textContent =
+    `Aap sure hain? ${unattempted} question(s) abhi bhi unattempted hain.`;
+  document.getElementById('submitModal').classList.add('show');
+});
+document.getElementById('modalCancelBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('submitModal').addEventListener('click', (e) => {
+  if(e.target.id === 'submitModal') document.getElementById('submitModal').classList.remove('show');
+});
+document.getElementById('modalYesBtn').addEventListener('click', () => {
+  document.getElementById('submitModal').classList.remove('show');
+  submitTest(false);
+});
+
+function submitTest(auto){
+  if(testSubmitted) return;
+  testSubmitted = true;
+  clearInterval(timerInterval);
+
+  let correct = 0, wrong = 0, attempted = 0;
+  questions.forEach((q, i) => {
+    if(userAnswers[i] !== null){
+      attempted++;
+      if(userAnswers[i] === q.ans) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = questions.length - attempted;
+  const score = (correct*1 - wrong*0.25).toFixed(2);
+
+  document.getElementById('rTotal').textContent = questions.length;
+  document.getElementById('rAttempted').textContent = attempted;
+  document.getElementById('rUnattempted').textContent = unattempted;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rScore').textContent = score;
+
+  document.getElementById('testScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ---------- REVIEW ----------
+document.getElementById('reviewBtn').addEventListener('click', () => {
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('reviewScreen').style.display = 'block';
+  currentQ = 0;
+  renderReview();
+  window.scrollTo(0,0);
+});
+document.getElementById('backToResultBtn').addEventListener('click', () => {
+  document.getElementById('reviewScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+document.getElementById('rvPrevBtn').addEventListener('click', () => {
+  if(currentQ > 0){ currentQ--; renderReview(); window.scrollTo(0,0);}
+});
+document.getElementById('rvNextBtn').addEventListener('click', () => {
+  if(currentQ < questions.length-1){ currentQ++; renderReview(); window.scrollTo(0,0);}
+});
+
+function renderReview(){
+  const q = questions[currentQ];
+  const userAns = userAnswers[currentQ];
+  document.getElementById('rvTag').textContent = q.tag || '';
+  document.getElementById('rvMeta').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('rvText').innerHTML = q.q;
+
+  let statusCls, statusText;
+  if(userAns === null){ statusCls='unattempted'; statusText='Unattempted'; }
+  else if(userAns === q.ans){ statusCls='correct'; statusText='Correct'; }
+  else { statusCls='wrong'; statusText='Wrong'; }
+  const tagEl = document.getElementById('reviewStatusTag');
+  tagEl.className = 'statustag ' + statusCls;
+  tagEl.textContent = statusText;
+
+  const optsDiv = document.getElementById('rvOpts');
+  optsDiv.innerHTML = '';
+  q.opts.forEach((opt, oi) => {
+    const btn = document.createElement('div');
+    btn.className = 'opt';
+    if(oi === q.ans) btn.classList.add('correct');
+    else if(oi === userAns) btn.classList.add('wrong');
+    let mark = '';
+    if(oi === q.ans) mark = '<span class="mark c">✓</span>';
+    else if(oi === userAns) mark = '<span class="mark w">✗</span>';
+    btn.innerHTML = `<span class="lab">${labels[oi]}</span><span>${opt}</span>${mark}`;
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('rvYourAns').innerHTML =
+    userAns === null
+      ? 'Aapne ye question attempt nahi kiya.'
+      : `Your answer: <b>${labels[userAns]}</b> &nbsp;|&nbsp; Correct answer: <b>${labels[q.ans]}</b>`;
+
+  document.getElementById('rvSolutionText').innerHTML = q.sol;
+
+  document.getElementById('rvPrevBtn').disabled = currentQ === 0;
+  document.getElementById('rvNextBtn').disabled = currentQ === questions.length-1;
+  renderPalette('Review');
+}
+
+// ---------- RETAKE ----------
+document.getElementById('retakeBtn').addEventListener('click', () => {
+  userAnswers = new Array(questions.length).fill(null);
+  visited = new Array(questions.length).fill(false);
+  currentQ = 0;
+  timeLeft = TOTAL_SECONDS;
+  testSubmitted = false;
+  updateTimerDisplay();
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('mainHeader').style.display = 'block';
+  document.querySelector('.divider').style.display = 'block';
+  document.getElementById('startScreen').style.display = 'block';
+  window.scrollTo(0,0);
+});
+</script>
+</body>
+</html>

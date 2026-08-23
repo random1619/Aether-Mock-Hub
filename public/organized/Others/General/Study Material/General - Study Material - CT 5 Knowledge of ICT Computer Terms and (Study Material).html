@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CT 5: Knowledge of ICT (Computer Terms and Abbreviations)</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    CT 5: Knowledge of ICT (Computer Terms and Abbreviations) 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the Recycle bin?</div>
+  <div class="question lang-hi">रीसायकल बिन क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">A software for deleting files</div><div class="option">A default folder for temp files</div><div class="option">A default folder for downloads</div><div class="option correct">A temporary storage for deleted files</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">फ़ाइलों को डिलिट करने के लिए एक सॉफ्टवेयर</div><div class="option">अस्थायी फ़ाइलों के लिए एक डिफ़ॉल्ट फ़ोल्डर</div><div class="option">डाउनलोड के लिए एक डिफ़ॉल्ट फ़ोल्डर</div><div class="option correct">डिलीट की गई फ़ाइलों के लिए एक अस्थायी स्टोरेज</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is option<strong> <u>4.</u></strong> i.e. <u><strong>A temporary storage for deleted files</strong></u>.</p> <ul> <li><span class="ILfuVd" style=""><span class="hgKElc" style="">When you delete a file or folder in Windows, it is placed in the <b style="">Recycle Bin</b>. Items are temporarily stored in the <b style="">Recycle Bin</b> before they are permanently deleted by the user.</span></span></li> <li><span class="ILfuVd" style=""><span class="hgKElc" style="">The <b style="">Recycle Bin</b> is located on the Windows desktop.</span></span></li> <li>You can open the <strong>Recycle Bin</strong> by double-clicking the icon on the Windows <span style="">desktop</span>.</li> <li>The <strong>Recycle Bin</strong> window allows you to delete items individually or restore them to their original location.</li> <li>If you want to permanently remove all items in the <strong>Recycle Bin</strong>, select &quot;<strong>Empty the Recycle Bin</strong>&quot; in the left sidebar of the window.</li> <li>A small icon of a waste container for deleting files was implemented during the development of the <span style="" title="Apple Lisa">Apple Lisa</span> user interface in <strong>1982</strong>, where it was called the &quot;<strong>Wastebasket</strong>&quot;.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <u><strong>4</strong></u> अर्थात् <u><strong>डिलीट की गई फ़ाइलों के लिए एक अस्थायी स्टोरेज</strong></u> है।</p> <ul> <li>जब आप विंडोज में कोई फाइल या फोल्डर डिलीट करते हैं, तो उसे <strong>रीसायकल बिन</strong> में रखा जाता है। उपयोगकर्ता द्वारा स्थायी रूप से हटाए जाने से पहले आइटम को <strong>रीसायकल बिन</strong> में अस्थायी रूप से संग्रहीत किया जाता है।</li> <li><strong>रीसायकल बिन</strong> विंडोज डेस्कटॉप पर स्थित होती है।</li> <li>आप विंडोज डेस्कटॉप पर आइकन पर डबल-क्लिक करके <strong>रीसायकल बिन</strong> को खोल सकते हैं।</li> <li><strong>रीसायकल बिन</strong> विंडो आपको व्यक्तिगत रूप से आइटम को हटाने या उन्हें उनके मूल स्थान पर पुनर्स्थापित करने की अनुमति देता है।</li> <li>यदि आप <strong>रीसायकल बिन</strong> में सभी आइटम स्थायी रूप से हटाना चाहते हैं, तो विंडो के बाएं साइडबार में<strong> &quot;इम्पटी द रीसायकल बिन&quot;</strong> चुनिये।</li> <li><strong>1982</strong> में एप्पल लिसा यूजर इंटरफेस के विकास के दौरान फ़ाइलों को हटाने के लिए एक वेस्ट कंटेनर&nbsp;का एक छोटा आइकन दिया गया था, जहां इसे<strong> &quot;वेस्टबास्केट&quot;</strong> कहा जाता था।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Match List I with List II</p> <table border="1" cellpadding="1" cellspacing="1" style="width:250px;"> <tbody> <tr> <td style="text-align: center;"><strong>List I</strong></td> <td style="text-align: center;"><strong>List II</strong></td> </tr> <tr> <td>A. Input device</td> <td>I. Chrome</td> </tr> <tr> <td>B. Output device</td> <td>II. MS-office</td> </tr> <tr> <td>C. Software</td> <td>III, Mouse</td> </tr> <tr> <td>D. Web browser</td> <td>IV. Monitor</td> </tr> </tbody> </table> <p>&nbsp;</p> <p>Choose the correct answer from the options given below:</p></div>
+  <div class="question lang-hi"><p>&nbsp;सूची&nbsp;I को सूची&nbsp;II के साथ सुमेलित कीजिए।&nbsp;</p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td style="text-align: center;"><strong><span style="color: rgb(37, 37, 37); ">सूची</span></strong><span style="font-weight: 700;"> I</span></td> <td style="text-align: center;"><strong><span style="color: rgb(37, 37, 37); ">सूची</span></strong><span style="font-weight: 700;"> II</span></td> </tr> <tr> <td>A.&nbsp;<span style="color: rgb(37, 37, 37); ">इनपुट डिवाइस</span></td> <td>I. क्रोम&nbsp;</td> </tr> <tr> <td>B. <span style="color: rgb(37, 37, 37); ">आउटपुट डिवाइस</span></td> <td>II. एमएस-ऑफिस&nbsp;</td> </tr> <tr> <td>C. सॉफ्टवेयर</td> <td>III, माउस&nbsp;</td> </tr> <tr> <td>D. वेब ब्राउज़र&nbsp;</td> <td>IV. मोनिटर&nbsp;</td> </tr> </tbody> </table> <p>&nbsp;</p> <p>नीचे दिए गए विकल्पों में से सही उत्तर का चयन कीजिए।&nbsp;</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">A - II, B - III, C - I, D - IV</div><div class="option correct">A - III, B - IV, C - II, D - I</div><div class="option">A - I, B - II, C - IV, D - III</div><div class="option">A - IV, B - III, C - II, D - I</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">A - II, B - III, C - I, D - IV</div><div class="option correct">A - III, B - IV, C - II, D - I</div><div class="option">A - I, B - II, C - IV, D - III</div><div class="option">A - IV, B - III, C - II, D - I</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>There are different components in the&nbsp;computer&nbsp;system. they all have their own working mechanisms. some component takes input, some process the&nbsp;data&nbsp;and some give output. all these components combine and make our work easier,&nbsp;comfortable, and convenient.</p> <table border="1" cellpadding="1" cellspacing="1" style="width:300px;"> <tbody> <tr> <td>&nbsp;<strong>Input device</strong></td> <td> <ul> <li>An&nbsp;input device&nbsp;is any&nbsp;hardware&nbsp;device&nbsp;tha<span style="font-weight: 700;">t sends data to a computer, allowing you to interact with and control it</span>.</li> <li><span style="font-weight: 700;">For example, Mouse</span>,&nbsp;Keyboard,&nbsp;Touchpad,&nbsp;Scanner,&nbsp;Digital Camera,&nbsp;Microphone,&nbsp;Joystick,&nbsp;Graphic Tablet, etc.</li> </ul> </td> </tr> <tr> <td> <p><span style="font-weight: 700;">Output device</span></p> <div> <p>&nbsp;</p> </div> </td> <td> <ul> <li>An output device is any piece of computer hardware equipment that&nbsp;<span style="font-weight: 700;">converts information into a human-readable form.</span>&nbsp;It can be text, graphics, tactile, audio, and video.</li> <li><span style="font-weight: 700;">For example,&nbsp;</span><strong>Monitor, Printer,&nbsp;</strong>Audio&nbsp;Speakers, Headphones, Projector, GPS, Sound Card, Video Card, Braille Reader, Plotter</li> </ul> <div> <p>&nbsp;</p> </div> </td> </tr> <tr> <td><span style="font-weight: 700;">Software</span></td> <td> <ul> <li>Software&nbsp;is a set of&nbsp;<span style="font-weight: 700;">instructions, data, or programs used to operate computers and execute specific tasks.</span></li> <li><span style="font-weight: 700;">For example,&nbsp;</span><span style="font-weight: 700;">MS-office,&nbsp;Office suites,&nbsp;</span>Database programs,&nbsp;Web browsers,&nbsp;Word-processors,&nbsp;Software&nbsp;development tools,&nbsp;Image&nbsp;editors,&nbsp;Communication platforms.</li> </ul> </td> </tr> <tr> <td><span style="font-weight: 700;">Web browser</span></td> <td> <ul> <li>A web&nbsp;browser, or simply &quot;browser,&quot; is an&nbsp;<span style="font-weight: 700;">application used to access,&nbsp;view websites, and the internet.&nbsp;</span>&nbsp;</li> <li>A&nbsp;browser&nbsp;lets you do activities&nbsp;like login, view multimedia, link from one site to another, visit one page from another, print, send and receive the email, etc.</li> <li><span style="font-weight: 700;">For example,&nbsp;</span><span style="font-weight: 700;">Chrom,&nbsp;</span>Microsoft Internet Explorer,&nbsp;<span style="font-weight: 700;">Google Chrome</span>,&nbsp;Mozilla&nbsp;Firefox,&nbsp;Apple Safari</li> </ul> </td> </tr> </tbody> </table> <p>For instance,<strong> a&nbsp;keyboard&nbsp;or&nbsp;computer mouse&nbsp;</strong>is an input device for a computer, while<strong>&nbsp;monitors&nbsp;and&nbsp;printers</strong>&nbsp;are output devices. Devices for communication between computers, such as<strong> modems and network cards, </strong>typically perform both input and output operations.</p> <p><strong>Hence</strong>, we may conclude that the right answer be like: -</p> <table border="1" cellpadding="1" cellspacing="1" style="background-color:(255, 255, 255);width:250px;"> <tbody> <tr> <td style="text-align: center;"><span style="font-weight: 700;">List I</span></td> <td style="text-align: center;"><span style="font-weight: 700;">List II</span></td> </tr> <tr> <td>A. Input device</td> <td>Mouse</td> </tr> <tr> <td>B. Output device</td> <td> <p>Monitor</p> </td> </tr> <tr> <td>C. Software</td> <td>MS-office</td> </tr> <tr> <td> <p>D. Web browser</p> </td> <td>Chrome</td> </tr> </tbody> </table> <div>&nbsp;</div></div>
+    <div class="lang-hi"><p>कंप्यूटर सिस्टम में विभिन्न घटक होते हैं। उन सभी की अपनी&nbsp;कार्यविधि&nbsp;है। कुछ घटक इनपुट लेते हैं, कुछ डेटा को प्रोसेस करते हैं और कुछ आउटपुट देते हैं। ये सभी घटक हमारे काम को आसान, आरामदायक और सुविधाजनक बनाते हैं।</p> <table border="1" cellpadding="1" cellspacing="1" style="width: 300px;"> <tbody> <tr> <td><strong>इनपुट डिवाइस</strong></td> <td> <ul> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">इनपुट डिवाइस कोई भी हार्डवेयर डिवाइस है जो कंप्यूटर को डेटा भेजती&nbsp;है,<strong> जिससे आप उसके साथ अंत:क्रिया&nbsp;कर सकते हैं और उसे नियंत्रित कर सकते हैं।</strong></div> </li> <li><span style="font-weight: 700;">उदाहरण के लिए, </span><span style="color: rgb(37, 37, 37); "><strong>माउस</strong>, कीबोर्ड, टचपैड, स्कैनर, डिजिटल कैमरा, माइक्रोफोन, जॉयस्टिक, ग्राफिक टैबलेट, आदि।</span></li> </ul> </td> </tr> <tr> <td> <p><strong>आउटपुट डिवाइस</strong></p> <p>&nbsp;</p> <div> <p>&nbsp;</p> </div> </td> <td> <ul> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">आउटपुट डिवाइस कंप्यूटर हार्डवेयर <strong>उपकरण का एक भाग&nbsp;है जो सूचना को मानव-पठनीय रूप में परिवर्तित करता है।</strong> यह टेक्स्ट, ग्राफिक्स, टेक्टाइल, ऑडियो और वीडियो हो सकता है।</div> </li> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; "><strong>उदाहरण के लिए, मॉनिटर, प्रिंटर,</strong> ऑडियो स्पीकर, हेडफ़ोन, प्रोजेक्टर, जीपीएस, साउंड कार्ड, वीडियो कार्ड, ब्रेल रीडर, प्लॉटर आदि।&nbsp;</div> </li> </ul> <div> <p>&nbsp;</p> </div> </td> </tr> <tr> <td><strong><span style="color: rgb(37, 37, 37); ">सॉफ्टवेयर</span></strong></td> <td> <ul> <li>सॉफ्टवेयर निर्देश, डेटा, या कंप्यूटर को संचालित करने और विशिष्ट कार्यों को निष्पादित करने के लिए उपयोग किए जाने वाले कार्यक्रमों का एक समूह है।</li> <li><strong>उदाहरण के लिए, एमएस-ऑफिस, ऑफिस सूट, डेटाबेस प्रोग्राम, वेब ब्राउजर</strong>, वर्ड-प्रोसेसर, सॉफ्टवेयर डेवलपमेंट टूल्स, इमेज एडिटर्स, कम्युनिकेशन प्लेटफॉर्म।</li> </ul> </td> </tr> <tr> <td><strong><span style="color: rgb(37, 37, 37); ">वेब ब्राउजर</span></strong></td> <td> <ul> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">एक वेब ब्राउज़र, या बस &quot;ब्राउज़र&quot;, <strong>वेबसाइटों, और इंटरनेट को देखने, अवलोकन करने&nbsp;के लिए उपयोग किया जाने वाला एक अनुप्रयोग है।</strong></div> <strong>&nbsp;</strong></li> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">एक ब्राउजर आपको लॉगिन, व्यू मल्टीमीडिया, एक साइट से दूसरी साइट पर लिंक, एक पेज से दूसरे पेज पर जाने, प्रिंट करने, भेजने और ईमेल प्राप्त करने, आदि जैसी गतिविधियां करने देता है</div> </li> <li> <div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">उदाहरण के लिए, <strong>क्रोम</strong>, माइक्रोसॉफ्ट इंटरनेट एक्सप्लोरर, <strong>गूगल क्रोम,</strong> मोज़िला फ़ायरफ़ॉक्स, एप्पल सफारी</div> </li> </ul> </td> </tr> </tbody> </table> <p>&nbsp;</p> <p>उदाहरण के लिए,<strong> एक कीबोर्ड या कंप्यूटर माउस कंप्यूटर </strong>के लिए एक इनपुट डिवाइस है, जबकि <strong>मॉनिटर और प्रिंटर </strong>आउटपुट डिवाइस हैं। कंप्यूटर के बीच संचार के लिए उपकरण, <strong>जैसे मोडेम और नेटवर्क कार्ड,</strong> आमतौर पर इनपुट और आउटपुट संचालन दोनों करते हैं।</p> <p><strong>इसलिए</strong>, हम यह निष्कर्ष निकाल सकते हैं कि सही उत्तर इस प्रकार है: -</p> <p>&nbsp;</p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td style="text-align: center;"><span style="font-weight: 700;">सूची&nbsp; I</span></td> <td style="text-align: center;"><span style="font-weight: 700;">सूची II</span></td> </tr> <tr> <td>A. इनपुट डिवाइस&nbsp;</td> <td>&nbsp;माउस&nbsp;</td> </tr> <tr> <td>B.आउटपुट डिवाइस&nbsp;</td> <td> <p>&nbsp;मोनिटर&nbsp;</p> </td> </tr> <tr> <td>C. सॉफ्टवेयर</td> <td>MS-ऑफिस&nbsp;</td> </tr> <tr> <td> <p>D. वेब ब्राउजर&nbsp;</p> </td> <td>क्रोम&nbsp;</td> </tr> </tbody> </table> <div>&nbsp;</div></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The communication line between the CPU, memory and peripherals is called a ______.</div>
+  <div class="question lang-hi">CPU, मेमोरी और बाह्य उपकरणों के बीच संचार लाइन को ______ कहा जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Bus</div><div class="option">Line</div><div class="option">Media</div><div class="option">None of these</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">बस&nbsp;</div><div class="option">लाइन&nbsp;</div><div class="option">मीडिया&nbsp;</div><div class="option">इनमें से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <b><u>Bus.</u></b></p> <p><b><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></b></p> <ul> <li><strong>A bus</strong> is a connection between components or devices connected to a computer.</li> <li><strong>A bus</strong> carries data between a <strong>CPU and the system memory via the motherboard.</strong></li> <li>The bus contains <strong>multiple wires (signal lines)</strong> with addressing information describing the memory location of where the data is being sent or retrieved.</li> <li>For example, a computer with a <strong>32-bit address bus</strong> can address<strong> 4 GB of memory.</strong></li> <li>A bus is either a<strong> parallel or serial bus</strong>, and either an<strong> internal bus (local bus)</strong> or an <strong>external bus (expansion bus).</strong></li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width:350px;"> <tbody> <tr> <td style="text-align: center;"><strong>Term</strong></td> <td style="text-align: center;"><strong>Use</strong></td> </tr> <tr> <td>Line</td> <td>In communications, <strong>a line</strong> refers to a cable or wire that connects two devices to each other.</td> </tr> <tr> <td>Media</td> <td>Media is a term used to describe computer storage.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>बस</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>बस</strong> कंप्यूटर से जुड़े घटकों या उपकरणों के बीच एक संबंध है।</li> <li><strong>बस</strong> <strong>मदरबोर्ड के माध्यम से सीपीयू और सिस्टम मेमोरी के बीच</strong> डेटा ले जाती है।</li> <li>जहाँ डेटा भेजा या पुनर्प्राप्त किया जा रहा है, उसकी मेमोरी लोकेशन का वर्णन करने वाली जानकारी के साथ बस में <strong>कई तार (सिग्नल लाइन)</strong> होते हैं।</li> <li>उदाहरण के लिए, <strong>32-बिट एड्रेस बस</strong> वाला कंप्यूटर <strong>4 जीबी मेमोरी</strong> को संबोधित कर सकता है।</li> <li>एक बस या तो एक <strong>समानांतर या सीरियल बस</strong> है, और या तो एक <strong>इंटरनल बस (लोकल बस)</strong> या एक <strong>एक्सटर्नल बस (एक्सपेंशन बस)</strong> है।</li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width:350px;"> <tbody> <tr> <td style="text-align: center;"><strong>शब्द&nbsp;</strong></td> <td style="text-align: center;"><strong>उपयोग&nbsp;</strong></td> </tr> <tr> <td>लाइन&nbsp;</td> <td>संचार में, एक लाइन एक केबल या तार को संदर्भित करती है जो दो उपकरणों को एक दूसरे से जोड़ती है।</td> </tr> <tr> <td>मीडिया</td> <td>मीडिया एक शब्द है जिसका उपयोग कंप्यूटर स्टोरेज का वर्णन करने के लिए किया जाता है।</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">&nbsp;A computer virus is a:</div>
+  <div class="question lang-hi">कंप्यूटर वायरस होता है:</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Software that saves the computer from being damaged</div><div class="option">Application software that helps to make different type of viruses and worms</div><div class="option correct">Program that spreads itself and destroys other programs</div><div class="option">Program that corrects the problems in your computer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सॉफ्टवेयर जो कंप्यूटर को क्षतिग्रस्त होने से बचाता है।&nbsp;</div><div class="option">एप्लीकेशन सॉफ्टवेयर जो विभिन्न प्रकार के वायरस और वर्म्स में अंतर में मदद करता है।&nbsp;</div><div class="option correct">एक प्रोग्राम जो स्वयं फैलता है और अन्य प्रोग्राम को नष्ट कर देता है।&nbsp;</div><div class="option">प्रोग्राम जो आपके कंप्यूटर में समस्याओं को ठीक करता है।&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The Correct Answer is <u><strong>&quot;Program that spreads itself and destroys other programs</strong></u><u><strong>&quot;</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>A<strong> computer virus&nbsp;</strong>is designed to spread from host to host and has the ability to replicate itself.</li> <li>A computer virus is a type of malicious code or program written to alter the way a computer operates and is designed to spread from one computer to another.</li> <li>A virus operates by inserting or attaching itself to a legitimate program or document that supports macros in order to execute its code.</li> <li>In the process, a virus has the potential to cause unexpected or damaging effects, such as harming the system software by corrupting or destroying data.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>A computer virus attack can produce a variety of symptoms. Here are some of them:</strong> <ul> <li><strong>Frequent pop-up windows:&nbsp;</strong>Pop-ups might encourage you to visit unusual sites. Or they might prod you to download antivirus or other software programs.</li> <li><strong>Changes to your homepage:</strong>&nbsp;Your usual homepage may change to another website, for instance. Plus, you may be unable to reset it.</li> <li><strong>Mass emails being sent from your email account:</strong>&nbsp;A criminal may take control of your account or send emails in your name from another infected computer.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Use a trusted antivirus product, such as <strong>Norton AntiVirus Basic</strong>, and keep it updated with the latest virus definitions.<strong> </strong></li> <li>Avoid clicking on any pop-up advertisements.</li> <li>Always scan your <strong>email attachments</strong> before opening them.</li> <li>Always scan the files that you download using <strong>file-sharing programs.</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर<u><strong> &quot;<span style="">एक प्रोग्राम&nbsp;जो स्वयं फैलता है और अन्य कार्यक्रमों को नष्ट कर देता है</span>&quot;</strong></u>।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li><strong>कंप्यूटर वायरस</strong> इस तरह डिज़ाइन किया जाता है कि यह खुद ही अपनी कॉपी बनाता है और एक सिस्टम से दूसरे में अपने आप ट्रांसफर हो जाता है।</li> <li>कंप्यूटर वायरस,&nbsp;दुर्भावना&nbsp;से बनाया गया एक ऐसा&nbsp;कोड या प्रोग्राम होता है जिसे किसी कंप्यूटर को संचालित करने के तरीके को बदलने और एक कंप्यूटर से दूसरे कंप्यूटर में फैलाने के लिए डिज़ाइन किया जाता है।</li> <li>वायरस अपने कोड को निष्पादित करने के लिए मैक्रो&nbsp;का समर्थन करने वाले वैध प्रोग्राम या दस्तावेज़ में खुद को सम्मिलित या संलग्न करके संचालित होता है।</li> <li>इस प्रक्रिया के दौरान वायरस में अप्रत्याशित या हानिकारक प्रभाव पैदा करने की क्षमता होती है।&nbsp;जैसे कि डेटा को करप्ट या नष्ट करके सिस्टम के सॉफ़्टवेयर को नुकसान पहुंचाना।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>कंप्यूटर वायरस का हमला होने पर कई तरह के लक्षण दिखाई पड़ते हैं। उनमें</strong><strong> से कुछ इस प्रकार हैं</strong><strong>:</strong> <ul> <li><strong>बार-बार पॉप-अप विंडो का खुलना</strong><strong>: </strong>पॉप-अप विंडो आपको असामान्य साइटों पर जाने के लिए प्रोत्साहित कर सकता है। वे आपको एंटीवायरस या अन्य सॉफ़्टवेयर प्रोग्राम डाउनलोड करने के लिए प्रेरित कर सकते हैं।</li> <li><strong>आपके होमपेज</strong><strong> में परिवर्तन: </strong>उदाहरण के लिए आपका सामान्य होमपेज दूसरी वेबसाइट में बदल सकता है। साथ ही, आप इसे रीसेट करने में असमर्थ हो सकते हैं।</li> <li><strong>आपके ईमेल खाते से सामूहिक ईमेल भेजना</strong><strong>: </strong>कोई अपराधी आपके खाते को कंट्रोल कर सकता है या किसी अन्य संक्रमित कंप्यूटर से आपके नाम पर ईमेल भेज सकता है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>इससे बचने के लिए नॉर्टन एंटीवायरस बेसिक जैसे <strong>विश्वसनीय एंटीवायरस उत्पाद</strong> का उपयोग करें। साथ ही,&nbsp;इसे नवीनतम वायरस परिभाषाओं के साथ अद्यतन रखें।</li> <li>किसी भी पॉप-अप विज्ञापन पर क्लिक करने से बचें।</li> <li><span style="">हमेशा&nbsp;अपने&nbsp;</span><span style="font-weight: 700; ">ईमेल अनुलग्नकों</span><span style="">&nbsp;को&nbsp;</span>खोलने से पहले <span style="">उन्हें</span>&nbsp;स्कैन करें।</li> <li>हमेशा उन फ़ाइलों को स्कैन करें जिन्हें आप <strong>फ़ाइल-साझाकरण प्रोग्राम</strong> का उपयोग करके डाउनलोड करते हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p dir="ltr">A compiler means &ndash;</p></div>
+  <div class="question lang-hi">कम्पाइलर का&nbsp;क्या&nbsp;अर्थ&nbsp;होता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><p>A person who compiles source program</p></div><div class="option"><p>The same thing as a programmer</p></div><div class="option"><p>Keypunch operator</p></div><div class="option correct"><p>A program which translates source program into object program</p></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="color: rgb(33, 37, 41);">वह व्यक्ति जो सोर्स प्रोग्राम को कम्पाइल&nbsp;करता है</span></div><div class="option"><span style="color: rgb(33, 37, 41);">ठीक वही कार्य जो एक प्रोग्रामर करता है</span></div><div class="option"><span style="color: rgb(33, 37, 41);">कीपंच ऑपरेटर</span></div><div class="option correct"><span style="color: rgb(33, 37, 41);">ऐसा प्रोग्राम जो सोर्स प्रोग्राम को ऑब्जेक्ट प्रोग्राम में ट्रांसलेट करता है</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>Compiler: </strong>Computer software that translates source code written in a high-level language into a set of machine-language instructions that can be understood by a digital computer&rsquo;s CPU.</p> <ul> <li>It scans the entire program and translates the whole of it into machine code at once.</li> <li>A Compiler always generates an intermediary object code.</li> <li>It will need further linking. Hence more memory is needed.</li> <li>Source code &rarr; Compiler &rarr; Machine code &rarr; Output</li> <li>Compilers are very large programs, with error-checking and other abilities.</li> <li>The compiler can diagnose grammatical errors only</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/05/F1_Shraddha_Raju_27.05.2021_D1.png" style="width: 287px; height: 94px;" /></p></div>
+    <div class="lang-hi"><p><strong>कंपाइलर:</strong>&nbsp;कंप्यूटर सॉफ्टवेयर जो उच्च-स्तरीय भाषा में लिखे गए स्रोत कूट&nbsp;को मशीन-भाषा निर्देशों के एक सेट में अनुवादित करता है जिसे डिजिटल कंप्यूटर के सीपीयू द्वारा समझा जा सकता है।</p> <ul> <li>यह पूरे प्रोग्राम को स्कैन करता है और एक ही बार में पूरे प्रोग्राम को मशीन कूट&nbsp;में बदल देता है।</li> <li>कंपाइलर हमेशा एक मध्यस्थ वस्तुनिष्ठ&nbsp;कूट&nbsp;उत्पन्न करता है।</li> <li>इसे और जोड़ने की आवश्यकता होगी। इसलिए ज्यादा मेमोरी की जरूरत होती है।</li> <li>स्रोत कूट &rarr; कंपाइलर &rarr; मशीन कूट &rarr; आउटपुट</li> <li>कंपाइलर बहुत बड़े प्रोग्राम होते हैं, जिनमें एरर-चेकिंग और अन्य क्षमताएं होती हैं।</li> <li>कंपाइलर केवल व्याकरण संबंधी त्रुटियों का निदान कर सकता है</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/05/F1_Shraddha_Raju_27.05.2021_D1.png" style="width: 287px; height: 94px;" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">With respect to memory, what is the full form of USB?</div>
+  <div class="question lang-hi"><span style="">मेमोरी के संदर्भ में USB का पूर्ण रूप क्या है?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Universal Service Bus</div><div class="option">Unique Serial Bus</div><div class="option correct">Universal Serial Bus</div><div class="option">Unique Service Bus</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">यूनिवर्सल सर्विस बस</span></div><div class="option">यूनिक&nbsp;<span style="">सीरियल बस</span></div><div class="option correct"><span style="">यूनिवर्सल</span> <span style="">सीरियल बस</span></div><div class="option"><span style="">यूनिक</span>&nbsp;<span style="">सर्विस बस</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong><span style="">Universal Serial Bus</span></strong></u><span style="">.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=""> <li>The full form of USB is&nbsp;<span style="font-weight: 700;">Universal Serial Bus.</span></li> <li>USB is a plug and play interface that allows a computer to communicate with external and other devices.</li> <li>The first commercial release of the Universal Serial Bus (version 1.0) was in January 1996.</li> <li>USB Pendrive is a Secondary type of storage device.</li> <li>USB connectors come in different shapes and sizes. They are of various types which include&nbsp;the standard USB, Mini USB, and Micro USB, have two or more variations of connectors.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul style=""> <li>A primary storage device is a storage medium that holds a&nbsp;<span style="font-weight: 700;">memory for short periods of time</span>&nbsp;while a computer is running.</li> <li><span style="font-weight: 700;">Random-access memory</span>&nbsp;(RAM) and&nbsp;<span style="font-weight: 700;">cache&nbsp;</span>are both examples of a primary storage device.</li> <li>Tertiary storage devices comprise&nbsp;<span style="font-weight: 700;">high-capacity data archives</span>&nbsp;designed to include vast numbers of removable media, such as tapes or optical discs.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong><span style="">यूनिवर्सल सीरियल बस</span></strong></u> है<span style="">।</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></span></p> <ul style=""> <li>USB का पूरा नाम&nbsp;<span style="font-weight: 700;">यूनिवर्सल सीरियल बस</span>&nbsp;है।</li> <li>USB एक प्लग एंड प्ले इंटरफ़ेस है जो कंप्यूटर को बाहरी और अन्य उपकरणों के साथ संवाद करने की अनुमति देता है।</li> <li>यूनिवर्सल सीरियल बस (संस्करण 1.0) की पहली व्यावसायिक रिलीज़ जनवरी 1996 में हुई थी।</li> <li>USB पेन ड्राइव एक द्वितीयक प्रकार का स्टोरेज डिवाइस है।</li> <li>USB कनेक्टर विभिन्न आकार और माप में आते हैं। वे विभिन्न प्रकार के होते हैं जिनमें स्टैन्ड्रड USB, मिनी USB और माइक्रो USB शामिल होते हैं, जिनमें दो या अधिक प्रकार के कनेक्टर होते हैं।</li> </ul> <p style=""><span style="font-weight: 700;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></span></p> <ul style=""> <li>एक प्राथमिक स्टोरेज डिवाइस एक ऐसा स्टोरेज माध्यम है जो&nbsp;<span style="font-weight: 700;">कम समय के लिए मेमोरी स्टोर करता</span> है&nbsp;यानी जब तक&nbsp;कंप्यूटर चल रहा है।</li> <li><span style="font-weight: 700;">रैंडम-एक्सेस मेमोरी</span>&nbsp;(रैम) और&nbsp;<span style="font-weight: 700;">कैश</span>&nbsp;दोनों एक प्राथमिक स्टोरेज डिवाइस के उदाहरण हैं।</li> <li>तृतीयक स्टोरेज डिवाइस <strong>बड़ी क्षमता वाले डेटा संग्रह </strong>होते हैं जिनमें बड़ी संख्या में हटाने योग्य मीडिया जैसे टेप या ऑप्टिकल डिस्क होते हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Full form of DBMS</div>
+  <div class="question lang-hi">DBMS का पूर्ण रूप क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Digital Base Management System</div><div class="option correct">Database Management System</div><div class="option">Database Maintenance System</div><div class="option">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">डिजिटल बेस मैनेजमेंट सिस्टम</div><div class="option correct">डेटाबेस मैनेजमेंट सिस्टम</div><div class="option">डेटाबेस मेंटेनेंस सिस्टम</div><div class="option">इनमें से कोई भी नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Database Management System</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>A <strong>DBMS</strong> is a computer software application that interacts with the user, other applications, and the database itself to <strong>capture and analyze data</strong>. It handles the <strong>storage, retrieval, and updating of data</strong> in the computer system.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Functions of DBMS: <ul> <li>​Manages&nbsp;<span style="font-weight: 700;">data dictionaries</span>&nbsp;that store a definition of various&nbsp;<span style="font-weight: 700;">data elements</span>&nbsp;and their relationships.</li> <li>Provides storage for not only data but also all related data like&nbsp;<span style="font-weight: 700;">procedural codes, data validation, and entry forms</span>.</li> <li><span style="font-weight: 700;">Transforms and presents data</span>&nbsp;according to the user&rsquo;s expectations.</li> <li>DBMS provides&nbsp;<span style="font-weight: 700;">data privacy</span>&nbsp;by using security systems in a multi-user database interface.</li> <li><span style="font-weight: 700;">Allows multiple users</span>&nbsp;to access any data at the same point of time without any discrepancies.</li> <li>Ensures&nbsp;<span style="font-weight: 700;">easy data recovery and back up</span>&nbsp;in order to protect its integrity.</li> <li>It allows users to&nbsp;<span style="font-weight: 700;">communicate and transact via emails</span>&nbsp;and many other communication modes.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही जवाब है&nbsp;<u><strong>डेटाबेस मैनेजमेंट सिस्टम</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>एक <strong>डीबीएमएस</strong> एक कंप्यूटर सॉफ्टवेयर अनुप्रयोग है जो उपयोगकर्ता, अन्य अनुप्रयोगों और <strong>डेटा को पकड़ने और विश्लेषण करने के लिए</strong> डेटाबेस के साथ स्वयं को इंटरैक्ट करता है। यह कंप्यूटर सिस्टम में डेटा के भंडारण, पुनर्प्राप्ति और अद्यतन को संभालता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>DBMS के कार्य: <ul> <li><span style="font-weight: 700;">डेटा शब्दकोशों का</span> प्रबंधन करता है जो विभिन्न <span style="font-weight: 700;">डेटा तत्वों</span> और उनके रिश्तों की परिभाषा को संग्रहीत करता है।</li> <li>न केवल डेटा बल्कि सभी संबंधित डेटा जैसे <span style="font-weight: 700;">प्रक्रियात्मक कोड, डेटा सत्यापन और प्रवेश फ़ॉर्म के</span> लिए भंडारण प्रदान करता है।</li> <li>उपयोगकर्ता की अपेक्षाओं के अनुसार <span style="font-weight: 700;">डेटा ट्रांसफ़ॉर्म और प्रस्तुत करता</span> है।</li> <li>DBMS एक बहु-उपयोगकर्ता डेटाबेस इंटरफ़ेस में सुरक्षा प्रणालियों का उपयोग करके <span style="font-weight: 700;">डेटा गोपनीयता</span> प्रदान करता है।</li> <li><span style="font-weight: 700;">कई उपयोगकर्ताओं</span> को बिना किसी विसंगति के एक ही समय में किसी भी डेटा का उपयोग करने की <span style="font-weight: 700;">अनुमति देता है</span> ।</li> <li><span style="font-weight: 700;">आसान डेटा रिकवरी</span> सुनिश्चित करता <span style="font-weight: 700;">है और</span> इसकी अखंडता की रक्षा के लिए <span style="font-weight: 700;">बैक अप</span> लेता है।</li> <li>यह उपयोगकर्ताओं को <span style="font-weight: 700;">ईमेल</span> और कई अन्य संचार मोड के <span style="font-weight: 700;">माध्यम</span> से <span style="font-weight: 700;">संचार और लेनदेन</span> करने की अनुमति देता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">With respect to CD-ROM, the term WORM stands for:</div>
+  <div class="question lang-hi">सीडी-रोम के संबंध में, WORM (वॉर्म) शब्द का अर्थ है:</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Work On Random Memory</div><div class="option">Write On Random Memory</div><div class="option correct">Write-Once Read-Many</div><div class="option">Write-Many Read-Once</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">वर्क ऑन&nbsp;रैंडम मेमोरी&nbsp;</div><div class="option">राइट ऑन&nbsp;रैंडम मेमोरी&nbsp;</div><div class="option correct">राइट-वन्स रीड-मैनी&nbsp;</div><div class="option">राइट-मैनी रीड-वन्स&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Write-Once Read-Many</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>CDs </strong>are also known as <strong>WORM discs</strong>, for &ldquo;<strong>Write Once Read Many</strong>.&rdquo;</li> <li><strong>A rewritable version </strong>based on <strong>excitable crystals</strong> and known as CD-RW was <strong>introduced in the mid-1990s.</strong></li> <li>In computer storage media, <strong>WORM</strong> (write once, read many)<strong> is a data storage technology that allows information to be written to a disc a single time </strong>and prevents the drive from erasing the data.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><span style="font-weight: 700;">Some important abbreviations used in Computer</span>:</p> <ul> <li>BIOS -<span style="white-space: pre;"> </span>Basic Input&nbsp;Output System</li> <li>CAD -<span style="white-space: pre;"> </span>Computer-Aided Design</li> <li>EDVAC -<span style="white-space: pre;"> </span>Electronic Discrete Variable Automatic Computer</li> <li>EPROM<span style="white-space: pre;"> - </span>Erasable Programmable Read-Only Memory</li> <li>FORTRAN<span style="white-space: pre;"> - </span>FORmula TRANslation</li> <li>GPRS<span style="white-space: pre;"> - </span>General Packet Radio Service&nbsp;</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>राइट-वन्स रीड-मैनी</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>सीडी</strong> को <strong>WORM (वॉर्म) डिस्क</strong> के रूप में भी जाना जाता है, <strong>&quot;राइट वन्स रीड मैनी।&quot;</strong></li> <li><strong>1990 के दशक के मध्य में </strong>CD-RW के रूप में प्रसिद्ध<strong> क्रिस्टल पर आधारित एक रीराइटेबल वर्जन और शुरू किया गया था।</strong></li> <li>कंप्यूटर स्टोरेज मीडिया में, <strong>WORM</strong> (राइट वन्स रीड मैनी) <strong>एक डेटा स्टोरेज तकनीक है जो सूचना को एक डिस्क पर एक बार लिखने की अनुमति देता है </strong>और ड्राइव को डेटा को मिटाने से रोकता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>कंप्यूटर में उपयोग किए जाने वाले कुछ महत्वपूर्ण संक्षिप्त विवरण:</strong></u></p> <ul> <li>BIOS - बेसिक इनपुट आउटपुट सिस्टम</li> <li>CAD - कंप्यूटर-एडेड डिजाइन</li> <li>EDVAC(एडवैक) - इलेक्ट्रॉनिक असतत परिवर्तनीय स्वचालित&nbsp;कंप्यूटर&nbsp;</li> <li>EPROM - इरेजेबल प्रोग्रामेबल रीड-ओनली मेमोरी</li> <li>FORTRAN - फ़ोरमुला ट्रैन्सलेशन</li> <li>GPRS - जनरल पैकेट रेडियो सर्विस</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Match<strong> List I</strong> with <strong>List II</strong></p> <table border="1" cellpadding="0" cellspacing="0" style="width:300px;"> <tbody> <tr> <td style="width:301px;"> <p align="center"><strong>List I</strong></p> </td> <td style="width:301px;"> <p align="center"><strong>List II</strong></p> </td> </tr> <tr> <td style="width:301px;"> <p>A. Image</p> </td> <td style="width:301px;"> <p>I. .doc</p> </td> </tr> <tr> <td style="width:301px;"> <p>B. Video</p> </td> <td style="width:301px;"> <p>II. mp3</p> </td> </tr> <tr> <td style="width:301px;"> <p>C. Audio</p> </td> <td style="width:301px;"> <p>III. .jpeg</p> </td> </tr> <tr> <td style="width:301px;"> <p>D. Word processing</p> </td> <td style="width:301px;"> <p>IV. .mpeg</p> </td> </tr> </tbody> </table> <p><br /> Choose the&nbsp;<span style="font-weight: 700;"><em>correct</em></span>&nbsp;answer from the options given below:</p></div>
+  <div class="question lang-hi"><p><strong>सूची I</strong> के साथ <strong>सूची II</strong> का मिलान कीजिए।</p> <table border="1" cellpadding="0" cellspacing="0" style="width:300px;"> <tbody> <tr> <td style="width:301px;"> <p align="center"><strong>सूची I</strong></p> </td> <td style="width:301px;"> <p align="center"><strong>सूची II</strong></p> </td> </tr> <tr> <td style="width:301px;"> <p>A. इमेज</p> </td> <td style="width:301px;"> <p>I. .doc</p> </td> </tr> <tr> <td style="width:301px;"> <p>B. विडियो&nbsp;</p> </td> <td style="width:301px;"> <p>II. mp3</p> </td> </tr> <tr> <td style="width:301px;"> <p>C. ऑडियो&nbsp;</p> </td> <td style="width:301px;"> <p>III. .jpeg</p> </td> </tr> <tr> <td style="width:301px;"> <p>D. वर्ड प्रोसेसिंग</p> </td> <td style="width:301px;"> <p>IV. .mpeg</p> </td> </tr> </tbody> </table> <p><br /> नीचे दिए गए विकल्पों में से <em><strong>सही </strong></em>उत्तर चुनिए:</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">A - I, B - II, C - III, D - IV</div><div class="option correct">A - III, B - IV, C - II, D - I</div><div class="option">A - II, B - III, C - IV, D - I</div><div class="option">A - I, B - IV, C - III D - II</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">A - I, B - II, C - III, D - IV</div><div class="option correct">A - III, B - IV, C - II, D - I</div><div class="option">A - II, B - III, C - IV, D - I</div><div class="option">A - I, B - IV, C - III D - II</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>Match<span style="font-weight: 700;">&nbsp;List I</span>&nbsp;with&nbsp;<span style="font-weight: 700;">List II</span></p> <table border="1" cellpadding="0" cellspacing="0" style="width:380px;"> <tbody> <tr> <td> <p style="text-align: center;"><strong>List I</strong></p> </td> <td style="width: 301px;"> <p align="center"><span style="font-weight: 700;">List II</span></p> </td> </tr> <tr> <td style="width: 160px;"> <p style="text-align: center;">A. Image</p> </td> <td style="width: 301px;"> <p><span style="font-weight: 700;">J</span><span style="font-weight: 700;">PG</span><span style="color: rgb(32, 33, 36);">&nbsp;(or JPEG), is a popular&nbsp;</span><span style="font-weight: 700;">file format</span><span style="color: rgb(32, 33, 36);">&nbsp;used for&nbsp;</span><span style="font-weight: 700;">images</span><span style="color: rgb(32, 33, 36);">&nbsp;and graphics&mdash;especially on the internet.</span></p> </td> </tr> <tr> <td> <p style="text-align: center;">B. Video</p> </td> <td style="width: 301px;"> <p><span style="color: rgb(32, 33, 36); ">The Moving Picture Experts Group (</span><b style="color: rgb(32, 33, 36); ">MPEG</b><span style="color: rgb(32, 33, 36); ">) is an alliance of working groups of ISO and IEC that sets standards for media coding, including compression coding of audio, <strong>video</strong>, graphics and genomic data, and transmission and file formats for various applications.</span></p> </td> </tr> <tr> <td> <p style="text-align: center;">C. Audio</p> </td> <td style="width: 301px;"> <p><span style="font-weight: 700;">MP3</span><span style="color: rgb(32, 33, 34);">&nbsp;is a&nbsp;</span><span style="background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;" title="Audio coding format">coding format</span><span style="color: rgb(32, 33, 34);">&nbsp;for&nbsp;</span><span style="background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;" title="Digital audio">digital <strong>audio</strong>.</span><span style="color: rgb(32, 33, 34);">&nbsp;</span></p> <p><span style="color: rgb(80, 80, 80);">The great attraction of the MP3 format is its ability to compress files, making it a convenient, versatile and very popular way of storing music.</span></p> </td> </tr> <tr> <td> <p style="text-align: center;">D. Word processing</p> </td> <td style="width: 301px;"> <p>The file extension of Microsoft (MS) <strong>word</strong> document in office 2007 is&nbsp;<span style="font-weight: 700;">.docx</span></p> </td> </tr> </tbody> </table> <p><br /> <strong>Therefore, option 2 is the correct answer.</strong></p></div>
+    <div class="lang-hi"><p><strong>सूची I </strong>के साथ <strong>सूची II </strong>का मिलान</p> <table border="1" cellpadding="0" cellspacing="0" style="width:380px;"> <tbody> <tr> <td> <p style="text-align: center;"><strong>सूची I</strong></p> </td> <td style="width: 301px;"> <p align="center"><span style="font-weight: 700; text-align: center;">सूची&nbsp;</span><span style="font-weight: 700;">II</span></p> </td> </tr> <tr> <td style="width: 160px;"> <p style="text-align: center;">A. इमेज&nbsp;</p> </td> <td style="width: 301px;"> <p><span style="font-weight: 700;">J</span><span style="font-weight: 700;">PG</span><span style="color: rgb(32, 33, 36);">&nbsp;</span>(या JPEG), एक लोकप्रिय <strong>फ़ाइल फॉर्मेट&nbsp;</strong>है जिसका उपयोग <strong>चित्रों</strong><b>&nbsp;</b>और ग्राफिक्स के लिए किया जाता है - विशेष रूप से इंटरनेट पर।</p> </td> </tr> <tr> <td> <p style="text-align: center;">B. विडियो&nbsp;</p> </td> <td style="width: 301px;"> <p>मूविंग पिक्चर एक्सपर्ट्स ग्रुप (<span style="font-weight: 700;">MPEG</span>) <span style="color: rgb(32, 33, 36);">ISO&nbsp;</span>और <span style="color: rgb(32, 33, 36);">IEC&nbsp;</span>के कामकाजी समूहों का एक गठबंधन है जो मीडिया कोडिंग के लिए मानक निर्धारित करता है, जिसमें विभिन्न अनुप्रयोगों के लिए ऑडियो, <strong>वीडियो</strong>, ग्राफिक्स और जीनोमिक डेटा, और ट्रांसमिशन और फ़ाइल स्वरूपों के संपीड़न कोडिंग शामिल हैं।</p> </td> </tr> <tr> <td> <p style="text-align: center;">C. ऑडियो&nbsp;</p> </td> <td style="width: 301px;"> <p><span style="font-weight: 700;">MP3</span>&nbsp;डिजिटल <strong>ऑडियो </strong>के लिए एक कोडिंग प्रारूप है।</p> <p><span style="font-weight: 700;">MP3 </span>फॉर्मेट&nbsp;का अत्यधिक&nbsp;फ़ाइलों को कॉम्प्रेस&nbsp;करने की अपनी क्षमता है, जिससे यह संगीत को संग्रहीत करने का एक सुविधाजनक, बहुमुखी और बहुत लोकप्रिय तरीका है।</p> </td> </tr> <tr> <td> <p style="text-align: center;">D. वर्ड प्रोसेसिंग</p> </td> <td style="width: 301px;"> <p>ऑफिस&nbsp;2007 में माइक्रोसॉफ्ट (MS) शब्द दस्तावेज़ का फ़ाइल एक्सटेंशन .docx है</p> </td> </tr> </tbody> </table> <p><br /> <strong>अतः, विकल्प 2 सही उत्तर है।</strong></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">JPEG is a commonly used method of lossy compression for digital images. What is the full form of JPEG?</div>
+  <div class="question lang-hi">JPEG&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">डिजिटल इमेज के लिए हानिपूर्ण</font></font><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;संपीड़न का आमतौर पर उपयोग किया जाने वाला तरीका है। </font></font>JPEG&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">का पूर्ण रूप क्या है?</font></font></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Jet Prints Editing Graphics</div><div class="option">Jet Protocol Experts Group</div><div class="option">Joint Pages Enhanced Graphics</div><div class="option correct">Joint Photographic Experts Group</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जेट प्रिंट्स एडिटिंग ग्राफिक्स</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जेट प्रोटोकॉल एक्सपर्ट्स ग्रुप</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जॉइंट पेजेज एनहांस्ड ग्राफिक्स</font></font></div><div class="option correct">जॉइंट फोटोग्राफिक एक्सपर्ट्स ग्रुप</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u>Joint Photographic Experts Group</u></strong>.</p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul> <li><u><strong>JPEG stands for Joint Photographic Experts Group</strong></u>. <ul> <li>It is a computer graphics file format.</li> <li>JPEG is a lossy compression method widely used for digital photographs.</li> <li>In JPEG, the image is compressed to make a smaller file.</li> <li>Compression results in a loss of quality, however, so it is usually undetectable.</li> <li>JPEG files are widely used on the Internet, and JPEG is a popular digital camera format, making it ideal for non-professional printing and web use.</li> <li>JPEG format is best for web images, non-professional printing, e-mail, PowerPoint.</li> <li>The extensions &quot;.jpeg&quot; and &quot;.jpg&quot; are used for JPEG files.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>PNG</strong> (Portable Network Graphics) files are a lossless picture format that was created to replace and improve upon the gif format.</li> <li><strong>GIF</strong> files (Graphics Interchange Format) are used for web graphics and can be animated and transparent.</li> <li><strong>BMP </strong>(Bitmap Image File) is a file format designed by Microsoft for Windows that does not compress or lose information, allowing images to have very high quality while simultaneously having very large file sizes.</li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्&zwj;तर </font></font><strong><u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ज्वाइंट फोटोग्राफिक एक्सपर्ट्स ग्रुप</font></font></u></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> </font></font>है<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><span style="font-weight: 700;">JPEG का अर्थ&nbsp;</span></u><span style="font-weight: 700;"><u><font style="vertical-align: inherit;">ज्वाइंट फोटोग्राफिक एक्सपर्ट्स ग्रुप</font></u></span><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;है</font></font></strong></u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font> <strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पीएनजी</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> (पोर्टेबल नेटवर्क ग्राफिक्स) फाइलें एक दोषरहित चित्र प्रारूप हैं जो कि जीआईएफ प्रारूप को बदलने और सुधारने के लिए बनाया गया था।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक कंप्यूटर ग्राफिक्स फ़ाइल स्वरूप है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JPEG एक हानिपूर्ण संपीड़न विधि है जिसका व्यापक रूप से डिजिटल फ़ोटोग्राफ़ के लिए उपयोग किया जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JPEG में, इमेज को छोटी फाइल बनाने के लिए कंप्रेस किया जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">हालांकि, संपीड़न के परिणामस्वरूप गुणवत्ता का नुकसान होता है, इसलिए यह आमतौर पर ज्ञानी नहीं होता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JPEG फ़ाइलें इंटरनेट पर व्यापक रूप से उपयोग की जाती हैं, और JPEG एक लोकप्रिय डिजिटल कैमरा प्रारूप है, जो इसे गैर-पेशेवर मुद्रण और वेब उपयोग के लिए आदर्श बनाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जेपीईजी प्रारूप वेब छवियों, गैर-पेशेवर मुद्रण, ई-मेल, पावरपॉइंट के लिए सर्वोत्तम है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JPEG फ़ाइलों के लिए एक्सटेंशन &quot;.jpeg&quot; और &quot;.jpg&quot; का उपयोग किया जाता है।</font></font>&nbsp;</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">PNG</span>&nbsp;(पोर्टेबल नेटवर्क ग्राफिक्स) फाइलें एक दोषरहित चित्र प्रारूप हैं जो कि जीआईएफ प्रारूप को बदलने और सुधारने के लिए बनाया गया था।</li> <li><span style="font-weight: 700;">GIF</span>&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">फाइलें (ग्राफिक्स इंटरचेंज फॉर्मेट) वेब ग्राफिक्स के लिए उपयोग की जाती हैं और एनिमेटेड और पारदर्शी हो सकती हैं।</font></font></li> <li><span style="font-weight: 700;">BMP&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(बिटमैप इमेज फाइल) माइक्रोसॉफ्ट द्वारा विंडोज़ के लिए डिज़ाइन किया गया एक फ़ाइल प्रारूप है जो सूचनाओं को संपीड़ित या खोता नहीं है, छवियों को बहुत बड़ी फ़ाइल आकार के साथ-साथ बहुत उच्च गुणवत्ता की अनुमति देता है।</font></font></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

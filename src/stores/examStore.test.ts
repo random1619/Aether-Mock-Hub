@@ -111,8 +111,8 @@ describe('timer', () => {
   });
 });
 
-describe('navigation', () => {
-  it('clamps to section bounds in sectional mode', async () => {
+describe('navigation & section locks', () => {
+  it('clamps to section bounds and locks future sections during active phase', async () => {
     const { useExamStore } = await loadStore();
     const meta = makeMeta(4, {
       sections: [
@@ -123,15 +123,28 @@ describe('navigation', () => {
     const questions = Array.from({ length: 4 }, () => makeQuestion());
     useExamStore.getState().loadExam(meta, questions);
     useExamStore.getState().startExam();
-    // Section A is [0,1] — jumping to 3 must be rejected
+    // Section A is [0,1] — jumping to 3 (Section B) must be rejected
     useExamStore.getState().navigateTo(3);
     expect(useExamStore.getState().currentIdx).toBe(0);
     useExamStore.getState().navigateTo(1);
     expect(useExamStore.getState().currentIdx).toBe(1);
-    // Switching sections unlocks 2..3
+
+    // Direct setCurrentSection(1) is rejected while Section A is locked/not completed
     useExamStore.getState().setCurrentSection(1);
+    expect(useExamStore.getState().currentSectionIdx).toBe(0);
+
+    // Submitting Section A locks Section A and unlocks Section B
+    useExamStore.getState().submitCurrentSection();
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
     expect(useExamStore.getState().currentIdx).toBe(2);
+    expect(useExamStore.getState().lockedSections.has(0)).toBe(true);
+
+    // Navigating within Section B [2,3] works
     useExamStore.getState().navigateTo(3);
+    expect(useExamStore.getState().currentIdx).toBe(3);
+
+    // Returning to locked Section A [0,1] is blocked
+    useExamStore.getState().navigateTo(0);
     expect(useExamStore.getState().currentIdx).toBe(3);
   });
 
@@ -445,3 +458,170 @@ describe('tick clock-jump guard', () => {
     vi.setSystemTime(new Date('2026-08-01T10:00:00'));
   });
 });
+
+describe('SSC CGL Sectional Timers & Section Locks', () => {
+  it('configures CGL Tier 1 pattern with 4 sections of 15 mins each', async () => {
+    const { useExamStore } = await loadStore();
+    const meta: ExamMeta = {
+      path: 'providers/Oliveboard/SSC_CGL_Tier1_Mock01.html',
+      name: 'SSC CGL Tier 1 Mock 01',
+      durationMinutes: 60,
+      sections: [
+        { name: 'General Intelligence and Reasoning', start: 0, end: 24 },
+        { name: 'General Awareness', start: 25, end: 49 },
+        { name: 'Quantitative Aptitude', start: 50, end: 74 },
+        { name: 'English Comprehension', start: 75, end: 99 },
+      ],
+    };
+    const questions = Array.from({ length: 100 }, (_, i) => makeQuestion({
+      section: i < 25 ? 'Reasoning' : i < 50 ? 'GA' : i < 75 ? 'Quant' : 'English',
+    }));
+
+    useExamStore.getState().loadExam(meta, questions);
+    const state = useExamStore.getState();
+    expect(state.pattern).toBe('cgl_tier1');
+    expect(state.sectionalTimerEnabled).toBe(true);
+    expect(state.meta?.sections[0].durationMinutes).toBe(15);
+    expect(state.meta?.sections[1].durationMinutes).toBe(15);
+    expect(state.meta?.sections[2].durationMinutes).toBe(15);
+    expect(state.meta?.sections[3].durationMinutes).toBe(15);
+
+    // Starting exam initializes section timer to 15 mins (900 seconds)
+    useExamStore.getState().startExam();
+    expect(useExamStore.getState().sectionTimeRemaining).toBe(900);
+  });
+
+  it('auto-advances to next section and locks previous section when sectional timer expires', async () => {
+    const { useExamStore } = await loadStore();
+    const meta = makeMeta(4, {
+      sections: [
+        { name: 'Section A', start: 0, end: 1, durationMinutes: 15 },
+        { name: 'Section B', start: 2, end: 3, durationMinutes: 15 },
+      ],
+    });
+    const questions = Array.from({ length: 4 }, () => makeQuestion());
+    useExamStore.getState().loadExam(meta, questions);
+    useExamStore.getState().startExam();
+
+    expect(useExamStore.getState().currentSectionIdx).toBe(0);
+    expect(useExamStore.getState().currentIdx).toBe(0);
+
+    // Simulate ticking to end of Section A timer (15 minutes = 900 seconds)
+    vi.setSystemTime(new Date('2026-08-01T10:15:01'));
+    useExamStore.getState().tick();
+
+    // Section A is automatically locked and candidate is in Section B
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
+    expect(useExamStore.getState().currentIdx).toBe(2);
+    expect(useExamStore.getState().lockedSections.has(0)).toBe(true);
+    expect(useExamStore.getState().phase).toBe('active');
+  });
+
+  it('auto-submits exam when the final section timer expires', async () => {
+    const { useExamStore } = await loadStore();
+    const meta = makeMeta(4, {
+      durationMinutes: 30,
+      sections: [
+        { name: 'Section A', start: 0, end: 1, durationMinutes: 15 },
+        { name: 'Section B', start: 2, end: 3, durationMinutes: 15 },
+      ],
+    });
+    const questions = Array.from({ length: 4 }, () => makeQuestion());
+    useExamStore.getState().loadExam(meta, questions);
+    useExamStore.getState().startExam();
+
+    // Advance to Section B
+    useExamStore.getState().submitCurrentSection();
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
+
+    // Advance past Section B's 15 min deadline
+    vi.setSystemTime(new Date('2026-08-01T10:30:01'));
+    useExamStore.getState().tick();
+
+    expect(useExamStore.getState().phase).toBe('submitted');
+  });
+
+  it('UNLOCKS ALL sections and questions completely after submitting the exam', async () => {
+    const { useExamStore } = await loadStore();
+    const meta = makeMeta(4, {
+      sections: [
+        { name: 'Section A', start: 0, end: 1, durationMinutes: 15 },
+        { name: 'Section B', start: 2, end: 3, durationMinutes: 15 },
+      ],
+    });
+    const questions = Array.from({ length: 4 }, () => makeQuestion());
+    useExamStore.getState().loadExam(meta, questions);
+    useExamStore.getState().startExam();
+
+    // In active phase, candidate completes Section A and moves to Section B
+    useExamStore.getState().selectOption(0, 1);
+    useExamStore.getState().submitCurrentSection();
+
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
+    // While active, Section A is locked
+    useExamStore.getState().navigateTo(0);
+    expect(useExamStore.getState().currentIdx).toBe(2); // Still in Section B
+
+    // Submit the whole exam
+    useExamStore.getState().selectOption(2, 2);
+    useExamStore.getState().submit();
+    expect(useExamStore.getState().phase).toBe('submitted');
+
+    // AFTER SUBMITTING: All sections and questions are FULLY UNLOCKED!
+    useExamStore.getState().setCurrentSection(0);
+    expect(useExamStore.getState().currentSectionIdx).toBe(0);
+    expect(useExamStore.getState().currentIdx).toBe(0);
+
+    useExamStore.getState().navigateTo(1);
+    expect(useExamStore.getState().currentIdx).toBe(1);
+
+    useExamStore.getState().setCurrentSection(1);
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
+    expect(useExamStore.getState().currentIdx).toBe(2);
+
+    useExamStore.getState().navigateTo(3);
+    expect(useExamStore.getState().currentIdx).toBe(3);
+
+    // Re-attempt mode works across unlocked sections
+    useExamStore.getState().toggleReattempt();
+    useExamStore.getState().selectOption(0, 2);
+    expect(useExamStore.getState().answers[0]).toBe(2);
+  });
+
+  it('persists and restores sectional timer and lock state in progress snapshot', async () => {
+    const { useExamStore } = await loadStore();
+    const meta = makeMeta(4, {
+      sections: [
+        { name: 'Section A', start: 0, end: 1, durationMinutes: 15 },
+        { name: 'Section B', start: 2, end: 3, durationMinutes: 15 },
+      ],
+    });
+    const questions = Array.from({ length: 4 }, () => makeQuestion());
+    useExamStore.getState().loadExam(meta, questions);
+    useExamStore.getState().startExam();
+
+    useExamStore.getState().submitCurrentSection();
+    useExamStore.getState().selectOption(2, 1);
+    vi.advanceTimersByTime(1000); // let debounced save run
+
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    expect(raw).not.toBeNull();
+    const snap = JSON.parse(raw!);
+    expect(snap.sectionalTimerEnabled).toBe(true);
+    expect(snap.currentSectionIdx).toBe(1);
+    expect(snap.lockedSections).toContain(0);
+
+    // Reload exam and resume
+    useExamStore.getState().reset();
+    useExamStore.getState().loadExam(meta, questions);
+    expect(useExamStore.getState().resumeAvailable).not.toBeNull();
+
+    const ok = useExamStore.getState().resumeExam();
+    expect(ok).toBe(true);
+    expect(useExamStore.getState().phase).toBe('active');
+    expect(useExamStore.getState().currentSectionIdx).toBe(1);
+    expect(useExamStore.getState().currentIdx).toBe(2);
+    expect(useExamStore.getState().lockedSections.has(0)).toBe(true);
+  });
+});
+

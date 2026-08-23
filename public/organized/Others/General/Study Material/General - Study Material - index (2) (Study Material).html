@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Letter For You</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Dancing+Script:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .background {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fce4ec 0%, #fff5f5 40%, #ffffff 100%);
+      position: relative;
+    }
+
+    .hint {
+      position: absolute;
+      top: 12%;
+      font-size: 0.95rem;
+      color: #c48b9f;
+      letter-spacing: 0.5px;
+      opacity: 1;
+      transition: opacity 0.6s ease;
+      font-style: italic;
+      animation: hintBounce 2s ease-in-out infinite;
+      z-index: 20;
+    }
+
+    @keyframes hintBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .hint.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .card-scene {
+      perspective: 1400px;
+      width: 320px;
+      height: 440px;
+      z-index: 10;
+      cursor: pointer;
+      overflow: visible;
+      transition: transform 0.5s ease, left 0.8s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: cardEntrance 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.85) translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .card-scene:not(.opened):hover {
+      transform: scale(1.04) translateY(-4px);
+    }
+
+    .card-scene.opened {
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+      border-radius: 8px;
+    }
+
+    .card.open {
+      transform: rotateY(-170deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card-front {
+      background: linear-gradient(145deg, #8b2942 0%, #a83255 30%, #c0394f 55%, #9b2d45 80%, #7a2038 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px rgba(120, 30, 50, 0.35), 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .card-front::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 200, 180, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(255, 150, 150, 0.06) 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255, 255, 255, 0.012) 3px, rgba(255, 255, 255, 0.012) 4px);
+      pointer-events: none;
+    }
+
+    .card-front::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 1.5px solid rgba(218, 165, 120, 0.25);
+      border-radius: 3px;
+      pointer-events: none;
+      box-shadow: inset 0 0 20px rgba(218, 165, 120, 0.04), 0 0 8px rgba(218, 165, 120, 0.06);
+    }
+
+    /* --- Shimmer sweep across card --- */
+    .shimmer-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .shimmer-layer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.06) 40%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.06) 60%,
+        transparent 80%
+      );
+      animation: shimmerSweep 4s ease-in-out infinite;
+      animation-delay: 2s;
+    }
+
+    @keyframes shimmerSweep {
+      0%, 100% { left: -100%; }
+      50% { left: 150%; }
+    }
+
+    /* --- Sparkle dots on card --- */
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, rgba(255, 220, 180, 0.9), transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      animation: sparkle 3s ease-in-out infinite;
+    }
+
+    .sparkle:nth-child(1) { top: 15%; left: 18%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: 25%; right: 22%; animation-delay: 0.8s; width: 3px; height: 3px; }
+    .sparkle:nth-child(3) { bottom: 20%; left: 25%; animation-delay: 1.6s; }
+    .sparkle:nth-child(4) { bottom: 30%; right: 18%; animation-delay: 2.4s; width: 3px; height: 3px; }
+    .sparkle:nth-child(5) { top: 45%; left: 12%; animation-delay: 1.2s; width: 2px; height: 2px; }
+    .sparkle:nth-child(6) { top: 55%; right: 12%; animation-delay: 2s; width: 2px; height: 2px; }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .corner {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      pointer-events: none;
+      opacity: 0.45;
+      transition: opacity 0.3s ease;
+    }
+
+    .card-scene:not(.opened):hover .corner {
+      opacity: 0.7;
+    }
+
+    .corner-tl {
+      top: 14px;
+      left: 14px;
+      border-top: 2.5px solid #d4a574;
+      border-left: 2.5px solid #d4a574;
+      border-top-left-radius: 2px;
+    }
+
+    .corner-tr {
+      top: 14px;
+      right: 14px;
+      border-top: 2.5px solid #d4a574;
+      border-right: 2.5px solid #d4a574;
+      border-top-right-radius: 2px;
+    }
+
+    .corner-bl {
+      bottom: 14px;
+      left: 14px;
+      border-bottom: 2.5px solid #d4a574;
+      border-left: 2.5px solid #d4a574;
+      border-bottom-left-radius: 2px;
+    }
+
+    .corner-br {
+      bottom: 14px;
+      right: 14px;
+      border-bottom: 2.5px solid #d4a574;
+      border-right: 2.5px solid #d4a574;
+      border-bottom-right-radius: 2px;
+    }
+
+    .front-inner {
+      text-align: center;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      padding: 20px;
+    }
+
+    .seal {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .front-divider {
+      width: 80px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, rgba(218, 165, 120, 0.6), transparent);
+      margin: 0 auto 20px;
+      animation: dividerPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes dividerPulse {
+      0%, 100% { width: 60px; opacity: 0.7; }
+      50% { width: 90px; opacity: 1; }
+    }
+
+    .front-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25), 0 0 30px rgba(218, 165, 120, 0.15);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      color: #fff;
+      animation: titleGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes titleGlow {
+      0%, 100% {
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25), 0 0 30px rgba(218, 165, 120, 0.15);
+      }
+      50% {
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25), 0 0 40px rgba(218, 165, 120, 0.4), 0 0 60px rgba(218, 165, 120, 0.2);
+      }
+    }
+
+    .front-subtitle {
+      font-family: 'Caveat', cursive;
+      font-size: 0.88rem;
+      font-style: italic;
+      opacity: 0;
+      letter-spacing: 1.5px;
+      color: rgba(255, 220, 200, 0.8);
+      animation: fadeInPulse 2s ease-in-out 0.5s forwards;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    @keyframes fadeInPulse {
+      0% {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      100% {
+        opacity: 0.8;
+        transform: translateY(0);
+      }
+    }
+
+    .card-back {
+      background: linear-gradient(160deg, #f8e8eb 0%, #f1d5da 100%);
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 30px rgba(180, 60, 80, 0.06);
+    }
+
+    .back-inner {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .back-text {
+      font-family: 'Caveat', cursive;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: #b06070;
+      line-height: 1.8;
+      opacity: 0.85;
+    }
+
+    .inside-page {
+      position: absolute;
+      width: 320px;
+      height: 440px;
+      background: #fffaf9;
+      border-radius: 0 8px 8px 0;
+      box-shadow: inset 5px 0 12px rgba(180, 60, 80, 0.08), 0 8px 30px rgba(180, 60, 80, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease 0.3s, left 0.8s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 5;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(200, 150, 160, 0.04) 28px, rgba(200, 150, 160, 0.04) 29px);
+    }
+
+    .inside-page.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .inside-page::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 3%;
+      bottom: 3%;
+      width: 1.5px;
+      background: linear-gradient(to bottom, transparent, rgba(180, 60, 80, 0.12), rgba(180, 60, 80, 0.12), transparent);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .inside-header {
+      padding: 28px 24px 12px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .inside-header h2 {
+      font-family: 'Dancing Script', cursive;
+      font-style: normal;
+      font-size: 1.3rem;
+      color: #c0546a;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    .letter-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 4px 24px 24px;
+      touch-action: pan-y;
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .letter-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .letter-content::-webkit-scrollbar-thumb {
+      background: rgba(192, 84, 106, 0.15);
+      border-radius: 4px;
+    }
+
+    .letter-greeting {
+      font-family: 'Dancing Script', cursive;
+      font-style: normal;
+      font-size: 1.05rem;
+      color: #c0546a;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(192, 84, 106, 0.12);
+      font-weight: 600;
+    }
+
+    .letter-paragraph {
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: #6a3545;
+      line-height: 1.75;
+      margin-bottom: 14px;
+      text-indent: 1.2em;
+      text-align: justify;
+    }
+
+    .letter-closing {
+      font-family: 'Dancing Script', cursive;
+      font-style: normal;
+      font-size: 1.1rem;
+      color: #c0394f;
+      text-align: right;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page.hidden {
+      display: none;
+    }
+
+    .page-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      flex-shrink: 0;
+    }
+
+    .page-dots {
+      font-family: 'Caveat', cursive;
+      font-size: 0.72rem;
+      color: #cba0a8;
+      letter-spacing: 1px;
+    }
+
+    .nav-btn {
+      font-family: 'Caveat', cursive;
+      background: none;
+      border: 1px solid rgba(192, 84, 106, 0.25);
+      color: #c0546a;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 0.78rem;
+      padding: 5px 14px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background: #c0546a;
+      color: #fff;
+    }
+
+    .music-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(192, 84, 106, 0.3);
+      background: rgba(192, 84, 106, 0.08);
+      color: #c0546a;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .music-btn:hover {
+      background: rgba(192, 84, 106, 0.18);
+      transform: scale(1.1);
+    }
+
+    .music-btn.playing {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(192, 84, 106, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(192, 84, 106, 0);
+      }
+    }
+
+    .song-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 4px 16px 16px;
+      touch-action: pan-y;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .song-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .song-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .song-list::-webkit-scrollbar-thumb {
+      background: rgba(192, 84, 106, 0.15);
+      border-radius: 4px;
+    }
+
+    .song-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(192, 84, 106, 0.04);
+      border-radius: 10px;
+      border-left: 3px solid rgba(192, 84, 106, 0.25);
+    }
+
+    .song-icon {
+      width: 44px;
+      height: 60px;
+      border-radius: 5px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .song-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .song-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.05rem;
+      color: #8b3a50;
+      font-weight: 600;
+    }
+
+    .song-detail {
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      color: #b07080;
+    }
+
+    .sorry-page {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .sorry-page img {
+      max-width: 100%;
+      max-height: 75%;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(120, 30, 50, 0.18);
+      object-fit: contain;
+    }
+
+    .sorry-page p {
+      font-family: 'Dancing Script', cursive;
+      font-style: italic;
+      font-size: 1rem;
+      color: #c0394f;
+      margin-top: 14px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .gallery {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 8px 16px 16px;
+      touch-action: pan-y;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .gallery::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .gallery::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .gallery::-webkit-scrollbar-thumb {
+      background: rgba(192, 84, 106, 0.15);
+      border-radius: 4px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(120, 30, 50, 0.12);
+      display: block;
+    }
+
+    .card-scene,
+    .inside-page {
+      position: absolute;
+      transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (max-width: 400px) {
+      .card-scene {
+        width: 270px;
+        height: 380px;
+      }
+
+      .inside-page {
+        width: 270px;
+        height: 380px;
+      }
+
+      .front-title {
+        font-size: 1.6rem;
+      }
+
+      .seal {
+        font-size: 2.6rem;
+      }
+
+      .inside-header h2 {
+        font-size: 1rem;
+      }
+    }
+
+    @media (min-width: 401px) and (max-width: 700px) {
+      .card-scene {
+        width: 300px;
+        height: 420px;
+      }
+
+      .inside-page {
+        width: 300px;
+        height: 420px;
+      }
+    }
+
+    @media (min-width: 701px) {
+      .card-scene {
+        width: 340px;
+        height: 460px;
+      }
+
+      .inside-page {
+        width: 340px;
+        height: 460px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://drive.google.com/uc?export=open&id=1m00-3P88-U9-aqAl7VCMwPPgoXlWpqKF" type="audio/mpeg">
+  </audio>
+
+  <div class="background">
+
+    <p class="hint" id="hint">Tap the card to open</p>
+
+    <div class="card-scene" id="cardScene">
+      <div class="card" id="card">
+
+        <div class="card-face card-front">
+          <div class="shimmer-layer"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="corner corner-tl"></div>
+          <div class="corner corner-tr"></div>
+          <div class="corner corner-bl"></div>
+          <div class="corner corner-br"></div>
+          <div class="front-inner">
+            <div class="seal">&#128140;</div>
+            <div class="front-divider"></div>
+            <h1 class="front-title">Chips</h1>
+            <p class="front-subtitle">Kholiyo&hellip;</p>
+          </div>
+        </div>
+
+        <div class="card-face card-back">
+          <div class="back-inner">
+            <p class="back-text">Apke liye<br>Chips&hellip;</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="inside-page" id="insidePage">
+
+      <div class="page" id="page1">
+        <div class="inside-header">
+          <h2>&hellip;</h2>
+        </div>
+        <div class="sorry-page">
+          <img src="https://drive.google.com/thumbnail?id=1fqD47h4De0J9QoTrG1mtjvd2goTMIDKR&sz=w800" alt="Sorry">
+          <p>I'm really sorry, Chips ❤️</p>
+        </div>
+        <div class="page-nav">
+          <button class="music-btn" id="musicBtn" title="Play Music">🎵</button>
+          <span class="page-dots">1 / 6</span>
+          <button class="nav-btn" id="nextBtn1">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="page hidden" id="page2">
+        <div class="inside-header">
+          <h2>A Letter For You&hellip;</h2>
+        </div>
+        <div class="letter-content" id="letterContent"></div>
+        <div class="page-nav">
+          <button class="nav-btn" id="prevBtn2">&larr; Back</button>
+          <span class="page-dots">2 / 6</span>
+          <button class="nav-btn" id="nextBtn2">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="page hidden" id="page3">
+        <div class="inside-header">
+          <h2>&hellip;</h2>
+        </div>
+        <div class="letter-content" id="page3Content"></div>
+        <div class="page-nav">
+          <button class="nav-btn" id="prevBtn3">&larr; Back</button>
+          <span class="page-dots">3 / 6</span>
+          <button class="nav-btn" id="nextBtn3">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="page hidden" id="page4">
+        <div class="inside-header">
+          <h2>&hellip;</h2>
+        </div>
+        <div class="letter-content" id="page4Content"></div>
+        <div class="page-nav">
+          <button class="nav-btn" id="prevBtn4">&larr; Back</button>
+          <span class="page-dots">4 / 6</span>
+          <button class="nav-btn" id="nextBtn4">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="page hidden" id="page5">
+        <div class="inside-header">
+          <h2>Our Moments&hellip;</h2>
+        </div>
+        <div class="gallery" id="gallery">
+          <img src="https://drive.google.com/thumbnail?id=1csKaSascGy6oSs1MQJUTHh92u75BwhkX&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1geHr3923h-xDi45UgC_13GtqgZVNUJqf&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1W5cSyzPWUXt5n-BNydJ6MH6Mt_DQNR6M&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1Xd4rczdFNU3ataSQWbsjuzUkXTJC7EtZ&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1y91D_ZHwi-YBFaMAYPym2glZafRGUoCg&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1ANNdX5mOkJTpnBkVo38HyRxGqbckO299&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1BYCRFo-IAJrPqk9F7KPPoYhBOLlE2Syo&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=130SJF4z4GacJ4iUFOMOl4LUC1pkWQA2z&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1vsvOMJeWMhjQqi38u_-6-KeR8kWKR9Lo&sz=w800" alt="">
+          <img src="https://drive.google.com/thumbnail?id=1o4XhN7WdJdttBl-EHcSE6dJg0yWeOEeN&sz=w800" alt="">
+        </div>
+        <div class="page-nav">
+          <button class="nav-btn" id="prevBtn5">&larr; Back</button>
+          <span class="page-dots">5 / 6</span>
+          <button class="nav-btn" id="nextBtn5">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="page hidden" id="page6">
+        <div class="inside-header">
+          <h2>Sath Dekhe? Promise&hellip;</h2>
+        </div>
+        <div class="song-list">
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/iqiH6vnoEgjAypKsuIScN7JlE2j.jpg"
+              alt="Jab We Met">
+            <div class="song-info">
+              <span class="song-name">Jab We Met</span>
+              <span class="song-detail">Bollywood &bull; Shahid &amp; Kareena</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/riGzESa9N9toumP9OhMmg0QvFPD.jpg"
+              alt="Hidden Love">
+            <div class="song-info">
+              <span class="song-name">Hidden Love</span>
+              <span class="song-detail">C-Drama &bull; So sweet &#10084;&#65039;</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/iLh7L8ZuvgdxFaM9sImyv2iKYLe.jpg"
+              alt="Business Proposal">
+            <div class="song-info">
+              <span class="song-name">Business Proposal</span>
+              <span class="song-detail">K-Drama &bull; So funny &amp; cute</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/cTYyp5ggqQhr264P1tXTB6rwjKl.jpg"
+              alt="First Frost">
+            <div class="song-info">
+              <span class="song-name">First Frost</span>
+              <span class="song-detail">C-Drama &bull; So romantic</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/xBnscv5BrJREKVSvh0le61y4KDk.jpg" alt="My Demon">
+            <div class="song-info">
+              <span class="song-name">My Demon</span>
+              <span class="song-detail">K-Drama &bull; Fantasy romance</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/2CAL2433ZeIihfX1Hb2139CX0pW.jpg" alt="DDLJ">
+            <div class="song-info">
+              <span class="song-name">DDLJ</span>
+              <span class="song-detail">Bollywood &bull; Classic &amp; timeless</span>
+            </div>
+          </div>
+          <div class="song-item">
+            <img class="song-icon" src="https://image.tmdb.org/t/p/w92/cljRxxAOlmsmt1GOKymbNZNTHBF.jpg"
+              alt="Dil Mein Ho Tum">
+            <div class="song-info">
+              <span class="song-name">Dil Mein Ho Tum</span>
+              <span class="song-detail">Bollywood &bull; Emraan Hashmi</span>
+            </div>
+          </div>
+        </div>
+        <div class="page-nav">
+          <button class="nav-btn" id="prevBtn6">&larr; Back</button>
+          <span class="page-dots">6 / 6</span>
+          <span></span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cardScene = document.getElementById('cardScene');
+      const card = document.getElementById('card');
+      const insidePage = document.getElementById('insidePage');
+      const letterEl = document.getElementById('letterContent');
+      const hint = document.getElementById('hint');
+
+      const page1 = document.getElementById('page1');
+      const page2 = document.getElementById('page2');
+      const page3 = document.getElementById('page3');
+      const page4 = document.getElementById('page4');
+      const page5 = document.getElementById('page5');
+      const page6 = document.getElementById('page6');
+
+      const page3El = document.getElementById('page3Content');
+      const page4El = document.getElementById('page4Content');
+
+      let isOpen = false;
+
+      const loveLetterParagraphs = [
+        'Chips,',
+
+        'Cant say in words how much I want to talk to you yr chips, to hear your voice, to see your smile jo eti happiness deti thi meko yr',
+        'Every single aisa lagta tereko mnna lu kese na kese karke yr',
+        'I know mene bhot galti kari hai yr aur usse tu durr chali gayi merese sab realize hai mereko yr',
+        'Ess distance ka I know mai he hu yr aur genuine meko regret hai yr sahi mein...',
+        'Mera bass chale toh harr ek moment harr ek thing ko rewrite kar pau yr mai jisse genuine feel kre how much you mean to me chips',
+        'Tu most precious part hai mera yr tujhe aise lose nahi karna halka bhi meko',
+        'Chahe tu kita bhi gusa ho merese chahe ya ladai ho I want apn still baat krke sort kare na sab',
+        'Love you cutu❤️'
+      ];
+
+      const page3Paragraphs = [
+        'Jaanti chips subh uthte he teri yaad ati sochta shyd tera msg aaya hoga',
+        'Tereko koi replace nahi karega yr you will always be my chips ❤️',
+        'Ek aadat thi meri pdte time jab bhi thak jata ya bhot tension hoti thi toh yr tujhe call krke mann krne lagta tha pdai karne ka',
+        'Humesha se yehi socha tha yr jaldi se job lagke phir ache se rehenge apn tujhe kabhi dukhi nahi hone dunga esliye job ke liye etni jldi kari hai',
+        'Yr ab toh aisi moment attach hai terese bahr jata tha toh call krta tha esliye bahr jaane ka mann nahi bacha',
+        'Pdte time baat ka karta tha padai bhi chrd rakhi hai ab toh',
+        'Bhot tension hoti thi toh tera trust you sunke lagta tha koi toh hai jo genuine meri side hai',
+        'Yrr ho sake toh ek baar mereko genuine se cheeze explain karne diyo chips ',
+        'Ik mene galtiya kari hai but sirf ek baar mereko woh sab batane de dil se baat karne de',
+        'Tu jaise bole kar lenge apn yr',
+        ' ',
+        'Gulab Jamun'
+      ];
+
+      const page4Paragraphs = [
+        'Aj kal subh mein chand nahi dekh pata toh chand ki pics ko dekhkar yaad krleta hu',
+        'Raat ko chand ko dekhkar mere chand ki sabse jada yaad aati yr meko',
+        'Darr lagne laga hai yr jo sabse bada darr tha mera woh horha hai because mai apna pehla darr sambhal nahi parha',
+        'Chips yr mai jo socha tha pehle baar mein woh hogya uss darr ki wajah se tujhe etna durr karta chala gya mai khudse',
+        'Mere dono darr mein mere fav persons ko rote dekhna tha wahi hua mere sath yr',
+        'Pehle woh sab hua ab tu bhi durr jarhi hai yr chips',
+        'Yrr ho sake toh ek baar sirf merese baat karle plz yr koi secret nahi rkhunga',
+        'Kyu mai teko phn nahi derha tha, kyu etna sab hua plz chips sirf ek baar kuch nahi chupane wala schii teri kasm',
+        'Bss ek baar merese baat krle na yr',
+        ' ',
+        'Gulab Jamun'
+      ];
+
+      function showPage(num) {
+        page1.classList.add('hidden');
+        page2.classList.add('hidden');
+        page3.classList.add('hidden');
+        page4.classList.add('hidden');
+        page5.classList.add('hidden');
+        page6.classList.add('hidden');
+        if (num === 1) page1.classList.remove('hidden');
+        if (num === 2) page2.classList.remove('hidden');
+        if (num === 3) page3.classList.remove('hidden');
+        if (num === 4) page4.classList.remove('hidden');
+        if (num === 5) page5.classList.remove('hidden');
+        if (num === 6) page6.classList.remove('hidden');
+      }
+
+      document.getElementById('nextBtn1').addEventListener('click', () => showPage(2));
+      document.getElementById('prevBtn2').addEventListener('click', () => showPage(1));
+      document.getElementById('nextBtn2').addEventListener('click', () => showPage(3));
+      document.getElementById('prevBtn3').addEventListener('click', () => showPage(2));
+      document.getElementById('nextBtn3').addEventListener('click', () => showPage(4));
+      document.getElementById('prevBtn4').addEventListener('click', () => showPage(3));
+      document.getElementById('nextBtn4').addEventListener('click', () => showPage(5));
+      document.getElementById('prevBtn5').addEventListener('click', () => showPage(4));
+      document.getElementById('nextBtn5').addEventListener('click', () => showPage(6));
+      document.getElementById('prevBtn6').addEventListener('click', () => showPage(5));
+
+      function positionElements() {
+        let sceneW = cardScene.offsetWidth;
+        let sceneH = cardScene.offsetHeight;
+        let winW = window.innerWidth;
+        let winH = window.innerHeight;
+
+        if (!isOpen) {
+          cardScene.style.left = (winW / 2 - sceneW / 2) + 'px';
+          cardScene.style.top = (winH / 2 - sceneH / 2) + 'px';
+          insidePage.style.left = cardScene.style.left;
+          insidePage.style.top = cardScene.style.top;
+        } else {
+          let totalW = sceneW * 2;
+
+          if (winW >= totalW + 40) {
+            let spineX = winW / 2;
+            let topY = (winH - sceneH) / 2;
+            cardScene.style.left = spineX + 'px';
+            cardScene.style.top = topY + 'px';
+            insidePage.style.left = spineX + 'px';
+            insidePage.style.top = topY + 'px';
+          } else {
+            cardScene.style.left = '-9999px';
+            insidePage.style.left = (winW / 2 - sceneW / 2) + 'px';
+            insidePage.style.top = (winH / 2 - sceneH / 2) + 'px';
+          }
+        }
+      }
+
+      positionElements();
+      window.addEventListener('resize', positionElements);
+
+      let music = document.getElementById('bgMusic');
+      let musicBtn = document.getElementById('musicBtn');
+      musicBtn.addEventListener('click', () => {
+        if (music.paused) {
+          music.volume = 0.3;
+          music.play().catch(() => { });
+          musicBtn.classList.add('playing');
+          musicBtn.textContent = '⏸';
+        } else {
+          music.pause();
+          musicBtn.classList.remove('playing');
+          musicBtn.textContent = '🎵';
+        }
+      });
+
+      function openCard() {
+        if (isOpen) return;
+        isOpen = true;
+
+        card.classList.add('open');
+        cardScene.classList.add('opened');
+        hint.classList.add('hidden');
+        positionElements();
+
+        setTimeout(() => {
+          insidePage.classList.add('visible');
+          revealLetter();
+          revealPage(page3El, page3Paragraphs);
+          revealPage(page4El, page4Paragraphs);
+        }, 1000);
+      }
+
+      cardScene.addEventListener('click', openCard);
+
+      function revealLetter() {
+        letterEl.innerHTML = '';
+        loveLetterParagraphs.forEach((text, i) => {
+          let el = document.createElement('p');
+          if (i === 0) el.className = 'letter-greeting';
+          else if (i >= loveLetterParagraphs.length - 1) el.className = 'letter-closing';
+          else el.className = 'letter-paragraph';
+          el.textContent = text;
+          letterEl.appendChild(el);
+        });
+      }
+
+      function revealPage(container, paragraphs) {
+        container.innerHTML = '';
+        paragraphs.forEach((text, i) => {
+          let el = document.createElement('p');
+          if (i >= paragraphs.length - 2) el.className = 'letter-closing';
+          else el.className = 'letter-paragraph';
+          el.textContent = text;
+          container.appendChild(el);
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

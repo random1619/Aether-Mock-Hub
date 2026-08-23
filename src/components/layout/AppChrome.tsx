@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles, Clock3, Menu } from 'lucide-react';
 import { FROSTED_NAV, ThemeToggle, ProvidersNavDropdown } from '@/components/dashboard';
 import { ProfileMenu } from '@/components/profile/ProfileMenu';
+import { MobileDrawer } from '@/components/layout/MobileDrawer';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { clsx } from 'clsx';
 
@@ -23,6 +24,7 @@ interface AppChromeProps {
 export function AppChrome({ title, icon, actions }: AppChromeProps) {
   const { theme, toggleTheme } = useSettingsStore();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -31,26 +33,39 @@ export function AppChrome({ title, icon, actions }: AppChromeProps) {
   }, []);
 
   return (
-    <nav className={clsx(
-      FROSTED_NAV,
-      theme === 'netflix' && isScrolled && 'bg-black border-transparent'
-    )}>
-      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 min-w-0">
+    <>
+    <nav
+      className={clsx(
+        FROSTED_NAV,
+        'min-h-safe-nav',
+        theme === 'netflix' && isScrolled && 'bg-black border-transparent'
+      )}
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' } as any}
+    >
+      <div className="max-w-7xl mx-auto h-14 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <button onClick={() => setDrawerOpen(true)} aria-label="Open menu" className="md:hidden w-9 h-9 grid place-items-center rounded-xl bg-surface-2 active:scale-95 shrink-0">
+            <Menu size={16} />
+          </button>
           <Link
             to="/"
-            className="inline-flex items-center gap-1 text-[13px] text-primary hover:underline transition-colors shrink-0"
+            className="hidden sm:inline-flex items-center gap-1 text-[13px] text-primary hover:underline transition-colors shrink-0"
           >
             <ArrowLeft size={14} /> Home
           </Link>
-          <span aria-hidden className="text-border-strong">/</span>
+          <Link to="/" className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-2 text-primary shrink-0" aria-label="Home">
+            <ArrowLeft size={16} />
+          </Link>
+          <span aria-hidden className="hidden sm:inline text-border-strong">/</span>
           <span className="text-[13px] font-semibold text-text truncate flex items-center gap-1.5">
-            {icon && <span className="text-primary">{icon}</span>}
-            {title}
+            {icon && <span className="text-primary hidden min-[380px]:inline">{icon}</span>}
+            <span className="truncate max-w-[110px] min-[380px]:max-w-[160px] sm:max-w-none">{title}</span>
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {actions}
+          <Link to="/showcase" className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-text"><Sparkles size={12} /> Showcase</Link>
+          <Link to="/activity" className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-text"><Clock3 size={12} /> Activity</Link>
           <div className="hidden sm:block">
             <ProvidersNavDropdown isNetflix={theme === 'netflix'} />
           </div>
@@ -59,5 +74,7 @@ export function AppChrome({ title, icon, actions }: AppChromeProps) {
         </div>
       </div>
     </nav>
+    <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    </>
   );
 }

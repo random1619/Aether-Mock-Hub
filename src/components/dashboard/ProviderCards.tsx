@@ -15,6 +15,7 @@ const MotionLink = motion.create(Link);
 export function ProviderCards({ mocks }: { mocks: MockEntry[] | null }) {
   const { theme } = useSettingsStore();
   const isNetflix = theme === 'netflix';
+  const isOnePiece = theme === 'onepiece';
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
@@ -26,15 +27,20 @@ export function ProviderCards({ mocks }: { mocks: MockEntry[] | null }) {
     <div id="providers">
       <Rail
         title={
-          isNetflix ? (
-            <span className="border-l-4 border-[#E50914] pl-2.5 inline-block text-white">
+          isOnePiece ? (
+            <span className="border-l-4 border-[#FFB703] pl-2.5 inline-block text-white font-black tracking-wide">
+              🏴‍☠️ Pirate Fleets &amp; Providers
+            </span>
+          ) : isNetflix ? (
+            <span className="flex items-center gap-2.5 text-white">
+              <span className="w-1.5 h-6 bg-[#E50914] rounded-full inline-block shadow-[0_0_12px_#E50914]" />
               Browse by Provider
             </span>
           ) : (
             "Browse by Provider"
           )
         }
-        hint="every source, one shelf"
+        hint={isOnePiece ? "every battle fleet, one shelf" : "every source, one shelf"}
       >
       {PROVIDERS.map((p) => {
         const count = counts.get(p.provider) ?? 0;

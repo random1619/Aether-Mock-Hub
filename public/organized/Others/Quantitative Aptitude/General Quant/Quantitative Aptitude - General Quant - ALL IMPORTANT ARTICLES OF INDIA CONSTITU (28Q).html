@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27629548</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">28</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">56.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">40 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">40:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27629548</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 28</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 28</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/56.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p>Consider the following statements regarding wrong explanation of articles:</p>\n<p>ARTICLE 1 &nbsp; NAME AND TERRITORY OF THE UNION</p>\n<p>ARTICLE 2 ADMISSION OR ESTABLISHMENT OF NEW STATES</p>\n<p>ARTICLE 3 FORMATION OF NEW STATES AND ALTERATION OF AREAS, BOUNDARIES OR NAMES OF EXISTING STATES</p>\n<p>ARTICLE 4 LAWS MADE UNDER ARTICLES 2 AND 3 TO PROVIDE FOR THE AMENDMENT OF THE FIRST AND THE FOURTH SCHEDULE AND&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SUPPLEMENTAL, INCIDENTAL AND&nbsp; CONSEQUENTIAL MATTERS</p>\n<p><span style=\"font-family: var(--font-family);\">अनुच्छेद</span> की गलत व्याख्या के संबंध में निम्नलिखित कथनों पर विचार करें:</p>\n<p>अनुच्छेद 1 संघ का नाम और क्षेत्र</p>\n<p>अनुच्छेद 2 नए राज्यों का प्रवेश या स्थापना</p>\n<p>अनुच्छेद 3 नए राज्यों का गठन और मौजूदा राज्यों के क्षेत्रों, सीमाओं या नामों में परिवर्तन</p>\n<p>अनुच्छेद 4 पहली और चौथी अनुसूची और पूरक, आकस्मिक और परिणामी मामलों में संशोधन प्रदान करने के लिए अनुच्छेद 2 और 3 के तहत बनाए गए कानून</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1</p>",
+      "<p>Only 2</p>",
+      "<p>only 3</p>",
+      "<p>None of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which citizenship article is wrongly explained?</p>\n<p>किस नागरिकता अनुच्छेद की गलत व्याख्या की गई है?</p>",
+    "comp": "",
+    "options": [
+      "<p>Article 5: Citizenship at the commencement of the Constitution At the commencement of this Constitution every person who has his domicile in the territory of India</p>\n<p>अनुच्छेद 5: संविधान के प्रारंभ में नागरिकता इस संविधान के प्रारंभ में प्रत्येक व्यक्ति जिसका अधिवास भारत के क्षेत्र में है</p>",
+      "<p>Article 7: Provided Rights of citizenship of certain persons of Indian origin residing outside India.</p>\n<p>अनुच्छेद 7: भारत के बाहर रहने वाले भारतीय मूल के कुछ व्यक्तियों को नागरिकता का अधिकार प्रदान किया गया।</p>",
+      "<p>Article 6: It provided rights of citizenship of certain persons who have migrated to India from Pakistan</p>\n<p>अनुच्छेद 6: यह उन कुछ व्यक्तियों को नागरिकता का अधिकार प्रदान करता है जो पाकिस्तान से भारत आए हैं</p>",
+      "<p>Article 11: It empowers Parliament to make any provision with respect to the acquisition and termination of citizenship and all matters relating to it.</p>\n<p>अनुच्छेद 11: यह संसद को नागरिकता के अधिग्रहण और समाप्ति और उससे संबंधित सभी मामलों के संबंध में कोई भी प्रावधान करने का अधिकार देता है।</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Article 7: Provided Rights of citizenship of certain migrants to Pakistan.</p>\n<p>Article 8: Provided Rights of citizenship of certain persons of Indian origin residing outside India.</p>\n<p>अनुच्छेद 7: पाकिस्तान में कुछ प्रवासियों को नागरिकता का अधिकार प्रदान किया गया।</p>\n<p>अनुच्छेद 8: भारत के बाहर रहने वाले भारतीय मूल के कुछ व्यक्तियों को नागरिकता का अधिकार प्रदान किया गया।</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Consider the following statements:</p>\n<p>1.Citizenship comes under Part II of the Indian Constitution.</p>\n<p>2.Article 5 to Article 11 defines the provision of Citizenship.</p>\n<p>3.Citizenship is taken from British Constitution</p>\n<p>4. Article 11 grants the Parliament of India the authority to make laws concerning the acquisition and termination of citizenship and all other matters related to citizenship.</p>\n<p></p>\n<p>Which of the statements given above is/are wrong ?</p>\n<p>निम्नलिखित कथनों पर विचार करें:</p>\n<p>1.नागरिकता भारतीय संविधान के भाग II के अंतर्गत आती है।</p>\n<p>2.अनुच्छेद 5 से अनुच्छेद 11 नागरिकता के प्रावधान को परिभाषित करता है।</p>\n<p>3.नागरिकता ब्रिटिश संविधान से ली गई है</p>\n<p>4.भारतीय संविधान का अनुच्छेद 11 संसद को नागरिकता के अधिग्रहण और समाप्ति तथा नागरिकता से संबंधित अन्य सभी मामलों पर कानून बनाने की शक्ति देता है।</p>\n<p></p>\n<p>ऊपर दिए गए कथनों में से कौन सा/से गलत है/हैं?</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 3&nbsp;</p>",
+      "<p>Only 4</p>",
+      "<p>Only 1</p>",
+      "<p>None of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements is/are correct regarding constitutional provisions related to appointments and governance in India?<br />भारत में नियुक्तियों और शासन से संबंधित संवैधानिक प्रावधानों के बारे में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 315(1) provides for the establishment of Public Service Commissions for the Union and the States.<br />अनुच्छेद 315(1) संघ और राज्यों के लिए लोक सेवा आयोगों की स्थापना का प्रावधान करता है।</p>\n</li>\n<li>\n<p>Article 43A deals with the participation of workers in the management of industries.<br />अनुच्छेद 43A उद्योगों के प्रबंधन में श्रमिकों की भागीदारी से संबंधित है।</p>\n</li>\n<li>\n<p>The Governor appoints the Advocate General for the State under Article 243K.<br />राज्यपाल अनुच्छेद 243K के तहत राज्य के महाधिवक्ता की नियुक्ति करता है।</p>\n</li>\n<li>\n<p>Article 163 states that the Council of Ministers aids and advises the Governor in the exercise of their functions.<br />अनुच्छेद 163 के अनुसार राज्यपाल के कार्यों के निष्पादन में उन्हें मंत्रिपरिषद द्वारा सहायता और सलाह दी जाती है।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 3 only / केवल 1 और 3</p>",
+      "<p>2 and 4 only / केवल 2 और 4</p>",
+      "<p>1, 2, and 4 only / केवल 1, 2, और 4</p>",
+      "<p>&nbsp;1, 2, 3, and 4 / 1, 2, 3, और 4</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><strong>(C) 1, 2, and 4 only / केवल 1, 2, और 4</strong></p>\n<p><em>Explanation / व्याख्या:</em></p>\n<ul>\n<li>\n<p><strong>Statement 1</strong> is correct (Article 315(1)).<br /><strong>कथन 1</strong> सही है (अनुच्छेद 315(1)).</p>\n</li>\n<li>\n<p><strong>Statement 2</strong> is correct (Article 43A).<br /><strong>कथन 2</strong> सही है (अनुच्छेद 43A).</p>\n</li>\n<li>\n<p><strong>Statement 3</strong> is incorrect. The Advocate General is appointed under Article 165, not Article 243K (which deals with the State Election Commissioner).<br /><strong>कथन 3</strong> गलत है। राज्य के महाधिवक्ता की नियुक्ति अनुच्छेद 165 के तहत होती है, न कि अनुच्छेद 243K के तहत (जो राज्य निर्वाचन आयुक्त से संबंधित है)।</p>\n</li>\n<li>\n<p><strong>Statement 4</strong> is correct (Article 163).<br /><strong>कथन 4</strong> सही है (अनुच्छेद 163).</p>\n</li>\n</ul>\n<p><strong>Other Appointments by the Governor:</strong></p>\n<ul>\n<li>\n<p><strong>State Election Commissioner</strong> &ndash; Article 243K<br /><strong>राज्य निर्वाचन आयुक्त</strong> &ndash; अनुच्छेद 243K</p>\n</li>\n<li>\n<p><strong>Vice-Chancellors of the universities in the state</strong> &ndash; as per University Grants Commission (UGC) Regulations, 2018<br /><strong>राज्य में विश्वविद्यालयों के कुलपति</strong> &ndash; विश्वविद्यालय अनुदान आयोग (UGC) विनियम, 2018 के अनुसार</p>\n</li>\n<li>\n<p><strong>Advocate General for the State</strong> &ndash; Article 165<br /><strong>राज्य के महाधिवक्ता</strong> &ndash; अनुच्छेद 165</p>\n</li>\n<li>\n<p><strong>Council of Ministers to aid and advise the Governor of the State</strong> &ndash; Article 163<br /><strong>मंत्रिपरिषद राज्यपाल की सहायता और सलाह के लिए</strong> &ndash; अनुच्छेद 163</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding various constitutional articles is/are correct?<br />भारत के विभिन्न संवैधानिक अनुच्छेदों के संदर्भ में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 33 empowers Parliament to restrict or abrogate the fundamental rights of the armed forces, paramilitary forces, police forces, intelligence agencies, and analogous forces.<br />अनुच्छेद 33 संसद को सशस्त्र बलों, अर्धसैनिक बलों, पुलिस बलों, खुफिया एजेंसियों और समान बलों के मौलिक अधिकारों को प्रतिबंधित या समाप्त करने का अधिकार प्रदान करता है।</p>\n</li>\n<li>\n<p>Article 35 grants the power to make laws to give effect to certain fundamental rights only to Parliament and not to state legislatures.<br />अनुच्छेद 35 कुछ मौलिक अधिकारों को प्रभावी बनाने के लिए कानून बनाने की शक्ति केवल संसद को देता है, न कि राज्य विधानसभाओं को।</p>\n</li>\n<li>\n<p>Article 144 mentions that all civil and judicial authorities in India must act in aid of the Supreme Court.<br />अनुच्छेद 144 उल्लेख करता है कि भारत में सभी नागरिक और न्यायिक प्राधिकरणों को सर्वोच्च न्यायालय की सहायता में कार्य करना चाहिए।</p>\n</li>\n<li>\n<p>Article 143 gives the President the power to consult the Supreme Court, while Article 142 pertains to the enforcement of Supreme Court decrees and orders.<br />अनुच्छेद 143 राष्ट्रपति को सर्वोच्च न्यायालय से परामर्श करने का अधिकार देता है, जबकि अनुच्छेद 142 सर्वोच्च न्यायालय के आदेशों और डिक्री के प्रवर्तन से संबंधित है।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 3 only / केवल 1 और 3</p>",
+      "<p>2, 3, and 4 only / केवल 2, 3, और 4</p>",
+      "<p>1, 2, and 3 only / केवल 1, 2, और 3</p>",
+      "<p>1, 2, 3, and 4 / 1, 2, 3, और 4</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><strong>Article 143: Power of President to consult the Supreme Court</strong><br /><strong>अनुच्छेद 143: राष्ट्रपति को सर्वोच्च न्यायालय से परामर्श करने का अधिकार</strong></p>\n<ul>\n<li>The President of India can seek the advisory opinion of the Supreme Court on any matter of law or fact that is of public importance.<br />भारत के राष्ट्रपति किसी भी ऐसे विधि या तथ्य के प्रश्न पर, जो सार्वजनिक महत्व का हो, सर्वोच्च न्यायालय से परामर्श प्राप्त कर सकते हैं।</li>\n</ul>\n<hr style=\"width: 1131.19px;\" />\n<p><strong>Article 142: Enforcement of decrees and orders of the Supreme Court</strong><br /><strong>अनुच्छेद 142: सर्वोच्च न्यायालय के आदेशों और डिक्री का प्रवर्तन</strong></p>\n<ul>\n<li>The Supreme Court has the power to pass any order necessary to ensure complete justice in any case before it. The court can enforce its decrees, judgments, and orders.<br />सर्वोच्च न्यायालय को किसी भी मामले में पूर्ण न्याय सुनिश्चित करने के लिए आवश्यक आदेश पारित करने का अधिकार है। वह अपने आदेशों, निर्णयों, और डिक्री को लागू कर सकता है।</li>\n</ul>\n<hr style=\"width: 1131.19px;\" />\n<p><strong>Article 141: Law declared by the Supreme Court to be binding on all courts</strong><br /><strong>अनुच्छेद 141: सर्वोच्च न्यायालय द्वारा घोषित विधि सभी अदालतों पर बाध्यकारी होगी</strong></p>\n<ul>\n<li>The law declared by the Supreme Court is binding on all courts across India. Lower courts must follow the legal principles set in the Supreme Court's judgments.<br />सर्वोच्च न्यायालय द्वारा घोषित विधि भारत के सभी न्यायालयों पर बाध्यकारी होगी। निचली अदालतों को सर्वोच्च न्यायालय के निर्णयों में निर्धारित कानूनी सिद्धांतों का पालन करना होग</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Consider the following statements regarding various articles of the Indian Constitution:<br />भारतीय संविधान के विभिन्न अनुच्छेदों के संबंध में निम्नलिखित कथनों पर विचार करें:</p>\n<ol>\n<li>\n<p>Article 177 grants the Speaker and Deputy Speaker of the Legislative Assembly the power to override the rights of Ministers with respect to the State Legislature.<br />अनुच्छेद 177 राज्य विधानमंडल के संबंध में मंत्रियों के अधिकारों को रद्द करने का अधिकार विधान सभा के अध्यक्ष और उपाध्यक्ष को प्रदान करता है।</p>\n</li>\n<li>\n<p>Article 176 refers to the special address of the Governor at the first session of both the Houses after each general election.<br />अनुच्छेद 176 प्रत्येक आम चुनाव के बाद दोनों सदनों के प्रथम सत्र में राज्यपाल के विशेष अभिभाषण को संदर्भित करता है।</p>\n</li>\n<li>\n<p>Articles 148 and 149 are both related to the duties and powers of the Comptroller and Auditor-General (CAG) of India, including the form of accounts of the Union and states.<br />अनुच्छेद 148 और 149 दोनों ही भारत के नियंत्रक और महालेखा परीक्षक (CAG) के कर्तव्यों और शक्तियों, जिसमें संघ और राज्यों के खातों का स्वरूप शामिल है, से संबंधित हैं।</p>\n</li>\n<li>\n<p>Articles 150 and 151 outline the form of accounts and the audit reports of the Union and state governments.<br />अनुच्छेद 150 और 151 संघ और राज्य सरकारों के खातों के स्वरूप और लेखापरीक्षा रिपोर्टों को निर्दिष्ट करते हैं।</p>\n</li>\n</ol>\n<p><strong>Which of the statements given above is/are correct? / उपर्युक्त में से कौन सा/से कथन सही है/हैं?</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1, 2, and 4 only / केवल 1, 2, और 4</p>",
+      "<p>2 and 4 only / केवल 2 और 4</p>",
+      "<p>2, 3, and 4 only / केवल 2, 3, और 4</p>",
+      "<p>1 and 3 only / केवल 1 और 3</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Answer / उत्तर:</strong><br /><strong>(B) 2 and 4 only / केवल 2 और 4</strong></p>\n<p><em>Explanation / व्याख्या:</em></p>\n<ul>\n<li>\n<p><strong>Statement 1</strong> is incorrect because Article 177 relates to the rights of Ministers to participate in the proceedings of the State Legislature, not the Speaker's or Deputy Speaker's power.<br /><strong>कथन 1</strong> गलत है क्योंकि अनुच्छेद 177 मंत्रियों के राज्य विधानमंडल की कार्यवाही में भाग लेने के अधिकारों से संबंधित है, न कि अध्यक्ष या उपाध्यक्ष की शक्ति से।</p>\n</li>\n<li>\n<p><strong>Statement 2</strong> is correct because Article 176 refers to the Governor&rsquo;s special address after each general election or at the beginning of the first session each year.<br /><strong>कथन 2</strong> सही है क्योंकि अनुच्छेद 176 राज्यपाल के विशेष अभिभाषण से संबंधित है जो प्रत्येक आम चुनाव के बाद या प्रत्येक वर्ष के प्रथम सत्र की शुरुआत में होता है।</p>\n</li>\n<li>\n<p><strong>Statement 3</strong> is incorrect because Article 149 relates to the duties and powers of the CAG, while Article 148 establishes the CAG's office. Article 150 deals with the form of accounts.<br /><strong>कथन 3</strong> गलत है क्योंकि अनुच्छेद 149 CAG के कर्तव्यों और शक्तियों से संबंधित है, जबकि अनुच्छेद 148 CAG के पद की स्थापना करता है। अनुच्छेद 150 खातों के स्वरूप से संबंधित है।</p>\n</li>\n<li>\n<p><strong>Statement 4</strong> is correct as Article 150 outlines the form of accounts of the Union and states, and Article 151 discusses audit reports.<br /><strong>कथन 4</strong> सही है क्योंकि अनुच्छेद 150 संघ और राज्यों के खातों के स्वरूप को निर्दिष्ट करता है और अनुच्छेद 151 लेखापरीक्षा रिपोर्टों से संबंधित है।</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements about the Indian Constitution and the Supreme Court is/are correct?<br />भारतीय संविधान और सर्वोच्च न्यायालय के बारे में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 124 establishes the Supreme Court, and Article 125 deals with the salaries of the Supreme Court judges.<br />अनुच्छेद 124 सर्वोच्च न्यायालय की स्थापना करता है, और अनुच्छेद 125 सर्वोच्च न्यायालय के न्यायाधीशों के वेतन से संबंधित है।</p>\n</li>\n<li>\n<p>Article 126 provides for the appointment of ad-hoc judges in the Supreme Court, while Article 127 deals with the appointment of acting Chief Justices.<br />अनुच्छेद 126 सर्वोच्च न्यायालय में अस्थायी न्यायाधीशों की नियुक्ति से संबंधित है, जबकि अनुच्छेद 127 कार्यवाहक मुख्य न्यायाधीशों की नियुक्ति से संबंधित है।</p>\n</li>\n<li>\n<p>Article 128 allows for the attendance of a retired judge at a sitting of the Supreme Court, and Article 129 declares the Supreme Court as a court of record.<br />अनुच्छेद 128 सर्वोच्च न्यायालय की कार्यवाही में एक सेवानिवृत्त न्यायाधीश की उपस्थिति की अनुमति देता है, और अनुच्छेद 129 सर्वोच्च न्यायालय को एक अभिलेख न्यायालय घोषित करता है।</p>\n</li>\n<li>\n<p>Article 137 provides for the Supreme Court's power to review its judgments or orders, and Article 141 makes the decisions of the Supreme Court binding on all courts in India.<br />अनुच्छेद 137 सर्वोच्च न्यायालय को अपने निर्णयों या आदेशों की समीक्षा करने का अधिकार देता है, और अनुच्छेद 141 सर्वोच्च न्यायालय के निर्णयों को भारत के सभी न्यायालयों पर बाध्यकारी बनाता है।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 3 only / केवल 1 और 3</p>",
+      "<p>1, 3, and 4 only / केवल 1, 3, और 4</p>",
+      "<p>1, 2, and 4 only / केवल 1, 2, और 4</p>",
+      "<p>2, 3, and 4 only / केवल 2, 3, और 4</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Answer / उत्तर:</strong><br /><strong>(B) 1, 3, and 4 only / केवल 1, 3, और 4</strong></p>\n<p></p>\n<p><strong>Statement 2</strong> is incorrect. Article 126 is about the appointment of acting Chief Justices, not ad-hoc judges. Article 127 deals with ad-hoc judges, not acting Chief Justices.<br /><strong>कथन 2</strong> गलत है। अनुच्छेद 126 कार्यवाहक मुख्य न्यायाधीशों की नियुक्ति से संबंधित है, न कि अस्थायी न्यायाधीशों से। अनुच्छेद 127 अस्थायी न्यायाधीशों की नियुक्ति से संबंधित है, न कि कार्यवाहक मुख्य न्यायाधीशों से।</p>\n<p></p>\n<p></p>\n<p></p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Question / प्रश्न:</strong></p>\n<p>Which of the following statements regarding the jurisdiction and powers of the Supreme Court of India is/are correct?<br />भारत के सर्वोच्च न्यायालय के अधिकार क्षेत्र और शक्तियों के संबंध में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 143 empowers the President to consult the Supreme Court on legal matters of public importance.<br />अनुच्छेद 143 राष्ट्रपति को सार्वजनिक महत्व के कानूनी मामलों पर सर्वोच्च न्यायालय से परामर्श करने का अधिकार देता है।</p>\n</li>\n<li>\n<p>Article 131 establishes the original jurisdiction of the Supreme Court to hear disputes between the Centre and the States or between States.<br />अनुच्छेद 131 केंद्र और राज्यों या राज्यों के बीच विवादों को सुनने के लिए सर्वोच्च न्यायालय की मौलिक अधिकारिता को स्थापित करता है।</p>\n</li>\n<li>\n<p>Article 132 pertains to the appellate jurisdiction of the Supreme Court in appeals from High Courts in civil matters only.<br />अनुच्छेद 132 केवल दीवानी मामलों में उच्च न्यायालयों से अपीलों में सर्वोच्च न्यायालय की अपीलीय अधिकारिता से संबंधित है।</p>\n</li>\n<li>\n<p>Articles 133 and 134 define the appellate jurisdiction of the Supreme Court in civil and criminal matters, respectively.<br />अनुच्छेद 133 और 134 क्रमशः दीवानी और आपराधिक मामलों में सर्वोच्च न्यायालय की अपीलीय अधिकारिता को परिभाषित करते हैं।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 2 only / केवल 1 और 2</p>",
+      "<p>1, 2, and 4 only / केवल 1, 2, और 4</p>",
+      "<p>1, 3, and 4 only / केवल 1, 3, और 4</p>",
+      "<p>2 and 4 only / केवल 2 और 4</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Answer / उत्तर:</strong><br /><strong>(B) 1, 2, and 4 only / केवल 1, 2, और 4</strong></p>\n<p><strong>Statement 3</strong> is incorrect. Article 132 pertains to the appellate jurisdiction of the Supreme Court in appeals from High Courts in both civil and criminal matters, not just civil matters.<br /><strong>कथन 3</strong> गलत है। अनुच्छेद 132 सर्वोच्च न्यायालय की अपीलीय अधिकारिता को दीवानी और आपराधिक मामलों में उच्च न्यायालयों से अपीलों में संदर्भित करता है, केवल दीवानी मामलों में नहीं।</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Directive Principles of State Policy (DPSP) in the Indian Constitution is/are correct?<br />भारतीय संविधान में राज्य की नीति के निर्देशक तत्व (DPSP) के बारे में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<div class=\"flex max-w-full flex-col flex-grow\">\n<div class=\"min-h-8 text-message flex w-full flex-col items-end gap-2 whitespace-normal break-words text-start [.text-message+&amp;]:mt-5\" data-message-author-role=\"assistant\" data-message-id=\"2d6e1ff4-5a1d-4d6f-80ee-fb9808ab2d29\" data-message-model-slug=\"gpt-4o-mini\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[3px]\">\n<div class=\"markdown prose w-full break-words dark:prose-invert light\">\n<p><strong>1. Article 40</strong> directs the organization of village panchayats to promote self-governance at the grassroots level.<br /><strong>अनुच्छेद 40</strong> गांव पंचायतों के संगठन का आदेश देता है ताकि基层 स्तर पर स्वशासन को बढ़ावा दिया जा सके।</p>\n<p><strong>2.&nbsp; Article 43B</strong> emphasizes the promotion of cooperative societies with voluntary formation and democratic control.<br /><strong>अनुच्छेद 43B</strong> स्वैच्छिक गठन और लोकतांत्रिक नियंत्रण के साथ सहकारी समाजों को बढ़ावा देने पर जोर देता है।</p>\n<p><strong>3. Article 47</strong> focuses on the improvement of public health, while <strong>Article 46</strong> promotes the educational and economic interests of the weaker sections.</p>\n<p><strong>&nbsp;अनुच्छेद 47</strong> सार्वजनिक स्वास्थ्य के सुधार पर ध्यान केंद्रित करता है, जबकि <strong>अनुच्छेद 46</strong> कमजोर वर्गों के शैक्षिक और आर्थिक हितों को बढ़ावा देता है।</p>\n<p>4. The Directive Principles derived from the Irish Constitution are categorized under the socialist principles and include articles such as 38 and 39.<br />आयरिश संविधान से लिए गए निर्देशक तत्वों को समाजवादी सिद्धांतों के अंतर्गत वर्गीकृत किया गया है और इसमें <strong>अनुच्छेद 38</strong> और <strong>39</strong> जैसे अनुच्छेद शामिल हैं।</p>\n<p></p>\n<p>Select the correct answer using the codes below:<br /><strong>नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>\n</div>\n</div>\n</div>\n</div>",
+    "comp": "",
+    "options": [
+      "<p>1 and 3 only / केवल 1 और 3</p>",
+      "<p>1, 2, and 3 only / केवल 1, 2, और 3</p>",
+      "<p>2, 3, and 4 only / केवल 2, 3, और 4</p>",
+      "<p>ALL ARE CORRECT</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><strong>Answer / उत्तर:</strong></p>\n<p>&nbsp;Directive Principles of State Policy (DPSP) - Part IV , Article (36 to 51). Taken From - Ireland. Other Groups - Socialist Principle - Article (38, 39, 41, 42, 43, 43A, 47). Liberal-Intellecutal Principle - Article (44, 45, 48, 48A, 49, 50, 51).</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following articles of the Indian Constitution pertain to the Directive Principles of State Policy (DPSP) and their objectives?<br />भारतीय संविधान के निम्नलिखित में से कौन से अनुच्छेद राज्य की नीति के निर्देशक तत्व (DPSP) और उनके उद्देश्यों से संबंधित हैं?</p>\n<ol>\n<li>\n<p>Article 39A provides for free legal representation and aims to ensure equal justice for all.<br />अनुच्छेद 39A नि:शुल्क कानूनी प्रतिनिधित्व प्रदान करता है और सभी के लिए समान न्याय सुनिश्चित करने का उद्देश्य रखता है।</p>\n</li>\n<li>\n<p>Article 44 advocates for a uniform civil code applicable across the entire country.<br />अनुच्छेद 44 समस्त देश में लागू होने वाले एक समान नागरिक संहिता की सिफारिश करता है।</p>\n</li>\n<li>\n<p>Article 47 places a duty on the state to raise the level of nutrition and improve public health standards.<br />अनुच्छेद 47 राज्य पर पोषण स्तर को बढ़ाने और सार्वजनिक स्वास्थ्य मानकों में सुधार करने की जिम्मेदारी डालता है।</p>\n</li>\n<li>\n<p>Article 50 emphasizes the integration of the judiciary and executive to ensure effective governance.<br />अनुच्छेद 50 प्रभावी शासन सुनिश्चित करने के लिए न्यायपालिका और कार्यपालिका के एकीकरण पर जोर देता है।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 3 only / केवल 1 और 3</p>",
+      "<p>1, 2, and 3 only / केवल 1, 2, और 3</p>",
+      "<p>1, 3, and 4 only / केवल 1, 3, और 4</p>",
+      "<p>2 and 3 only / केवल 2 और 3</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Answer / उत्तर:</strong><br /><strong>(B) 1,2 &amp; 3 only&nbsp;</strong></p>\n<p></p>\n<p><strong>Statement 4</strong> is incorrect. Article 50 emphasizes the separation of the judiciary from the executive, not their integration.<br /><strong>कथन 4</strong> गलत है। अनुच्छेद 50 न्यायपालिका और कार्यपालिका के पृथक्करण पर जोर देता है, न कि उनके एकीकरण पर।</p>\n<p></p>\n<h3>Directive Principles of State Policy: Articles 36 &ndash; 51</h3>\n<p><strong>Article 36</strong> &ndash; Definition<br /><strong>अनुच्छेद 36</strong> &ndash; परिभाषा</p>\n<p><strong>Article 37</strong> &ndash; Application of DPSP<br /><strong>अनुच्छेद 37</strong> &ndash; DPSP का आवेदन</p>\n<p><strong>Article 39A</strong> &ndash; Free legal representation and equal justice<br /><strong>अनुच्छेद 39A</strong> &ndash; नि:शुल्क कानूनी प्रतिनिधित्व और समान न्याय</p>\n<p><strong>Article 40</strong> &ndash; Forming a village panchayat<br /><strong>अनुच्छेद 40</strong> &ndash; ग्राम पंचायत का गठन</p>\n<p><strong>Article 41</strong> &ndash; Right to employment, education, and, in some circumstances, public support<br /><strong>अनुच्छेद 41</strong> &ndash; रोजगार, शिक्षा, और कुछ परिस्थितियों में, सार्वजनिक समर्थन का अधिकार</p>\n<p><strong>Article 43</strong> &ndash; Living wages, etc., for workers<br /><strong>अनुच्छेद 43</strong> &ndash; श्रमिकों के लिए जीविका के लिए वेतन आदि</p>\n<p><strong>Article 43A</strong> &ndash; Participation of workers in the management of industries<br /><strong>अनुच्छेद 43A</strong> &ndash; उद्योगों के प्रबंधन में श्रमिकों की भागीदारी</p>\n<p><strong>Article 44</strong> &ndash; Uniform civil code (applicable in Goa only)<br /><strong>अनुच्छेद 44</strong> &ndash; एक समान नागरिक संहिता (केवल गोवा में लागू)</p>\n<p><strong>Article 45</strong> &ndash; Provision for free and compulsory education for children<br /><strong>अनुच्छेद 45</strong> &ndash; बच्चों के लिए नि:शुल्क और अनिवार्य शिक्षा की व्यवस्था</p>\n<p><strong>Article 46</strong> &ndash; Promotion of educational and economic interest of scheduled castes, ST, and OBC<br /><strong>अनुच्छेद 46</strong> &ndash; अनुसूचित जातियों, जनजातियों और अन्य पिछड़ा वर्ग के शैक्षिक और आर्थिक हितों को बढ़ावा देना</p>\n<p><strong>Article 47</strong> &ndash; Duty of the state to raise the level of nutrition and the standard of living and to improve public health<br /><strong>अनुच्छेद 47</strong> &ndash; राज्य की जिम्मेदारी पोषण स्तर और जीवन स्तर को बढ़ाने और सार्वजनिक स्वास्थ्य में सुधार करने की</p>\n<p><strong>Article 48</strong> &ndash; Deals with agriculture and animal husbandry<br /><strong>अनुच्छेद 48</strong> &ndash; कृषि और पशुपालन से संबंधित</p>\n<p><strong>Article 49</strong> &ndash; Protection of monuments, places, and objects of natural importance<br /><strong>अनुच्छेद 49</strong> &ndash; स्मारकों, स्थानों और प्राकृतिक महत्व की वस्तुओं की रक्षा</p>\n<p><strong>Article 50</strong> &ndash; Separation of judiciary from the executive<br /><strong>अनुच्छेद 50</strong> &ndash; न्यायपालिका और कार्यपालिका का पृथक्करण</p>\n<p><strong>Article 51</strong> &ndash; Promotion of international peace and security<br /><strong>अनुच्छेद 51</strong> &ndash; अंतरराष्ट्रीय शांति और सुरक्षा को बढ़ावा देना</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements about the Indian Constitution is/are correct regarding the rights and provisions related to cooperative societies and legal protections?<br />भारतीय संविधान के बारे में निम्नलिखित में से कौन सा/से कथन सहकारी समाजों और कानूनी संरक्षण से संबंधित अधिकारों और प्रावधानों के संदर्भ में सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 20 (2) states that no person shall be prosecuted or punished for the same offence more than once (double jeopardy).<br />अनुच्छेद 20 (2) कहता है कि किसी व्यक्ति को एक ही अपराध के लिए एक से अधिक बार अभियोजित या दंडित नहीं किया जाएगा (डबल जेओपार्डी)।</p>\n</li>\n<li>\n<p>Article 19 (1)(c) guarantees the right to form cooperative societies.<br />अनुच्छेद 19 (1)(c) सहकारी समाजों का गठन करने का अधिकार सुनिश्चित करता है।</p>\n</li>\n<li>\n<p>Article 1 of the Indian Constitution states that India, that is Bharat, shall be a Union of States, which reflects the feature of cooperative federalism.<br />भारतीय संविधान का अनुच्छेद 1 कहता है कि भारत, अर्थात् भारत, राज्यों का संघ होगा, जो सहकारी संघवाद की विशेषता को दर्शाता है।</p>\n</li>\n<li>\n<p>Articles 243ZH to 243ZT relate to the provisions of cooperative societies in the Indian Constitution.<br />अनुच्छेद 243ZH से 243ZT भारतीय संविधान में सहकारी समाजों के प्रावधानों से संबंधित हैं।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1 and 2 only / केवल 1 और 2</p>",
+      "<p>1, 2, and 4 only / केवल 1, 2, और 4</p>",
+      "<p>1, 3, and 4 only / केवल 1, 3, और 4</p>",
+      "<p>All of the above / सभी उपरोक्त</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>&nbsp;243 ZH to 243 ZT. Co-operative Societies - A form of business organisation that is formed with the objective of helping the society members. Under 97th Amendment Act 2011, the right to form cooperative societies was included as Right to Freedom {Article 19(1)(c)}. Promotion of Cooperation societies was inserted as one of the DPSPs (Article 43-B).&nbsp;243 Definitions (for Panchayats) 243A Gram Sabha (powers and functions) 243B Constitution of Panchayats (three-tier system)243CComposition of Panchayats243DReservation of seats (for SC/ST and Women)243EDuration of Panchayats (five years) 243FDisqualifications for membership243GPowers, authority, and responsibilities of Panchayats (related to Eleventh Schedule)243HPower to impose taxes by, and Funds of, the Panchayats243IConstitution of Finance Commission to review financial position243JAudit of accounts of Panchayats243KElections to the Panchayats (State Election Commission)243LApplication to Union territories243MPart not to apply to certain areas (Exemptions)243NContinuance of existing laws and Panchayats243OBar to interference by courts in electoral matters</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Fundamental Duties added by the 42nd Amendment Act of 1976 is/are correct?<br />42वें संशोधन अधिनियम, 1976 द्वारा जोड़े गए मौलिक कर्तव्यों के बारे में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>51 A (a) - Abide by the Indian Constitution and respect its ideals and institutions, the National Flag and the National Anthem.<br />51 ए (क) - भारतीय संविधान का पालन करना और इसके आदर्शों और संस्थानों, राष्ट्रीय ध्वज और राष्ट्रीय गान का सम्मान करना।</p>\n</li>\n<li>\n<p>51 A (k) - Provide opportunities for education to his child or ward between the ages of six and fourteen years. (This duty was added by the 86th Constitutional Amendment Act, 2002.)<br />51 ए (K) - अपने बच्चे या वार्ड को छह से चौदह वर्ष की आयु के बीच शिक्षा के अवसर प्रदान करना। (यह कर्तव्य 86वें संविधान संशोधन अधिनियम, 2002 द्वारा जोड़ा गया था।)</p>\n</li>\n<li>\n<p>51 A (h) - To develop the scientific temper, humanism, and the spirit of inquiry and reform.<br />51 ए (H) - वैज्ञानिक दृष्टिकोण, मानवतावाद और जिज्ञासा और सुधार की भावना का विकास करना।</p>\n</li>\n<li>\n<p>51 A (i) - To safeguard public property and to abjure violence.<br />51 ए (i) - सार्वजनिक संपत्ति का संरक्षण करना और हिंसा से परहेज़ करना।</p>\n</li>\n</ol>\n<p><strong>Select the correct answer using the codes below: / नीचे दिए गए कूट का उपयोग करके सही उत्तर चुनें:</strong></p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>(A) 1 and 2 only / केवल 1 और 2</p>",
+      "<p>1, 3, and 4 only / केवल 1, 3, और 4</p>",
+      "<p>2, 3, and 4 only / केवल 2, 3, और 4</p>",
+      "<p>All of the above / सभी उपरोक्त</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<h3>Fundamental Duties under Article 51-A</h3>\n<h4>11 Fundamental Duties to be Obeyed by Every Indian Citizen:</h4>\n<ol>\n<li>\n<p><strong>Abide by the Indian Constitution and respect its ideals and institutions, the National Flag, and the National Anthem.</strong><br /><strong>भारतीय संविधान का पालन करें और इसके आदर्शों और संस्थानों, राष्ट्रीय ध्वज और राष्ट्रीय गान का सम्मान करें।</strong></p>\n</li>\n<li>\n<p><strong>Cherish and follow the noble ideals that inspired the national struggle for freedom.</strong><br /><strong>उन महान आदर्शों को संजोएं और उनका पालन करें जिन्होंने राष्ट्रीय स्वतंत्रता संग्राम को प्रेरित किया।</strong></p>\n</li>\n<li>\n<p><strong>Uphold and protect the sovereignty, unity, and integrity of India.</strong><br /><strong>भारत की संप्रभुता, एकता और अखंडता का सम्मान और संरक्षण करें।</strong></p>\n</li>\n<li>\n<p><strong>Defend the country and render national service when called upon to do so.</strong><br /><strong>देश की रक्षा करें और जब भी बुलाया जाए, राष्ट्रीय सेवा प्रदान करें।</strong></p>\n</li>\n<li>\n<p><strong>Promote harmony and the spirit of common brotherhood amongst all the people of India, transcending religious, linguistic, and regional or sectional diversities, and renounce practices derogatory to the dignity of women.</strong><br /><strong>भारत के सभी लोगों के बीच सद्भाव और सामान्य भाईचारे की भावना को बढ़ावा दें, धार्मिक, भाषाई और क्षेत्रीय विविधताओं को पार करते हुए, और महिलाओं की गरिमा को हानि पहुंचाने वाली प्रथाओं का त्याग करें।</strong></p>\n</li>\n<li>\n<p><strong>Value and preserve the rich heritage of the country&rsquo;s composite culture.</strong><br /><strong>देश की समग्र संस्कृति की समृद्ध विरासत का मूल्यांकन करें और उसे संरक्षित करें।</strong></p>\n</li>\n<li>\n<p><strong>Protect and improve the natural environment, including forests, lakes, rivers, and wildlife, and have compassion for living creatures.</strong><br /><strong>प्राकृतिक पर्यावरण, जिसमें वन, झीलें, नदियाँ और वन्यजीव शामिल हैं, की रक्षा करें और सुधारें, और जीवित प्राणियों के प्रति सहानुभूति रखें।</strong></p>\n</li>\n<li>\n<p><strong>Develop scientific temper, humanism, and the spirit of inquiry and reform.</strong><br /><strong>वैज्ञानिक दृष्टिकोण, मानवतावाद, और जिज्ञासा और सुधार की भावना का विकास करें।</strong></p>\n</li>\n<li>\n<p><strong>Safeguard public property and abjure violence.</strong><br /><strong>सार्वजनिक संपत्ति की रक्षा करें और हिंसा से दूर रहें।</strong></p>\n</li>\n<li>\n<p><strong>Strive towards excellence in all spheres of individual and collective activity so that the nation constantly rises to higher levels of endeavour and achievement.</strong><br /><strong>व्यक्तिगत और सामूहिक गतिविधियों के सभी क्षेत्रों में उत्कृष्टता के लिए प्रयास करें ताकि राष्ट्र लगातार उच्च स्तर की कोशिश और उपलब्धि की ओर बढ़े।</strong></p>\n</li>\n<li>\n<p><strong>Provide opportunities for education to his child or ward between the ages of six and fourteen years. (This duty was added by the 86th Constitutional Amendment Act, 2002)</strong><br /><strong>अपने बच्चे या वार्ड को छह से चौदह वर्ष की आयु के बीच शिक्षा के अवसर प्रदान करें। (यह कर्तव्य 86वें संविधान संशोधन अधिनियम, 2002 द्वारा जोड़ा गया था।)</strong></p>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>&nbsp;Which of the following statements is/are correct regarding the Indian Constitution and related cases? / प्रश्न: निम्नलिखित में से कौन सा/से कथन भारतीय संविधान और संबंधित मामलों के बारे में सही है/हैं?</strong></p>\n<ol>\n<li>The <strong>KA Najeeb vs Union of India</strong> case deals with the violation of rights under <strong>Article 21</strong>. / <strong>KA Najeeb बनाम भारत संघ</strong> मामला <strong>अनुच्छेद 21</strong> के तहत अधिकारों के उल्लंघन से संबंधित है।</li>\n<li><strong>Article 79</strong> of the Indian Constitution provides for a bicameral Parliament of India. / भारतीय संविधान का <strong>अनुच्छेद 79</strong> भारत की द्व chambers संसद का प्रावधान करता है।</li>\n<li><strong>Article 79</strong> defines the Constitution of Parliament, while <strong>Article 80</strong> details the composition of the Rajya Sabha, <strong>Article 81</strong> outlines the composition of the Lok Sabha, and <strong>Article 83</strong> describes the duration of the Houses of Parliament. / <strong>अनुच्छेद 79</strong> संसद के संविधान को परिभाषित करता है, जबकि <strong>अनुच्छेद 80</strong> राज्य सभा की संरचना का विवरण देता है, <strong>अनुच्छेद 81</strong> लोक सभा की संरचना को निर्धारित करता है, और <strong>अनुच्छेद 83</strong> संसद के सदनों की अवधि का वर्णन करता है।</li>\n<li>As per <strong>Article 172 (2)</strong>, the Legislative Council (Saasana Mandali) of a State shall NOT be subject to dissolution. / <strong>अनुच्छेद 172 (2)</strong> के अनुसार, एक राज्य की विधान परिषद (सासना मंडली) को भंग नहीं किया जाएगा।</li>\n</ol>\n<p><strong>Select the correct answer: / सही उत्तर का चयन करें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1 and 2 / केवल 1 और 2</p>",
+      "<p>Only 3 and 4 / केवल 3 और 4</p>",
+      "<p>&nbsp;All of the above / सभी उपरोक्त</p>",
+      "<p>None of the above / उपरोक्त में से कोई नहीं</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><strong>Legislative Council (Saasana Mandali)</strong>: It is the upper house in those states of India that have a bicameral state legislature. Six States have a Legislative Council: <strong>Andhra Pradesh, Telangana, Uttar Pradesh, Bihar, Maharashtra, Karnataka</strong>.</p>\n<p><strong>राज्य परिषद (सासना मंडली)</strong>: यह भारत के उन राज्यों में उच्च सदन है जिनके पास द्व chambersीय राज्य विधानमंडल है। छह राज्यों में राज्य परिषद है: <strong>आंध्र प्रदेश, तेलंगाना, उत्तर प्रदेश, बिहार, महाराष्ट्र, कर्नाटका</strong>।</p>\n<hr />\n<p><strong>State Legislative Assembly (Vidhan Sabha)</strong>: A legislative body in the states and union territories of India.</p>\n<p><strong>राज्य विधान सभा (विदान सभा)</strong>: भारत के राज्यों और संघ क्षेत्रों में एक विधायी निकाय है।</p>\n<hr />\n<p><strong>Council of States (Rajya Sabha)</strong>: The upper house of the Parliament of India.</p>\n<p><strong>राज्य सभा (काउंसिल ऑफ स्टेट्स)</strong>: भारत की संसद का उच्च सदन।</p>\n<hr />\n<p><strong>House of People (Lok Sabha)</strong>: The lower house of the Parliament of India.</p>\n<p><strong>लोक सभा (हाउस ऑफ पीपल्स)</strong>: भारत की संसद का निचला सदन।</p>\n<hr />\n<p><strong>Article 21</strong>: Protection of life and personal liberty.</p>\n<p><strong>अनुच्छेद 21</strong>: जीवन और व्यक्तिगत स्वतंत्रता का संरक्षण।</p>\n<hr />\n<p><strong>Important Cases related to Article 21</strong>:</p>\n<ol>\n<li>\n<p><strong>A.K. Gopalan vs. the State of Madras, 1950</strong>: The Supreme Court took a narrow interpretation of Article 21 in this case.</p>\n<p><strong>महत्वपूर्ण मामले जो अनुच्छेद 21 से संबंधित हैं</strong>:</p>\n<ol>\n<li><strong>A.K. गोपालन बनाम मद्रास राज्य, 1950</strong>: इस मामले में सर्वोच्च न्यायालय ने अनुच्छेद 21 का संकीर्ण अर्थ निकाला।</li>\n</ol>\n</li>\n<li>\n<p><strong>Maneka Gandhi vs. Union of India, 1978</strong>: In this case, the Supreme Court overruled its judgement from the Gopalan Case by taking a wider interpretation of Article 21.</p>\n<ol start=\"2\">\n<li><strong>मेनका गांधी बनाम भारत संघ, 1978</strong>: इस मामले में, सर्वोच्च न्यायालय ने गोपालन मामले के अपने निर्णय को पलटा और अनुच्छेद 21 का व्यापक अर्थ निकाला।</li>\n</ol>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>&nbsp;Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</strong></p>\n<p><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 247 empowers the Parliament to establish additional courts for better administration of laws made by it.<br />अनुच्छेद 247 संसद को उसके द्वारा बनाए गए कानूनों के बेहतर प्रशासन के लिए अतिरिक्त न्यायालय स्थापित करने का अधिकार देता है।</p>\n</li>\n<li>\n<p>Article 246 deals with the subject-matter of laws made by Parliament and by the Legislatures of States.<br />अनुच्छेद 246 संसद और राज्यों की विधानसभाओं द्वारा बनाए गए कानूनों के विषयवस्तु से संबंधित है।</p>\n</li>\n<li>\n<p>Article 248 pertains to residuary powers of legislation.<br />अनुच्छेद 248 विधायी के अवशिष्ट अधिकारों से संबंधित है।</p>\n</li>\n<li>\n<p>Article 253 empowers Parliament to legislate for giving effect to international agreements.<br />अनुच्छेद 253 संसद को अंतरराष्ट्रीय समझौतों को प्रभावी बनाने के लिए कानून बनाने का अधिकार देता है।</p>\n</li>\n<li>\n<p>Article 98 provides for the Secretariat of Parliament.<br />अनुच्छेद 98 संसद के सचिवालय के लिए प्रावधान करता है।</p>\n</li>\n<li>\n<p>Article 317 deals with the removal and suspension of a member of the Public Service Commission.<br />अनुच्छेद 317 सार्वजनिक सेवा आयोग के सदस्य की हटाने और निलंबन से संबंधित है।</p>\n</li>\n<li>\n<p>Article 320 outlines the functions of the Public Service Commission.<br />अनुच्छेद 320 सार्वजनिक सेवा आयोग के कार्यों को स्पष्ट करता है।</p>\n<p></p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 4</p>",
+      "<p>Only 3,4 &amp; 6</p>",
+      "<p>Only 1, 5 &amp; 6</p>",
+      "<p>ALL OF THE ABOVE</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</strong></p>\n<p><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 239AA provides that there shall be a Legislative Assembly for the National Capital Territory of Delhi.</p>\nअनुच्छेद 239AA में कहा गया है कि राष्ट्रीय राजधानी क्षेत्र दिल्ली के लिए एक विधान सभा होगी।</li>\n<li>\n<p>In May 2023, the Supreme Court of India granted couples the right to get a divorce on the grounds of 'irretrievable breakdown of marriage' under Article 142(1) of the Indian Constitution.</p>\nमई 2023 में, भारत के सर्वोच्च न्यायालय ने युग्मों को भारतीय संविधान के अनुच्छेद 142(1) के तहत 'विवाह के अभूतपूर्व टूटने' के आधार पर तलाक प्राप्त करने का अधिकार दिया।</li>\n<li>\n<p>Article 76 deals with the Attorney General of India.</p>\nअनुच्छेद 76 भारत के अटॉर्नी जनरल से संबंधित है।</li>\n<li>\n<p>Article 338 provides for the National Commission for Scheduled Castes.</p>\nअनुच्छेद 338 अनुसूचित जातियों के लिए राष्ट्रीय आयोग के लिए प्रावधान करता है।</li>\n</ol>\n<p><strong>Select the correct answer from the options below:</strong></p>\n<p><strong>नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1 and 2</p>",
+      "<p>ONLY 1,2 &amp; 3</p>",
+      "<p>Only 3 and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>&nbsp;Article 338 - It is a constitutional body established with a view to provide safeguards against the exploitation of Scheduled Castes and to promote and protect their social, educational, economic and cultural interests. Other Commissions - National Commission for Scheduled Tribes (Article 338A) and National Commission for Backward Classes (Article 338B). Article 343 - Official language of the Union. Article 344 - Commission and Committee of Parliament on Official Language. Article 337 - Special provisions in terms of educational grants/subsidies provided to the Anglo-Indian population of India.&nbsp;</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</strong></p>\n<p><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 355 mentions that it is the duty of the Union government to protect States against external aggression and internal disturbance.</p>\nअनुच्छेद 355 में कहा गया है कि यह संघ सरकार का कर्तव्य है कि वह राज्यों की बाहरी आक्रमण और आंतरिक disturbance से रक्षा करे।</li>\n<li>\n<p>Article 151 is related to the Comptroller and Auditor General of India and his audit reports.</p>\nअनुच्छेद 151 भारत के नियंत्रक और महालेखा परीक्षक और उनकी लेखा रिपोर्ट से संबंधित है।</li>\n<li>\n<p>The Central Bureau of Intelligence and Investigation comes under union list of the Seventh Schedule of the Indian Constitution</p>\nकेंद्रीय खुफिया और जांच ब्यूरो भारतीय संविधान की सातवीं अनुसूची की Union list में आता है</li>\n<li>\n<p>Article 244(1) mentions Scheduled Areas and the administration and control of Scheduled Areas and Scheduled Tribes.</p>\nअनुच्छेद 244(1) अनुसूचित क्षेत्रों और अनुसूचित क्षेत्रों और अनुसूचित जनजातियों के प्रशासन और नियंत्रण का उल्लेख करता है।</li>\n<li>\n<p>The 6th Schedule relates to the administration of tribal areas in Assam, Meghalaya, Tripura, and Mizoram.</p>\n6वीं अनुसूची असम, मेघालय, त्रिपुरा और मिजोरम के आदिवासी क्षेत्रों के प्रशासन से संबंधित है।</li>\n<li>\n<p>Article 244(2) mentions tribal areas, and the 8th Schedule contains provisions related to languages.</p>\nअनुच्छेद 244(2) जनजातीय क्षेत्रों का उल्लेख करता है, और 8वीं अनुसूची भाषाओं से संबंधित प्रावधानों को शामिल करती है।</li>\n</ol>\n<p><strong>Select the correct answer from the options below:</strong></p>\n<p><strong>नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 4</p>",
+      "<p>Only 3, 5, and 6</p>",
+      "<p>Only 1,4 and 6</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<div class=\"flex max-w-full flex-col flex-grow\">\n<div class=\"min-h-8 text-message flex w-full flex-col items-end gap-2 whitespace-normal break-words [.text-message+&amp;]:mt-5\" data-message-author-role=\"assistant\" data-message-id=\"3b2a66f8-6fb2-4c5a-a098-7728a502d225\" data-message-model-slug=\"gpt-4o\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[3px]\">\n<div class=\"markdown prose w-full break-words dark:prose-invert light\">\n<p><strong>Union List (100):</strong></p>\n<ul>\n<li>Defence, Army, International Relations, Ports, Railways, Census, Communication, Central Bureau of Investigation, etc.</li>\n<li><strong>संघ सूची (100):</strong> रक्षा, सेना, अंतरराष्ट्रीय संबंध, बंदरगाह, रेलवे, जनगणना, संचार, केंद्रीय जांच ब्यूरो आदि।</li>\n</ul>\n<p><strong>State List (61):</strong></p>\n<ul>\n<li>Public order, Police, Public health and sanitation, Hospitals and dispensaries, Agriculture, State Public Service Commission, etc.</li>\n<li><strong>राज्य सूची (61):</strong> सार्वजनिक व्यवस्था, पुलिस, सार्वजनिक स्वास्थ्य और स्वच्छता, अस्पताल और औषधालय, कृषि, राज्य लोक सेवा आयोग आदि।</li>\n</ul>\n<p><strong>Concurrent List (52):</strong></p>\n<ul>\n<li>Education, Forest, Trade unions, Population control and family planning, Marriage, Adoption, etc.</li>\n<li><strong>समवर्ती सूची (52):</strong> शिक्षा, वन, ट्रेड यूनियन, जनसंख्या नियंत्रण और परिवार नियोजन, विवाह, गोद लेना आदि।</li>\n</ul>\n<p><strong>Seventh Schedule under Article 246:</strong></p>\n<ul>\n<li>It deals with the division of powers between the Union and the States.</li>\n<li><strong>अनुच्छेद 246 के तहत सातवीं अनुसूची:</strong> यह संघ और राज्यों के बीच शक्तियों के विभाजन से संबंधित है</li>\n</ul>\n</div>\n</div>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</p>\n<p>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</p>\n<p></p>\n<ol>\n<li>\n<p>Article 343 specifies Hindi as the official language of the Union. अनुच्छेद 343 हिंदी को संघ की आधिकारिक भाषा के रूप में निर्दिष्ट करता है।</p>\n</li>\n<li>\n<p>The Constitution originally included 14 languages in the 8th Schedule, and later, 8 more languages were added. संविधान ने मूल रूप से 8वीं अनुसूची में 14 भाषाओं को शामिल किया था, बाद में 8 अन्य भाषाएं जोड़ी गईं।</p>\n</li>\n<li>\n<p>The Indian Parliament has the power to impose restrictions on trade, commerce, and intercourse through Article 302. भारतीय संसद को अनुच्छेद 302 के माध्यम से व्यापार, वाणिज्य और संपर्क पर प्रतिबंध लगाने का अधिकार है।</p>\n</li>\n<li>\n<p>Article 243K is related to elections to the Panchayats. अनुच्छेद 243K पंचायतों के चुनावों से संबंधित है।</p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 4</p>",
+      "<p>Only 2 and 3</p>",
+      "<p>Only 1, 3, and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><strong>Election to the Panchayats / पंचायतों के चुनाव:</strong></p>\n<p><strong>Panchayati Raj:</strong> Panchayati Raj is a three-tiered administrative framework in India that focuses on rural development. It is a system of local self-government used to organize districts, zones, and villages.</p>\n<p><strong>पंचायती राज:</strong> पंचायती राज भारत में ग्रामीण विकास पर केंद्रित एक त्रि-स्तरीय प्रशासनिक ढांचा है। यह स्थानीय स्व-शासन की एक प्रणाली है जिसका उपयोग जिलों, क्षेत्रों और गांवों के निर्माण के लिए किया जाता है।</p>\n<p><strong>Relevant Articles / संबंधित अनुच्छेद:</strong></p>\n<ol>\n<li>\n<p><strong>Article 243E:</strong> Duration of Panchayats<br /><strong>अनुच्छेद 243E:</strong> पंचायतों की अवधि</p>\n</li>\n<li>\n<p><strong>Article 243D:</strong> Reservation of seats in Panchayats<br /><strong>अनुच्छेद 243D:</strong> पंचायत में सीटों का आरक्षण</p>\n</li>\n<li>\n<p><strong>Article 243F:</strong> Grounds of disqualification from membership of Panchayats<br /><strong>अनुच्छेद 243F:</strong> पंचायत की सदस्यता से अयोग्यता के आधार</p>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</strong></p>\n<p>&nbsp;भारतीय संविधान के अनुच्छेदों के संबंध में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p>Article 350A provides for facilities for instruction in the mother-tongue at the primary stage.<br />अनुच्छेद 350A प्राथमिक स्तर पर मातृभाषा में शिक्षा की सुविधाओं के लिए प्रावधान करता है।</p>\n</li>\n<li>\n<p>Article 371 relates to special provisions with respect to the states of Maharashtra and Gujarat.<br />अनुच्छेद 371 महाराष्ट्र और गुजरात राज्यों के संबंध में विशेष प्रावधानों से संबंधित है।</p>\n</li>\n<li>\n<p>Article 120 states that business in Parliament shall be transacted in Hindi or English.<br />अनुच्छेद 120 में उल्लेख है कि संसद में कार्य हिंदी या अंग्रेजी में किया जाएगा।</p>\n</li>\n<li>\n<p>Article 371B provides special provisions with respect to the state of Sikkim.<br />अनुच्छेद 371B सिक्किम राज्य के संबंध में विशेष प्रावधान करता है।</p>\n</li>\n</ol>\n<p><strong>Select the correct option: / सही विकल्प चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 3, and 4</p>",
+      "<p>Only 2 and 4</p>",
+      "<p>Only 1, 2, and 3</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><strong>Article 371 and Related Special Provisions for Various States (Bilingual)</strong><br /><strong>अनुच्छेद 371 और विभिन्न राज्यों के लिए संबंधित विशेष प्रावधान (द्विभाषी)</strong></p>\n<ol>\n<li>\n<p><strong>Article 371F</strong> - Special provisions for the state of <strong>Sikkim</strong>. (Added by the 36th Amendment Act, 1975)<br /><strong>अनुच्छेद 371F</strong> - सिक्किम राज्य के लिए विशेष प्रावधान। (36वें संशोधन अधिनियम, 1975 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371</strong> - Special provisions for the states of <strong>Maharashtra</strong> and <strong>Gujarat</strong>.<br /><strong>अनुच्छेद 371</strong> - महाराष्ट्र और गुजरात राज्यों के लिए विशेष प्रावधान।</p>\n</li>\n<li>\n<p><strong>Article 371A</strong> - Special provisions for the state of <strong>Nagaland</strong>. (Added by the 13th Amendment Act, 1962)<br /><strong>अनुच्छेद 371A</strong> - नागालैंड राज्य के लिए विशेष प्रावधान। (13वें संशोधन अधिनियम, 1962 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371B</strong> - Special provisions for the state of <strong>Assam</strong>. (Added by the 22nd Amendment Act, 1969)<br /><strong>अनुच्छेद 371B</strong> - असम राज्य के लिए विशेष प्रावधान। (22वें संशोधन अधिनियम, 1969 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371C</strong> - Special provisions for the state of <strong>Manipur</strong>. (Added by the 27th Amendment Act, 1971)<br /><strong>अनुच्छेद 371C</strong> - मणिपुर राज्य के लिए विशेष प्रावधान। (27वें संशोधन अधिनियम, 1971 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371D</strong> - Special provisions for the states of <strong>Andhra Pradesh</strong> and <strong>Telangana</strong>. (Added by the 32nd Amendment Act, 1973)<br /><strong>अनुच्छेद 371D</strong> - आंध्र प्रदेश और तेलंगाना राज्यों के लिए विशेष प्रावधान। (32वें संशोधन अधिनियम, 1973 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371E</strong> - Provision to establish a <strong>Central University in Andhra Pradesh</strong>.<br /><strong>अनुच्छेद 371E</strong> - आंध्र प्रदेश में केंद्रीय विश्वविद्यालय की स्थापना के लिए प्रावधान।</p>\n</li>\n<li>\n<p><strong>Article 371G</strong> - Special provisions for the state of <strong>Mizoram</strong>. (Added by the 53rd Amendment Act, 1986)<br /><strong>अनुच्छेद 371G</strong> - मिजोरम राज्य के लिए विशेष प्रावधान। (53वें संशोधन अधिनियम, 1986 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371H</strong> - Special provisions for the state of <strong>Arunachal Pradesh</strong>. (Added by the 55th Amendment Act, 1986)<br /><strong>अनुच्छेद 371H</strong> - अरुणाचल प्रदेश राज्य के लिए विशेष प्रावधान। (55वें संशोधन अधिनियम, 1986 द्वारा जोड़ा गया)</p>\n</li>\n<li>\n<p><strong>Article 371I</strong> - Special provisions for the state of <strong>Goa</strong>.<br /><strong>अनुच्छेद 371I</strong> - गोवा राज्य के लिए विशेष प्रावधान।</p>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?<br />भारतीय संविधान के अनुच्छेदों के संबंध में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</p>\n<ol>\n<li>\n<p><strong>Article 338</strong> of the Constitution of India establishes the <strong>National Commission for Scheduled Castes</strong>.<br /><strong>अनुच्छेद 338</strong> भारतीय संविधान का अनुसूचित जातियों के लिए राष्ट्रीय आयोग की स्थापना करता है।</p>\n</li>\n<li>\n<p><strong>Article 166</strong> of the Constitution of India deals with the <strong>Conduct of Business of the Government of a State</strong>.<br /><strong>अनुच्छेद 166</strong> भारतीय संविधान का राज्य सरकार के व्यवसाय के संचालन से संबंधित है।</p>\n</li>\n<li>\n<p><strong>Article 85</strong> of the Constitution of India deals with the <strong>Sessions of the Parliament</strong>.<br /><strong>अनुच्छेद 85</strong> भारतीय संविधान का संसद के सत्रों से संबंधित है।</p>\n</li>\n<li>\n<p><strong>Chapter III</strong> of the Constitution of India discusses the <strong>Articles of Parliament</strong>.<br />भारतीय संविधान का <strong>अध्याय III</strong> संसद के अनुच्छेदों पर चर्चा करता है।</p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 4</p>",
+      "<p>Only 3, 4</p>",
+      "<p>Only 1, 2, and 3</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><strong>Chapter II (Articles 79-122)</strong> of Part V of the Indian Constitution deals with the <strong>Parliament</strong> of India.<br />भारतीय संविधान के भाग V के <strong>अध्याय II (अनुच्छेद 79-122)</strong> संसद से संबंधित है।</p>\n<ul>\n<li>\n<p><strong>Chapter I (The Executive; Articles 52 to 78)</strong>: Deals with the President, Vice President, Prime Minister, and Council of Ministers.<br /><strong>अध्याय I (कार्यपालिका; अनुच्छेद 52 से 78)</strong>: राष्ट्रपति, उपराष्ट्रपति, प्रधानमंत्री, और मंत्रिपरिषद से संबंधित है।</p>\n</li>\n<li>\n<p><strong>Chapter II</strong>: Deals with the <strong>Articles of Parliament</strong> including the composition, powers, and functioning of both houses (Lok Sabha and Rajya Sabha).<br /><strong>अध्याय II</strong> संसद के अनुच्छेदों से संबंधित है, जिसमें लोकसभा और राज्यसभा दोनों सदनों की संरचना, शक्तियाँ और कार्य शामिल हैं।</p>\n</li>\n<li>\n<p><strong>Chapter III (Legislative Powers of the President; Article 123)</strong>: Deals with the President's power to issue ordinances.<br /><strong>अध्याय III (राष्ट्रपति की विधायी शक्तियाँ; अनुच्छेद 123)</strong>: राष्ट्रपति के अध्यादेश जारी करने की शक्ति से संबंधित है।</p>\n</li>\n<li>\n<p><strong>Chapter IV (The Union Judiciary; Articles 124-147)</strong>: Discusses the structure, powers, and functions of the Supreme Court of India.<br /><strong>अध्याय IV (संघ न्यायपालिका; अनुच्छेद 124-147)</strong>: भारत के सर्वोच्च न्यायालय की संरचना, शक्तियों और कार्यों पर चर्चा करता है।</p>\n</li>\n<li>\n<p><strong>Chapter V (Comptroller and Auditor General of India (CAG); Articles 148-151)</strong>: Deals with the role and duties of the Comptroller and Auditor General of India.<br /><strong>अध्याय V (भारत के नियंत्रक और महालेखा परीक्षक (CAG); अनुच्छेद 148-151)</strong>: भारत के नियंत्रक और महालेखा परीक्षक की भूमिका और कर्तव्यों से संबंधित है।</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?</strong><br /><strong>प्रश्न: भारतीय संविधान के अनुच्छेदों के संबंध में निम्नलिखित में से कौन सा/से कथन सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 154 of the Indian Constitution deals with all the executive powers of the Governor.<br /><strong>अनुच्छेद 154 भारतीय संविधान का राज्यपाल की सभी कार्यकारी शक्तियों से संबंधित है।</strong></p>\n</li>\n<li>\n<p>Article 108 of the Indian Constitution provides the definition of a Money Bill.<br /><strong>अनुच्छेद 108 भारतीय संविधान का मनी बिल की परिभाषा से संबंधित है।</strong></p>\n</li>\n<li>\n<p>Article 338B(1) of the Indian Constitution mentions the establishment of the National Commission for Backward Classes.<br /><strong>अनुच्छेद 338B(1) भारतीय संविधान का पिछड़े वर्गों के लिए राष्ट्रीय आयोग की स्थापना का उल्लेख करता है।</strong></p>\n</li>\n<li>\n<p>Article 343(3) of the Indian Constitution empowered the Parliament to continue the use of English for official purposes after 25 January 1965.<br /><strong>अनुच्छेद 343(3) भारतीय संविधान का संसद को 25 जनवरी 1965 के बाद भी आधिकारिक उद्देश्यों के लिए अंग्रेजी के उपयोग को जारी रखने की शक्ति देता है।</strong></p>\n</li>\n</ol>\n<p><strong>Select the correct answer from the options below:</strong><br /><strong>नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 4</p>",
+      "<p>Only 2, 3, and 4</p>",
+      "<p>Only 1, 3, and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Article 110 of the Indian Constitution provides the definition of a Money Bill.<br /><strong>अनुच्छेद 110 भारतीय संविधान का मनी बिल की परिभाषा से संबंधित है।</strong></p>\n<p>&nbsp;Article 100: Voting in Houses, power of Houses to act notwithstanding vacancies and quorum, Article 115: Supplementary, additional or excess grants, and Article 120: Language to be used in Parliament.</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 343(1) of the Constitution of India states that Hindi in Devanagari script shall be the official language of the Union.<br />अनुच्छेद 343(1) भारतीय संविधान के अनुसार, हिंदी देवनागरी लिपि में संघ की आधिकारिक भाषा होगी।</p>\n</li>\n<li>\n<p>Article 279A of the Constitution of India provides for the creation of a GST Council.<br />अनुच्छेद 279A भारतीय संविधान के अनुसार, जीएसटी परिषद के निर्माण का प्रावधान करता है।</p>\n</li>\n<li>\n<p>Article 348(1) of the Constitution of India states that English is the official language for all the high courts in the country.<br />अनुच्छेद 348(1) भारतीय संविधान के अनुसार, अंग्रेजी देश के सभी उच्च न्यायालयों के लिए आधिकारिक भाषा है।</p>\n</li>\n<li>\n<p>Article 98 of the Constitution of India defines a separate secretarial staff for each House of the Parliament.<br />अनुच्छेद 98 भारतीय संविधान के अनुसार, प्रत्येक सदन के लिए एक अलग सचिवालयी कर्मचारी का प्रावधान करता है।</p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 3</p>",
+      "<p>Only 4, 2, and 3</p>",
+      "<p>Only 2, 3, and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>&nbsp;Article 123- Power of President to promulgate Ordinances during recess of Parliament. Article 155- Appointment of the Governor. Article 34- Restriction on rights conferred by third Part while martial law is in force in any area.</p>",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Articles of the Indian Constitution is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Article 198 of the Constitution of India states that a Money Bill shall not be introduced in a Legislative Council.<br />अनुच्छेद 198 भारतीय संविधान के अनुसार, एक धन विधेयक विधान परिषद में प्रस्तुत नहीं किया जा सकता।</p>\n</li>\n<li>\n<p>Article 140 is related to the ancillary powers of the Supreme Court.<br />अनुच्छेद 140 सर्वोच्च न्यायालय के सहायक शक्तियों से संबंधित है।</p>\n</li>\n<li>\n<p>Article 143 provides the power of the President to consult the Supreme Court.<br />अनुच्छेद 143 राष्ट्रपति को सर्वोच्च न्यायालय से परामर्श करने की शक्ति प्रदान करता है।</p>\n</li>\n<li>\n<p>Article 138 deals with the enlargement of the jurisdiction of the Supreme Court.<br />अनुच्छेद 138 सर्वोच्च न्यायालय के अधिकार क्षेत्र के विस्तार से संबंधित है।</p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>Only 1 and 2</p>",
+      "<p>Only 2, 3, and 4</p>",
+      "<p>Only 1, 3, and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the parts of the Indian Constitution is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के भागों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Part I of the Indian Constitution deals with the Union and its territory, covering Articles 1 to 4.<br />भारतीय संविधान का भाग I संघ और उसके क्षेत्र से संबंधित है, जिसमें अनुच्छेद 1 से 4 तक शामिल हैं।</p>\n</li>\n<li>\n<p>Part II pertains to Citizenship, which includes Articles 5 to 11.<br />भाग II नागरिकता से संबंधित है, जिसमें अनुच्छेद 5 से 11 तक शामिल हैं।</p>\n</li>\n<li>\n<p>Part III outlines Fundamental Rights, encompassing Articles 12 to 35.<br />भाग III मौलिक अधिकारों को स्पष्ट करता है, जिसमें अनुच्छेद 12 से 35 तक शामिल हैं।</p>\n</li>\n<li>\n<p>Part IV contains Directive Principles of State Policy, covering Articles 36 to 51.<br />भाग IV राज्य नीति के निर्देशक तत्वों को शामिल करता है, जिसमें अनुच्छेद 36 से 51 तक शामिल हैं।</p>\n</li>\n</ol>\n<p><strong>Options / विकल्प:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>only 1,2 and 3</p>",
+      "<p>Only 2,3 and 4</p>",
+      "<p>only 1,3 and 4</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p><strong>Question:</strong> Match the chapters of the Indian Constitution with their respective Articles.<br /><strong>निम्नलिखित में से भारतीय संविधान के अध्यायों को उनके संबंधित अनुच्छेदों के साथ मिलाएं।</strong></p>\n<table>\n<thead>\n<tr>\n<th><strong>Chapters / अध्याय</strong></th>\n<th><strong>Articles / अनुच्छेद</strong></th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1. The Union Government</td>\n<td>A. 52 &ndash; 151</td>\n</tr>\n<tr>\n<td>2. Chapter I &ndash; The Executive</td>\n<td>B. 79 &ndash; 122</td>\n</tr>\n<tr>\n<td>3. Chapter II &ndash; Parliament</td>\n<td>C. 52 &ndash; 78</td>\n</tr>\n<tr>\n<td>4. Chapter III &ndash; Legislative Powers of President</td>\n<td>D. 123</td>\n</tr>\n<tr>\n<td>5. Chapter IV &ndash; The Union Judiciary</td>\n<td>E. 124 &ndash; 147</td>\n</tr>\n<tr>\n<td>6. Chapter V &ndash; Comptroller and Auditor-General of India</td>\n<td>F. 148 &ndash; 151</td>\n</tr>\n</tbody>\n</table>",
+    "comp": "",
+    "options": [
+      "<p>A &ndash; 1, B &ndash; 2, C &ndash; 3, D &ndash; 4, E &ndash; 5, F &ndash; 6</p>",
+      "<p>A &ndash; 2, B &ndash; 1, C &ndash; 3, D &ndash; 4, E &ndash; 6, F &ndash; 5</p>",
+      "<p>A &ndash; 1, B &ndash; 3, C &ndash; 2, D &ndash; 4, E &ndash; 5, F &ndash; 6</p>",
+      "<p>A &ndash; 3, B &ndash; 2, C &ndash; 1, D &ndash; 4, E &ndash; 5, F &ndash; 6</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Parts of the Indian Constitution and their respective Articles is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के भागों और उनके संबंधित अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Part VII was repealed by the Constitution (7th Amendment) Act, 1956, and Article 238 was omitted due to the reorganisation of states.<br />भाग VII को संविधान (7वां संशोधन) अधिनियम, 1956 द्वारा निरस्त कर दिया गया था, और अनुच्छेद 238 राज्यों के पुनर्गठन के कारण समाप्त कर दिया गया था।</p>\n</li>\n<li>\n<p>Part VIII covers the Union Territories, which are mentioned in Articles 239 to 242.<br />भाग VIII संघ राज्य क्षेत्रों को कवर करता है, जो अनुच्छेद 239 से 242 तक उल्लेखित हैं।</p>\n</li>\n<li>\n<p>Part IX relates to the Panchayats, detailed in Articles 243 to 243-O.<br />भाग IX पंचायतों से संबंधित है, जो अनुच्छेद 243 से 243-O में विस्तृत है।</p>\n</li>\n<li>\n<p>Part IX-B includes provisions for the Co-operative Societies, outlined in Articles 243-ZH to 243-ZT.<br />भाग IX-B सहकारी समितियों के लिए प्रावधानों को शामिल करता है, जो अनुच्छेद 243-ZH से 243-ZT में निर्धारित हैं।</p>\n</li>\n<li>\n<p>Part X pertains to the Scheduled and Tribal Areas, covered under Articles 244 to 244-A.<br />भाग X अनुसूचित और जनजातीय क्षेत्रों से संबंधित है, जो अनुच्छेद 244 से 244-A में शामिल हैं।</p>\n</li>\n<li>\n<p>Part XI deals with the Relations between the Union and the States, covered in Articles 245 to 263.<br />भाग XI संघ और राज्यों के बीच संबंधों से संबंधित है, जो अनुच्छेद 245 से 263 में शामिल हैं।</p>\n</li>\n</ol>\n<p>Select the correct answer from the options below:<br />नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 3</p>",
+      "<p>Only 4, 5, and 6</p>",
+      "<p>All except 6</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the Chapters of the Indian Constitution and their respective Articles is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अध्यायों और उनके संबंधित अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Chapter I (Legislative Relations) covers Articles 245 to 255, detailing the relationship between the Union and the States regarding legislative powers.<br />अध्याय I (विधायी संबंध) अनुच्छेद 245 से 255 तक को कवर करता है, जो संघ और राज्यों के बीच विधायी शक्तियों के संबंधों का विवरण देता है।</p>\n</li>\n<li>\n<p>Chapter II (Administrative Relations) includes Articles 256 to 263, addressing the administrative relationship between the Union and the States.<br />अध्याय II (प्रशासनिक संबंध) अनुच्छेद 256 से 263 तक शामिल है, जो संघ और राज्यों के बीच प्रशासनिक संबंधों को संबोधित करता है।</p>\n</li>\n<li>\n<p>The section on Finance, Property, Contracts and Suits is found in Articles 264 to 300-A, detailing the financial relations between the Union and the States.<br />वित्त, संपत्ति, अनुबंध और मुकदमों से संबंधित अनुभाग अनुच्छेद 264 से 300-A में पाया जाता है, जो संघ और राज्यों के बीच वित्तीय संबंधों का विवरण देता है।</p>\n</li>\n<li>\n<p>Chapter XIII pertains to Trade, Commerce and Intercourse within the Territory of India, covered in Articles 301 to 307.<br />अध्याय XIII भारत के क्षेत्र में व्यापार, वाणिज्य और संपर्क से संबंधित है, जो अनुच्छेद 301 से 307 में शामिल है।</p>\n</li>\n<li>\n<p>Chapter XIV outlines the provisions related to Services under the Union and the States, specified in Articles 308 to 323.<br />अध्याय XIV संघ और राज्यों के तहत सेवाओं से संबंधित प्रावधानों को निर्धारित करता है, जो अनुच्छेद 308 से 323 में निर्दिष्ट हैं।</p>\n</li>\n<li>\n<p>Chapter XV deals with Elections and includes Articles 324 to 329-A, focusing on the election process in India.<br />अध्याय XV चुनावों से संबंधित है और अनुच्छेद 324 से 329-A को शामिल करता है, जो भारत में चुनाव प्रक्रिया पर केंद्रित है।</p>\n</li>\n<li>\n<p>Chapter XVI contains Special Provisions relating to Certain Classes, detailed in Articles 330 to 342.<br />अध्याय XVI कुछ वर्गों से संबंधित विशेष प्रावधानों को शामिल करता है, जो अनुच्छेद 330 से 342 में विस्तृत हैं।</p>\n</li>\n</ol>\n<p>Select the correct answer from the options below:<br />नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1, 2, and 3</p>",
+      "<p>All except 6&nbsp; &amp; 7</p>",
+      "<p>All except 6</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the final parts of the Indian Constitution and their respective Articles is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान के अंतिम भागों और उनके संबंधित अनुच्छेदों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Chapter XVIII (Emergency Provisions) covers Articles 352 to 360, detailing the circumstances under which the President can declare a national emergency.<br />अध्याय XVIII (आपातकालीन प्रावधान) अनुच्छेद 352 से 360 तक को कवर करता है, जो उन परिस्थितियों का विवरण देता है जिनके तहत राष्ट्रपति राष्ट्रीय आपातकाल की घोषणा कर सकते हैं।</p>\n</li>\n<li>\n<p>Chapter XIX (Miscellaneous) includes Articles 361 to 367, addressing various provisions that do not fall under other specific chapters.<br />अध्याय XIX (विविध) अनुच्छेद 361 से 367 तक शामिल है, जो विभिन्न प्रावधानों को संबोधित करता है जो अन्य विशिष्ट अध्यायों के तहत नहीं आते हैं।</p>\n</li>\n<li>\n<p>Chapter XX (Amendment of the Constitution) is specified in Article 368, detailing the procedure for amending the Constitution.<br />अध्याय XX (संविधान का संशोधन) अनुच्छेद 368 में निर्दिष्ट है, जो संविधान को संशोधित करने की प्रक्रिया का विवरण देता है।</p>\n</li>\n<li>\n<p>Chapter XXI (Temporary, Transitional and Special Provisions) covers Articles 369 to 392, providing for temporary and transitional provisions in the Constitution.<br />अध्याय XXI (अस्थायी, संक्रमणकालीन और विशेष प्रावधान) अनुच्छेद 369 से 392 तक को कवर करता है, जो संविधान में अस्थायी और संक्रमणकालीन प्रावधानों के लिए प्रदान करता है।</p>\n</li>\n<li>\n<p>Chapter XXII (Short title, Commencement, Authoritative Text in Hindi and Repeals) includes Articles 393 to 395, addressing the short title of the Constitution and its commencement.<br />अध्याय XXII (संक्षिप्त शीर्षक, प्रारंभ, हिंदी में प्राधिकृत पाठ और निरसन) अनुच्छेद 393 से 395 तक शामिल है, जो संविधान के संक्षिप्त शीर्षक और इसके प्रारंभ को संबोधित करता है।</p>\n</li>\n</ol>\n<p>Select the correct answer from the options below:<br />नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</p>",
+    "comp": "",
+    "options": [
+      "<p>All except 3 &amp; 4</p>",
+      "<p>All except 4 &amp; 5</p>",
+      "<p>All except 2 &amp; 3</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Polity"
+  },
+  {
+    "question": "<p>Which of the following statements regarding the provisions for Official Language and Legislative Relations in the Indian Constitution is/are correct?<br /><strong>निम्नलिखित में से कौन सा/से कथन भारतीय संविधान में आधिकारिक भाषा और विधायी संबंधों के प्रावधानों के संबंध में सही है/हैं?</strong></p>\n<ol>\n<li>\n<p>Chapter I (Language of the Union) includes Articles 343 to 344, designating Hindi in Devanagari script as the official language of the Union.<br />अध्याय I (संघ की भाषा) अनुच्छेद 343 से 344 तक को शामिल करता है, जो हिंदी (देवनागरी लिपि) को संघ की आधिकारिक भाषा के रूप में नियुक्त करता है।</p>\n</li>\n<li>\n<p>Chapter II (Regional Languages) comprises Articles 345 to 347, allowing states to adopt their own official languages.<br />अध्याय II (क्षेत्रीय भाषाएँ) अनुच्छेद 345 से 347 तक का गठन करता है, जो राज्यों को अपनी आधिकारिक भाषाएँ अपनाने की अनुमति देता है।</p>\n</li>\n<li>\n<p>Chapter III (Language of the Supreme Court, High Courts, and so on) includes Articles 348 to 349, specifying English as the language for all high courts in India.<br />अध्याय III (सुप्रीम कोर्ट, उच्च न्यायालयों आदि की भाषा) अनुच्छेद 348 से 349 तक को शामिल करता है, जो भारत के सभी उच्च न्यायालयों के लिए अंग्रेजी को भाषा के रूप में निर्दिष्ट करता है।</p>\n</li>\n<li>\n<p>Chapter IV (Special Directives) covers Articles 350 to 351, providing guidelines for the use of languages in educational institutions and ensuring facilities for instruction in the mother tongue.<br />अध्याय IV (विशेष निर्देश) अनुच्छेद 350 से 351 तक को कवर करता है, जो शैक्षणिक संस्थानों में भाषाओं के उपयोग के लिए दिशानिर्देश प्रदान करता है और मातृभाषा में instruction के लिए सुविधाओं को सुनिश्चित करता है।</p>\n</li>\n<li>\n<p>Chapter I (Legislative Relations) includes Articles 245 to 255, outlining the distribution of legislative powers between the Union and the States.<br />अध्याय I (विधायी संबंध) अनुच्छेद 245 से 255 तक को शामिल करता है, जो संघ और राज्यों के बीच विधायी शक्तियों के वितरण का वर्णन करता है।</p>\n</li>\n<li>\n<p>Chapter II (Administrative Relations) comprises Articles 256 to 263, detailing the responsibilities of the Union and States in administrative matters.<br />अध्याय II (प्रशासनिक संबंध) अनुच्छेद 256 से 263 तक का गठन करता है, जो प्रशासनिक मामलों में संघ और राज्यों की जिम्मेदारियों का विवरण देता है।</p>\n</li>\n</ol>\n<p>Select the correct answer from the options below:<br />नीचे दिए गए विकल्पों में से सही उत्तर चुनें:</p>",
+    "comp": "",
+    "options": [
+      "<p>All except 2 &amp; 3</p>",
+      "<p>All Except 3 only</p>",
+      "<p>All except 4 only</p>",
+      "<p>All of the above</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "",
+    "marks": 2.0,
+    "section": "Polity"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 40;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

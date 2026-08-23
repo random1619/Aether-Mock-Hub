@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocks Wallah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --light: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #dfe6e9;
+            --card-bg: #ffffff;
+            --body-bg: #f5f6fa;
+            --header-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --footer-bg: #ffffff;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --box-shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Space for fixed navigation */
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .header-brand i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .control-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .timer-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 18px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .timer-display i {
+            margin-right: 6px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            padding: 16px;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--box-shadow-sm);
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .option-item {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+            .question-text {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+
+    .question-text img,
+    .option-label img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 8px 0;
+        border-radius: 8px;
+    }
+
+    .option-label {
+        overflow: hidden;
+    }
+
+    .question-card {
+        overflow: hidden;
+    }
+        
+        .option-label {
+            display: block;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .option-input:checked + .option-label {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        
+        .option-input:checked + .option-label::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        /* When reviewing answers */
+        .review-mode .option-input:checked + .option-label.correct {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.correct::after {
+            background: var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.incorrect {
+            border-color: var(--danger);
+            background: rgba(214, 48, 49, 0.05);
+            box-shadow: 0 0 0 1px var(--danger);
+        }
+        
+        .MathJax, .mjx-chtml {
+            overflow-x: auto;
+            max-width: 100%;
+            display: inline-block;
+        }
+
+        
+        .review-mode .option-input:checked + .option-label.incorrect::after {
+            background: var(--danger);
+        }
+        
+        .review-mode .option-label.correct-answer {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-label.correct-answer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--success);
+        }
+        
+        .solution-container {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .solution-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        /* Question Navigation */
+        .question-nav {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            bottom: 80px;
+            width: 100%;
+            max-width: 320px;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: var(--transition);
+            z-index: 900;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .question-nav.show {
+            transform: translateX(0);
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .question-stats {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .stat-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .section-selector {
+            width: 100%;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 10px 16px;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            font-size: 0.9rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+        }
+        
+        .q-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .q-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .q-box.attempted {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .q-box.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .q-box.incorrect {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .q-box.current {
+            border: 2px solid var(--accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .q-box.unattempted {
+            background-color: var(--gray);
+            color: white;
+            border-color: var(--gray);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--footer-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 800;
+        }
+        
+        .nav-btn {
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            transition: var(--transition);
+            gap: 8px;
+        }
+        
+        .nav-btn i {
+            font-size: 1rem;
+        }
+        
+        .nav-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .nav-btn-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Overlay when nav is open */
+        .nav-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            background: rgba(0,0,0,0.5);
+            z-index: 800;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .nav-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Results Modal */
+        .results-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 16px;
+        }
+        
+        .results-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .results-modal.show .results-card {
+            transform: translateY(0);
+        }
+        
+        .results-header {
+            background: var(--header-bg);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .results-title {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .results-body {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .results-footer {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 992px) {
+            .question-nav {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 320px;
+            }
+            
+            .nav-overlay {
+                display: none;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+                gap: 6px;
+            }
+            
+            .q-box {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .option-label {
+                padding: 12px 14px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            .header-brand {
+                font-size: 1rem;
+            }
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .timer-display {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            
+            .nav-btn {
+                height: 44px;
+                padding: 0 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="header-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Mocks Wallah</span>
+            </a>
+            
+            <div class="header-controls">
+                <!-- Timer -->
+                <div class="timer-display">
+                    <i class="far fa-clock"></i>
+                    <span id="timer-display">9:00</span>
+                </div>
+                
+                <!-- Language toggle -->
+                <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">
+                    <span id="lang-text">En</span>
+                </button>
+                
+                <!-- Submit button -->
+                <button class="control-btn" id="submit-btn" onclick="confirmSubmit()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                
+                <!-- Questions toggle for mobile -->
+                <button class="control-btn nav-toggle-btn" id="nav-toggle" onclick="toggleNav()">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="main-content" id="main-content">
+        <div class="question-counter" id="question-counter">Question 1 of 22</div>
+        
+        <!-- Questions will be displayed here -->
+        <div id="questions-container"></div>
+    </main>
+    
+    <!-- Overlay for mobile nav -->
+    <div class="nav-overlay" id="nav-overlay" onclick="toggleNav(false)"></div>
+    
+    <!-- Question navigation sidebar -->
+    <aside class="question-nav" id="question-nav">
+        <div class="nav-header">
+            <h3 class="nav-title">Questions</h3>
+            <div class="question-stats">
+                <span class="stat-badge bg-primary" id="attempted-count">0</span>
+                <span class="stat-badge bg-gray" id="total-count">22</span>
+                <button class="control-btn d-lg-none" onclick="toggleNav(false)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Section selector -->
+        <select class="section-selector" id="section-selector" onchange="switchSection(this.value)">
+            <option value="all">All Sections</option>
+        </select>
+        
+        <!-- Question grid -->
+        <div class="question-grid" id="question-boxes"></div>
+    </aside>
+    
+    <!-- Bottom navigation for mobile -->
+    <nav class="bottom-nav d-lg-none">
+        <button class="nav-btn nav-btn-outline" onclick="prevQuestion()">
+            <i class="fas fa-chevron-left"></i>
+            <span>Previous</span>
+        </button>
+        <button class="nav-btn nav-btn-outline" onclick="nextQuestion()">
+            <span>Next</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </nav>
+    
+    <!-- Results modal -->
+    <div class="results-modal" id="results-modal">
+        <div class="results-card">
+            <div class="results-header">
+                <h3 class="results-title">Test Results</h3>
+            </div>
+            <div class="results-body">
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark))">
+                        <div class="stat-value" id="score-value">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--success), #1b9aaa)">
+                        <div class="stat-value" id="correct-value">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--danger), var(--accent))">
+                        <div class="stat-value" id="incorrect-value">0</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--gray), var(--dark))">
+                        <div class="stat-value" id="unattempted-value">0</div>
+                        <div class="stat-label">Unattempted</div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-footer">
+                <button class="nav-btn nav-btn-primary" onclick="reviewTest()">
+                    <i class="fas fa-search me-1"></i>
+                    <span>Review Test</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Questions data
+        const questions = [];
+        const sections = {};
+        let currentLang = "en";
+        let currentQuestion = 0;
+        let answers = {};
+        let submitted = false;
+        let totalTime = 9 * 60;
+        
+        // Initialize the test
+        window.onload = function() {
+            initializeTest();
+            startTimer();
+            
+            // If on desktop, show the question navigation by default
+            if (window.innerWidth >= 992) {
+                document.getElementById('question-nav').classList.add('show');
+                document.getElementById('main-content').classList.add('with-nav');
+            }
+        };
+        
+        // Initialize test data
+        function initializeTest() {
+            // Add sections and questions
+            
+            sections["18"] = {
+                name: "General Awareness",
+                start: 0,
+                end: 20
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="18">General Awareness</option>`;
+            
+            sections["misc"] = {
+                name: "Miscellaneous",
+                start: 21,
+                end: 21
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="misc">Miscellaneous</option>`;
+            
+            
+                questions.push({
+                    id: "1",
+                    section: "18",
+                    question_en: "<p>1. <span style=\"font-family: Times New Roman;\">Adar Poonawalla launched the Clean City initiative in Pune in the year ______.&nbsp;</span></p>",
+                    question_hi: "<p>1. <span style=\"font-family: Palanquin Dark;\">अदार पूनावाला ने वर्ष ________ में पुणे में स्वच्छ शहर पहल की शुरुआत की।</span></p>",
+                    options_en: ["<p>2018</p>", "<p>2012</p>", 
+                                "<p>2010</p>", "<p>2015</p>"],
+                    options_hi: ["<p>2018</p>", "<p>2012</p>",
+                                "<p>2010</p>", "<p>2015</p>"],
+                    solution_en: "<p>1.(d) <span style=\"font-family: Times New Roman;\"><strong>Adar Poonawalla</strong> </span><span style=\"font-family: Times New Roman;\">founded the Clean city initiative in </span><strong><span style=\"font-family: Times New Roman;\">January 2015</span></strong><span style=\"font-family: Times New Roman;\"> with the sole purpose of improving the environment and waste management in the city of Pune. He also received the Business Leader of the year 2021 award at the Economic Times Award. </span><span style=\"font-family: Times New Roman;\">Adar Poonawalla is the chief executive officer (CEO) of Serum Institute of India.</span></p>",
+                    solution_hi: "<p>1.(d) <span style=\"font-family: Baloo;\"><strong>अदार पूनावाला</strong> ने पुणे शहर में पर्यावरण और अपशिष्ट प्रबंधन में सुधार के एकमात्र उद्देश्य के साथ <strong>जनवरी 2015</strong> में स्वच्छ शहर पहल की स्थापना की। उन्हें इकोनॉमिक टाइम्स अवार्ड में बिजनेस लीडर ऑफ़ द ईयर 2021 का अवार्ड भी मिला। अदार पूनावाला सीरम इंस्टीट्यूट ऑफ इंडिया के मुख्य कार्यकारी अधिकारी (</span><span style=\"font-family: Times New Roman;\">CEO</span><span style=\"font-family: Baloo;\">) हैं।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "2",
+                    section: "18",
+                    question_en: "<p>2. <span style=\"font-family: Times New Roman;\">Who among the following Indian artists won the &lsquo;Joan Miro Prize&rsquo; for the year 2019?&nbsp;</span></p>",
+                    question_hi: "<p>2. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित भारतीय कलाकारों में से किसने वर्ष 2019 के लिए \'जोन मिरो पुरस्कार\' जीता?</span></p>",
+                    options_en: ["<p>Jogen Chowdhury</p>", "<p>Nalini Malani</p>", 
+                                "<p>Anjolie Ela Menon</p>", "<p>Jiten Thukral</p>"],
+                    options_hi: ["<p>जोगेन चौधरी</p>", "<p>नलिनी मालानी</p>",
+                                "<p>अंजोली एला मेनन</p>", "<p>जितेन ठुकराली</p>"],
+                    solution_en: "<p>2.(b) <span style=\"font-family: Times New Roman;\">Nalini Malani won the &lsquo;Joan Miro Prize&rsquo; for the year 2019. It is </span><span style=\"font-family: Times New Roman;\">one of the most prestigious contemporary art awards in the world.</span></p>",
+                    solution_hi: "<p>2.(b) <span style=\"font-family: Baloo;\">नलिनी मलानी ने वर्ष 2019 के लिए \'जोन मिरो पुरस्कार\' जीता। यह दुनिया के सबसे प्रतिष्ठित समकालीन कला पुरस्कारों में से एक है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "3",
+                    section: "18",
+                    question_en: "<p>3.<span style=\"font-family: Baloo;\"> The Government of India imposed an Agriculture and Infrastructure Development Cess of ______ per </span><span style=\"font-family: Baloo;\">litre</span><span style=\"font-family: Baloo;\"> on petrol through Union Budget 2021-22.&nbsp;</span></p>",
+                    question_hi: "<p>3.<span style=\"font-family: Palanquin Dark;\"> भारत सरकार ने केंद्रीय बजट 2021-22 के माध्यम से पेट्रोल पर ______ प्रति लीटर का कृषि और बुनियादी ढांचा विकास उपकर लगाया।</span></p>",
+                    options_en: ["<p>₹3.5</p>", "<p>₹3</p>", 
+                                "<p>₹2.5</p>", "<p>₹4</p>"],
+                    options_hi: ["<p>₹3.5</p>", "<p>₹3</p>",
+                                "<p>₹2.5</p>", "<p>₹4</p>"],
+                    solution_en: "<p>3.(c)<span style=\"font-family: Times New Roman;\"> </span><span style=\"font-family: Times New Roman;\">The Government of India imposed an Agriculture and Infrastructure Development Cess of ₹2.5 per </span><span style=\"font-family: Times New Roman;\">litre</span><span style=\"font-family: Times New Roman;\"> on petrol through Union Budget 2021-22. Cess is on specified goods including alcoholic beverages, gold, silver, cotton, peas, apple, petrol, and diesel.</span></p>",
+                    solution_hi: "<p>3.(c) <span style=\"font-family: Baloo;\">भारत सरकार ने केंद्रीय बजट 2021-22 के माध्यम से पेट्रोल पर 2.5 रुपये प्रति लीटर का कृषि और बुनियादी ढांचा विकास उपकर लगाया। मादक पेय, सोना, चांदी, कपास, मटर, सेब, पेट्रोल और डीजल सहित विशिष्ट वस्तुओं पर उपकर है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "4",
+                    section: "18",
+                    question_en: "<p>4.<span style=\"font-family: Baloo;\"> Which of the following persons was named as Dean of Harvard Business School in October 2020?&nbsp;</span></p>",
+                    question_hi: "<p>4.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किस व्यक्ति को अक्टूबर 2020 में हार्वर्ड बिजनेस स्कूल के डीन के रूप में नामित किया गया था?</span></p>",
+                    options_en: ["<p>Sanjit Roy</p>", "<p>Achyuta Samanta</p>", 
+                                "<p>Srikant Datar</p>", "<p>Nitin Nohria</p>"],
+                    options_hi: ["<p>संजीत रॉय</p>", "<p>अच्युत सामंत</p>",
+                                "<p>श्रीकांत दातार</p>", "<p>नितिन नोहरिया</p>"],
+                    solution_en: "<p>4.(c) <span style=\"font-family: Times New Roman;\">As of May 2022 Srikant Datar is an Indian-American economist and the Dean of Harvard Business School.</span></p>",
+                    solution_hi: "<p>4.(c) <span style=\"font-family: Baloo;\">मई 2022 तक श्रीकांत दातार एक भारतीय-अमेरिकी अर्थशास्त्री और हार्वर्ड बिजनेस स्कूल के डीन हैं।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "5",
+                    section: "18",
+                    question_en: "<p>5. <span style=\"font-family: Baloo;\">The picture that won the World Press Photo of the Year 2021 contest is titled &lsquo;______&rsquo;.</span></p>",
+                    question_hi: "<p>5. <span style=\"font-family: Palanquin Dark;\">वर्ल्ड प्रेस फोटो ऑफ द ईयर 2021 प्रतियोगिता जीतने वाली तस्वीर का शीर्षक \'________\' है।</span></p>",
+                    options_en: ["<p>The First Embrace</p>", "<p>Crying Girl on the Border</p>", 
+                                "<p>Emancipation Memorial Debate</p>", "<p>Straight Voice</p>"],
+                    options_hi: ["<p>पहला आलिंगन</p>", "<p>सीमा पर रोती हुई लड़की</p>",
+                                "<p>मुक्ति स्मारक बहस</p>", "<p>सीधी आवाज</p>"],
+                    solution_en: "<p>5.(a) <span style=\"font-family: Times New Roman;\">The picture that won the World Press Photo of the Year 2021 contest is titled &lsquo;The First Embrace&rsquo;. </span></p>",
+                    solution_hi: "<p>5.(a) <span style=\"font-family: Baloo;\">वर्ल्ड प्रेस फोटो ऑफ द ईयर 2021 प्रतियोगिता जीतने वाली तस्वीर का शीर्षक \'द फर्स्ट एम्ब्रेस\' है।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "6",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">6.</span><span style=\"font-family: Times New Roman;\"> As per the provisions of Union Budget 2021-22, how many public sector banks have been lined up for disinvestment?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">6.</span><span style=\"font-family: Baloo;\"> केंद्रीय बजट 2021-22 के प्रावधानों के अनुसार, कितने सार्वजनिक क्षेत्र के बैंकों को विनिवेश के लिए तैयार किया गया है?</span></p>",
+                    options_en: ["<p>Seven</p>", "<p>Three</p>", 
+                                "<p>Two</p>", "<p>Five</p>"],
+                    options_hi: ["<p>सात</p>", "<p>तीन</p>",
+                                "<p>दो</p>", "<p>पांच</p>"],
+                    solution_en: "<p>6.(c) <span style=\"font-family: Times New Roman;\">Finance Minister in the Union Budget </span><span style=\"font-family: Times New Roman;\">announced privatization of </span><strong><span style=\"font-family: Times New Roman;\">two </span></strong><span style=\"font-family: Times New Roman;\">public sector banks as part of the disinvestment programme for this fiscal. Niti Aayog had reportedly shortlisted </span><strong><span style=\"font-family: Times New Roman;\">Central Bank of India and Indian Overseas Bank</span></strong><span style=\"font-family: Times New Roman;\"> for the purpose. </span><strong><span style=\"font-family: Times New Roman;\">Recent Mergers of Banks</span></strong><span style=\"font-family: Times New Roman;\">- Corporation Bank and Andhra Banks were merged with Union Bank of India, Syndicate Bank was merged with Canara Bank, Oriental Bank of Commerce and United Bank of India were merged with Punjab National Bank. Allahabad Bank was merged with Indian Bank.</span></p>",
+                    solution_hi: "<p>6.(c) <span style=\"font-family: Baloo;\">केंद्रीय बजट में वित्त मंत्री ने चालू वित्त वर्ष के विनिवेश कार्यक्रम के तहत सार्वजनिक क्षेत्र के <strong>दो </strong>बैंकों के निजीकरण की घोषणा की। नीति आयोग ने कथित तौर पर इस उद्देश्य के लिए </span><span style=\"font-family: Baloo;\"><strong>सेंट्रल बैंक ऑफ इंडिया और इंडियन ओवरसीज बैंक</strong> </span><span style=\"font-family: Baloo;\">को शॉर्टलिस्ट किया था। </span><strong><span style=\"font-family: Baloo;\">बैंकों के हालिया विलय</span></strong><span style=\"font-family: Baloo;\">- कॉर्पोरेशन बैंक और आंध्रा बैंकों को यूनियन बैंक ऑफ इंडिया में विलय कर दिया गया, सिंडिकेट बैंक को केनरा बैंक, ओरिएंटल बैंक ऑफ कॉमर्स और यूनाइटेड बैंक ऑफ इंडिया को पंजाब नेशनल बैंक में विलय कर दिया गया। इलाहाबाद बैंक का इंडियन बैंक में विलय कर दिया गया।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "7",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">7.</span><span style=\"font-family: Times New Roman;\"> Gulzar was awarded the 66th Filmfare Award for &lsquo;Best Lyrics&rsquo; for the film ______.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">7.</span><span style=\"font-family: Baloo;\"> गुलजार को फिल्म ______ के लिए \'सर्वश्रेष्ठ गीत\' के लिए 66वें फिल्मफेयर पुरस्कार से सम्मानित किया गया।</span></p>",
+                    options_en: ["<p>Thappad</p>", "<p>Sir</p>", 
+                                "<p>Chhapaak</p>", "<p>Ludo</p>"],
+                    options_hi: ["<p>थप्पड़</p>", "<p>सिर</p>",
+                                "<p>छपाक</p>", "<p>लूडो</p>"],
+                    solution_en: "<p>7.(c) <span style=\"font-family: Times New Roman;\">Gulzar also known as Sampooran Singh Kalra won the best lyrics award for the film chappak in 66th Filmfare Awards. Irrfan khan won the best actor for the film Angreji Medium, Taapsee Pannu won the best actress award for the film Thappad.</span></p>",
+                    solution_hi: "<p>7.(c) <span style=\"font-family: Baloo;\">गुलज़ार, जिन्हें संपूर्णन सिंह कालरा के नाम से भी जाना जाता है, ने 66वें फ़िल्मफ़ेयर पुरस्कारों में फ़िल्म \'छपाक\' के लिए सर्वश्रेष्ठ गीत का पुरस्कार जीता। फिल्म \'अंगरेजी मीडियम\' के लिए इरफान खान ने सर्वश्रेष्ठ अभिनेता का पुरस्कार जीता तापसी पन्नू ने फिल्म थप्पड़ के लिए सर्वश्रेष्ठ अभिनेत्री का पुरस्कार जीता।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "8",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">8. </span><span style=\"font-family: Times New Roman;\">Which of the following statements is/are correct?&nbsp;<br></span><span style=\"font-family: Times New Roman;\">I.Gandhi Peace Prize is an annual award instituted by the Government of India since 1995.&nbsp;<br></span><span style=\"font-family: Times New Roman;\">II.The award is open to all persons regardless of nationality, race, language, caste, creed or sex.&nbsp;<br></span><span style=\"font-family: Times New Roman;\">III.The Gandhi Peace Prize for the year 2020 was conferred on Bangabandhu Sheikh Mujibur Rahman.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">8. </span><span style=\"font-family: Baloo;\">निम्नलिखित में से कौन सा कथन सही हैं?<br></span><span style=\"font-family: Baloo;\">I.गांधी शांति पुरस्कार 1995 से भारत सरकार द्वारा स्थापित एक वार्षिक पुरस्कार है।<br></span><span style=\"font-family: Baloo;\">II.यह पुरस्कार राष्ट्रीयता, नस्ल, भाषा, जाति, पंथ या लिंग की परवाह किए बिना सभी व्यक्तियों के लिए खुला है।<br></span><span style=\"font-family: Baloo;\">III.वर्ष 2020 के लिए गांधी शांति पुरस्कार बंगबंधु शेख मुजीबुर रहमान को प्रदान किया गया।</span></p>",
+                    options_en: ["<p>Only I and II</p>", "<p>Only I</p>", 
+                                "<p>I, II and III</p>", "<p>Only III</p>"],
+                    options_hi: ["<p>केवल I और II</p>", "<p>केवल I</p>",
+                                "<p>I, II और III</p>", "<p>केवल III</p>"],
+                    solution_en: "<p>8.(b) <strong><span style=\"font-family: Times New Roman;\">Gandhi Peace Prize</span></strong><span style=\"font-family: Times New Roman;\"> -</span><span style=\"font-family: Times New Roman;\">Contributions towards social, economic and political transformation through non-violence and other Gandhian methods. Last awarded in 2014 and winner was Sheikh Mujibur Rehman. It was established in 1995. Reward is ₹ 1 crore. Julius Kambarage Nyerere of Tanzania won the First Gandhi Peace Prize in 1995.</span></p>",
+                    solution_hi: "<p>8.(b) <span style=\"font-family: Baloo;\"><strong>गांधी शांति पुरस्कार</strong>- </span><span style=\"font-family: Baloo;\">अहिंसा और अन्य गांधीवादी तरीकों के माध्यम से सामाजिक, आर्थिक और राजनीतिक परिवर्तन की दिशा में योगदान। आखिरी बार 2014 में सम्मानित किया गया था और विजेता शेख मुजीबुर रहमान थे। इसकी स्थापना 1995 में हुई थी। इनाम ₹1 करोड़ है। तंजानिया के जूलियस कंबारेज न्येरेरे ने 1995 में पहला गांधी शांति पुरस्कार जीता।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "9",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">9.</span><span style=\"font-family: Times New Roman;\"> Mridula Sinha, who passed away in November 2020, was the first woman Governor of ______.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">9. </span><span style=\"font-family: Baloo;\">मृदुला सिन्हा, जिनका नवंबर 2020 में निधन हो गया, ______ की पहली महिला राज्यपाल थीं।</span></p>",
+                    options_en: ["<p>Goa</p>", "<p>Mizoram</p>", 
+                                "<p>Tripura</p>", "<p>Haryana</p>"],
+                    options_hi: ["<p>गोवा</p>", "<p>मिजोरम</p>",
+                                "<p>त्रिपुरा</p>", "<p>हरियाणा</p>"],
+                    solution_en: "<p>9.(a) <span style=\"font-family: Times New Roman;\"><strong>Mridula Sinha</strong>,</span><span style=\"font-family: Times New Roman;\"> who passed away in November 2020, was the first woman Governor of <strong>Goa</strong>.</span><span style=\"font-family: Times New Roman;\"> <strong>Sarojini Naidu</strong></span><span style=\"font-family: Times New Roman;\"> was the first woman governor of the Indian State (Uttar Pradesh) from 15 August 1947 to 2 March 1949. </span><strong><span style=\"font-family: Times New Roman;\">Padmaja Naidu</span></strong><span style=\"font-family: Times New Roman;\">, is the longest-serving female governor with almost 11 years tenure in West Bengal. The Governor of a State shall be appointed by the President by warrant under his hand and seal (</span><strong><span style=\"font-family: Times New Roman;\">Article 155</span></strong><span style=\"font-family: Times New Roman;\">). A person to be eligible for appointment as Governor should be citizen of India and has completed age of 35 years (</span><strong><span style=\"font-family: Times New Roman;\">Article 157</span></strong><span style=\"font-family: Times New Roman;\">).</span></p>",
+                    solution_hi: "<p>9.(a) <strong><span style=\"font-family: Palanquin Dark;\">मृदुला सिन्हा</span></strong><span style=\"font-family: Palanquin Dark;\">, जिनका नवंबर 2020 में निधन हो गया, <strong>गोवा </strong>की पहली महिला राज्यपाल थीं। </span><span style=\"font-family: Palanquin Dark;\"><strong>सरोजिनी नायडू</strong> </span><span style=\"font-family: Palanquin Dark;\">15 अगस्त 1947 से 2 मार्च 1949 तक भारतीय राज्य (उत्तर प्रदेश) की पहली महिला राज्यपाल थीं। </span><strong><span style=\"font-family: Palanquin Dark;\">पद्मजा नायडू</span></strong><span style=\"font-family: Palanquin Dark;\">, पश्चिम बंगाल में लगभग 11 वर्षों के कार्यकाल के साथ सबसे लंबे समय तक सेवा करने वाली महिला राज्यपाल हैं। किसी राज्य के राज्यपाल की नियुक्ति राष्ट्रपति द्वारा अपने हस्ताक्षर और मुहर के तहत वारंट द्वारा की जाएगी। (</span><strong><span style=\"font-family: Palanquin Dark;\">अनुच्छेद 155</span></strong><span style=\"font-family: Palanquin Dark;\">) राज्यपाल के रूप में नियुक्ति के लिए पात्र होने वाला व्यक्ति भारत का नागरिक होना चाहिए और 35 वर्ष की आयु पूरी कर चुका हो। (</span><strong><span style=\"font-family: Palanquin Dark;\">अनुच्छेद 157</span></strong><span style=\"font-family: Palanquin Dark;\">)</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "10",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">10.</span><span style=\"font-family: Times New Roman;\"> Which of the following countries hosted the ITTF (International Table Tennis Federation) Women\'s World Cup 2020?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">10.</span><span style=\"font-family: Baloo;\"> निम्नलिखित में से किस देश ने ITTF (इंटरनेशनल टेबल टेनिस फेडरेशन) महिला विश्व कप 2020 की मेजबानी की?</span></p>",
+                    options_en: ["<p>Singapore</p>", "<p>China</p>", 
+                                "<p>Japan</p>", "<p>South Korea</p>"],
+                    options_hi: ["<p>सिंगापुर</p>", "<p>चीन</p>",
+                                "<p>जापान</p>", "<p>दक्षिण कोरिया</p>"],
+                    solution_en: "<p>10.(b) <span style=\"font-family: Times New Roman;\">The 2020 ITTF Women\'s World Cup was a table tennis competition held in </span><strong><span style=\"font-family: Times New Roman;\">Weihai, China</span></strong><span style=\"font-family: Times New Roman;\">.&nbsp;</span><span style=\"font-family: Times New Roman;\">The HeadQuarter of ITTF (International Table Tennis Federation) is in <strong>Lausanne, switzerland</strong> was founded in the year1926 </span></p>",
+                    solution_hi: "<p>10.(b) <span style=\"font-family: Baloo;\">2020 ITTF महिला विश्व कप <strong>चीन के वेहाई</strong> में आयोजित एक टेबल टेनिस प्रतियोगिता थी। ITTF (इंटरनेशनल टेबल टेनिस फेडरेशन) का मुख्यालय </span><strong><span style=\"font-family: Baloo;\">लुसाने स्विट्जरलैंड</span></strong><span style=\"font-family: Baloo;\"> में है, जिसकी स्थापना वर्ष 1926 में हुई थी।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "11",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">11. </span><span style=\"font-family: Times New Roman;\">According to the Central Ground Water Board, BIS (IS_10500 and revised module IS 10500:2012) specifications in Uniform Drinking Water Quality Monitoring Protocol, what is the acceptable pH value of drinking water specification in India?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">11. </span><span style=\"font-family: Baloo;\">केंद्रीय भूजल बोर्ड, BIS (IS 10500 और संशोधित मॉड्यूल IS 10500:2012) के अनुसार समान पेयजल गुणवत्ता निगरानी प्रोटोकॉल में विनिर्देशों के अनुसार, भारत में पेयजल विनिर्देश का स्वीकार्य pH मान क्या है?</span></p>",
+                    options_en: ["<p>5.5 - 7.5</p>", "<p>4.5 - 9.5</p>", 
+                                "<p>6.5 - 8.5</p>", "<p>3.5 - 5.5</p>"],
+                    options_hi: ["<p>5.5 - 7.5</p>", "<p>4.5 - 9.5</p>",
+                                "<p>6.5 - 8.5</p>", "<p>3.5 - 5.5</p>"],
+                    solution_en: "<p>11.(c) <span style=\"font-family: Times New Roman;\">Central Ground Water Board</span><span style=\"font-family: Times New Roman;\"> guidelines state that the pH of tap water should be between 6.5 and 8.5. The pH was discovered by S&oslash;ren S&oslash;rensen. The letters pH stand for potential of hydrogen.</span></p>",
+                    solution_hi: "<p>11.(c) <span style=\"font-family: Palanquin Dark;\">केंद्रीय भूजल बोर्ड के दिशा-निर्देशों में कहा गया है कि नल के पानी का pH 6.5 और 8.5 के बीच होना चाहिए। pH की खोज सोरेन सोरेन्सन ने की थी। pH, हाइड्रोजन की क्षमता को दर्शाता है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "12",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">12. </span><span style=\"font-family: Times New Roman;\">Who among the following was named sportsman of the decade (Individual non Olympic sports) at the 2021 Sportstar ACES Awards?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">12. </span><span style=\"font-family: Baloo;\">निम्नलिखित में से किसे 2021 स्पोर्टस्टार ACES पुरस्कारों में दशक का खिलाड़ी (एकल गैर-ओलंपिक खेल) नामित किया गया था?</span></p>",
+                    options_en: ["<p>Pentala Harikrishna</p>", "<p>Vidit Santosh Gujrathi</p>", 
+                                "<p>Viswanathan Anand</p>", "<p>Baskaran Adhiban</p>"],
+                    options_hi: ["<p>पेंटाला हरिकृष्ण</p>", "<p>विदित संतोष गुजराती</p>",
+                                "<p>विश्वनाथन आनंद</p>", "<p>भास्करन अधिबन</p>"],
+                    solution_en: "<p>12.(c) <span style=\"font-family: Times New Roman;\">Viswanathan Anand was named sportsman of the decade (Individual non Olympic sports) at the 2021 Sportstar ACES Awards. </span><span style=\"font-family: Times New Roman;\">Viswanathan Anand became the first grandmaster from India in the year 1988. </span></p>",
+                    solution_hi: "<p>12.(c) <span style=\"font-family: Baloo;\">विश्वनाथन आनंद को 2021 स्पोर्टस्टार ACES अवार्ड्स में दशक का खिलाड़ी (व्यक्तिगत गैर ओलंपिक खेल) नामित किया गया था। विश्वनाथन आनंद वर्ष 1988 में भारत के पहले ग्रैंडमास्टर बने।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "13",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">13.</span><span style=\"font-family: Times New Roman;\"> Finance Minister Nirmala Sitharaman announced the setting up of ______ mega textile parks across the country over three years, in her Budget 2021-22 speech.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">13.</span><span style=\"font-family: Baloo;\"> वित्त मंत्री निर्मला सीतारमण ने अपने बजट 2021-22 के भाषण में तीन वर्षों में देश भर में ______ मेगा टेक्सटाइल पार्क स्थापित करने की घोषणा की।</span></p>",
+                    options_en: ["<p>seven</p>", "<p>Five</p>", 
+                                "<p>Three</p>", "<p>Nine</p>"],
+                    options_hi: ["<p>सात</p>", "<p>पांच</p>",
+                                "<p>तीन</p>", "<p>नौ</p>"],
+                    solution_en: "<p>13.(a) <span style=\"font-family: Times New Roman;\">Finance Minister Nirmala Sitharaman announced the setting up of seven mega textile parks across the country over three years, in her Budget 2021-22 speech.</span></p>",
+                    solution_hi: "<p>13.(a) <span style=\"font-family: Baloo;\">वित्त मंत्री निर्मला सीतारमण ने अपने बजट 2021-22 के भाषण में तीन वर्षों में देश भर में सात मेगा टेक्सटाइल पार्क स्थापित करने की घोषणा की।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "14",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">14. </span><span style=\"font-family: Times New Roman;\">As per World Justice Project 2020, what is India&rsquo;s rank in Regulatory Enforcement as cited in Economic Survey of India 2021?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">14. </span><span style=\"font-family: Baloo;\">वर्ल्ड जस्टिस प्रोजेक्ट 2020 के अनुसार, भारत के आर्थिक सर्वेक्षण 2021 में उद्धृत नियामक प्रवर्तन में भारत की रैंक क्या है?</span></p>",
+                    options_en: ["<p>56</p>", "<p>79</p>", 
+                                "<p>62</p>", "<p>74</p>"],
+                    options_hi: ["<p>56</p>", "<p>79</p>",
+                                "<p>62</p>", "<p>74</p>"],
+                    solution_en: "<p>14.(d) <span style=\"font-family: Times New Roman;\">As per World Justice Project 2020, India&rsquo;s rank in Regulatory Enforcement as cited in Economic Survey of India 2021 is 74. </span><span style=\"font-family: Times New Roman;\">The World Justice Project (WJP) is an international civil society organization with the stated mission of \"working to advance the rule of law around the world\".</span></p>",
+                    solution_hi: "<p>14.(d)<span style=\"font-family: Baloo;\"> वर्ल्ड जस्टिस प्रोजेक्ट 2020 के अनुसार, भारत के आर्थिक सर्वेक्षण 2021 में उल्लिखित नियामक प्रवर्तन में भारत की रैंक 74 है। विश्व न्याय परियोजना (WJP) एक अंतरराष्ट्रीय नागरिक समाज संगठन है जिसका मिशन \"दुनिया भर में कानून के शासन को आगे बढ़ाने के लिए काम करना\" है।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "15",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Times New Roman;\">15. </span><span style=\"font-family: Times New Roman;\">______, the world&rsquo;s first sailing boat made entirely from plastic waste, aims to raise people&rsquo;s awareness of plastic pollution in oceans.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Times New Roman;\">15. </span><span style=\"font-family: Baloo;\">________, पूरी तरह से प्लास्टिक कचरे से बनी दुनिया की पहली नौकायन नाव का उद्देश्य महासागरों में प्लास्टिक प्रदूषण के बारे में लोगों की जागरूकता बढ़ाना है।</span></p>",
+                    options_en: ["<p>Flipflopi</p>", "<p>Blipblopi</p>", 
+                                "<p>Snipsnopi</p>", "<p>Triptropi</p>"],
+                    options_hi: ["<p>फ्लिपफ्लॉपी</p>", "<p>ब्लिपब्लोपी</p>",
+                                "<p>स्निप्सनोपी</p>", "<p>ट्रिप्ट्रोपी</p>"],
+                    solution_en: "<p>15.(a) <span style=\"font-family: Times New Roman;\"><strong>Flipflopi</strong>,</span><span style=\"font-family: Times New Roman;\"> the world&rsquo;s first sailing boat made entirely from plastic waste, aims to raise people&rsquo;s awareness of plastic pollution in oceans. </span><span style=\"font-family: Times New Roman;\">Flipflopi - an East African movement with a mission to end single use plastic and inspire a plastic-reuse revolution through our innovation hubs, positive storytelling and education, and campaigning to influence policy change.</span></p>",
+                    solution_hi: "<p>15.(a) <strong><span style=\"font-family: Baloo;\">फ्लिपफ्लॉपी</span></strong><span style=\"font-family: Baloo;\">, पूरी तरह से प्लास्टिक कचरे से बनी दुनिया की पहली नौकायन नाव है, जिसका उद्देश्य महासागरों में प्लास्टिक प्रदूषण के बारे में लोगों की जागरूकता बढ़ाना है। फ्लिपफ्लॉपी - एकल उपयोग प्लास्टिक को समाप्त करने के मिशन के साथ एक पूर्वी अफ्रीकी आंदोलन और हमारे नवाचार केंद्रों, सकारात्मक कहानी और शिक्षा, और नीति परिवर्तन को प्रभावित करने के लिए अभियान के माध्यम से प्लास्टिक-पुन: उपयोग क्रांति को प्रेरित करता है।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "16",
+                    section: "18",
+                    question_en: "<p>16. <span style=\"font-family: Baloo;\"> In which of the following States/Union Territories did a regional alliance by the </span><span style=\"font-family: Baloo;\">abbreviated</span><span style=\"font-family: Baloo;\"> name TIPRA </span><span style=\"font-family: Baloo;\">come</span><span style=\"font-family: Baloo;\"> into the limelight in March-April 2021?&nbsp;</span></p>",
+                    question_hi: "<p>16. <span style=\"font-family: Palanquin Dark;\">&nbsp;निम्नलिखित में से किस राज्य/केंद्र शासित प्रदेश में संक्षिप्त नाम TIPRA द्वारा एक क्षेत्रीय गठबंधन मार्च-अप्रैल 2021 में सुर्खियों में आया?</span></p>",
+                    options_en: [" <p> Tamil Nadu</span></p>", " <p> Telangana</span></p>", 
+                                " <p> Ladakh</span></p>", " <p> Tripura</span></p>"],
+                    options_hi: ["<p>तमिलनाडु</p>", "<p>तेलंगाना</p>",
+                                "<p>लद्दाख</p>", "<p>त्रिपुरा</p>"],
+                    solution_en: "<p>16.(d)<span style=\"font-family: Times New Roman;\">Tipraha Indigenous Progressive Regional Alliance or TIPRA or Tipra Motha is a regional political party which was initially a social organization of Tripura, India.The TIPRA is led by Pradyot DebBarma (May 2022) . It was founded in 2019.</span></p>",
+                    solution_hi: "<p>16.(d) <span style=\"font-family: Palanquin Dark;\">टिपरा स्वदेशी प्रगतिशील क्षेत्रीय गठबंधन या TIPRA या टिपरा मोथा एक क्षेत्रीय राजनीतिक दल है जो शुरू में त्रिपुरा, भारत का एक सामाजिक संगठन था। TIPRA का नेतृत्व प्रद्योत देबबर्मा (मई 2022) कर रहे हैं। इसकी स्थापना 2019 में हुई थी।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "17",
+                    section: "18",
+                    question_en: "<p>17. <span style=\"font-family: Palanquin Dark;\">Union Budget 2021-22 allocated a total amount of ______ towards health and wellbeing.&nbsp;</span></p>",
+                    question_hi: "<p>17. <span style=\"font-family: Palanquin Dark;\">केंद्रीय बजट 2021-22 ने स्वास्थ्य और भलाई के लिए कुल _________ राशि आवंटित की।</span></p>",
+                    options_en: ["<p>₹94,452 crore</p>", "<p>₹3,32,194 crore</p>", 
+                                "<p>₹2,23,846 crore</p>", "<p>₹1,54,938 crore</p>"],
+                    options_hi: ["<p>₹94,452 करोड़</p>", "<p>₹3,32,194 करोड़</p>",
+                                "<p>₹2,23,846 करोड़</p>", "<p>₹1,54,938 करोड़</p>"],
+                    solution_en: "<p>17.(c) <span style=\"font-family: Times New Roman;\">Union Budget 2021-22 allocated a total amount of ₹2,23,846 crore towards health and wellbeing. </span><span style=\"font-family: Times New Roman;\">The Union Budget 2022-23 allocated INR 86,200 cr to the Ministry of Health and Family Welfare, nearly 16.5 per cent increase in comparison to INR 73,932 cr in Financial Years 2020-21. </span></p>",
+                    solution_hi: "<p>17.(c) <span style=\"font-family: Palanquin Dark;\">केंद्रीय बजट 2021-22 में स्वास्थ्य और सेहत के लिए कुल 2,23,846 करोड़ रुपये आवंटित किए गए। केंद्रीय बजट 2022-23 ने स्वास्थ्य और परिवार कल्याण मंत्रालय को वित्तीय वर्ष 2020-21 में 73,932 करोड़ रुपये की तुलना में लगभग 16.5 प्रतिशत की वृद्धि के लिए 86,200 करोड़ रुपये आवंटित किए।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "18",
+                    section: "18",
+                    question_en: "<p>18.<span style=\"font-family: Palanquin Dark;\"> Who among the following won the 2020 Tour de France?</span></p>",
+                    question_hi: "<p>18.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किसने 2020 टूर डी फ्रांस जीता?</span></p>",
+                    options_en: ["<p>Wout Van Aert</p>", "<p>Egan Bernal</p>", 
+                                "<p>Tadej Pogačar</p>", "<p>Nairo Quintana</p>"],
+                    options_hi: ["<p>वाउट वैन एर्टो</p>", "<p>ईगन बर्नाल</p>",
+                                "<p>ताडेज पोगसारी</p>", "<p>नैरो क्विंटाना</p>"],
+                    solution_en: "<p>18.(c) <span style=\"font-family: Times New Roman;\">Tadej Pogačar won the 2020 Tour de France. He is the </span><span style=\"font-family: Times New Roman;\">youngest winner of the Tour de France in the post-World War II era. It is related to bicycle racing.</span></p>",
+                    solution_hi: "<p>18.(c) <span style=\"font-family: Palanquin Dark;\">तदेज पोगाकर ने 2020 टूर डी फ्रांस जीता। वह द्वितीय विश्व युद्ध के बाद के युग में टूर डी फ्रांस के सबसे कम उम्र के विजेता हैं। यह साइकिल रेसिंग से संबंधित है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "19",
+                    section: "18",
+                    question_en: "<p>19. <span style=\"font-family: Palanquin Dark;\">What was the theme of World Toilet Day 2020?&nbsp;</span></p>",
+                    question_hi: "<p>19.<span style=\"font-family: Palanquin Dark;\"> विश्व शौचालय दिवस 2020 का विषय क्या था?</span></p>",
+                    options_en: [" <p> Better Sanitation for Better Nutrition </span></p>", " <p> Sustainable Sanitation and Climate Change </span></p>", 
+                                "<p>Toilets and Jobs</p>", "<p>When Nature Calls</p>"],
+                    options_hi: ["<p>बेहतर पोषण के लिए बेहतर स्वच्छता</p>", "<p>सतत स्वच्छता और जलवायु परिवर्तन</p>",
+                                "<p>शौचालय और नौकरियां</p>", "<p>जब प्रकृति बुलाती है</p>"],
+                    solution_en: "<p>19.(b) <span style=\"font-family: Times New Roman;\">Sustainable Sanitation and Climate Change was the theme of World Toilet Day 2020. World Toilet Day is observed on 19 November every year. </span><span style=\"font-family: Times New Roman;\">The theme for World Toilet Day 2021 is &ldquo;</span><strong><span style=\"font-family: Times New Roman;\">Valuing Toilets</span></strong><span style=\"font-family: Times New Roman;\">&rdquo;. </span></p>",
+                    solution_hi: "<p>19.(b) <span style=\"font-family: Palanquin Dark;\">सतत स्वच्छता और जलवायु परिवर्तन विश्व शौचालय दिवस 2020 का विषय था। विश्व शौचालय दिवस हर साल 19 नवंबर को मनाया जाता है। विश्व शौचालय दिवस 2021 का विषय </span><span style=\"font-family: Palanquin Dark;\">\'शौचालयों के मायने (<strong>Valuing Toilet</strong>)\'</span><span style=\"font-family: Palanquin Dark;\"> है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "20",
+                    section: "18",
+                    question_en: "<p>20. <span style=\"font-family: Times New Roman;\">Who among the following is the author of the book &lsquo;Sea of Poppies&rsquo;?&nbsp;</span></p>",
+                    question_hi: "<p>20. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित में से कौन \'सी ऑफ पोपीज़\' पुस्तक के लेखक हैं?</span></p>",
+                    options_en: ["<p>Vikram Seth</p>", "<p>Arvind Adiga</p>", 
+                                "<p>Amitav Ghosh</p>", "<p>Shashi Tharror</p>"],
+                    options_hi: ["<p>विक्रम सेठ</p>", "<p>अरविंद अडिगा</p>",
+                                "<p>अमिताभ घोष</p>", "<p>शशि थररो</p>"],
+                    solution_en: "<p>20.(c)<span style=\"font-family: Times New Roman;\"> <strong>Amitav Ghosh</strong> </span><span style=\"font-family: Times New Roman;\"> is the author of the book &lsquo;Sea of Poppies&rsquo;. More books written by him are &lsquo;The Hungry Tide&rsquo;, &lsquo;The Glass Palace&rsquo;, &lsquo;River of Smoke&rsquo;, &lsquo;Flood of Fire\', &lsquo;The Great Derangement\', &lsquo;The Shadow Lines&rsquo;, &lsquo;The Calcutta Chromosome&rsquo;, &lsquo;Gun Island&rsquo;, &lsquo;The Circle Of Reason&rsquo;, &lsquo;Countdown&rsquo;. </span></p>",
+                    solution_hi: "<p>20.(c)<span style=\"font-family: Palanquin Dark;\"> \'सी ऑफ पोपीज\' नामक पुस्तक के लेखक </span><strong><span style=\"font-family: Palanquin Dark;\">अमिताव </span></strong><span style=\"font-family: Palanquin Dark;\"><strong>घोष</strong> हैं। उनके द्वारा लिखी गई अन्य पुस्तकें \'द हंग्री टाइड\', \'द ग्लास पैलेस\', \'रिवर ऑफ स्मोक\', \'फ्लड ऑफ फायर\', \'द ग्रेट डेरेंजमेंट\', \'द शैडो लाइन्स\', \'द कलकत्ता क्रोमोसोम\', \'गन\' आइलैंड\', \'द सर्कल ऑफ रीजन\', और \'काउंटडाउन\' हैं।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "21",
+                    section: "18",
+                    question_en: " <p>21.</span><span style=\"font-family:Palanquin Dark\"> Along with India, which of the following countries was crowned Joint Winner at the 2020 Online FIDE Chess Olympiad? </span></p>",
+                    question_hi: "<p>21. <span style=\"font-family: Palanquin Dark;\">भारत के साथ, निम्नलिखित में से किस देश को 2020 ऑनलाइन FIDE शतरंज ओलंपियाड में संयुक्त विजेता का ताज पहनाया गया?</span></p>",
+                    options_en: [" <p> Croatia </span></p>", " <p> Ukraine </span></p>", 
+                                " <p> Belgium </span></p>", " <p> Russia</span></p>"],
+                    options_hi: ["<p>क्रोएशिया</p>", "<p>यूक्रेन</p>",
+                                "<p>बेल्जियम</p>", "<p>रूस</p>"],
+                    solution_en: "<p>21.(d) <span style=\"font-family: Times New Roman;\">Along with India, Russia was crowned Joint Winner at the 2020 Online FIDE Chess Olympiad. In 2021 Team Russia won by defeating USA. </span></p>",
+                    solution_hi: "<p>21.(d) <span style=\"font-family: Palanquin Dark;\">भारत के साथ, रूस को 2020 ऑनलाइन FIDE शतरंज ओलंपियाड में संयुक्त विजेता का ताज पहनाया गया। 2021 में टीम रूस ने USA को हराकर जीत हासिल की।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "22",
+                    section: "misc",
+                    question_en: "<p>22. <span style=\"font-family: Palanquin Dark;\">As per the Swiss </span><span style=\"font-family: Palanquin Dark;\">organisation</span><span style=\"font-family: Palanquin Dark;\"> IQAir&rsquo;s &lsquo;World Air Quality Report, 2020&rsquo;, which of the </span><span style=\"font-family: Palanquin Dark;\">following</span><span style=\"font-family: Palanquin Dark;\"> is the most polluted capital city in the world?&nbsp;</span></p>",
+                    question_hi: "<p>22.<span style=\"font-family: Palanquin Dark;\"> स्विस संगठन IQAir की \'वर्ल्ड एयर क्वालिटी रिपोर्ट, 2020\' के अनुसार, निम्नलिखित में से कौन दुनिया का सबसे प्रदूषित राजधानी शहर है?</span></p>",
+                    options_en: [" <p> Beijing </span></p>", " <p> Tokyo </span></p>", 
+                                " <p> Delhi</span></p>", " <p> Paris</span></p>"],
+                    options_hi: ["<p>बीजिंग</p>", "<p>टोक्यो</p>",
+                                "<p>दिल्ली</p>", "<p>पेरिस</p>"],
+                    solution_en: "<p>22.(c) <span style=\"font-family: Times New Roman;\">World Air Quality Index 2022 &ndash; Most Polluted Cities in the World Bhiwadi (India), Ghaziabad (India), Hotan (China), Delhi (India), Jaunpur (India), Faisalabad (Pakistan), Noida (India), Bahawalpur (Pakistan).</span></p>",
+                    solution_hi: "<p>22.(c) <span style=\"font-family: Palanquin Dark;\">विश्व वायु गुणवत्ता सूचकांक 2022 - विश्व में सबसे प्रदूषित शहर भिवाड़ी (भारत), गाजियाबाद (भारत), होतान (चीन), दिल्ली (भारत), जौनपुर (भारत), फैसलाबाद (पाकिस्तान), नोएडा (भारत), बहावलपुर (पाकिस्तान) )</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+            
+            // Generate question boxes
+            const boxesContainer = document.getElementById('question-boxes');
+            questions.forEach((q, index) => {
+                const box = document.createElement('div');
+                box.className = 'q-box';
+                box.textContent = index + 1;
+                box.onclick = () => showQuestion(index);
+                box.id = `box-${index}`;
+                boxesContainer.appendChild(box);
+            });
+            
+            // Show first question
+            showQuestion(0);
+            updateProgress();
+        }
+        
+        // Show a specific question
+        
+        function formatContent(text) {
+            if (!text) return '';
+            return text.replace(/<img/g, '<img style="max-width:100%;height:auto;"');
+        }
+        
+        function showQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update question counter
+            document.getElementById('question-counter').textContent = `Question ${index + 1} of ${questions.length}`;
+            
+            // Update question boxes
+            document.querySelectorAll('.q-box').forEach(box => box.classList.remove('current'));
+            document.getElementById(`box-${index}`).classList.add('current');
+            
+            // Generate question HTML
+            let html = `
+                <div class="question-card">
+                    <div class="question-text">
+                        <div class="en">${formatContent(question.question_en)}</div>
+                        <div class="hi" style="display:none">${formatContent(question.question_hi)} </div>
+                    </div>
+                    <div class="options" id="options-container">`;
+            
+            // Add options
+            ['a', 'b', 'c', 'd'].forEach((opt, i) => {
+                let optionClass = '';
+                let isCorrectAnswer = opt === question.correct;
+                let isUserAnswer = answers[question.id] === opt;
+                
+                // When reviewing, add appropriate classes
+                if (submitted) {
+                    if (isCorrectAnswer) {
+                        optionClass += ' correct-answer';
+                    } else if (isUserAnswer && !isCorrectAnswer) {
+                        optionClass += ' incorrect';
+                    }
+                }
+                
+                html += `
+                    <div class="option-item">
+                        <input class="option-input" type="radio" name="q${index}" 
+                            id="opt-${index}-${opt}" value="${opt}" 
+                            ${isUserAnswer ? 'checked' : ''}
+                            onclick="selectAnswer('${question.id}', '${opt}')">
+                       <label class="option-label${optionClass}" for="opt-${index}-${opt}">
+                            <div class="en">${question.options_en[i]}</div>
+                            <div class="hi" style="display:none">${question.options_hi[i]}</div>
+                        </label>
+                    </div>`;
+            });
+            
+            // Add solution if submitted
+            if (submitted) {
+                const isCorrect = answers[question.id] === question.correct;
+                const resultText = answers[question.id] ? (isCorrect ? 'Correct!' : 'Incorrect!') : 'Not attempted';
+                
+                html += `
+                    <div class="solution-container">
+                        <div class="solution-title">${resultText}</div>
+                        <div class="solution-text">
+                            <div class="en">${question.solution_en}</div>
+                            <div class="hi" style="display:none">${question.solution_hi}</div>
+                        </div>
+                    </div>`;
+            }
+            
+            html += `</div></div>`;
+            
+            document.getElementById('questions-container').innerHTML = html;
+            
+            // Apply language settings
+            applyLanguage();
+            
+            // If in mobile view, close the menu
+            if (window.innerWidth < 992) {
+                toggleNav(false);
+            }
+            
+            // Add review mode class if submitted
+            if (submitted) {
+                document.getElementById('options-container').classList.add('review-mode');
+            }
+        }
+        
+        // Apply current language
+        function applyLanguage() {
+            document.querySelectorAll(`.${currentLang}`).forEach(el => el.style.display = 'block');
+            document.querySelectorAll(`.${currentLang === 'en' ? 'hi' : 'en'}`).forEach(el => el.style.display = 'none');
+            
+            // Update language button text
+            document.getElementById('lang-text').textContent = currentLang === 'en' ? 'Hi' : 'En';
+        }
+        
+        // Select an answer
+        function selectAnswer(qId, option) {
+            if (submitted) return;
+            
+            answers[qId] = option;
+            updateProgress();
+            
+            // Mark question as attempted in the navigation
+            const index = questions.findIndex(q => q.id === qId);
+            if (index >= 0) {
+                const box = document.getElementById(`box-${index}`);
+                box.classList.add('attempted');
+                box.classList.remove('unattempted');
+            }
+        }
+        
+        // Navigate to previous/next question
+        function prevQuestion() { 
+            if (currentQuestion > 0) showQuestion(currentQuestion - 1); 
+        }
+        
+        function nextQuestion() { 
+            if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1); 
+        }
+        
+        // Switch section
+        function switchSection(sectionId) {
+            if (sectionId === 'all') {
+                showQuestion(0);
+                return;
+            }
+            
+            const section = sections[sectionId];
+            if (section) showQuestion(section.start);
+        }
+        
+        // Toggle language
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            applyLanguage();
+        }
+        
+        // Toggle navigation sidebar
+        function toggleNav(show) {
+            const nav = document.getElementById('question-nav');
+            const overlay = document.getElementById('nav-overlay');
+            
+            if (show === undefined) {
+                show = !nav.classList.contains('show');
+            }
+            
+            if (show) {
+                nav.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Update progress
+        function updateProgress() {
+            const attempted = Object.keys(answers).length;
+            document.getElementById('attempted-count').textContent = attempted;
+        }
+        
+        // Start timer
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            let timeLeft = totalTime;
+            
+            const timerInterval = setInterval(() => {
+                if (timeLeft <= 0 || submitted) {
+                    clearInterval(timerInterval);
+                    if (!submitted) submitTest();
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+        
+        // Confirm before submitting
+        function confirmSubmit() {
+            if (submitted) return;
+            
+            const attempted = Object.keys(answers).length;
+            const remaining = questions.length - attempted;
+            
+            // Create a more modern confirmation dialog
+            const confirmHtml = `
+                <div style="text-align: center; padding: 20px;">
+                    <h4 style="margin-bottom: 16px; color: var(--dark);">Confirm Submission</h4>
+                    <p style="margin-bottom: 24px; color: var(--gray);">
+                        You have attempted ${attempted} of ${questions.length} questions.<br>
+                        ${remaining} questions are unattempted.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 12px;">
+                        <button onclick="this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; border: 1px solid var(--light-gray); background: white; border-radius: 8px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="submitTest(); this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Submit Test
+                        </button>
+                    </div>
+                </div>`;
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'results-modal show';
+            modal.innerHTML = `
+                <div class="results-card" style="max-width: 400px;">
+                    <button class="cancel-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray);" onclick="this.closest('.results-modal').remove()">
+                        ×
+                    </button>
+                    ${confirmHtml}
+                </div>`;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // Submit test
+        function submitTest() {
+            if (submitted) return;
+            
+            submitted = true;
+            
+            let score = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+            
+            questions.forEach((q, index) => {
+                const userAns = answers[q.id];
+                const box = document.getElementById(`box-${index}`);
+                
+                box.classList.remove('attempted');
+                
+                if (!userAns) {
+                    unattemptedCount++;
+                    box.classList.add('unattempted');
+                } else if (userAns === q.correct) {
+                    correctCount++;
+                    score += q.pos_marks;
+                    box.classList.add('correct');
+                } else {
+                    incorrectCount++;
+                    score -= q.neg_marks;
+                    box.classList.add('incorrect');
+                }
+            });
+            
+            // Update result values
+            document.getElementById('score-value').textContent = score.toFixed(2);
+            document.getElementById('correct-value').textContent = correctCount;
+            document.getElementById('incorrect-value').textContent = incorrectCount;
+            document.getElementById('unattempted-value').textContent = unattemptedCount;
+            
+            // Show the results modal
+            document.getElementById('results-modal').classList.add('show');
+            
+            // Disable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i>';
+            submitBtn.style.backgroundColor = 'var(--success)';
+            
+            // Refresh current question view to show solution
+            showQuestion(currentQuestion);
+        }
+        
+        // Review test
+        function reviewTest() {
+            document.getElementById('results-modal').classList.remove('show');
+            showQuestion(0);
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('results-modal')) {
+                document.getElementById('results-modal').classList.remove('show');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'ArrowRight') nextQuestion();
+        });
+    </script>
+</body>
+</html>

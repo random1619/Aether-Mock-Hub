@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computer Subject Test 1</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    Computer Subject Test 1 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which component of a computer connects the processor to the other hardware?</div>
+  <div class="question lang-hi">कम्प्यूटर का कौन - सा भाग प्रोसेसर को अन्य हार्डवेयर से जोड़ता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Motherboard</div><div class="option">CPU</div><div class="option">Punch card</div><div class="option">Chip</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">मदरबोर्ड</div><div class="option">सी&bull; पी&bull; यू&bull;</div><div class="option">पंच कार्ड</div><div class="option">चिप</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Motherboard.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>The <u><strong>motherboard</strong></u> is a circuit board that links the processor to the memory and other components of the computer.</li> <li>The CPU is attached to the motherboard (also called the<strong> logic board</strong>).</li> <li><strong>Buses</strong> are motherboard circuits that connect the CPU to other components.</li> <li>A motherboard provides the<strong> electrical connections</strong> that allow the system&#39;s other components to communicate with one another.</li> <li>Motherboards come in a variety of shapes and sizes to fit different types and sizes of computers.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Basic arithmetic, logic, controlling, and input/output (I/O) tasks are performed by the <strong>CPU</strong> as described by the program&#39;s instructions.</li> <li>A <strong>punched card</strong> is a stiff sheet of paper that carries digital data that is represented by the presence or absence of holes at predetermined locations.</li> <li>A&nbsp;<strong>computer chip</strong> is a set of electronic circuits on a small flat piece of silicon.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर&nbsp;<u><strong>मदरबोर्ड </strong></u>है।</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><u><strong>मदरबोर्ड </strong></u>एक सर्किट बोर्ड है जो प्रोसेसर को मेमोरी और कंप्यूटर के अन्य घटकों से जोड़ता है।</li> <li>सीपीयू मदरबोर्ड से जुड़ा होता है (जिसे <strong>लॉजिक बोर्ड</strong> भी कहा जाता है)।</li> <li><strong>बसेस </strong>मदरबोर्ड परिपथ हैं जो सीपीयू को अन्य घटकों से जोड़ती हैं।</li> <li>एक मदरबोर्ड विद्युत कनेक्शन प्रदान करता है जो प्रणाली&nbsp;के अन्य घटकों को एक दूसरे के साथ संचार करने की अनुमति देता है।</li> <li>कंप्यूटर के विभिन्न प्रकारों और आकारों में फिट होने के लिए मदरबोर्ड कई प्रकार के आकार और आकार में आते हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>बुनियादी अंकगणित, तर्क, नियंत्रण, और इनपुट/आउटपुट (I/O) कार्यों को <strong>सीपीयू </strong>द्वारा प्रोग्राम के निर्देशों के अनुसार वर्णित किया जाता है।</li> <li>एक <strong>पंच&nbsp;कार्ड</strong> कागज की एक कड़ी शीट है जिसमें डिजिटल डेटा होता है जिसे पूर्व निर्धारित स्थानों पर छेद की उपस्थिति या अनुपस्थिति द्वारा दर्शाया जाता है।</li> <li>एक <strong>कंप्यूटर चिप </strong>सिलिकॉन के एक छोटे से फ्लैट टुकड़े पर इलेक्ट्रॉनिक सर्किट का एक सेट है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is a hardware?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन हार्डवेयर है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Assembler</div><div class="option correct">Server</div><div class="option">Compiler</div><div class="option">Interpreter</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">असेम्बलर&nbsp;</div><div class="option correct">सर्वर</div><div class="option">कम्पाइलर&nbsp;</div><div class="option">इंटरप्रेटर&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Server</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>A server</strong> is a piece of<strong> computer hardware or software (computer programme)</strong> that offers functionality to other programmes or devices known as <strong>&quot;clients&quot; in the computing world.</strong></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>An assembler </strong>is a programme that turns basic computer instructions into a bit pattern that the computer&#39;s processor can utilise to conduct basic functions.</li> <li><strong>A compiler </strong>is a computer programme that converts code written in one programming language into code written in another.</li> <li><strong>An interpreter</strong> is a translator who reads instructions repeatedly and converts them to machine code.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>सर्वर </strong></u>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>एक सर्वर</strong> <strong>कंप्यूटर हार्डवेयर या सॉफ्टवेयर (कंप्यूटर प्रोग्राम) </strong>का एक टुकड़ा है जो <strong>कंप्यूटिंग दुनिया में &quot;क्लाइंट&quot;</strong> के रूप में जाने जाने वाले अन्य प्रोग्रामों या उपकरणों को कार्यक्षमता प्रदान करता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>एक असेंबलर</strong> एक प्रोग्राम है जो बेसिक कंप्यूटर निर्देशों को एक बिट पैटर्न में बदल देता है जिसका उपयोग कंप्यूटर का प्रोसेसर बेसिक फंक्शन को करने के लिए कर सकता है।</li> <li><strong>एक कंपाइलर</strong> एक कंप्यूटर प्रोग्राम है जो एक प्रोग्रामिंग लैंग्वेज में लिखे गए कोड को दूसरी&nbsp;<span style="">प्रोग्रामिंग लैंग्वेज</span>&nbsp;कोड में परिवर्तित करता है।</li> <li><strong>एक इंटरप्रेटर</strong> एक ट्रांसलेटर होता है जो निर्देशों को बार-बार पढ़ता है और उन्हें मशीन कोड में परिवर्तित करता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">In _______,type the email address you want to send a copy of email.&nbsp;</div>
+  <div class="question lang-hi"><p>_____ में, वह ईमेल पता टाइप करते हैं,&nbsp;जिसे आप ईमेल की एक कॉपी&nbsp;भेजना चाहते हैं।&nbsp;</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Subject Box</div><div class="option correct">Carbon copy Box</div><div class="option">Binding&nbsp;Carbon copy</div><div class="option">Address box</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सब्जेक्ट बॉक्स</div><div class="option correct">कार्बन कॉपी बॉक्स</div><div class="option">बाइंडिंग कार्बन कॉपी</div><div class="option">एड्रेस बॉक्स</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u>Carbon copy</u></strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>CC</strong> is <strong>the abbreviation</strong> for &ldquo;<strong>carbon copy</strong>.&rdquo;</li> <li><strong>Carbon is used to make a copy of a letter or text which we were writing</strong>.</li> <li><strong>CC is an easy way to send copies of an email to other people</strong>.</li> <li>If a person&nbsp;received a <strong>CCed emai</strong>l, it shows that&nbsp;<strong>it will be addressed to you and a list of other people who have also been used</strong>.</li> <li>The term &quot;<strong>carbon copy</strong>&quot; can denote anything that is a near duplicate of an original.</li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>BCC</strong> stands for<strong> &ldquo;blind carbon copy.&rdquo;</strong></li> <li><strong>BCC</strong> is a way of <strong>sending copies of an email to other people.</strong></li> <li>But there is a big difference between <strong>CC and BCC</strong>.</li> <li>In <strong>CC</strong> we can see the list of recipients which is not in the case of <strong>BCC</strong>.</li> <li>It&rsquo;s called blind carbon copy because the other recipients <strong>won&rsquo;t be able to see that someone else has been sent a copy of the email.</strong></li> <li><strong>Given below is the image of Where to write CC and BCC address while writing an email.</strong></li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/12/61cb101c5cfb1234d599ef31_16407161670011.png" /></p></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>कार्बन कॉपी</strong></u> है</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>CC &quot;कार्बन कॉपी&quot;</strong> का <strong>संक्षिप्त </strong>नाम है।</li> <li><strong>कार्बन का उपयोग एक अक्षर या टेक्स्ट</strong><span style="font-weight: bolder;">&nbsp;जिसे हम लिख रहे थे,</span><strong>&nbsp;की कॉपी बनाने के लिए किया जाता है।</strong></li> <li><strong>CC दूसरे लोगों को ईमेल की कॉपी भेजने का एक आसान तरीका है।</strong></li> <li>यदि किसी व्यक्ति को <strong>CC किया गया&nbsp;ईमेल </strong>प्राप्त हुआ है, तब&nbsp;यह दर्शाता है कि <strong>यह आपको और अन्य लोगों, जिनका उपयोग भी किया गया है,</strong><span style="font-weight: bolder;">&nbsp;की एक सूची को संबोधित किया जाएगा</span><strong>।</strong></li> <li><strong>&quot;कार्बन कॉपी&quot;</strong><strong> </strong>शब्द किसी भी चीज़ को निरूपित कर सकता है जो एक ओरिजिनल&nbsp;के लगभग डुप्लिकेट है।</li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>BCC </strong>का अर्थ है <strong>&quot;ब्लाइंड&nbsp;कार्बन कॉपी।&quot;</strong></li> <li><strong>BCC </strong>अन्य <strong>लोगों को ईमेल की कॉपी भेजने का एक तरीका है।</strong></li> <li>लेकिन <strong>CC और BCC</strong> में बड़ा अंतर है।</li> <li><strong>CC </strong>में हम उन प्राप्तकर्ताओं की सूची देख सकते हैं, परन्तु&nbsp;<strong>BCC </strong>के मामले में हम अन्य प्राप्तकर्ताओं की सूचि नहीं देख सकते हैं।</li> <li>इसे ब्लाइंड&nbsp;कार्बन कॉपी कहा जाता है क्योंकि<strong> अन्य प्राप्तकर्ता यह नहीं देख पाएंगे कि किसी अन्य व्यक्ति को ईमेल की एक कॉपी भेज दी गई है।</strong></li> <li><strong>नीचे दी&nbsp;गई&nbsp;छवि में&nbsp;&nbsp;ईमेल लिखते समय CC&nbsp;और BCC&nbsp;एड्रेस को&nbsp;दर्शाया गया है।</strong></li> </ul> <p><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage3347.png" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Press ________ key to open the help window in MS Word 2007 document.</div>
+  <div class="question lang-hi">एमएस वर्ड 2007 डॉक्यूमेंट में हेल्प विंडो खोलने के लिए ________ की दबाते हैं।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">F1</div><div class="option">F2</div><div class="option">F9</div><div class="option">F11</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">F1</div><div class="option">F2</div><div class="option">F9</div><div class="option">F11</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>F1</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The<strong>&nbsp;Help button</strong>&nbsp;in Word is too small that will be easily ignored.</li> <li>The Help button stays in the top right corner of the window.</li> <li>Shortcut<strong>&nbsp;key F1</strong>&nbsp;to enable the Help window.</li> <li><strong>Other important keys and their functions-</strong></li> </ul> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td><strong>Shortcut Keys</strong></td> <td><strong>Functions</strong></td> </tr> <tr> <td>F2</td> <td>Moves text or object</td> </tr> <tr> <td>F9</td> <td>Updates all the field codes in the current selection</td> </tr> <tr> <td>F11</td> <td>Moves to the next Field</td> </tr> <tr> <td>F12</td> <td>Displays the&nbsp;<strong>Save As</strong>&nbsp;dialog box.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर<u><span style="">&nbsp;</span><span style="font-weight: 700; ">F1</span></u>&nbsp;है<span style="">।</span></p> <ul> <li>वर्ड में हेल्प (Help) बटन बहुत छोटा होता&nbsp;है जिसे आसानी से नजरअंदाज कर दिया जाएगा।</li> <li>हेल्प बटन विंडो के ऊपरी दायें कोने में होता है।</li> <li>शॉर्टकट <strong>की&nbsp;(key) F1,</strong> Help विंडो को सक्षम करने के लिए होती है।</li> <li><strong>अन्य महत्वपूर्ण की (key)&nbsp;और उनके कार्य-</strong></li> </ul> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td><strong>शॉर्टकट कीज़&nbsp;</strong></td> <td><strong>&nbsp; फंक्शन&nbsp;</strong></td> </tr> <tr> <td>F2</td> <td>टेक्स्ट या ऑब्जेक्ट को मूव कराना&nbsp;</td> </tr> <tr> <td>F9</td> <td>वर्तमान में चुने गए सभी फ़ील्ड कोड को अपडेट करता है</td> </tr> <tr> <td>F11</td> <td>अगले फ़ील्ड में मूव कराता है</td> </tr> <tr> <td>F12</td> <td><strong>सेव एज</strong>&nbsp;डायलॉग बॉक्स प्रदर्शित करता है।</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The deleted mail in Gmail account goes in which folder?</div>
+  <div class="question lang-hi">जीमेल अकाउंट में डिलीट किया गया मेल किस फोल्डर में जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Trash</div><div class="option">Spam</div><div class="option">Draft</div><div class="option">Receipts</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">ट्रैश</div><div class="option">स्पैम&nbsp;</div><div class="option">ड्राफ्ट&nbsp;</div><div class="option">रिसिप्टस&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Trash</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>The Trash folder</strong> is where <strong>any emails have been&nbsp;deleted.</strong></li> <li>This folder also indicates <strong>the mail which has been automatically deleted, are sent</strong>.</li> <li>The <strong>Trash folder</strong> will <strong>empty every time we&nbsp;log out of Message Center</strong>, and all of the messages will be permanently deleted.</li> <li>If we&nbsp;delete an e-mail from your inbox,<strong> it will initially be put into the Trash folder. </strong></li> <li>The e-mail will only be permanently deleted if we&nbsp;delete it in the Trash folder or empty the trash, or if the e-mail&#39;s storage time has expired.</li> <li>Permanently deleted e-mail cannot be recovered.</li> <li>The default storage time for <strong>an email in the Trash folder is 1 day. </strong></li> <li>We can customize the storage time for <strong>an email in the Trash folder.</strong></li> <li><strong>It is present at the left below the compose window in the email window.</strong></li> <li><img alt="" src="https://storage.googleapis.com/tb-img/production/22/02/6215ddccc6c4826190470690_16456002198221.png" /></li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><strong>Important Components of Compose Mail</strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width: 500px;"> <tbody> <tr> <td style="text-align: center;"><strong>Components</strong></td> <td style="text-align: center;"><strong>Description</strong></td> </tr> <tr> <td><span style="font-weight: 700;">To</span></td> <td> <ul> <li><span style="font-weight: 700;">To</span>&nbsp;indicates&nbsp;<span style="font-weight: 700;">the address of the person whom we want to send the mail.</span></li> <li>we can send&nbsp;<span style="font-weight: 700;">one mail to multiple people at once.</span></li> <li>For that,&nbsp;<span style="font-weight: 700;">we just need to mention the email address of each person by adding a semicolon after each address</span>&nbsp;in To part.</li> </ul> <p>&nbsp;</p> </td> </tr> <tr> <td><span style="font-weight: 700;">Body</span></td> <td> <ul> <li>The body is the screen&nbsp;<span style="font-weight: 700;">where we will write the actual mail.</span></li> <li>Here we will write&nbsp;<span style="font-weight: 700;">the full details of the mail.</span></li> <li>It should be in&nbsp;<span style="font-weight: 700;">the proper format depending upon the type of letter we are writing.</span></li> <li>It can be in the form of a&nbsp;<span style="font-weight: 700;">formal or informal letter.</span></li> </ul> </td> </tr> <tr> <td><span style="font-weight: 700;">CC</span></td> <td> <ul> <li>In email sending,&nbsp;<span style="font-weight: 700;">CC is the abbreviation for carbon copy.</span>&nbsp;</li> <li>Just like the physical carbon copy above,&nbsp;<span style="font-weight: 700;">CC is an easy way to send copies of an email to other people.</span></li> <li>If you&rsquo;ve ever received a CCed email, you&rsquo;ve probably noticed that it will be addressed to you and a list of other people who have also been used.</li> </ul> </td> </tr> <tr> <td><span style="font-weight: 700;">BCC</span></td> <td> <ul> <li>BCC stands for&nbsp;<span style="font-weight: 700;">blind carbon copy.</span></li> <li>BCC is a way of&nbsp;<span style="font-weight: 700;">sending copies of an email to other people.</span>&nbsp;</li> <li>It&rsquo;s called<span style="font-weight: 700;">&nbsp;blind carbon copy</span>&nbsp;because the other recipients won&rsquo;t be able to see that someone else has been sent a copy of the email.</li> </ul> </td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>ट्रैश</strong></u> है।&nbsp;</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>ट्रैश फ़ोल्डर</strong> वह जगह है <strong>जहाँ कोई ईमेल डिलीट कर&nbsp;दिया जाता है।</strong></li> <li>यह फ़ोल्डर उस मेल को भी इंगित करता है <strong>जिसे स्वचालित रूप से </strong><span style="font-weight: 700; ">डिलीट कर</span><strong> दिया जाता है, भेजा जाता है।</strong></li> <li><strong>मैसेज सेंटर से लॉग आउट करने पर हर बार ट्रैश फ़ोल्डर</strong> <strong>खाली हो जाएगा</strong>, और सभी संदेश स्थायी रूप से हटा दिए जाएंगे।</li> <li>यदि हम आपके इनबॉक्स से एक ई-मेल हटाते हैं, तो <strong>इसे शुरू में ट्रैश फ़ोल्डर में डाल दिया जाता है।</strong></li> <li>ई-मेल को यदि हम इसे ट्रैश फ़ोल्डर से हटा दें या ट्रैश को खाली कर दें तो वह स्थायी रूप से हटा दिया जाएगा या यदि ई-मेल के भंडारण का समय समाप्त हो गया है।</li> <li>स्थायी रूप से डिलीट किये<span style="font-weight: 700; ">&nbsp;</span>गए ई-मेल को पुनर्प्राप्त नहीं किया जा सकता है।</li> <li>ट्रैश फोल्डर में ईमेल के लिए <strong>डिफ़ॉल्ट स्टोरेज&nbsp;समय 1 दिन है।</strong></li> <li>हम <strong>ट्रैश फ़ोल्डर में ईमेल</strong> के लिए स्टोरेज&nbsp;समय को अनुकूलित कर सकते हैं।</li> <li><strong>यह ईमेल विंडो में कंपोज़ विंडो के नीचे बाईं ओर मौजूद है।</strong></li> <li><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage4613.png" /></li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</p> <p><strong>कम्पोज़ मेल के महत्वपूर्ण घटक</strong></p> <table border="1" cellpadding="1" cellspacing="1" style="width: 500px;"> <tbody> <tr> <td style="text-align: center;"><b>घटक</b></td> <td style="text-align: center;"><strong>विवरण</strong></td> </tr> <tr> <td><strong>टू (</strong><span style="color: rgb(33, 37, 41); font-weight: 700;">To)</span></td> <td> <ul> <li><strong>टू</strong> <strong>व्यक्ति के एड्रेस</strong> को इंगित करता है&nbsp;<strong>जिसे हम मेल भेजना चाहते हैं।</strong></li> <li>हम <strong>एक साथ कई लोगों को एक&nbsp;मेल भेज सकते हैं।</strong></li> <li>उसके लिए, <strong>हमें केवल प्रत्येक भाग के लिए</strong> टू पार्ट <strong>में एक अर्धविराम जोड़कर प्रत्येक व्यक्ति के ईमेल एड्रेस का उल्लेख करना होता है।&nbsp;</strong></li> </ul> <p>&nbsp;</p> </td> </tr> <tr> <td><strong>बॉडी (</strong><span style="color: rgb(33, 37, 41); font-weight: 700;">Body)</span></td> <td> <ul> <li>बॉडी वह स्क्रीन है <strong>जहां हम वास्तविक मेल लिखते हैं</strong>।&nbsp;</li> <li>यहां हम <strong>मेल का पूरा विवरण</strong> लिखेंगे।</li> <li>हम<strong> जिस प्रकार के पत्र लिख रहे हैं, उसके आधार पर यह उचित प्रारूप में होना चाहिए।</strong></li> <li>यह एक <strong>औपचारिक या अनौपचारिक पत्र</strong> के रूप में हो सकता है।</li> </ul> </td> </tr> <tr> <td><strong>सीसी (</strong><span style="color: rgb(33, 37, 41); font-weight: 700;">CC)</span>&nbsp;</td> <td> <ul> <li>ईमेल भेजने में, <strong>सीसी कार्बन कॉपी का संक्षिप्त नाम है।</strong></li> <li>ऊपर दिए गए भौतिक कार्बन कॉपी की तरह, <strong>सीसी अन्य लोगों को ईमेल की प्रतियां भेजने का एक आसान तरीका है।</strong></li> <li>यदि आपको कभी भी एक सीसी किया हुआ ईमेल प्राप्त होता है, तो आपने देखा होगा कि यह आपके नाम के अलावा दूसरे व्यक्तियों का नाम भी होता है।&nbsp;</li> </ul> </td> </tr> <tr> <td><strong>बीसीसी (</strong><span style="color: rgb(33, 37, 41); font-weight: 700;">BCC)</span></td> <td> <ul> <li>बीसीसी का मतलब <strong>ब्लाइंड कार्बन कॉपी</strong> होता है।</li> <li>बीसीसी <strong>अन्य लोगों को ईमेल की प्रतियां भेजने का एक तरीका है।</strong></li> <li>इसे <strong>ब्लाइंड&nbsp;कार्बन कॉपी</strong> कहा जाता है क्योंकि अन्य प्राप्तकर्ता यह नहीं देख पाएंगे कि किसी अन्य व्यक्ति को ईमेल की एक प्रति भेज दी गई है।</li> </ul> </td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which one of the following is NOT an Input device?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन एक इनपुट उपकरण&nbsp;नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Keyboard</div><div class="option correct">Monitor</div><div class="option">Digitiser</div><div class="option">Scanner</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">कीबोर्ड</div><div class="option correct">मॉनिटर</div><div class="option">डिजिटाइज़र</div><div class="option">स्कैनर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><u><strong>Monitor</strong></u>&nbsp;is NOT an Input device.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The device which provides any piece of information from a computer into human-readable form is known as the Output device. <ul> <li style=""><span style="font-weight: 700;">Monitor,&nbsp;</span>Speakers, Headphones etc&nbsp;are&nbsp;examples of&nbsp;<span style="font-weight: 700;">Output devices.</span></li> </ul> </li> <li style="">A <strong>computer monitor is an output device</strong> that displays information in pictorial or text form. A monitor usually comprises the visual display, circuitry, casing, and power supply.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>The device which is used to provide data and control signals to a computer is known as an Input device. <ul> <li style=""><strong>Keyboard</strong><span style="font-weight: 700;">,&nbsp;</span>Mouse,&nbsp;<span style="font-weight: 700;">Scanner</span>,&nbsp;<span style="font-weight: 700;">Digitiser&nbsp;</span>etc are examples of Input device.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><u><strong>मॉनिटर</strong></u> एक इनपुट उपकरण&nbsp;नहीं है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>वह उपकरण जो कंप्यूटर से मानव-पठनीय रूप में कोई भी जानकारी प्रदान करता है, आउटपुट उपकरण&nbsp;के रूप में जाना जाता है। <ul> <li style=""><span style="font-weight: 700;">मॉनिटर,</span> स्पीकर, हेडफोन आदि <span style="font-weight: 700;">आउटपुट </span><strong>उपकरण&nbsp;</strong>के&nbsp;उदाहरण हैं।</li> </ul> </li> <li style=""><strong>कंप्यूटर मॉनीटर एक आउटपुट डिवाइस </strong>है जो सूचना को चित्रात्मक या टेक्स्ट रूप में प्रदर्शित करता है। एक मॉनिटर में आमतौर पर विजुअल डिस्प्ले, सर्किट्री, आवरण और बिजली की आपूर्ति शामिल होती है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>कंप्यूटर को डेटा और नियंत्रण सिग्नल प्रदान करने के लिए उपयोग की जाने वाली डिवाइस को इनपुट डिवाइस के रूप में जाना जाता है।&nbsp; <ul> <li><strong>कीबोर्ड</strong> <span style="font-weight: 700;">,</span> माउस, <span style="font-weight: 700;">स्कैनर</span> , <span style="font-weight: 700;">डिजिटाइज़र</span> आदि इनपुट उपकरण&nbsp;के उदाहरण हैं।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following holds the ROM, CPU, RAM and expansion cards?</div>
+  <div class="question lang-hi">निम्न में से किस पर रोम, सीपीयू रैम और एक्सपेंशन कार्ड्स लगे होते हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hard disk</div><div class="option">Floppy disk</div><div class="option correct">Mother board&nbsp;</div><div class="option">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हार्ड डिस्क&nbsp;</div><div class="option">फ्लॉपी डिस्क&nbsp;</div><div class="option correct">मदर बोर्ड</div><div class="option">उपरोक्त में से कोई नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <b><u>Mother board.</u></b></p> <ul> <li><strong>The motherboard</strong> is a printed circuit board and foundation of a computer that is the biggest board in a computer chassis.</li> <li>It <strong>allocates power and allows communication</strong> to and between the CPU, RAM, and all other computer hardware components.</li> <li>A motherboard provides connectivity between the hardware components of a computer, like a <strong>processor (CPU), memory (RAM), hard drive, and video card.</strong></li> <li>A computer motherboard is<strong> located inside the computer case</strong> and is where most of the parts and computer peripherals connect.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <table border="1" cellpadding="1" cellspacing="1" style="background-color: rgb(255, 255, 255); width: 350px;"> <tbody> <tr> <td style="text-align: center;"><strong>Storage Device</strong></td> <td style="text-align: center;"><strong>Use</strong></td> </tr> <tr> <td>Hard disk</td> <td><strong>A hard disk drive</strong> (sometimes abbreviated as a hard drive, HD, or HDD) is a non-volatile data storage device.</td> </tr> <tr> <td>Floppy disk</td> <td><strong>Floppy diskette</strong> is a type of storage media capable of storing electronic data, like a computer file.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>मदर बोर्ड</strong></u> है।&nbsp;</p> <ul> <li><strong>मदरबोर्ड</strong> एक प्रिंटेड सर्किट बोर्ड और एक कंप्यूटर की नींव है यह एक कंप्यूटर चेसिस में सबसे बड़ा बोर्ड है।</li> <li>यह <strong>पावर आवंटित करता है</strong> और सीपीयू, रैम और अन्य सभी कंप्यूटर हार्डवेयर घटकों के बीच <strong>संचार की अनुमति</strong> देता है।</li> <li>एक मदरबोर्ड <strong>एक प्रोसेसर (सीपीयू), मेमोरी (रैम), हार्ड ड्राइव और वीडियो कार्ड</strong> की तरह, कंप्यूटर के हार्डवेयर घटकों के बीच कनेक्टिविटी प्रदान करता है।</li> <li>एक कंप्यूटर मदरबोर्ड <strong>कंप्यूटर केस के अंदर स्थित होता है</strong> और यह वह जगह है जहां अधिकांश भाग और कंप्यूटर बाह्य उपकरणों को जोड़ते हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <table border="1" cellpadding="1" cellspacing="1" style="background-color: rgb(255, 255, 255); width: 350px;"> <tbody> <tr> <td style="text-align: center;">स्टोरेज डिवाइस</td> <td style="text-align: center;">उपयोग</td> </tr> <tr> <td>हार्ड डिस्क&nbsp;</td> <td>हार्ड डिस्क ड्राइव (कभी-कभी एक हार्ड ड्राइव, एचडी, या एचडीडी के रूप में संक्षिप्त) एक नॉन - वोलेटाइल डेटा स्टोरेज उपकरण है।</td> </tr> <tr> <td>फ्लॉपी डिस्क&nbsp;</td> <td><strong>फ्लॉपी डिस्क</strong> एक प्रकार का स्टोरेज मीडिया है, जो इलेक्ट्रॉनिक डेटा को कंप्यूटर फाइल की तरह स्टोर करने में सक्षम है।</td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">_______ is used to protect data and password.</div>
+  <div class="question lang-hi">_______ का उपयोग डेटा और पासवर्ड की सुरक्षा के लिए किया जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Encryption</div><div class="option">Authentication</div><div class="option">Verification</div><div class="option">Computer</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">एन्क्रिप्शन</div><div class="option">ऑथेंटिकेशन</div><div class="option">वेरिफिकेशन</div><div class="option">कंप्यूटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Encryption</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Encryption</strong> is the process of encoding data in cryptography.</li> <li>This procedure converts plaintext, or the original representation of the data, into ciphertext, or an alternative representation of the data.</li> <li>Only authorized parties should be able to decipher a ciphertext back to plaintext and access the original data.</li> <li>Encryption does not prevent interference in and of itself, but it does hinder a would-be interceptor from understanding the material.</li> <li>The act of verifying an assertion, such as a computer system user&#39;s identity, is known as<strong> authentication.&nbsp;</strong></li> </ul></div>
+    <div class="lang-hi"><div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">सही उत्तर <u><strong>एन्क्रिप्शन </strong></u>है।</div> <p><br style="color: rgb(37, 37, 37); " /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>एन्क्रिप्शन </strong>क्रिप्टोग्राफी में डेटा एन्कोडिंग की प्रक्रिया है।</li> <li>यह प्रक्रिया प्लेन टेक्स्ट या डेटा के मूल प्रतिनिधित्व को सिफरटेक्स्ट या डेटा के अल्टरनेटिव रिप्रजेंटेशन में बदल देती है।</li> <li>केवल अधिकृत पक्ष ही सिफरटेक्स्ट को प्लेनटेक्स्ट में वापस समझने और मूल डेटा तक पहुंचने में सक्षम होना चाहिए।</li> <li>एन्क्रिप्शन अपने आप में इंटरफेरेंस को नहीं रोकता है, लेकिन यह सामग्री को समझने से होने वाले इंटरसेप्टर को बाधित करता है।</li> <li>किसी दावे को सत्यापित करने का कार्य, जैसे कि कंप्यूटर सिस्टम यूजर्स आइडेंटिटी, <strong>ऑथेंटिकेशन </strong>के रूप में जाना जाता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is not an operating system?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा एक ऑपरेटिंग सिस्टम नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">iOS</div><div class="option">Android</div><div class="option">Mac OSX</div><div class="option correct">Hadoop</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">iOS</div><div class="option">Android</div><div class="option">Mac OSX</div><div class="option correct">Hadoop</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Hadoop.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></u></p> <ul style="margin-left: 40px;"> <li>iOS (formerly iPhone OS) is a mobile operating system created and developed by Apple Inc</li> <li>Android is a mobile operating system developed by Google</li> <li>macOS (previously Mac OS X) is a series of graphical operating systems developed and marketed by Apple Inc</li> <li><strong>Hadoop is an open-source framework that allows to store and process big data in a distributed environment across clusters of computers using simple programming models</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्‍तर है <u><strong>→ हडूप।</strong></u></p><p> <u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></u></p><ul style="margin-left: 40px;"><li> iOS (पूर्व में iPhone OS) एक मोबाइल ऑपरेटिंग सिस्टम है जिसे Apple Inc . द्वारा बनाया और विकसित किया गया है</li><li> Android Google द्वारा विकसित एक मोबाइल ऑपरेटिंग सिस्टम है</li><li> मैकोज़ (पहले मैक ओएस एक्स) ऐप्पल इंक द्वारा विकसित और विपणन किए गए ग्राफिकल ऑपरेटिंग सिस्टम की एक श्रृंखला है</li><li> <strong>Hadoop एक ओपन-सोर्स फ्रेमवर्क है जो सरल प्रोग्रामिंग मॉडल का उपयोग करके कंप्यूटर के समूहों में वितरित वातावरण में बड़े डेटा को स्टोर और प्रोसेस करने की अनुमति देता है।</strong></li></ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">One byte has</div>
+  <div class="question lang-hi">एक बाइट _____________है<span style="color: rgb(33, 37, 41);">।</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">8-bits</div><div class="option">16-bits</div><div class="option">32-bits</div><div class="option">64-bits</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">8-बिट</div><div class="option">16-बिट</div><div class="option">32-बिट</div><div class="option">64-बिट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>8-bits</strong></u>.</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>The smallest unit of data in a computer is called&nbsp;the <strong>bit</strong>.</li> <li>The Bit is the acronym of <strong><u>Bi</u></strong>nary Digi<strong><u>t</u></strong>.</li> <li>&nbsp;A bit has a single binary value, either 0 or 1</li> <li>The data will be <strong>transformed to its binary form.</strong> <ul> <li>1 byte = 8 bits</li> <li>1 kilobyte (KB) = 1024 bytes</li> <li>1 megabyte (MB) = 1024 kilobytes</li> <li>1 gigabyte (GB) = 1024 megabytes</li> <li>1 terabyte (TB) = 1024 gigabytes</li> <li>1 petabyte (PB) = 1024 terabytes</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Bit (Binary Digit):</strong> <ul> <li>A binary digit is logical 0 and 1 representing a passive or an active state of a component in an electric circuit.</li> </ul> </li> <li><strong>Nibble:</strong> <ul> <li>A group of 4 bits is called a nibble.</li> </ul> </li> <li><strong>Byte:</strong> <ul> <li>A group of 8 bits is called a byte.</li> <li>A byte is the smallest unit, which can represent a data item or a character.</li> </ul> </li> <li><strong>Word:</strong> <ul> <li>A computer word, like a byte, is a group of a <strong>fixed number of bits processed as a unit</strong>, which varies from computer to computer but is fixed for each computer.</li> <li>The length of a computer word is called <strong>word size or word length.</strong></li> <li>It may be as small as <strong>8 bits</strong> or maybe as long as 96 bits.</li> <li>A computer stores the information in the <strong>form of computer words.</strong></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u><span style="font-weight: 700;">8-बिट</span></u>&nbsp;है।</p> <p><u><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></u></p> <ul> <li><font style="vertical-align: inherit;">कंप्यूटर में डेटा की सबसे छोटी इकाई को&nbsp;</font><span style="font-weight: 700;">बिट</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;कहा जाता है</font><font style="vertical-align: inherit;">।</font></font></li> <li><font style="vertical-align: inherit;">बिट, <b><u>बाइ</u></b></font>नरी&nbsp;<font style="vertical-align: inherit;">डिजी</font><span style="font-weight: 700;"><u><font style="vertical-align: inherit;">ट</font></u></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;का संक्षिप्त रूप है</font><font style="vertical-align: inherit;">।</font></font></li> <li><font style="vertical-align: inherit;">बिट का एक एकल बाइनरी मान या तो 0 या 1 होता है।&nbsp;</font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">डेटा&nbsp;</font></font>को&nbsp;<font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">उसके बाइनरी रूप में बदल दिया</font></span><font style="vertical-align: inherit;">&nbsp;जाएगा</font></font>। <ul> <li><font style="vertical-align: inherit;">1 बाइट = 8 बिट</font></li> <li><font style="vertical-align: inherit;">1 किलोबाइट (KB) = 1024 बाइट्स</font></li> <li><font style="vertical-align: inherit;">1 मेगाबाइट (</font>MB<font style="vertical-align: inherit;">) = 1024 किलो</font>बाइट्स</li> <li><font style="vertical-align: inherit;">1 गीगाबाइट (</font>GB<font style="vertical-align: inherit;">) = 1024 मेगा</font>बाइट्स</li> <li><font style="vertical-align: inherit;">1 टेराबाइट (</font>TB<font style="vertical-align: inherit;">) = 1024 गीगा</font>बाइट्स</li> <li><font style="vertical-align: inherit;">1 पेटाबाइट (PB) = 1024 टेराबाइट्स</font></li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">बिट (बाइनरी अंक):</span> <ul> <li><font style="vertical-align: inherit;">एक द्विआधारी अंक तार्किक 0 और 1 है जो विद्युत परिपथ में एक घटक की निष्क्रिय या सक्रिय स्थिति का प्रतिनिधित्व करता है।</font></li> </ul> </li> <li><span style="font-weight: 700;">निबल:</span> <ul> <li><font style="vertical-align: inherit;">4 बिट्स के समूह को निबल कहते हैं।</font></li> </ul> </li> <li><span style="font-weight: 700;">बाइट:</span> <ul> <li><font style="vertical-align: inherit;">8 बिट के समूह को बाइट कहते हैं।</font></li> <li><font style="vertical-align: inherit;">एक बाइट सबसे छोटी इकाई है, जो किसी डेटा आइटम या एक चरित्र का प्रतिनिधित्व कर सकती है।</font></li> </ul> </li> <li><span style="font-weight: 700;">शब्द:</span> <ul> <li><font style="vertical-align: inherit;">एक कंप्यूटर शब्द, एक बाइट की तरह,&nbsp;</font><span style="font-weight: 700;">एक इकाई के रूप में संसाधित बिट्स की निश्चित संख्या का</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;एक समूह है</font><font style="vertical-align: inherit;">, जो कंप्यूटर से कंप्यूटर में भिन्न होता है लेकिन प्रत्येक कंप्यूटर के लिए तय होता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कंप्यूटर शब्द की लंबाई को&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">शब्द आकार या शब्द की लंबाई</font></span><font style="vertical-align: inherit;">&nbsp;कहा जाता&nbsp;</font></font>है।</li> <li><font style="vertical-align: inherit;">यह&nbsp;</font><span style="font-weight: 700;">8 बिट</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;जितना छोटा&nbsp;</font><font style="vertical-align: inherit;">या 96 बिट जितना लंबा हो सकता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कंप्यूटर सूचनाओं&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">को कंप्यूटर शब्दों</font></span><font style="vertical-align: inherit;">&nbsp;के&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">रूप</font></span><font style="vertical-align: inherit;">&nbsp;में संग्रहीत करता है</font></font>।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">How can we add a Chart to the presentation in MS PowerPoint?</div>
+  <div class="question lang-hi">हम MS पॉवर पॉइंट में प्रेजेंटेशन में चार्ट कैसे जोड़ सकते हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Insert &gt; Illustration &gt; Chart</div><div class="option">Design &gt; Illustration &gt; chart&nbsp;</div><div class="option">Insert &gt; Macros &gt; Chart&nbsp;</div><div class="option">Layout &gt; object &gt; chart</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">इन्सर्ट &gt; इलस्ट्रेशन &gt; चार्ट</div><div class="option">डिज़ाइन &gt; इलस्ट्रेशन &gt; चार्ट</div><div class="option">इन्सर्ट &gt; माक्रोस &gt; चार्ट</div><div class="option">लेआउट &gt; ऑब्जेक्ट &gt; चार्ट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Insert &gt; Illustration &gt; Chart</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>How to create Charts</strong> <ul> <li>To create a simple chart in<strong> PowerPoint, click insert&gt; Chart and pick the chart you want.</strong></li> <li>Click the placeholder that you want to contain the chart.</li> <li>On the Insert Tab, in the illustrations click the chart.</li> <li>In the Insert Chart dialog box, click a chart and then click ok.</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/22/09/PowerpointChart.png" style="width: 350px; height: 211px;" /></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">MS PowerPoint</span> <ul> <li>It is a presentation program used to present data and information by using text, diagrams with animation, images, and transitional effects in the form of slides.</li> <li>It is developed by Robert Gaskins and Dennis Austin.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>इन्सर्ट &gt; इलस्ट्रेशन &gt; चार्ट</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>चार्ट कैसे बनाएं</strong> <ul> <li><strong>पॉवर पॉइंट </strong>में एक सरल चार्ट बनाने के लिए, <strong>इन्सर्ट पर क्लिक करें &gt; चार्ट और इच्छित चार्ट चुनें।</strong></li> <li>उस प्लेसहोल्डर पर क्लिक करें जिसे आप चार्ट को शामिल करना चाहते हैं।</li> <li>इन्सर्ट टैब पर, चित्र में चार्ट पर क्लिक करें।</li> <li>इन्सर्ट चार्ट डाईलोग बॉक्स में, चार्ट पर क्लिक करें और फिर ओके पर क्लिक करें।</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/22/09/PowerpointChart.png" style=" width: 350px; height: 211px;" /></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>एम.एस. पावरपॉइंट</strong> <ul> <li>यह एक प्रेजेंटेशन प्रोग्राम है जिसका उपयोग टेक्स्ट और, स्लाइड के रूप में एनीमेशन, चित्र, और परिवर्तनशील प्रभावों के साथ चित्र प्रस्तुत करने के लिए किया जाता है।</li> <li>यह रॉबर्ट गैस्किन्स और डेनिस ऑस्टिन द्वारा विकसित किया गया है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is<strong> not</strong> a soft copy device.</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा एक&nbsp;सॉफ्ट कॉपी डिवाइस <strong>नहीं</strong> है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Monitor</div><div class="option">Visual display terminal</div><div class="option correct">Plotter</div><div class="option">Video system</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">मॉनीटर</div><div class="option">विजुअल डिस्पले टर्मिनल</div><div class="option correct">प्लॉटर</div><div class="option">वीडियो सिस्टम</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Plotter</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="color: rgb(77, 81, 86); "><strong>A plotter produces vector graphics drawings</strong>. </span></li> <li><span style="color: rgb(77, 81, 86); ">Plotters draw lines on paper using a pen, or in some applications, use a knife to cut a material like vinyl or leather.&nbsp;</span></li> <li><span style="color: rgb(77, 81, 86); "><strong>The plotter is a hard copy device.&nbsp;</strong></span></li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/06/Reported_24-June-2021_umesh_D5.PNG" style="width: 300px; height: 218px;" /></p> <ul> <li><strong>Soft copy device&nbsp;</strong> <ul> <li>It is used to produce a soft copy of the output.</li> <li>Soft-copy can be seen or heard.&nbsp;</li> <li>When power is switched off this copy is vanished, so a soft copy of a document is of temporary nature.&nbsp;</li> <li>Softcopy output is an output that is not produced on paper or some materials which can not be touched or carried for being shown to others.&nbsp;</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Monitors</strong> <ul> <li>It is the most popular output device used today for producing a soft copy output.</li> <li>The monitor is often called a visual display unit or visual display terminal. The two basic types of monitors used today are CRT and flat panel display.</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/06/Reported_24-June-2021_umesh_D6.PNG" style="width: 300px; height: 232px;" /></p> <ul> <li><strong>Hard copy output</strong> <ul> <li>It is an output that is produced on paper or some materials which can be touched or carried for being shown to others.</li> <li>They are permanent in nature and can be looked at later when the person is not using the computer. Example-the output produced by the printer is a hard copy output.</li> </ul> </li> <li><strong>Visual display terminal</strong> <ul> <li>It&nbsp;is a device with a screen that displays characters or graphics representing data in computer memory. It usually has a keyboard or light pen for the input of information or inquiries</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>प्लॉटर</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>एक प्लॉटर वेक्टर ग्राफिक्स ड्राइंग (रेखा-चित्रों) का निर्माण करता है।</strong></li> <li>प्लॉटर एक पेन का उपयोग करके कागज पर लाइनें खींचते हैं, या कुछ अनुप्रयोगों में, विनाइल या चमड़े जैसी सामग्री को काटने के लिए चाकू का उपयोग करते हैं।</li> <li><strong>प्लॉटर एक हार्ड कॉपी डिवाइस है।</strong></li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/06/Reported_24-June-2021_umesh_D5.PNG" style="width: 300px; height: 218px;" /></p> <ul> <li><strong>सॉफ्ट कॉपी डिवाइस</strong><strong>&nbsp;</strong> <ul> <li>इसका उपयोग आउटपुट की सॉफ्ट कॉपी बनाने के लिए किया जाता है।</li> <li>सॉफ्ट-कॉपी देखी या सुनी जा सकती है।</li> <li>जब बिजली बंद हो जाती है तो यह कॉपी गायब हो जाती है, इसलिए किसी डॉक्यूमेंट की सॉफ्ट कॉपी अस्थायी प्रकृति की होती है।</li> <li>सॉफ्ट कॉपी आउटपुट एक ऐसा आउटपुट है जो कागज या कुछ सामग्रियों पर उत्पादित नहीं होता है जिसे दूसरों को दिखाया नहीं जा सकता है या उन्हें छुआ नहीं जा सकता है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>मॉनीटर</strong> <ul> <li>यह एक सॉफ्ट कॉपी आउटपुट के उत्पादन के लिए आज का सबसे लोकप्रिय आउटपुट डिवाइस है।</li> <li>मॉनीटर को अक्सर विज़ुअल डिस्प्ले यूनिट या विज़ुअल डिस्प्ले टर्मिनल कहा जाता है। आज उपयोग किए जाने वाले दो बुनियादी प्रकार के मॉनीटर CRT और फ्लैट पैनल डिस्प्ले हैं।</li> </ul> </li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/21/06/Reported_24-June-2021_umesh_D6.PNG" style="width: 300px; height: 232px;" /></p> <ul> <li><strong>हार्ड कॉपी आउटपुट</strong> <ul> <li>यह एक आउटपुट है जिसे कागज या कुछ सामग्रियों पर उत्पादित किया जाता है जिसे दूसरों को दिखाया जा सकता है।</li> <li>वे प्रकृति में स्थायी होते हैं और <span style="">जब व्यक्ति कंप्यूटर का उपयोग नहीं कर रहा होता है तब&nbsp;</span>इन्हें बाद में भी देखा जा सकता है। उदाहरण-प्रिंटर द्वारा उत्पादित आउटपुट एक हार्ड कॉपी आउटपुट है।</li> </ul> </li> <li><strong>विजुअल डिस्प्ले टर्मिनल</strong> <ul> <li>यह एक स्क्रीन के साथ एक उपकरण है जो कंप्यूटर मेमोरी में डेटा का प्रतिनिधित्व करने वाले कैरेक्टरों या ग्राफिक्स को प्रदर्शित करता है। इसमें आमतौर पर जानकारी या पूछताछ के इनपुट के लिए एक कीबोर्ड या लाइट पेन होता है</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following are&nbsp;components of MS Access?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-से MS <span style="">एक्सेस</span> के घटक हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Tables</div><div class="option">Relationships</div><div class="option">Queries</div><div class="option correct">All the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">टेबल्स</div><div class="option">रीलैशनशिप</div><div class="option">क्वेरीज़</div><div class="option correct">उपरोक्त सभी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>option 4.</strong></p> <p><strong>Concept:</strong></p> <p><strong><span style="">MS Access:</span></strong></p> <p><span style="">&nbsp;</span><span style="">MS Access&nbsp;</span>or Microsoft Access is Database Management System (DBMS) by Microsoft. In Microsoft Access, Jet Database Engine is merged with the Graphical User Interface (GUI) and Software development tools.</p> <p><strong>There are seven major components of Microsoft Access:</strong></p> <p><strong>Tables</strong>:</p> <p>In MS Access Tables store the data or the information that we feed the program.</p> <p><strong>Relationships:</strong></p> <p>The connections that arise between one or more tables are known as relationships. So there are one-on-one connections, one-to-many relationships, and, of course, many-to-many ties.</p> <p><strong>Queries:</strong></p> <p>Queries are when the user or the programmer requests the database for information.</p> <p><strong>Forms:</strong></p> <p>This is an object class that enables a programmer or designer to develop an MS Access user interface. Tables and queries are what make up a form.</p> <p><strong>Reports:</strong></p> <p>The user will wish to examine the information once all of the data has been entered into the database.</p> <p><strong>Macros:</strong></p> <p>Macros are Microsoft Access capabilities that let you automate actions on your forms and reports.</p> <p><strong>Modules:</strong></p> <p>These are the software&#39;s foundations, which enable a programmer to design a series of predetermined instructions known as sub-routines.</p> <p><strong>Hence the correct answer is&nbsp;</strong><span style="">All the above.</span></p></div>
+    <div class="lang-hi"><p>सही उत्तर <strong>विकल्प 4 है।</strong></p> <p><strong>संकल्पना:</strong></p> <p><strong><span style="">MS एक्सेस:</span></strong></p> <p>MS एक्सेस या माइक्रोसॉफ्ट एक्सेस, माइक्रोसॉफ्ट द्वारा विकसित डेटाबेस प्रबंधन प्रणाली (DBMS) है। <span style="">माइक्रोसॉफ्ट एक्सेस</span> में जेट डेटाबेस इंजन को ग्राफिकल यूजर इंटरफेस (<span style="">GUI</span>) और सॉफ्टवेयर डेवलपमेंट टूल्स के साथ मिला दिया गया है।</p> <p><strong>माइक्रोसॉफ्ट एक्सेस के सात मुख्य घटक निम्न हैं:</strong></p> <p><strong>सारणी(</strong><span style="font-weight: 700; ">Tables)</span>:</p> <p>MS एक्सेस में सारणी डेटा और हमारे द्वारा प्रोग्राम में फीड की जाने वाली सूचना को संग्रहित करता है।</p> <p><strong>संबंध:</strong></p> <p>एक या अधिक तालिकाओं के बीच उत्पन्न होने वाले संबंधन को संबंध के रूप में जाना जाता है। अत: इनके बीच एक-एक तालिका के बीच संबंध, एक तालिका का कई तालिकाओं से संबंध, कई तालिकाओं का कई अन्य तालिकाओं से संबंध शामिल है।</p> <p><strong>क्वेरीज़:</strong></p> <p>क्वेरी तब होती है जब उपयोगकर्ता या प्रोग्रामर डेटाबेस से जानकारी के लिए अनुरोध करता है।</p> <p><strong>फार्म</strong>:</p> <p>यह एक ऑब्जेक्ट क्लास है जो एक प्रोग्रामर या डिजाइनर को <span style="">MS एक्सेस </span>यूजर इंटरफेस विकसित करने में सक्षम बनाता है। सारणी और क्वेरी मिलकर एक फॉर्म का निर्माण करते हैं।</p> <p><strong>रिपोर्ट</strong>:</p> <p><span style="">डेटाबेस में </span>सभी डेटा दर्ज हो जाने के बाद उपयोगकर्ता जानकारी की जांच करना चाहता है।</p> <p><strong>मैक्रोज़(<span style="font-weight: 700; ">Macros)</span>:</strong></p> <p><span style="">मैक्रोज़(</span><span style=" font-weight: 700;">Macros) </span>माइक्रोसॉफ्ट एक्सेस क्षमताएँ हैं जो आपको अपने फार्म और रिपोर्ट्स पर क्रियाओं को स्वचालित करने की सुविधा देती हैं।</p> <p><strong>मॉड्यूल</strong>:</p> <p>ये सॉफ़्टवेयर का मूल हैं, जो एक प्रोग्रामर को सब रुटिन के रूप में ज्ञात पूर्व निर्धारित निर्देशों की एक श्रृंखला तैयार करने में सक्षम बनाती हैं।</p> <p><strong>इस प्रकार सही उत्तर </strong>उपरोक्त सभी है।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>A formula in MS Excel starts with a ______ symbol.</p></div>
+  <div class="question lang-hi">MS Excel में एक सूत्र ______ चिह्न से शुरू होता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">+</div><div class="option correct">=</div><div class="option">#</div><div class="option">@</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">+</div><div class="option correct">=</div><div class="option">#</div><div class="option">@</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>=</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>The formula in MS Excel:</strong> <ul> <li>In Excel, you can use formulas to <strong>calculate results</strong>.</li> <li>Formulas can be<strong> short and simple</strong>, such as adding two numbers, or long and complex.</li> <li>Formulas can <strong>include one or more of Excel&#39;s built-in functions</strong>, and advanced users can even create their own functions.&nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>=</strong></u> है।<br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>एमएस एक्सेल (<span style="">MS Excel</span>) में फार्मूला (Formula):</strong> <ul> <li>एक्सेल में, आप <strong>परिणामों की गणना</strong> करने के लिए सूत्रों का उपयोग कर सकते हैं।</li> <li>सूत्र,&nbsp;<strong>छोटे और सरल</strong> हो सकते हैं, जैसे कि दो संख्याओं को जोड़ना, या लंबे&nbsp;और जटिल भी हो सकते हैं।</li> <li><span style="font-weight: bolder;">फार्मूला&nbsp;</span>में एक्सेल के एक या अधिक अंतर्निर्मित फंक्शन (<span style="font-weight: bolder;">built-in functions)&nbsp;</span>शामिल हो सकते हैं और उन्नत उपयोगकर्ता अपने स्वयं के <span style="">फंक्शन&nbsp;</span>भी बना सकते हैं।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following part of the operating system interacts with a specific hardware?</div>
+  <div class="question lang-hi">ऑपरेटिंग सिस्टम का निम्नलिखित में से कौन-सा भाग किसी विशिष्ट हार्डवेयर के साथ <span style="">ऑपरेटिंग सिस्टम में&nbsp;</span>परस्पर इंटरैक्ट करता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">device driver</div><div class="option">data processor</div><div class="option">optical reader</div><div class="option">application software</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct"><span style="">डिवाइस ड्राइवर</span></div><div class="option"><span style="">डेटा प्रोसेसर</span></div><div class="option"><span style="">ऑप्टिकल रीडर</span></div><div class="option"><span style="">एप्लिकेशन सॉफ्टवेयर</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>device driver.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Device Driver:</strong> <ul> <li>It interacts with specific hardware. in the operating system.</li> <li>They define the messages and mechanisms in the system.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Data Processor:</strong> <ul> <li>It processes personal data only on behalf of the controller.</li> <li>It carries out various data processing tasks for a business, such as storing data and retrieving data.</li> </ul> </li> <li><strong>Optical reader:</strong> <ul> <li>It is a device that converts text or images from paper into digital signals that can be processed in various ways by computers.</li> </ul> </li> <li><strong>Application Software:</strong> <ul> <li>It is a computer software package that performs a specific function directly for the end user or possibly another application.</li> <li>Examples: Office, Excel, Word etc.&nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>डिवाइस ड्राइवर</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>डिवाइस ड्राइवर:</strong> <ul> <li>यह विशिष्ट हार्डवेयर के साथ ऑपरेटिंग सिस्टम में <span style="">परस्पर&nbsp;</span>इंटरैक्ट करता है।</li> <li>वे सिस्टम में संदेश और मेकैनिज़म&nbsp;को परिभाषित करते हैं।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>डेटा&nbsp;प्रोसेसर:</strong> <ul> <li>यह केवल कन्ट्रोलर&nbsp;की (Key) ओर से पर्सनल&nbsp;डेटा को प्रोसेस&nbsp;करता है।</li> <li>यह किसी व्यवसाय के लिए विभिन्न प्रकार के डेटा प्रोसेसिंग&nbsp;जैसे डेटा स्टोर&nbsp;करना और डेटा रेटरीव&nbsp;करना <span style="">का कार्य करता है</span>।</li> </ul> </li> <li><strong>ऑप्टिकल रीडर:</strong> <ul> <li>यह एक ऐसा डिवाइस&nbsp;है जो टेक्स्ट&nbsp;या इमेज&nbsp;को पेपर&nbsp;से डिजिटल संकेतों में परिवर्तित करता है जिसे कंप्यूटर द्वारा विभिन्न तरीकों से प्रोसेस&nbsp;किया जा सकता है।</li> </ul> </li> <li><strong>एप्लिकेशन सॉफ्टवेयर:</strong> <ul> <li>यह एक कंप्यूटर सॉफ्टवेयर पैकेज है जो अंतिम उपयोगकर्ता या संभवतः किसी अन्य एप्लिकेशन के लिए सीधे एक विशिष्ट कार्य करता है।</li> <li>उदाहरण: ऑफिस, एक्सेल, वर्ड आदि।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q16</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A program that infects other programs by modifying them is known as:</div>
+  <div class="question lang-hi">एक प्रोग्राम जो अन्य प्रोग्रामों को संशोधित करके उन्हें संक्रमित करता है, उसे ______ के रूप में जाना जाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Search Engine</div><div class="option">Antivirus</div><div class="option correct">Virus</div><div class="option">Cyber crime</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सर्च इंजन</div><div class="option">एंटी-वायरस</div><div class="option correct">वायरस</div><div class="option">साइबर क्राइम</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is option&nbsp;<strong>3&nbsp;</strong>i.e&nbsp;<u><strong>Virus.</strong></u></p> <ul> <li>A program that infects other programs by modifying them is known as Virus.</li> <li>The computer virus can be injected into the computer through removable media,&nbsp;downloads of&nbsp;the Internet,&nbsp;and e-mail attachments.</li> <li>The first computer virus called the &#39;<strong>Creeper system&#39;</strong>.</li> <li>The first computer virus in India is &#39;<strong>C-Brain Virus</strong>&#39;. <ul> <li>The C-Brain virus first appeared in Chennai in 1988.</li> </ul> </li> <li>Examples of some important Computer viruses are: <ul> <li>Coloumbs Crime.</li> <li>Chenge Mungu.</li> <li>C-brain.</li> <li>Bloody.</li> <li>Pachcom.</li> <li>Filip.</li> <li>Date crime.</li> </ul> </li> <li>A <strong>Search Engine</strong> is a software that is designed to search for information on the World Wide Web.</li> <li><strong>Antivirus</strong>&nbsp;is a computer program used to prevent, detect, and remove malware.</li> <li><strong>Cybercrime</strong> is a crime that involves a computer and a network.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <strong>3</strong> अर्थात् <strong><u>वायरस</u></strong> है।</p> <ul> <li>एक प्रोग्राम जो अन्य प्रोग्रामों को संशोधित करके उन्हें संक्रमित करता है, उसे वायरस के रूप में जाना जाता है।</li> <li>कंप्यूटर वायरस को रिमूवेबल मीडिया, इंटरनेट के डाउनलोड और ई-मेल अटैचमेंट के माध्यम से कंप्यूटर में इंजेक्ट किया जा सकता है।</li> <li>पहले कंप्यूटर वायरस को &#39;<strong>क्रीपर सिस्टम</strong>&#39; कहा जाता था।</li> <li>भारत में पहला कंप्यूटर वायरस &#39;<strong>सी-ब्रेन वायरस</strong>&#39; है। <ul> <li>सी-ब्रेन वायरस पहली बार 1988 में चेन्नई में पाया गया था।</li> </ul> </li> <li>कुछ महत्वपूर्ण कंप्यूटर वायरस के उदाहरण निम्नलिखित हैं: <ul> <li>कोलंबस क्राइम</li> <li>चेंगे मुंगू</li> <li>सी-ब्रेन</li> <li>ब्लडी</li> <li>पैचकॉम</li> <li>फ़िलिप</li> <li>डेट क्राइम</li> </ul> </li> <li>एक <strong>सर्च इंजन</strong> एक सॉफ्टवेयर है जिसे वर्ल्ड वाइड वेब पर जानकारी के लिए खोज करने के लिए डिज़ाइन किया गया है।</li> <li><strong>एंटी-वायरस</strong> एक कंप्यूटर प्रोग्राम है जिसका उपयोग मैलवेयर को रोकने, पता लगाने और हटाने के लिए किया जाता है।</li> <li><strong>साइबर अपराध</strong> एक अपराध है जिसमें एक कंप्यूटर और एक नेटवर्क शामिल है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q17</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is NOT a web search engine?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा वेब सर्च इंजन नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Bing</div><div class="option">Baidu</div><div class="option">Google</div><div class="option correct">Safari</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">बिंग&nbsp;</div><div class="option">बाइडू&nbsp;</div><div class="option">गूगल&nbsp;</div><div class="option correct">सफारी</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><span style="font-weight: 700;">Safari.</span></u></p> <ul> <li><u><span style="font-weight: 700;">Safari</span></u>: is a graphical web browser developed by Apple.</li> <li><u><strong>Safari is a default browser on Apple devices</strong></u>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">Search Engine</span> <ul> <li>A search engine is software that is designed to search information on the World Wide Web which is needed by the user.</li> <li>The other important search engines are&nbsp;<span style="font-weight: 700;">Yahoo, MSN, Ask.com, Yandex.</span></li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Bing</strong> <ul> <li>It is a&nbsp;web search engine&nbsp;developed and operated&nbsp;by Microsoft.</li> </ul> </li> <li><strong>Baidu</strong> <ul> <li>Baidu is the leading internet search engine in China, often likened to Google. Founded in 2000, it offers numerous online services like maps, videos and its own encyclopedia. It also invests significantly in AI and machine learning technologies.</li> </ul> </li> <li><strong>Google</strong> <ul> <li>Google&nbsp;is a&nbsp;web search engine&nbsp;developed and operated&nbsp;by Google LLC.</li> <li>It is the most used search engine on the World Wide Web across all platforms.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>First search engine - <strong>Archie.</strong></li> <li>The founder of Apple - <strong>Steve Jobs, Steve Woznaik, and Ronald Wayne.</strong></li> <li>The&nbsp;CEO&nbsp;of Apple - <strong>Tim Cook.</strong></li> <li>The founder of Google -&nbsp;<strong>Larry Page and Sergey Brin.</strong></li> <li>The&nbsp;CEO&nbsp;of&nbsp;Google - <strong>Sundar Pichai.</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>सफारी</strong></u> है।&nbsp;</p> <ul> <li><u><strong>सफारी: </strong></u>एप्पल द्वारा विकसित एक ग्राफिकल वेब ब्राउज़र है।</li> <li><u><strong>सफारी एप्पल उपकरणों पर एक डिफ़ॉल्ट ब्राउज़र है।</strong></u></li> </ul> <p><u><strong>​</strong></u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>सर्च इंजन</strong> <ul> <li>एक सर्च इंजन वह सॉफ्टवेयर है जिसे <span style="">उपयोगकर्ता द्वारा आवश्यक&nbsp;जानकारी प्राप्त करने के लिए&nbsp;</span>वर्ल्ड वाइड वेब पर&nbsp;<span style="color: rgb(33, 37, 41);">डिजाइन किया&nbsp;</span>गया&nbsp;है।</li> <li>अन्य महत्वपूर्ण सर्च इंजन <strong>याहू, MSN, </strong><span style="font-weight: 700; ">Ask.com</span><strong>, </strong><span style="font-weight: 700; ">Yandex&nbsp;</span>हैं।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>बिंग</strong> <ul> <li>यह माइक्रोसॉफ्ट द्वारा विकसित और संचालित एक वेब सर्च इंजन है।</li> </ul> </li> <li><strong>बाइडू</strong> <ul> <li>बाइडू चीन का अग्रणी इंटरनेट सर्च इंजन है, जिसकी तुलना अक्सर <span style="color: rgb(33, 37, 41);">गूगल&nbsp;</span>से की जाती है। 2000 में स्थापित, यह मानचित्र, वीडियो और अपने स्वयं के विश्वकोश जैसी कई ऑनलाइन सेवाएँ प्रदान करता है। यह एआई और मशीन शिक्षण प्रौद्योगिकियों में भी महत्वपूर्ण निवेश करता है।</li> </ul> </li> <li><strong>गूगल</strong> <ul> <li>गूगल,&nbsp;<span style="">गूगल LLC द्वारा विकसित और संचालित&nbsp;</span>एक वेब सर्च इंजन है।</li> <li>यह सभी प्लेटफार्मों में वर्ल्ड वाइड वेब पर सबसे अधिक उपयोग किया जाने वाला सर्च इंजन है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li>पहला सर्च इंजन - <strong>आर्ची</strong></li> <li>एप्पल के संस्थापक - <strong>स्टीव जॉब्स, स्टीव वोज़निक और रोनाल्ड वेन</strong></li> <li>एप्पल के सीईओ - <strong>टिम कुक</strong></li> <li>गूगल के संस्थापक - <strong>लैरी पेज और सर्गी ब्रिन</strong></li> <li>गूगल के सीईओ - <strong>सुंदर पिचाई</strong></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q18</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following options is an example of software?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा विकल्प सॉफ्टवेयर का एक उदाहरण है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Keyboard</div><div class="option">CPU</div><div class="option">Joy Stick</div><div class="option correct">MS Office</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">कीबोर्ड</div><div class="option">CPU</div><div class="option">जॉय स्टिक</div><div class="option correct">MS ऑफिस</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>MS Office</strong></u>.</p> <ul> <li><strong>Software</strong> is a set of instructions given to the computer to control and coordinate computer hardware.</li> <li>The software cannot be sensed by touch.&nbsp;</li> <li><strong>MS Office</strong> is an example of computer software.</li> <li>Other examples for software are: <ul> <li>Office suites.</li> <li>Database programs.</li> <li>Web browsers.</li> <li>Communication platforms.</li> <li>Word processors.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Hardware</strong> is the physical equipment of a computer that can be seen and touched.</li> <li>Examples of important computer hardware are: <ul> <li><strong>CPU.</strong></li> <li><strong>Joy Stick.</strong></li> <li><strong>Keyboard</strong>.</li> <li>Mouse.</li> <li>Printer.</li> <li>Scanner.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong><u>MS ऑफिस</u></strong> है।</p> <ul> <li><strong>सॉफ्टवेयर,&nbsp;</strong>कंप्यूटर हार्डवेयर को नियंत्रित करने और समन्वय करने के लिए कंप्यूटर को दिए गए निर्देशों का एक समूह है।</li> <li>सॉफ्टवेयर को स्पर्श से महसूस नहीं किया जा सकता है।</li> <li><strong>MS ऑफिस</strong> कंप्यूटर सॉफ्टवेयर का एक उदाहरण है।</li> <li>सॉफ्टवेयर के अन्य उदाहरण निम्नलिखित हैं: <ul> <li>ऑफिस&nbsp;सूट</li> <li>डेटाबेस प्रोग्राम</li> <li>वेब ब्राउज़र्स</li> <li>कम्युनिकेशन प्लेटफॉर्म्स</li> <li>वर्ड प्रोसेसर</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>हार्डवेयर</strong> एक कंप्यूटर का भौतिक उपकरण है जिसे देखा और स्पर्श किया जा सकता है।</li> <li>महत्वपूर्ण कंप्यूटर हार्डवेयर के उदाहरण निम्नलिखित हैं: <ul> <li><span style="font-weight: 700;">CPU</span></li> <li><strong>जॉय स्टिक</strong></li> <li><strong>कीबोर्ड</strong></li> <li>माउस</li> <li>प्रिंटर</li> <li>स्कैनर</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q19</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Linux is ______.</p></div>
+  <div class="question lang-hi">लाइनक्स ______ है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">an operating system</div><div class="option">an assembly language</div><div class="option">a high level language</div><div class="option">an interpreter</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">एक ऑपरेटिंग सिस्टम</div><div class="option">एक असेंबली लैंग्वेज</div><div class="option">एक हाई लेवल लैंग्वेज</div><div class="option">एक इंटरप्रेटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>an operating system</strong></u>.</p> <ul> <li><u><strong>Linux is an operating system</strong></u>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Linux</strong> was created in 1991&nbsp;by&nbsp;&nbsp;Linus Torvalds and the Free Software Foundation (FSF). <ul> <li>It is an&nbsp;<strong>open-source </strong>Unix-like operating system.</li> <li>An operating system&nbsp;helps users interact with the computer.</li> </ul> </li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></p> <ul> <li><span style="font-weight: 700;">Machine language and Assembly language</span>&nbsp;are an example of a low-level language. <ul> <li><span style="font-weight: 700;">Machine language</span>&nbsp;is a low-level language that is comprised of binary digits i.e.&nbsp;<span style="font-weight: 700;">ones and zeros.&nbsp;</span></li> <li>An<span style="font-weight: 700;">&nbsp;assembly language&nbsp;</span>is a&nbsp;language designed for a&nbsp;<span style="font-weight: 700;">specific type of processor.</span></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर<u><strong> एक ऑपरेटिंग सिस्टम</strong></u> है।</p> <ul> <li><u><strong>लाइनक्स एक ऑपरेटिंग सिस्टम है।</strong></u></li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">लाइनक्स&nbsp;</span>1991 में लिनस टोरवाल्ड्स और फ्री सॉफ्टवेयर फाउंडेशन (FSF) द्वारा बनाया गया था। <ul> <li>यह एक <strong>ओपन-सोर्स </strong>यूनिक्स जैसा ऑपरेटिंग सिस्टम है।</li> <li>एक ऑपरेटिंग सिस्टम उपयोगकर्ताओं को कंप्यूटर के साथ बातचीत करने में मदद करता है।</li> </ul> </li> </ul> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li><strong>मशीन लैंग्वेज और असेंबली लैंग्वेज</strong> निम्न-स्तरीय लैंग्वेज का एक उदाहरण है। <ul> <li><strong>मशीनी लैंग्वेज</strong> एक निम्न-स्तरीय लैंग्वेज है जो बाइनरी अंकों यानी <strong>एक और शून्य</strong> से मिलकर बनती है।</li> <li><strong>असेंबली लैंग्वेज</strong> एक <strong>विशिष्ट प्रकार के प्रोसेसर</strong> के लिए डिज़ाइन की गई लैंग्वेज है।</li> </ul> </li> </ul> <p>&nbsp;</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q20</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following internet protocols allows us to access the data over the World Wide Web?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा इंटरनेट प्रोटोकॉल हमें वर्ल्ड वाइड वेब पर डेटा एक्सेस करने की अनुमति देता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">DNS</div><div class="option">SNMP</div><div class="option correct">HTTP</div><div class="option">FTP</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">DNS</div><div class="option">SNMP</div><div class="option correct">HTTP</div><div class="option">FTP</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong><span style="">HTTP.</span></strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong><span style="">HTTP&nbsp;allows us to access the data over the World Wide Web.</span></strong></li> <li>HTTP&nbsp;stands for&nbsp;<span style="font-weight: 700;">Hypertext Transfer Protocol</span>.&nbsp;</li> <li><span style="">Hypertext Transfer Protocol is an application protocol used for data communication.<span style="font-weight: 700;">&nbsp;</span></span></li> <li><span style=""><span style="font-weight: 700;">It is the base of data communication in the World Wide Web.&nbsp;</span></span></li> <li><span style="">It provides a standard for web browsers that facilitates users to exchange information over the internet.</span></li> <li><span style="">HTTP is used by most websites to access any file or page. </span></li> <li><span style="">HTTP is a request-response protocol in the client-server computing model. It is an application layer protocol designed within the framework of the Internet Protocol Suite.</span></li> <li><strong>Hypertext&nbsp;</strong>-&nbsp;<span style="">A text containing a link within it, is known as hypertext. If you click on a word on a webpage and it redirects you to a new page, it means you have clicked on a hypertext.</span></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>HTTP</strong></u> है।<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700; ">HTTP&nbsp;</span><strong>हमें वर्ल्ड वाइड वेब पर डेटा एक्सेस करने की अनुमति देता है।</strong></li> <li>HTTP&nbsp;का अर्थ&nbsp;<strong>हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल</strong> है।</li> <li>हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल डेटा संचार के लिए उपयोग किया जाने वाला एक एप्लिकेशन प्रोटोकॉल है।</li> <li><strong>यह वर्ल्ड वाइड वेब में डेटा संचार का आधार है।</strong></li> <li>यह वेब ब्राउज़र के लिए एक मानक प्रदान करता है जो उपयोगकर्ताओं को इंटरनेट पर सूचनाओं के आदान-प्रदान की सुविधा प्रदान करता है।</li> <li><span style="font-weight: 700; ">हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल</span>&nbsp;का इस्तेमाल ज्यादातर वेबसाइट किसी भी फाइल या पेज को एक्सेस करने के लिए करती हैं।</li> <li><span style="font-weight: 700; ">हाइपरटेक्स्ट ट्रांसफर प्रोटोकॉल</span>&nbsp;क्लाइंट-सर्वर कंप्यूटिंग मॉडल में एक अनुरोध-प्रतिक्रिया प्रोटोकॉल है। यह एक एप्लिकेशन लेयर प्रोटोकॉल है जिसे इंटरनेट प्रोटोकॉल सूट के ढांचे के भीतर डिज़ाइन किया गया है।</li> <li>हाइपरटेक्स्ट - जिस टेक्स्ट में एक लिंक होता है, उसे हाइपरटेक्स्ट के रूप में जाना जाता है। यदि आप किसी वेबपेज पर किसी शब्द पर क्लिक करते हैं और यह आपको एक नए पेज पर रीडायरेक्ट करता है, तो इसका मतलब है कि आपने हाइपरटेक्स्ट पर क्लिक किया है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

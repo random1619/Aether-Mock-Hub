@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27367406</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">25</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">50.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">20 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">20:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27367406</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 25</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 25</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/50.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p data-start=\"348\" data-end=\"418\">Consider the following statements regarding the Union Budget of India:</p>\n<p data-start=\"420\" data-end=\"484\">भारत के संघीय बजट के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"486\" data-end=\"1414\">\n<li data-start=\"486\" data-end=\"682\">\n<p data-start=\"489\" data-end=\"682\">The Union Budget is mentioned under Article 112 of the Constitution as the Annual Financial Statement.<br data-start=\"591\" data-end=\"594\" />संघीय बजट संविधान के अनुच्छेद 112 में वार्षिक वित्तीय विवरण के रूप में उल्लिखित है।</p>\n</li>\n<li data-start=\"684\" data-end=\"814\">\n<p data-start=\"687\" data-end=\"814\">The term &ldquo;Budget&rdquo; is explicitly used in the Constitution.<br data-start=\"744\" data-end=\"747\" />संविधान में &ldquo;Budget&rdquo; शब्द का स्पष्ट रूप से प्रयोग किया गया है।</p>\n</li>\n<li data-start=\"816\" data-end=\"1124\">\n<p data-start=\"819\" data-end=\"1124\">The Budget is prepared by the Budget Division of the Department of Economic Affairs, Ministry of Finance, in consultation with NITI Aayog and administrative ministries.<br data-start=\"987\" data-end=\"990\" />बजट वित्त मंत्रालय के आर्थिक कार्य विभाग के बजट प्रभाग द्वारा NITI Aayog एवं संबंधित मंत्रालयों से परामर्श कर तैयार किया जाता है।</p>\n</li>\n<li data-start=\"1126\" data-end=\"1414\">\n<p data-start=\"1129\" data-end=\"1414\">The Budget includes estimates of revenue and capital receipts, expenditure, previous year&rsquo;s actuals, and economic policies for the upcoming financial year.<br data-start=\"1284\" data-end=\"1287\" />बजट में राजस्व एवं पूंजी प्राप्तियाँ, व्यय, पिछले वर्ष के वास्तविक आंकड़े तथा आगामी वर्ष की आर्थिक नीतियाँ शामिल होती हैं।</p>\n</li>\n</ol>\n<p data-start=\"1416\" data-end=\"1501\">Which of the statements given above are correct?<br data-start=\"1464\" data-end=\"1467\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1503\" data-end=\"1578\">A. 1 and 3 only<br data-start=\"1518\" data-end=\"1521\" />B. 1, 3 and 4 only<br data-start=\"1539\" data-end=\"1542\" />C. 2 and 4 only<br data-start=\"1557\" data-end=\"1560\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1580\" data-end=\"1615\">✅&nbsp;<strong data-start=\"1582\" data-end=\"1613\">Answer: B (1, 3 and 4 only)</strong></p>\n<p></p>\n<p data-start=\"1617\" data-end=\"1703\">🔎 Statement 2 is incorrect because the word &ldquo;Budget&rdquo; is NOT used in the Constitution.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1729\" data-end=\"1819\">Consider the following statements regarding the enactment and history of the Union Budget:</p>\n<p data-start=\"1821\" data-end=\"1901\">संघीय बजट की प्रक्रिया एवं इतिहास के संदर्भ में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1903\" data-end=\"2835\">\n<li data-start=\"1903\" data-end=\"2033\">\n<p data-start=\"1906\" data-end=\"2033\">Only the Lok Sabha has the power to vote on Demands for Grants.<br data-start=\"1969\" data-end=\"1972\" />केवल लोकसभा को अनुदानों की मांगों पर मतदान का अधिकार है।</p>\n</li>\n<li data-start=\"2035\" data-end=\"2304\">\n<p data-start=\"2038\" data-end=\"2304\">The Appropriation Bill authorizes withdrawal of money from the Consolidated Fund of India, while the Finance Bill implements taxation proposals.<br data-start=\"2182\" data-end=\"2185\" />विनियोग विधेयक भारत की संचित निधि से धन निकासी को अधिकृत करता है, जबकि वित्त विधेयक कर प्रस्तावों को लागू करता है।</p>\n</li>\n<li data-start=\"2306\" data-end=\"2521\">\n<p data-start=\"2309\" data-end=\"2521\">The Rajya Sabha must return a Money Bill within 14 days and its recommendations are binding on the Lok Sabha.<br data-start=\"2418\" data-end=\"2421\" />राज्यसभा को मनी बिल 14 दिनों में लौटाना होता है और उसकी सिफारिशें लोकसभा पर बाध्यकारी होती हैं।</p>\n</li>\n<li data-start=\"2523\" data-end=\"2835\">\n<p data-start=\"2526\" data-end=\"2835\">The first Budget of Independent India was presented by R.K. Shanmukham Chetty in 1947, and since 2017 the Railway Budget has been merged with the General Budget.<br data-start=\"2687\" data-end=\"2690\" />स्वतंत्र भारत का पहला बजट 1947 में आर.के. शन्मुखम चेट्टी द्वारा प्रस्तुत किया गया तथा 2017 से रेलवे बजट को सामान्य बजट में विलय कर दिया गया।</p>\n</li>\n</ol>\n<p data-start=\"2837\" data-end=\"2922\">Which of the statements given above are correct?<br data-start=\"2885\" data-end=\"2888\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2924\" data-end=\"2999\">A. 1, 2 and 4 only<br data-start=\"2942\" data-end=\"2945\" />B. 1 and 3 only<br data-start=\"2960\" data-end=\"2963\" />C. 2 and 4 only<br data-start=\"2978\" data-end=\"2981\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p data-start=\"3001\" data-end=\"3036\">&nbsp;<strong data-start=\"3003\" data-end=\"3034\">Answer: A (1, 2 and 4 only)</strong></p>\n<p></p>\n<p data-start=\"3038\" data-end=\"3120\">&nbsp;Statement 3 is incorrect because Rajya Sabha&rsquo;s recommendations are NOT binding.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<h2 data-start=\"145\" data-end=\"177\"><strong data-start=\"148\" data-end=\"175\">Q. Match the following:</strong></h2>\n<p data-start=\"178\" data-end=\"208\"><strong data-start=\"178\" data-end=\"208\">निम्नलिखित का सुमेल कीजिए:</strong></p>\n<h3 data-start=\"210\" data-end=\"243\"><strong data-start=\"214\" data-end=\"241\">List I (Event / Person)</strong></h3>\n<p data-start=\"244\" data-end=\"273\"><strong data-start=\"244\" data-end=\"271\">सूची I (घटना / व्यक्ति)</strong></p>\n<p data-start=\"275\" data-end=\"352\">A. James Wilson<br data-start=\"290\" data-end=\"293\" />B. R.K. Shanmukham Chetty<br data-start=\"318\" data-end=\"321\" />C. Liaquat Ali Khan<br data-start=\"340\" data-end=\"343\" />D. 2017</p>\n<hr data-start=\"354\" data-end=\"357\" />\n<h3 data-start=\"359\" data-end=\"401\"><strong data-start=\"363\" data-end=\"399\">List II (Description / Key Fact)</strong></h3>\n<p data-start=\"402\" data-end=\"436\"><strong data-start=\"402\" data-end=\"434\">सूची II (विवरण / मुख्य तथ्य)</strong></p>\n<ol data-start=\"438\" data-end=\"920\">\n<li data-start=\"438\" data-end=\"573\">\n<p data-start=\"441\" data-end=\"573\">Presented the first Budget of Independent India (26 November 1947).<br data-start=\"508\" data-end=\"511\" />स्वतंत्र भारत का पहला बजट (26 नवम्बर 1947) प्रस्तुत किया।</p>\n</li>\n<li data-start=\"575\" data-end=\"671\">\n<p data-start=\"578\" data-end=\"671\">Introduced India&rsquo;s first-ever Budget in 1860.<br data-start=\"623\" data-end=\"626\" />1860 में भारत का पहला बजट प्रस्तुत किया।</p>\n</li>\n<li data-start=\"673\" data-end=\"797\">\n<p data-start=\"676\" data-end=\"797\">Year the Railway Budget was merged with the General Budget.<br data-start=\"735\" data-end=\"738\" />वह वर्ष जब रेलवे बजट को सामान्य बजट में विलय किया गया।</p>\n</li>\n<li data-start=\"799\" data-end=\"920\">\n<p data-start=\"802\" data-end=\"920\">Presented the Budget as a member of the Interim Government.<br data-start=\"861\" data-end=\"864\" />अंतरिम सरकार के सदस्य के रूप में बजट प्रस्तुत किया।</p>\n</li>\n</ol>\n<hr data-start=\"922\" data-end=\"925\" />\n<h3 data-start=\"927\" data-end=\"947\"><strong data-start=\"931\" data-end=\"947\">Codes (कोड):</strong></h3>\n<p data-start=\"949\" data-end=\"1048\">(a) A-2, B-1, C-4, D-3<br data-start=\"971\" data-end=\"974\" />(b) A-1, B-2, C-3, D-4<br data-start=\"996\" data-end=\"999\" />(c) A-2, B-4, C-1, D-3<br data-start=\"1021\" data-end=\"1024\" />(d) A-4, B-1, C-2, D-3</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<h3 data-start=\"1055\" data-end=\"1094\"><strong data-start=\"1061\" data-end=\"1092\">Correct Answer (सही उत्तर):</strong></h3>\n<p data-start=\"1095\" data-end=\"1121\"><strong data-start=\"1095\" data-end=\"1121\">(a) A-2, B-1, C-4, D-3</strong></p>\n<p></p>\n<ul data-start=\"1172\" data-end=\"1432\">\n<li data-start=\"1172\" data-end=\"1234\">\n<p data-start=\"1174\" data-end=\"1234\"><strong data-start=\"1174\" data-end=\"1190\">James Wilson</strong>&nbsp;&rarr; 1860 (First Budget under British Crown)</p>\n</li>\n<li data-start=\"1235\" data-end=\"1312\">\n<p data-start=\"1237\" data-end=\"1312\"><strong data-start=\"1237\" data-end=\"1263\">R.K. Shanmukham Chetty</strong>&nbsp;&rarr; 26 Nov 1947 (First Independent India Budget)</p>\n</li>\n<li data-start=\"1313\" data-end=\"1375\">\n<p data-start=\"1315\" data-end=\"1375\"><strong data-start=\"1315\" data-end=\"1335\">Liaquat Ali Khan</strong>&nbsp;&rarr; Interim Government Budget (1947-48)</p>\n</li>\n<li data-start=\"1376\" data-end=\"1432\">\n<p data-start=\"1378\" data-end=\"1432\"><strong data-start=\"1378\" data-end=\"1386\">2017</strong>&nbsp;&rarr; Railway Budget merged with General Budget</p>\n</li>\n<li data-start=\"43\" data-end=\"128\">\n<p data-start=\"45\" data-end=\"128\"><strong data-start=\"45\" data-end=\"61\">James Wilson</strong> &rarr; 1860<br data-start=\"68\" data-end=\"71\" data-is-only-node=\"\" />(ब्रिटिश क्राउन के अधीन भारत का पहला बजट प्रस्तुत किया)</p>\n</li>\n<li data-start=\"130\" data-end=\"221\">\n<p data-start=\"132\" data-end=\"221\"><strong data-start=\"132\" data-end=\"158\">R.K. Shanmukham Chetty</strong> &rarr; 26 नवम्बर 1947<br data-start=\"175\" data-end=\"178\" data-is-only-node=\"\" />(स्वतंत्र भारत का पहला बजट प्रस्तुत किया)</p>\n</li>\n<li data-start=\"223\" data-end=\"312\">\n<p data-start=\"225\" data-end=\"312\"><strong data-start=\"225\" data-end=\"245\">Liaquat Ali Khan</strong> &rarr; 1947&ndash;48<br data-start=\"255\" data-end=\"258\" data-is-only-node=\"\" />(अंतरिम सरकार के सदस्य के रूप में बजट प्रस्तुत किया)</p>\n</li>\n</ul>\n<p></p>\n<ul>\n<li data-start=\"314\" data-end=\"375\" data-is-last-node=\"\">\n<p data-start=\"316\" data-end=\"375\" data-is-last-node=\"\"><strong data-start=\"316\" data-end=\"324\">2017</strong> &rarr;(रेलवे बजट को सामान्य बजट में विलय किया गया)</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"336\" data-end=\"430\">Consider the following statements regarding Financial Provisions in the Constitution of India:</p>\n<p data-start=\"432\" data-end=\"514\">भारतीय संविधान के वित्तीय प्रावधानों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"516\" data-end=\"1255\">\n<li data-start=\"516\" data-end=\"752\">\n<p data-start=\"519\" data-end=\"752\">Article 110 defines a Money Bill, while Article 109 lays down the special procedure in respect of Money Bills.<br data-start=\"629\" data-end=\"632\" />अनुच्छेद 110 मनी बिल को परिभाषित करता है, जबकि अनुच्छेद 109 मनी बिल के संबंध में विशेष प्रक्रिया निर्धारित करता है।</p>\n</li>\n<li data-start=\"754\" data-end=\"965\">\n<p data-start=\"757\" data-end=\"965\">Article 112 deals with the Annual Financial Statement, and Article 114 relates to the Appropriation Bill.<br data-start=\"862\" data-end=\"865\" />अनुच्छेद 112 वार्षिक वित्तीय विवरण से संबंधित है तथा अनुच्छेद 114 विनियोग विधेयक से संबंधित है।</p>\n</li>\n<li data-start=\"967\" data-end=\"1088\">\n<p data-start=\"970\" data-end=\"1088\">Article 113 provides for supplementary and excess grants.<br data-start=\"1027\" data-end=\"1030\" />अनुच्छेद 113 अनुपूरक एवं अधिक अनुदानों से संबंधित है।</p>\n</li>\n<li data-start=\"1090\" data-end=\"1255\">\n<p data-start=\"1093\" data-end=\"1255\">Article 116 provides for Vote on Account, Vote of Credit, and Exceptional Grant.<br data-start=\"1173\" data-end=\"1176\" />अनुच्छेद 116 लेखानुदान, प्रत्ययानुदान तथा अपवादात्मक अनुदान से संबंधित है।</p>\n</li>\n</ol>\n<p data-start=\"1257\" data-end=\"1342\">Which of the statements given above are correct?<br data-start=\"1305\" data-end=\"1308\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1344\" data-end=\"1422\">A. 1, 2 and 4 only<br data-start=\"1362\" data-end=\"1365\" />B. 1 and 3 only<br data-start=\"1380\" data-end=\"1383\" />C. 2, 3 and 4 only<br data-start=\"1401\" data-end=\"1404\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1424\" data-end=\"1459\">&nbsp;<strong data-start=\"1426\" data-end=\"1457\">Answer: A (1, 2 and 4 only)</strong></p>\n<p></p>\n<p data-start=\"1461\" data-end=\"1592\">&nbsp;Statement 3 is incorrect because Supplementary, Additional and Excess Grants are covered under&nbsp;<strong data-start=\"1559\" data-end=\"1574\">Article 115</strong>, not Article 113.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1618\" data-end=\"1720\">Consider the following statements regarding other Financial and Fiscal Provisions of the Constitution:</p>\n<p data-start=\"1722\" data-end=\"1815\">संविधान के अन्य वित्तीय एवं राजकोषीय प्रावधानों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1817\" data-end=\"2791\">\n<li data-start=\"1817\" data-end=\"2005\">\n<p data-start=\"1820\" data-end=\"2005\">Article 265 states that no tax shall be levied or collected except by authority of law.<br data-start=\"1907\" data-end=\"1910\" />अनुच्छेद 265 के अनुसार विधि के प्राधिकार के बिना कोई कर न लगाया जाएगा और न ही वसूला जाएगा।</p>\n</li>\n<li data-start=\"2007\" data-end=\"2270\">\n<p data-start=\"2010\" data-end=\"2270\">Article 266 deals with the Consolidated Fund and Public Account of India, while Article 267 provides for the Contingency Fund.<br data-start=\"2136\" data-end=\"2139\" />अनुच्छेद 266 भारत की संचित निधि एवं लोक लेखा से संबंधित है, जबकि अनुच्छेद 267 आपातकालीन निधि (Contingency Fund) से संबंधित है।</p>\n</li>\n<li data-start=\"2272\" data-end=\"2529\">\n<p data-start=\"2275\" data-end=\"2529\">Article 280 provides for the Finance Commission, and Article 281 mandates that its recommendations be laid before Parliament.<br data-start=\"2400\" data-end=\"2403\" />अनुच्छेद 280 वित्त आयोग से संबंधित है तथा अनुच्छेद 281 इसके प्रतिवेदन को संसद के समक्ष प्रस्तुत करने का प्रावधान करता है।</p>\n</li>\n<li data-start=\"2531\" data-end=\"2791\">\n<p data-start=\"2534\" data-end=\"2791\">Article 292 deals with borrowing by the Government of India, whereas Article 275 provides for grants from the Union to certain States.<br data-start=\"2668\" data-end=\"2671\" />अनुच्छेद 292 भारत सरकार के ऋण लेने से संबंधित है, जबकि अनुच्छेद 275 कुछ राज्यों को संघ द्वारा अनुदान से संबंधित है।</p>\n</li>\n</ol>\n<p data-start=\"2793\" data-end=\"2878\">Which of the statements given above are correct?<br data-start=\"2841\" data-end=\"2844\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2880\" data-end=\"2955\">A. 1, 2 and 3 only<br data-start=\"2898\" data-end=\"2901\" />B. 1, 2, 3 and 4<br data-start=\"2917\" data-end=\"2920\" />C. 2 and 4 only<br data-start=\"2935\" data-end=\"2938\" />D. 1 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>&nbsp;<strong data-start=\"2959\" data-end=\"2988\">Answer: B (1, 2, 3 and 4)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"267\" data-end=\"336\">Consider the following statements regarding the Union Budget 2026&ndash;27:</p>\n<p data-start=\"338\" data-end=\"401\">संघीय बजट 2026&ndash;27 के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"403\" data-end=\"1169\">\n<li data-start=\"403\" data-end=\"641\">\n<p data-start=\"406\" data-end=\"641\">The Union Budget 2026&ndash;27 was presented by Smt. Nirmala Sitharaman, Union Minister for Finance &amp; Corporate Affairs.<br data-start=\"520\" data-end=\"523\" />संघीय बजट 2026&ndash;27 को श्रीमती निर्मला सीतारमण, केंद्रीय वित्त एवं कॉर्पोरेट कार्य मंत्री द्वारा प्रस्तुत किया गया।</p>\n</li>\n<li data-start=\"643\" data-end=\"819\">\n<p data-start=\"646\" data-end=\"819\">It is the first Budget to be prepared and presented from the newly inaugurated Kartavya Bhawan.<br data-start=\"741\" data-end=\"744\" />यह नव उद्घाटित कर्तव्य भवन से तैयार एवं प्रस्तुत किया गया पहला बजट है।</p>\n</li>\n<li data-start=\"821\" data-end=\"1014\">\n<p data-start=\"824\" data-end=\"1014\">The Budget was presented on a Sunday, marking the first time in history that the Union Budget was presented on that day.<br data-start=\"944\" data-end=\"947\" />यह बजट रविवार को प्रस्तुत किया गया, जो इतिहास में पहली बार है।</p>\n</li>\n<li data-start=\"1016\" data-end=\"1169\">\n<p data-start=\"1019\" data-end=\"1169\">Historically, Tuesday has been the most frequent day for Budget presentation.<br data-start=\"1096\" data-end=\"1099\" />ऐतिहासिक रूप से मंगलवार बजट प्रस्तुति का सबसे सामान्य दिन रहा है।</p>\n</li>\n</ol>\n<p data-start=\"1171\" data-end=\"1256\">Which of the statements given above are correct?<br data-start=\"1219\" data-end=\"1222\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1258\" data-end=\"1336\">A. 1, 2 and 3 only<br data-start=\"1276\" data-end=\"1279\" />B. 1 and 4 only<br data-start=\"1294\" data-end=\"1297\" />C. 2, 3 and 4 only<br data-start=\"1315\" data-end=\"1318\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p data-start=\"1338\" data-end=\"1373\"><strong data-start=\"1340\" data-end=\"1371\">Answer: A (1, 2 and 3 only)</strong></p>\n<p data-start=\"1338\" data-end=\"1373\">Monday (21 times) has historically been the most frequent Budget day &mdash; not Tuesday.</p>\n<p></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1502\" data-end=\"1598\">Consider the following statements regarding the Macroeconomic Blueprint of Union Budget 2026&ndash;27:</p>\n<p data-start=\"1600\" data-end=\"1711\">संघीय बजट 2026&ndash;27 के व्यापक आर्थिक खाके (Macroeconomic Blueprint) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1713\" data-end=\"2588\">\n<li data-start=\"1713\" data-end=\"1944\">\n<p data-start=\"1716\" data-end=\"1944\">The total expenditure for 2026&ndash;27 is pegged at ₹53.47 lakh crore, while the revised estimate for 2025&ndash;26 is ₹49.6 lakh crore.<br data-start=\"1841\" data-end=\"1844\" />2026&ndash;27 के लिए कुल व्यय ₹53.47 लाख करोड़ है, जबकि 2025&ndash;26 का संशोधित अनुमान ₹49.6 लाख करोड़ है।</p>\n</li>\n<li data-start=\"1946\" data-end=\"2129\">\n<p data-start=\"1949\" data-end=\"2129\">The fiscal deficit is estimated at 4.3% of GDP for 2026&ndash;27, compared to 4.4% in 2025&ndash;26 (RE).<br data-start=\"2042\" data-end=\"2045\" />2026&ndash;27 में राजकोषीय घाटा GDP का 4.3% अनुमानित है, जबकि 2025&ndash;26 में यह 4.4% है।</p>\n</li>\n<li data-start=\"2131\" data-end=\"2383\">\n<p data-start=\"2134\" data-end=\"2383\">Capital expenditure is ₹12.2 lakh crore (3.1% of GDP), and the debt-to-GDP ratio is projected at 55.6% with a target of 50% by 2031.<br data-start=\"2266\" data-end=\"2269\" />पूंजीगत व्यय ₹12.2 लाख करोड़ (GDP का 3.1%) है तथा ऋण-GDP अनुपात 55.6% है, जिसे 2031 तक 50% करने का लक्ष्य है।</p>\n</li>\n<li data-start=\"2385\" data-end=\"2588\">\n<p data-start=\"2388\" data-end=\"2588\">The disinvestment target for 2026&ndash;27 is ₹80,000 crore and the projected real GDP growth is around 7%.<br data-start=\"2489\" data-end=\"2492\" />2026&ndash;27 के लिए विनिवेश लक्ष्य ₹80,000 करोड़ है तथा वास्तविक GDP वृद्धि लगभग 7% अनुमानित है।</p>\n</li>\n</ol>\n<p data-start=\"2590\" data-end=\"2675\">Which of the statements given above are correct?<br data-start=\"2638\" data-end=\"2641\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2677\" data-end=\"2752\">A. 1, 2 and 3 only<br data-start=\"2695\" data-end=\"2698\" />B. 2 and 4 only<br data-start=\"2713\" data-end=\"2716\" />C. 1, 2, 3 and 4<br data-start=\"2732\" data-end=\"2735\" />D. 1 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>✅&nbsp;<strong data-start=\"2756\" data-end=\"2785\">Answer: C (1, 2, 3 and 4)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"301\" data-end=\"371\">Consider the following statements regarding the Six Pillars of Growth:</p>\n<p data-start=\"373\" data-end=\"438\">विकास के छह स्तंभों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"440\" data-end=\"1018\">\n<li data-start=\"440\" data-end=\"545\">\n<p data-start=\"443\" data-end=\"545\">Sustaining Economic Growth is one of the six pillars.<br data-start=\"496\" data-end=\"499\" />सतत आर्थिक विकास छह स्तंभों में से एक है।</p>\n</li>\n<li data-start=\"547\" data-end=\"710\">\n<p data-start=\"550\" data-end=\"710\">People-Centric Development and Trust-based Governance are included among the pillars.<br data-start=\"635\" data-end=\"638\" />जन-केंद्रित विकास तथा विश्वास-आधारित शासन इन स्तंभों में शामिल हैं।</p>\n</li>\n<li data-start=\"712\" data-end=\"869\">\n<p data-start=\"715\" data-end=\"869\">Ease of Doing Business &amp; Living and Fiscal Matters are part of the six pillars.<br data-start=\"794\" data-end=\"797\" />व्यवसाय एवं जीवन सुगमता तथा राजकोषीय विषय छह स्तंभों का हिस्सा हैं।</p>\n</li>\n<li data-start=\"871\" data-end=\"1018\">\n<p data-start=\"874\" data-end=\"1018\">National Security is explicitly mentioned as one of the six pillars.<br data-start=\"942\" data-end=\"945\" />राष्ट्रीय सुरक्षा को छह स्तंभों में स्पष्ट रूप से शामिल किया गया है।</p>\n</li>\n</ol>\n<p data-start=\"1020\" data-end=\"1105\">Which of the statements given above are correct?<br data-start=\"1068\" data-end=\"1071\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1107\" data-end=\"1185\">A. 1, 2 and 3 only<br data-start=\"1125\" data-end=\"1128\" />B. 1 and 4 only<br data-start=\"1143\" data-end=\"1146\" />C. 2, 3 and 4 only<br data-start=\"1164\" data-end=\"1167\" />D. 1, 2, 3 and 4</p>\n<p data-start=\"1187\" data-end=\"1222\"></p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>&nbsp;<strong data-start=\"1189\" data-end=\"1220\">Answer: A (1, 2 and 3 only)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1248\" data-end=\"1314\">Consider the following statements regarding the Three &ldquo;Kartavyas&rdquo;:</p>\n<p data-start=\"1316\" data-end=\"1377\">तीन &ldquo;कर्तव्यों&rdquo; के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1379\" data-end=\"2103\">\n<li data-start=\"1379\" data-end=\"1601\">\n<p data-start=\"1382\" data-end=\"1601\">The First Kartavya focuses on accelerating and sustaining economic growth by enhancing productivity and resilience.<br data-start=\"1497\" data-end=\"1500\" />प्रथम कर्तव्य उत्पादकता एवं लचीलापन बढ़ाकर आर्थिक विकास को गति देने और बनाए रखने पर केंद्रित है।</p>\n</li>\n<li data-start=\"1603\" data-end=\"1797\">\n<p data-start=\"1606\" data-end=\"1797\">The Second Kartavya aims to make youth and citizens strong partners in India&rsquo;s prosperity.<br data-start=\"1696\" data-end=\"1699\" />द्वितीय कर्तव्य युवाओं एवं नागरिकों को भारत की समृद्धि का सशक्त भागीदार बनाने पर केंद्रित है।</p>\n</li>\n<li data-start=\"1799\" data-end=\"1980\">\n<p data-start=\"1802\" data-end=\"1980\">The Third Kartavya emphasizes Sabka Saath, Sabka Vikas with focus on Last Mile (Antyodaya).<br data-start=\"1893\" data-end=\"1896\" />तृतीय कर्तव्य &ldquo;सबका साथ, सबका विकास&rdquo; तथा अंतिम छोर (अंत्योदय) पर ध्यान देता है।</p>\n</li>\n<li data-start=\"1982\" data-end=\"2103\">\n<p data-start=\"1985\" data-end=\"2103\">The Third Kartavya mainly focuses on fiscal consolidation.<br data-start=\"2043\" data-end=\"2046\" />तृतीय कर्तव्य मुख्यतः राजकोषीय समेकन पर केंद्रित है।</p>\n</li>\n</ol>\n<p data-start=\"2105\" data-end=\"2190\">Which of the statements given above are correct?<br data-start=\"2153\" data-end=\"2156\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2192\" data-end=\"2267\">A. 1, 2 and 3 only<br data-start=\"2210\" data-end=\"2213\" />B. 1 and 4 only<br data-start=\"2228\" data-end=\"2231\" />C. 2 and 3 only<br data-start=\"2246\" data-end=\"2249\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>C</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>&nbsp;<strong data-start=\"2271\" data-end=\"2302\">Answer: A (1, 2 and 3 only)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"2389\" data-end=\"2462\">Consider the following statements regarding major manufacturing missions:</p>\n<p data-start=\"2464\" data-end=\"2552\">विनिर्माण क्षेत्र से संबंधित प्रमुख मिशनों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2554\" data-end=\"3408\">\n<li data-start=\"2554\" data-end=\"2790\">\n<p data-start=\"2557\" data-end=\"2790\">Biopharma SHAKTI has an outlay of ₹10,000 crore over five years and focuses on biologics and biosimilars.<br data-start=\"2662\" data-end=\"2665\" />बायोफार्मा शक्ति के लिए पाँच वर्षों में ₹10,000 करोड़ का प्रावधान है तथा यह बायोलॉजिक्स एवं बायोसिमिलर्स पर केंद्रित है।</p>\n</li>\n<li data-start=\"2792\" data-end=\"3047\">\n<p data-start=\"2795\" data-end=\"3047\">India Semiconductor Mission (ISM) 2.0 focuses on manufacturing semiconductor equipment and materials and strengthening supply chains.<br data-start=\"2928\" data-end=\"2931\" />इंडिया सेमीकंडक्टर मिशन 2.0 सेमीकंडक्टर उपकरण एवं सामग्री निर्माण तथा आपूर्ति शृंखला सुदृढ़ीकरण पर केंद्रित है।</p>\n</li>\n<li data-start=\"3049\" data-end=\"3242\">\n<p data-start=\"3052\" data-end=\"3242\">The outlay for the Electronics Components Manufacturing Scheme has been reduced to ₹22,919 crore.<br data-start=\"3149\" data-end=\"3152\" />इलेक्ट्रॉनिक्स कंपोनेंट निर्माण योजना का प्रावधान घटाकर ₹22,919 करोड़ कर दिया गया है।</p>\n</li>\n<li data-start=\"3244\" data-end=\"3408\">\n<p data-start=\"3247\" data-end=\"3408\">Three Chemical Parks will be developed under a cluster-based plug-and-play model.<br data-start=\"3328\" data-end=\"3331\" />तीन केमिकल पार्क क्लस्टर-आधारित प्लग-एंड-प्ले मॉडल पर विकसित किए जाएंगे।</p>\n</li>\n</ol>\n<p data-start=\"3410\" data-end=\"3495\">Which of the statements given above are correct?<br data-start=\"3458\" data-end=\"3461\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"3497\" data-end=\"3572\">A. 1, 2 and 4 only<br data-start=\"3515\" data-end=\"3518\" />B. 1 and 3 only<br data-start=\"3533\" data-end=\"3536\" />C. 2 and 4 only<br data-start=\"3551\" data-end=\"3554\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p data-start=\"3574\" data-end=\"3609\">&nbsp;<strong data-start=\"3576\" data-end=\"3607\">Answer: A (1, 2 and 4 only)</strong></p>\n<p></p>\n<p data-start=\"3611\" data-end=\"3675\">&nbsp;Statement 3 is incorrect &mdash; Outlay increased to ₹40,000 crore.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"3701\" data-end=\"3766\">Consider the following statements regarding sectoral initiatives:</p>\n<p data-start=\"3768\" data-end=\"3829\">क्षेत्रीय पहलों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"3831\" data-end=\"4573\">\n<li data-start=\"3831\" data-end=\"4002\">\n<p data-start=\"3834\" data-end=\"4002\">Rare Earth Corridors are proposed in Odisha, Kerala, Andhra Pradesh, and Tamil Nadu.<br data-start=\"3918\" data-end=\"3921\" />ओडिशा, केरल, आंध्र प्रदेश एवं तमिलनाडु में रेयर अर्थ कॉरिडोर प्रस्तावित हैं।</p>\n</li>\n<li data-start=\"4004\" data-end=\"4134\">\n<p data-start=\"4007\" data-end=\"4134\">A ₹10,000 crore Container Manufacturing Scheme has been introduced.<br data-start=\"4074\" data-end=\"4077\" />₹10,000 करोड़ की कंटेनर निर्माण योजना शुरू की गई है।</p>\n</li>\n<li data-start=\"4136\" data-end=\"4376\">\n<p data-start=\"4139\" data-end=\"4376\">The Integrated Textile Programme includes National Fibre Scheme, Samarth 2.0, Tex-Eco Initiative, and Cluster Modernization.<br data-start=\"4263\" data-end=\"4266\" />एकीकृत वस्त्र कार्यक्रम में नेशनल फाइबर स्कीम, समर्थ 2.0, टेक्स-ईको पहल एवं क्लस्टर आधुनिकीकरण शामिल हैं।</p>\n</li>\n<li data-start=\"4378\" data-end=\"4573\">\n<p data-start=\"4381\" data-end=\"4573\">A scheme aims to revive 200 legacy industrial clusters through infrastructure and technology upgradation.<br data-start=\"4486\" data-end=\"4489\" />एक योजना के अंतर्गत 200 पारंपरिक औद्योगिक क्लस्टरों के पुनरुद्धार का लक्ष्य है।</p>\n</li>\n</ol>\n<p data-start=\"4575\" data-end=\"4660\">Which of the statements given above are correct?<br data-start=\"4623\" data-end=\"4626\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"4662\" data-end=\"4737\">A. 1 and 2 only<br data-start=\"4677\" data-end=\"4680\" />B. 1, 2, 3 and 4<br data-start=\"4696\" data-end=\"4699\" />C. 2 and 4 only<br data-start=\"4714\" data-end=\"4717\" />D. 1, 3 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>&nbsp;<strong data-start=\"4741\" data-end=\"4770\">Answer: B (1, 2, 3 and 4)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"306\" data-end=\"372\">Consider the following statements regarding MSME support measures:</p>\n<p data-start=\"374\" data-end=\"441\">एमएसएमई समर्थन उपायों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"443\" data-end=\"1452\">\n<li data-start=\"443\" data-end=\"762\">\n<p data-start=\"446\" data-end=\"762\">A dedicated ₹10,000 crore SME Growth Fund has been created to incentivize high-potential firms and build globally competitive &ldquo;Champion MSMEs.&rdquo;<br data-start=\"589\" data-end=\"592\" />₹10,000 करोड़ का एक समर्पित SME ग्रोथ फंड उच्च क्षमता वाली इकाइयों को प्रोत्साहित कर वैश्विक स्तर पर प्रतिस्पर्धी &ldquo;चैंपियन एमएसएमई&rdquo; बनाने के लिए स्थापित किया गया है।</p>\n</li>\n<li data-start=\"764\" data-end=\"1036\">\n<p data-start=\"767\" data-end=\"1036\">The Self-Reliant India Fund has received an additional ₹2,000 crore to support micro-enterprises and improve access to risk capital.<br data-start=\"899\" data-end=\"902\" />आत्मनिर्भर भारत फंड को सूक्ष्म उद्यमों के समर्थन एवं जोखिम पूंजी की उपलब्धता बढ़ाने हेतु अतिरिक्त ₹2,000 करोड़ प्रदान किए गए हैं।</p>\n</li>\n<li data-start=\"1038\" data-end=\"1246\">\n<p data-start=\"1041\" data-end=\"1246\">Corporate Mitras are proposed as institutions to regulate MSMEs under the Companies Act.<br data-start=\"1129\" data-end=\"1132\" />कॉर्पोरेट मित्रों को कंपनियों अधिनियम के तहत एमएसएमई के नियमन हेतु संस्थान के रूप में प्रस्तावित किया गया है।</p>\n</li>\n<li data-start=\"1248\" data-end=\"1452\">\n<p data-start=\"1251\" data-end=\"1452\">Corporate Mitras aim to mentor and integrate small enterprises into larger value chains.<br data-start=\"1339\" data-end=\"1342\" />कॉर्पोरेट मित्रों का उद्देश्य लघु उद्यमों को मार्गदर्शन देना तथा उन्हें बड़ी मूल्य शृंखलाओं से जोड़ना है।</p>\n</li>\n</ol>\n<p data-start=\"1454\" data-end=\"1539\">Which of the statements given above are correct?<br data-start=\"1502\" data-end=\"1505\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1541\" data-end=\"1616\">A. 1, 2 and 4 only<br data-start=\"1559\" data-end=\"1562\" />B. 1 and 3 only<br data-start=\"1577\" data-end=\"1580\" />C. 2 and 4 only<br data-start=\"1595\" data-end=\"1598\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p data-start=\"1618\" data-end=\"1653\">&nbsp;<strong data-start=\"1620\" data-end=\"1651\">Answer: A (1, 2 and 4 only)</strong></p>\n<p></p>\n<p data-start=\"1655\" data-end=\"1746\">&nbsp;Statement 3 is incorrect &mdash; Corporate Mitras are enablers/mentors, not regulatory bodies.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1821\" data-end=\"1908\">Consider the following statements regarding Infrastructure and Sustainable Initiatives:</p>\n<p data-start=\"1910\" data-end=\"1992\">इन्फ्रास्ट्रक्चर एवं सतत विकास पहलों के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1994\" data-end=\"3127\">\n<li data-start=\"1994\" data-end=\"2245\">\n<p data-start=\"1997\" data-end=\"2245\">Seven High-Speed Rail Corridors have been proposed as &ldquo;Growth Connectors,&rdquo; including Mumbai&ndash;Pune and Delhi&ndash;Varanasi.<br data-start=\"2113\" data-end=\"2116\" />&ldquo;ग्रोथ कनेक्टर्स&rdquo; के रूप में सात हाई-स्पीड रेल कॉरिडोर प्रस्तावित किए गए हैं, जिनमें मुंबई&ndash;पुणे और दिल्ली&ndash;वाराणसी शामिल हैं।</p>\n</li>\n<li data-start=\"2247\" data-end=\"2545\">\n<p data-start=\"2250\" data-end=\"2545\">A new Dedicated Freight Corridor will connect Dankuni to Surat, and 20 National Waterways will be operationalized over the next five years.<br data-start=\"2389\" data-end=\"2392\" />एक नया समर्पित माल गलियारा (Dedicated Freight Corridor) दानकुनी से सूरत को जोड़ेगा तथा अगले पाँच वर्षों में 20 राष्ट्रीय जलमार्ग संचालित किए जाएंगे।</p>\n</li>\n<li data-start=\"2547\" data-end=\"2761\">\n<p data-start=\"2550\" data-end=\"2761\">The Coastal Cargo Promotion Scheme aims to increase the share of coastal shipping from 6% to 12% by 2047.<br data-start=\"2655\" data-end=\"2658\" />तटीय कार्गो प्रोत्साहन योजना का लक्ष्य 2047 तक तटीय शिपिंग की हिस्सेदारी 6% से बढ़ाकर 12% करना है।</p>\n</li>\n<li data-start=\"2763\" data-end=\"3127\">\n<p data-start=\"2766\" data-end=\"3127\">A Carbon Capture, Utilization and Storage (CCUS) scheme has been launched to decarbonize sectors like steel and cement, and an Infrastructure Risk Guarantee Fund is proposed to provide partial credit guarantees.<br data-start=\"2977\" data-end=\"2980\" />इस्पात एवं सीमेंट जैसे क्षेत्रों के डी-कार्बोनाइजेशन हेतु CCUS योजना शुरू की गई है तथा अवसंरचना जोखिम गारंटी कोष आंशिक ऋण गारंटी प्रदान करेगा।</p>\n</li>\n</ol>\n<p data-start=\"3129\" data-end=\"3214\">Which of the statements given above are correct?<br data-start=\"3177\" data-end=\"3180\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"3216\" data-end=\"3291\">A. 1, 2 and 3 only<br data-start=\"3234\" data-end=\"3237\" />B. 2 and 4 only<br data-start=\"3252\" data-end=\"3255\" />C. 1, 2, 3 and 4<br data-start=\"3271\" data-end=\"3274\" />D. 1 and 4 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>&nbsp;<strong data-start=\"3295\" data-end=\"3324\">Answer: C (1, 2, 3 and 4)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"251\" data-end=\"285\">Consider the following statements:</p>\n<p data-start=\"287\" data-end=\"319\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"321\" data-end=\"1188\">\n<li data-start=\"321\" data-end=\"543\">\n<p data-start=\"324\" data-end=\"543\">Under the AVGC sector, Content Creator Labs will be set up in 15,000 secondary schools and 500 colleges.<br data-start=\"428\" data-end=\"431\" />AVGC क्षेत्र के अंतर्गत 15,000 माध्यमिक विद्यालयों और 500 कॉलेजों में कंटेंट क्रिएटर लैब स्थापित की जाएंगी।</p>\n</li>\n<li data-start=\"545\" data-end=\"835\">\n<p data-start=\"548\" data-end=\"835\">To support girls in STEM higher education, one girls&rsquo; hostel will be established in every district through VGF or direct capital support.<br data-start=\"685\" data-end=\"688\" />STEM उच्च शिक्षा में छात्राओं को समर्थन देने के लिए प्रत्येक जिले में VGF या प्रत्यक्ष पूंजी सहायता से एक बालिका छात्रावास स्थापित किया जाएगा।</p>\n</li>\n<li data-start=\"837\" data-end=\"1040\">\n<p data-start=\"840\" data-end=\"1040\">The National Institute of Hospitality will be set up by upgrading the existing NCHMCT.<br data-start=\"926\" data-end=\"929\" />राष्ट्रीय आतिथ्य संस्थान (National Institute of Hospitality) मौजूदा NCHMCT को उन्नत कर स्थापित किया जाएगा।</p>\n</li>\n<li data-start=\"1042\" data-end=\"1188\">\n<p data-start=\"1045\" data-end=\"1188\">The Government plans to train 5,000 tourist guides with the help of IITs.<br data-start=\"1118\" data-end=\"1121\" />सरकार IIT के सहयोग से 5,000 पर्यटक गाइडों को प्रशिक्षित करेगी।</p>\n</li>\n</ol>\n<p data-start=\"1190\" data-end=\"1269\">Which of the above statements are correct?<br data-start=\"1232\" data-end=\"1235\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1271\" data-end=\"1349\">A. 1, 2 and 3 only<br data-start=\"1289\" data-end=\"1292\" />B. 1 and 4 only<br data-start=\"1307\" data-end=\"1310\" />C. 2, 3 and 4 only<br data-start=\"1328\" data-end=\"1331\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1351\" data-end=\"1386\">✅&nbsp;<strong data-start=\"1353\" data-end=\"1384\">Answer: A (1, 2 and 3 only)</strong></p>\n<p></p>\n<p data-start=\"1388\" data-end=\"1469\">Statement 4 is incorrect &mdash; 10,000 guides will be trained with IIMs (not IITs).</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1495\" data-end=\"1529\">Consider the following statements:</p>\n<p data-start=\"1531\" data-end=\"1563\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1565\" data-end=\"2640\">\n<li data-start=\"1565\" data-end=\"1780\">\n<p data-start=\"1568\" data-end=\"1780\">Five Regional Medical Hubs will be established in PPP mode to promote medical and wellness tourism.<br data-start=\"1667\" data-end=\"1670\" />चिकित्सा और वेलनेस पर्यटन को बढ़ावा देने के लिए PPP मॉडल में पाँच क्षेत्रीय मेडिकल हब स्थापित किए जाएंगे।</p>\n</li>\n<li data-start=\"1782\" data-end=\"1962\">\n<p data-start=\"1785\" data-end=\"1962\">These hubs will include AYUSH centres, diagnostics, post-care and rehabilitation services.<br data-start=\"1875\" data-end=\"1878\" />इन हब में आयुष केंद्र, डायग्नोस्टिक, पोस्ट-केयर और पुनर्वास सेवाएँ शामिल होंगी।</p>\n</li>\n<li data-start=\"1964\" data-end=\"2224\">\n<p data-start=\"1967\" data-end=\"2224\">The Government announced setting up of NIMHANS-2 and upgrading institutes in Ranchi and Tezpur as Regional Apex Institutions.<br data-start=\"2092\" data-end=\"2095\" />सरकार ने NIMHANS-2 की स्थापना तथा रांची और तेजपुर के संस्थानों को क्षेत्रीय शीर्ष संस्थान के रूप में उन्नत करने की घोषणा की।</p>\n</li>\n<li data-start=\"2226\" data-end=\"2460\">\n<p data-start=\"2229\" data-end=\"2460\">Under Khelo India Mission, focus will be on talent development, coach training, sports science and sports infrastructure.<br data-start=\"2350\" data-end=\"2353\" />खेलो इंडिया मिशन के तहत प्रतिभा विकास, कोच प्रशिक्षण, खेल विज्ञान और खेल अवसंरचना पर ध्यान दिया जाएगा।</p>\n</li>\n<li data-start=\"2462\" data-end=\"2640\">\n<p data-start=\"2465\" data-end=\"2640\">A loan-linked capital subsidy will help increase veterinary professionals by 20,000.<br data-start=\"2549\" data-end=\"2552\" />ऋण-संबद्ध पूंजी सब्सिडी के माध्यम से 20,000 पशु चिकित्सकों की उपलब्धता बढ़ाई जाएगी।</p>\n</li>\n</ol>\n<p data-start=\"2642\" data-end=\"2721\">Which of the above statements are correct?<br data-start=\"2684\" data-end=\"2687\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2723\" data-end=\"2810\">A. 1, 2, 3 and 4 only<br data-start=\"2744\" data-end=\"2747\" />B. 1, 2, 4 and 5 only<br data-start=\"2768\" data-end=\"2771\" />C. 1, 2, 3, 4 and 5<br data-start=\"2790\" data-end=\"2793\" />D. 2 and 5 only</p>\n<p data-start=\"2812\" data-end=\"2848\"></p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>&nbsp;<strong data-start=\"2814\" data-end=\"2846\">Answer: C (1, 2, 3, 4 and 5)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"233\" data-end=\"267\">Consider the following statements:</p>\n<p data-start=\"269\" data-end=\"301\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"303\" data-end=\"1142\">\n<li data-start=\"303\" data-end=\"550\">\n<p data-start=\"306\" data-end=\"550\">Bharat-VISTAAR is a multilingual AI platform that will integrate AgriStack and ICAR data to give farmers customized advice.<br data-start=\"429\" data-end=\"432\" />भारत-विस्तार एक बहुभाषी एआई प्लेटफॉर्म है जो एग्रीस्टैक और ICAR के डेटा को जोड़कर किसानों को व्यक्तिगत सलाह देगा।</p>\n</li>\n<li data-start=\"552\" data-end=\"790\">\n<p data-start=\"555\" data-end=\"790\">The Cotton Mission is based on the 5F framework: Farm to Fibre, Fibre to Factory, Factory to Fashion, and Fashion to Foreign.<br data-start=\"680\" data-end=\"683\" />कपास मिशन 5F ढांचे पर आधारित है: फार्म से फाइबर, फाइबर से फैक्ट्री, फैक्ट्री से फैशन और फैशन से फॉरेन।</p>\n</li>\n<li data-start=\"792\" data-end=\"993\">\n<p data-start=\"795\" data-end=\"993\">The Government has committed unlimited procurement of Arhar, Urad and Masur to protect farmers&rsquo; income.<br data-start=\"898\" data-end=\"901\" />सरकार ने किसानों की आय सुरक्षा के लिए अरहर, उड़द और मसूर की असीमित खरीद का वचन दिया है।</p>\n</li>\n<li data-start=\"995\" data-end=\"1142\">\n<p data-start=\"998\" data-end=\"1142\">SHE Marts are government-owned malls for multinational companies.<br data-start=\"1063\" data-end=\"1066\" />SHE मार्ट्स बहुराष्ट्रीय कंपनियों के लिए सरकारी स्वामित्व वाले मॉल हैं।</p>\n</li>\n</ol>\n<p data-start=\"1144\" data-end=\"1223\">Which of the above statements are correct?<br data-start=\"1186\" data-end=\"1189\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1225\" data-end=\"1300\">A. 1, 2 and 3 only<br data-start=\"1243\" data-end=\"1246\" />B. 1 and 4 only<br data-start=\"1261\" data-end=\"1264\" />C. 2 and 3 only<br data-start=\"1279\" data-end=\"1282\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1302\" data-end=\"1337\"><strong data-start=\"1304\" data-end=\"1335\">Answer: A (1, 2 and 3 only)</strong></p>\n<p></p>\n<p data-start=\"1339\" data-end=\"1429\">Statement 4 is incorrect &mdash; SHE Marts are community-owned retail outlets for women SHGs.</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1455\" data-end=\"1489\">Consider the following statements:</p>\n<p data-start=\"1491\" data-end=\"1523\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1525\" data-end=\"2567\">\n<li data-start=\"1525\" data-end=\"1812\">\n<p data-start=\"1528\" data-end=\"1812\">Buddhist Circuits will be developed in North-East states like Arunachal Pradesh, Sikkim, Assam, Manipur, Mizoram and Tripura to promote tourism.<br data-start=\"1672\" data-end=\"1675\" />पर्यटन को बढ़ावा देने हेतु अरुणाचल प्रदेश, सिक्किम, असम, मणिपुर, मिजोरम और त्रिपुरा जैसे राज्यों में बौद्ध सर्किट विकसित किए जाएंगे।</p>\n</li>\n<li data-start=\"1814\" data-end=\"2012\">\n<p data-start=\"1817\" data-end=\"2012\">The East Coast Industrial Corridor (ECIC) includes an industrial node at Durgapur in West Bengal.<br data-start=\"1914\" data-end=\"1917\" />ईस्ट कोस्ट इंडस्ट्रियल कॉरिडोर में पश्चिम बंगाल के दुर्गापुर में एक औद्योगिक नोड शामिल है।</p>\n</li>\n<li data-start=\"2014\" data-end=\"2256\">\n<p data-start=\"2017\" data-end=\"2256\">NIMHANS-2 will be established and institutes at Ranchi and Tezpur will be upgraded as Regional Apex Institutions.<br data-start=\"2130\" data-end=\"2133\" />NIMHANS-2 की स्थापना की जाएगी तथा रांची और तेजपुर के संस्थानों को क्षेत्रीय शीर्ष संस्थान के रूप में उन्नत किया जाएगा।</p>\n</li>\n<li data-start=\"2258\" data-end=\"2419\">\n<p data-start=\"2261\" data-end=\"2419\">The Government will deploy 4,000 e-buses to promote clean public transport.<br data-start=\"2336\" data-end=\"2339\" />स्वच्छ सार्वजनिक परिवहन को बढ़ावा देने के लिए 4,000 ई-बसें तैनात की जाएंगी।</p>\n</li>\n<li data-start=\"2421\" data-end=\"2567\">\n<p data-start=\"2424\" data-end=\"2567\">Divyang Sahara Yojana is aimed at empowering differently-abled persons.<br data-start=\"2495\" data-end=\"2498\" />दिव्यांग सहारा योजना का उद्देश्य दिव्यांगजनों को सशक्त बनाना है।</p>\n</li>\n</ol>\n<p data-start=\"2569\" data-end=\"2648\">Which of the above statements are correct?<br data-start=\"2611\" data-end=\"2614\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2650\" data-end=\"2737\">A. 1, 2 and 3 only<br data-start=\"2668\" data-end=\"2671\" />B. 1, 2, 3 and 4 only<br data-start=\"2692\" data-end=\"2695\" />C. 2, 4 and 5 only<br data-start=\"2713\" data-end=\"2716\" />D. 1, 2, 3, 4 and 5</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>&nbsp;<strong data-start=\"2741\" data-end=\"2773\">Answer: D (1, 2, 3, 4 and 5)</strong></p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"283\" data-end=\"317\">Consider the following statements:</p>\n<p data-start=\"319\" data-end=\"351\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"353\" data-end=\"1146\">\n<li data-start=\"353\" data-end=\"555\">\n<p data-start=\"356\" data-end=\"555\">The Income Tax Act, 1961 will be replaced by the new Income Tax Act, 2025, effective from 1 April 2026.<br data-start=\"459\" data-end=\"462\" />आयकर अधिनियम, 1961 को नए आयकर अधिनियम, 2025 से 1 अप्रैल 2026 से प्रतिस्थापित किया जाएगा।</p>\n</li>\n<li data-start=\"557\" data-end=\"829\">\n<p data-start=\"560\" data-end=\"829\">There is no change in tax slabs for FY 2026-27 and the effective tax-free limit remains about ₹12.75 lakh (including standard deduction).<br data-start=\"697\" data-end=\"700\" />वित्त वर्ष 2026-27 में कर स्लैब में कोई बदलाव नहीं है और प्रभावी कर-मुक्त सीमा लगभग ₹12.75 लाख (मानक कटौती सहित) बनी हुई है।</p>\n</li>\n<li data-start=\"831\" data-end=\"1002\">\n<p data-start=\"834\" data-end=\"1002\">TCS on overseas tour packages and foreign remittances under LRS is reduced to 2%.<br data-start=\"915\" data-end=\"918\" />विदेश यात्रा पैकेज एवं LRS के अंतर्गत प्रेषण पर TCS को घटाकर 2% कर दिया गया है।</p>\n</li>\n<li data-start=\"1004\" data-end=\"1146\">\n<p data-start=\"1007\" data-end=\"1146\">STT on Futures and Options has been reduced to promote trading.<br data-start=\"1070\" data-end=\"1073\" />ट्रेडिंग को बढ़ावा देने हेतु फ्यूचर्स और ऑप्शंस पर STT घटाया गया है।</p>\n</li>\n</ol>\n<p data-start=\"1148\" data-end=\"1227\">Which of the above statements are correct?<br data-start=\"1190\" data-end=\"1193\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1229\" data-end=\"1307\">A. 1, 2 and 3 only<br data-start=\"1247\" data-end=\"1250\" />B. 1 and 4 only<br data-start=\"1265\" data-end=\"1268\" />C. 2, 3 and 4 only<br data-start=\"1286\" data-end=\"1289\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p data-start=\"1309\" data-end=\"1344\"><strong data-start=\"1311\" data-end=\"1342\">Answer: A (1, 2 and 3 only)</strong></p>\n<p></p>\n<p data-start=\"1346\" data-end=\"1430\">Statement 4 is incorrect &mdash; STT has been increased (Futures 0.05%, Options 0.15%).</p>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"1487\" data-end=\"1521\">Consider the following statements:</p>\n<p data-start=\"1523\" data-end=\"1555\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"1557\" data-end=\"2402\">\n<li data-start=\"1557\" data-end=\"1745\">\n<p data-start=\"1560\" data-end=\"1745\">MAT rate is reduced from 15% to 14%, and accumulation of MAT credit will stop from April 2026.<br data-start=\"1654\" data-end=\"1657\" />MAT दर 15% से घटाकर 14% कर दी गई है और अप्रैल 2026 से MAT क्रेडिट का संचय बंद होगा।</p>\n</li>\n<li data-start=\"1747\" data-end=\"1909\">\n<p data-start=\"1750\" data-end=\"1909\">Share buybacks will now be taxed as Capital Gains in the hands of shareholders.<br data-start=\"1829\" data-end=\"1832\" />शेयर बायबैक पर अब कर शेयरधारकों के हाथ में पूंजीगत लाभ के रूप में लगेगा।</p>\n</li>\n<li data-start=\"1911\" data-end=\"2086\">\n<p data-start=\"1914\" data-end=\"2086\">Foreign companies operating data centres in India will get a tax holiday till 2047.<br data-start=\"1997\" data-end=\"2000\" />भारत में डेटा सेंटर संचालित करने वाली विदेशी कंपनियों को 2047 तक कर अवकाश मिलेगा।</p>\n</li>\n<li data-start=\"2088\" data-end=\"2271\">\n<p data-start=\"2091\" data-end=\"2271\">The tax holiday for Offshore Banking Units in IFSC (GIFT City) is extended to 20 years.<br data-start=\"2178\" data-end=\"2181\" />IFSC (गिफ्ट सिटी) में ऑफशोर बैंकिंग इकाइयों के लिए कर अवकाश 20 वर्ष तक बढ़ाया गया है।</p>\n</li>\n<li data-start=\"2273\" data-end=\"2402\">\n<p data-start=\"2276\" data-end=\"2402\">APA (Advance Pricing Agreement) cases will now be resolved within 2 years.<br data-start=\"2350\" data-end=\"2353\" />APA मामलों को अब 2 वर्षों में निपटाया जाएगा।</p>\n</li>\n</ol>\n<p data-start=\"2404\" data-end=\"2483\">Which of the above statements are correct?<br data-start=\"2446\" data-end=\"2449\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"2485\" data-end=\"2566\">A. 1, 2 and 3 only<br data-start=\"2503\" data-end=\"2506\" />B. 2, 3 and 4 only<br data-start=\"2524\" data-end=\"2527\" />C. 1, 2, 3, 4 and 5<br data-start=\"2546\" data-end=\"2549\" />D. 1 and 5 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"2653\" data-end=\"2687\">Consider the following statements:</p>\n<p data-start=\"2689\" data-end=\"2721\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"2723\" data-end=\"3656\">\n<li data-start=\"2723\" data-end=\"2901\">\n<p data-start=\"2726\" data-end=\"2901\">Customs duty is fully exempted on 17 cancer drugs and medicines for rare diseases.<br data-start=\"2808\" data-end=\"2811\" />17 कैंसर दवाओं और दुर्लभ रोगों की दवाओं पर सीमा शुल्क पूरी तरह समाप्त कर दिया गया है।</p>\n</li>\n<li data-start=\"2903\" data-end=\"3073\">\n<p data-start=\"2906\" data-end=\"3073\">Customs duty on goods imported for personal use is reduced from 20% to 10%.<br data-start=\"2981\" data-end=\"2984\" />व्यक्तिगत उपयोग के लिए आयातित वस्तुओं पर सीमा शुल्क 20% से घटाकर 10% कर दिया गया है।</p>\n</li>\n<li data-start=\"3075\" data-end=\"3293\">\n<p data-start=\"3078\" data-end=\"3293\">Capital goods for processing critical minerals like Lithium and Cobalt are given customs duty exemption.<br data-start=\"3182\" data-end=\"3185\" />लिथियम और कोबाल्ट जैसे महत्वपूर्ण खनिजों के प्रसंस्करण हेतु पूंजीगत वस्तुओं पर सीमा शुल्क छूट दी गई है।</p>\n</li>\n<li data-start=\"3295\" data-end=\"3489\">\n<p data-start=\"3298\" data-end=\"3489\">A Single Digital Window for cargo clearance and a Customs Integrated System will be implemented.<br data-start=\"3394\" data-end=\"3397\" />कार्गो क्लीयरेंस के लिए एकल डिजिटल विंडो और कस्टम्स इंटीग्रेटेड सिस्टम लागू किया जाएगा।</p>\n</li>\n<li data-start=\"3491\" data-end=\"3656\">\n<p data-start=\"3494\" data-end=\"3656\">Fish caught in India&rsquo;s Exclusive Economic Zone (EEZ) will now be duty-free.<br data-start=\"3569\" data-end=\"3572\" />भारत के विशिष्ट आर्थिक क्षेत्र (EEZ) में पकड़ी गई मछलियाँ अब शुल्क-मुक्त होंगी।</p>\n</li>\n</ol>\n<p data-start=\"3658\" data-end=\"3737\">Which of the above statements are correct?<br data-start=\"3700\" data-end=\"3703\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"3739\" data-end=\"3817\">A. 1, 2 and 3 only<br data-start=\"3757\" data-end=\"3760\" />B. 2 and 4 only<br data-start=\"3775\" data-end=\"3778\" />C. 1, 2, 3, 4 and 5<br data-start=\"3797\" data-end=\"3800\" />D. 3 and 5 only</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"55\" data-end=\"160\">Consider the following statements regarding <strong data-start=\"99\" data-end=\"139\">Major Expenditure Items (₹ in crore)</strong> in the Union Budget:</p>\n<p data-start=\"162\" data-end=\"252\">संघीय बजट में प्रमुख व्यय मदों (₹ करोड़ में) के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"254\" data-end=\"1005\">\n<li data-start=\"254\" data-end=\"417\">\n<p data-start=\"257\" data-end=\"417\">Expenditure on Transport (₹5,98,520 crore) is higher than Defence (₹5,94,585 crore).<br data-start=\"341\" data-end=\"344\" />परिवहन (₹5,98,520 करोड़) पर व्यय रक्षा (₹5,94,585 करोड़) से अधिक है।</p>\n</li>\n<li data-start=\"419\" data-end=\"607\">\n<p data-start=\"422\" data-end=\"607\">Rural Development (₹2,73,108 crore) has higher allocation than Home Affairs (₹2,55,234 crore).<br data-start=\"516\" data-end=\"519\" />ग्रामीण विकास (₹2,73,108 करोड़) का आवंटन गृह मंत्रालय (₹2,55,234 करोड़) से अधिक है।</p>\n</li>\n<li data-start=\"609\" data-end=\"815\">\n<p data-start=\"612\" data-end=\"815\">Education (₹1,39,289 crore) has higher allocation than Agriculture &amp; Allied Activities (₹1,62,671 crore).<br data-start=\"717\" data-end=\"720\" />शिक्षा (₹1,39,289 करोड़) का आवंटन कृषि एवं संबद्ध गतिविधियाँ (₹1,62,671 करोड़) से अधिक है।</p>\n</li>\n<li data-start=\"817\" data-end=\"1005\">\n<p data-start=\"820\" data-end=\"1005\">Development of North East (₹6,812 crore) has the lowest allocation among the listed major items.<br data-start=\"916\" data-end=\"919\" />उत्तर-पूर्व के विकास (₹6,812 करोड़) का आवंटन सूचीबद्ध प्रमुख मदों में सबसे कम है।</p>\n</li>\n</ol>\n<p data-start=\"1007\" data-end=\"1092\">Which of the statements given above are correct?<br data-start=\"1055\" data-end=\"1058\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"1094\" data-end=\"1172\">A. 1, 2 and 4 only<br data-start=\"1112\" data-end=\"1115\" />B. 1 and 3 only<br data-start=\"1130\" data-end=\"1133\" />C. 2, 3 and 4 only<br data-start=\"1151\" data-end=\"1154\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<h3 data-start=\"1179\" data-end=\"1226\">&nbsp;Correct Answer:&nbsp;<strong data-start=\"1201\" data-end=\"1224\">A (1, 2 and 4 only)</strong></h3>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"57\" data-end=\"91\">Consider the following statements:</p>\n<p data-start=\"93\" data-end=\"125\">निम्नलिखित कथनों पर विचार कीजिए:</p>\n<ol data-start=\"127\" data-end=\"667\">\n<li data-start=\"127\" data-end=\"290\">\n<p data-start=\"130\" data-end=\"290\">Article 112 of the Constitution refers to the Budget as the &ldquo;Annual Financial Statement.&rdquo;<br data-start=\"219\" data-end=\"222\" />संविधान का अनुच्छेद 112 बजट को &ldquo;वार्षिक वित्तीय विवरण&rdquo; कहता है।</p>\n</li>\n<li data-start=\"292\" data-end=\"420\">\n<p data-start=\"295\" data-end=\"420\">The biggest source of government income is Borrowings (about 24%).<br data-start=\"361\" data-end=\"364\" />सरकार की आय का सबसे बड़ा स्रोत उधारी (लगभग 24%) है।</p>\n</li>\n<li data-start=\"422\" data-end=\"540\">\n<p data-start=\"425\" data-end=\"540\">The largest expenditure item is Interest Payments (about 20%).<br data-start=\"487\" data-end=\"490\" />सबसे बड़ा व्यय मद ब्याज भुगतान (लगभग 20%) है।</p>\n</li>\n<li data-start=\"542\" data-end=\"667\">\n<p data-start=\"545\" data-end=\"667\">The Railway Budget was merged with the General Budget in 2017.<br data-start=\"607\" data-end=\"610\" />रेलवे बजट को 2017 में सामान्य बजट में विलय किया गया।</p>\n</li>\n</ol>\n<p data-start=\"669\" data-end=\"748\">Which of the above statements are correct?<br data-start=\"711\" data-end=\"714\" />उपरोक्त में से कौन-से कथन सही हैं?</p>\n<p data-start=\"750\" data-end=\"828\">A. 1, 2 and 4 only<br data-start=\"768\" data-end=\"771\" />B. 1 and 3 only<br data-start=\"786\" data-end=\"789\" />C. 2, 3 and 4 only<br data-start=\"807\" data-end=\"810\" />D. 1, 2, 3 and 4</p>",
+    "comp": "",
+    "options": [
+      "<p>A</p>",
+      "<p>B</p>",
+      "<p>C</p>",
+      "<p>D</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Largest expenditure is States&rsquo; Share (22%), not Interest (20%).</p>\n<h2 data-start=\"72\" data-end=\"106\">1️⃣ THE BASICS&nbsp;</h2>\n<p data-start=\"108\" data-end=\"270\"><strong data-start=\"108\" data-end=\"124\">Article 112:</strong><br data-start=\"124\" data-end=\"127\" />The Constitution calls the Budget the <strong data-start=\"165\" data-end=\"198\">&ldquo;Annual Financial Statement.&rdquo;</strong><br data-start=\"198\" data-end=\"201\" />संविधान का अनुच्छेद 112 बजट को <strong data-start=\"232\" data-end=\"259\">&ldquo;वार्षिक वित्तीय विवरण&rdquo;</strong> कहता है।</p>\n<p data-start=\"272\" data-end=\"510\"><strong data-start=\"272\" data-end=\"297\">Definition (परिभाषा):</strong><br data-start=\"297\" data-end=\"300\" />The Budget is an estimate of government <strong data-start=\"340\" data-end=\"361\">Receipts (Income)</strong> and <strong data-start=\"366\" data-end=\"392\">Expenditure (Spending)</strong> for one financial year.<br data-start=\"416\" data-end=\"419\" />बजट एक वित्तीय वर्ष के लिए सरकार की <strong data-start=\"455\" data-end=\"475\">प्राप्तियों (आय)</strong> और <strong data-start=\"479\" data-end=\"494\">व्यय (खर्च)</strong> का अनुमान है।</p>\n<p data-start=\"512\" data-end=\"670\"><strong data-start=\"512\" data-end=\"537\">Preparation (तैयारी):</strong><br data-start=\"537\" data-end=\"540\" />Prepared by the <strong data-start=\"556\" data-end=\"597\">Budget Division, Ministry of Finance.</strong><br data-start=\"597\" data-end=\"600\" />बजट का निर्माण <strong data-start=\"615\" data-end=\"647\">वित्त मंत्रालय के बजट प्रभाग</strong> द्वारा किया जाता है।</p>\n<p data-start=\"672\" data-end=\"868\"><strong data-start=\"672\" data-end=\"705\">14-Day Rule (14 दिन का नियम):</strong><br data-start=\"705\" data-end=\"708\" />Rajya Sabha can keep a Money Bill for <strong data-start=\"746\" data-end=\"762\">only 14 days</strong> and cannot reject it.<br data-start=\"784\" data-end=\"787\" />राज्यसभा मनी बिल को <strong data-start=\"807\" data-end=\"822\">केवल 14 दिन</strong> तक रख सकती है और उसे अस्वीकार नहीं कर सकती।</p>\n<hr data-start=\"870\" data-end=\"873\" />\n<h2 data-start=\"875\" data-end=\"910\">2️⃣ WHERE THE MONEY COMES FROM</h2>\n<h2 data-start=\"911\" data-end=\"940\">2️⃣ रुपया कहाँ से आता है</h2>\n<p data-start=\"942\" data-end=\"1006\">Think of this as government&rsquo;s income.<br data-start=\"979\" data-end=\"982\" />इसे सरकार की आय समझें।</p>\n<ul data-start=\"1008\" data-end=\"1447\">\n<li data-start=\"1008\" data-end=\"1142\">\n<p data-start=\"1010\" data-end=\"1142\"><strong data-start=\"1010\" data-end=\"1030\">Borrowings (24%)</strong> &rarr; Largest source (Loans taken by government)<br data-start=\"1075\" data-end=\"1078\" /><strong data-start=\"1080\" data-end=\"1095\">उधारी (24%)</strong> &rarr; सबसे बड़ा स्रोत (सरकार द्वारा लिया गया ऋण)</p>\n</li>\n<li data-start=\"1144\" data-end=\"1245\">\n<p data-start=\"1146\" data-end=\"1245\"><strong data-start=\"1146\" data-end=\"1166\">Income Tax (21%)</strong> &rarr; Tax paid by individuals<br data-start=\"1192\" data-end=\"1195\" /><strong data-start=\"1197\" data-end=\"1211\">आयकर (21%)</strong> &rarr; व्यक्तियों द्वारा दिया गया कर</p>\n</li>\n<li data-start=\"1247\" data-end=\"1352\">\n<p data-start=\"1249\" data-end=\"1352\"><strong data-start=\"1249\" data-end=\"1274\">Corporation Tax (18%)</strong> &rarr; Tax paid by companies<br data-start=\"1298\" data-end=\"1301\" /><strong data-start=\"1303\" data-end=\"1320\">निगम कर (18%)</strong> &rarr; कंपनियों द्वारा दिया गया कर</p>\n</li>\n<li data-start=\"1354\" data-end=\"1447\">\n<p data-start=\"1356\" data-end=\"1447\"><strong data-start=\"1356\" data-end=\"1369\">GST (15%)</strong> &rarr; Tax on goods and services<br data-start=\"1397\" data-end=\"1400\" /><strong data-start=\"1402\" data-end=\"1418\">जीएसटी (15%)</strong> &rarr; वस्तुओं एवं सेवाओं पर कर</p>\n</li>\n</ul>\n<hr data-start=\"1449\" data-end=\"1452\" />\n<h2 data-start=\"1454\" data-end=\"1483\">3️⃣ WHERE THE MONEY GOES</h2>\n<h2 data-start=\"1484\" data-end=\"1511\">3️⃣ रुपया कहाँ जाता है</h2>\n<p data-start=\"1513\" data-end=\"1581\">Think of this as government&rsquo;s expenses.<br data-start=\"1552\" data-end=\"1555\" />इसे सरकार का खर्च समझें।</p>\n<ul data-start=\"1583\" data-end=\"2115\">\n<li data-start=\"1583\" data-end=\"1681\">\n<p data-start=\"1585\" data-end=\"1681\"><strong data-start=\"1585\" data-end=\"1608\">States&rsquo; Share (22%)</strong> &rarr; Largest expenditure<br data-start=\"1630\" data-end=\"1633\" /><strong data-start=\"1635\" data-end=\"1662\">राज्यों का हिस्सा (22%)</strong> &rarr; सबसे बड़ा व्यय</p>\n</li>\n<li data-start=\"1683\" data-end=\"1788\">\n<p data-start=\"1685\" data-end=\"1788\"><strong data-start=\"1685\" data-end=\"1712\">Interest Payments (20%)</strong> &rarr; Interest on old loans<br data-start=\"1736\" data-end=\"1739\" /><strong data-start=\"1741\" data-end=\"1763\">ब्याज भुगतान (20%)</strong> &rarr; पुराने ऋणों पर ब्याज</p>\n</li>\n<li data-start=\"1790\" data-end=\"1920\">\n<p data-start=\"1792\" data-end=\"1920\"><strong data-start=\"1792\" data-end=\"1824\">Central Sector Schemes (17%)</strong> &rarr; Major government projects<br data-start=\"1852\" data-end=\"1855\" /><strong data-start=\"1857\" data-end=\"1891\">केंद्रीय क्षेत्र योजनाएँ (17%)</strong> &rarr; प्रमुख सरकारी परियोजनाएँ</p>\n</li>\n<li data-start=\"1922\" data-end=\"2016\">\n<p data-start=\"1924\" data-end=\"2016\"><strong data-start=\"1924\" data-end=\"1941\">Defence (11%)</strong> &rarr; Army, Navy, Air Force<br data-start=\"1965\" data-end=\"1968\" /><strong data-start=\"1970\" data-end=\"1985\">रक्षा (11%)</strong> &rarr; थल सेना, नौसेना, वायु सेना</p>\n</li>\n<li data-start=\"2018\" data-end=\"2115\">\n<p data-start=\"2020\" data-end=\"2115\"><strong data-start=\"2020\" data-end=\"2038\">Subsidies (6%)</strong> &rarr; Food, fertilizer, LPG etc.<br data-start=\"2067\" data-end=\"2070\" /><strong data-start=\"2072\" data-end=\"2088\">सब्सिडी (6%)</strong> &rarr; खाद्य, उर्वरक, गैस आदि</p>\n</li>\n</ul>\n<hr data-start=\"2117\" data-end=\"2120\" />\n<h2 data-start=\"2122\" data-end=\"2152\">4️⃣ HISTORICAL ONE-LINERS</h2>\n<h2 data-start=\"2153\" data-end=\"2186\">4️⃣ महत्वपूर्ण ऐतिहासिक तथ्य</h2>\n<ul data-start=\"2188\" data-end=\"2620\">\n<li data-start=\"2188\" data-end=\"2319\">\n<p data-start=\"2190\" data-end=\"2319\"><strong data-start=\"2190\" data-end=\"2222\">First Budget of India (1860)</strong> &rarr; Presented by <strong data-start=\"2238\" data-end=\"2254\">James Wilson</strong><br data-start=\"2254\" data-end=\"2257\" /><strong data-start=\"2259\" data-end=\"2286\">भारत का पहला बजट (1860)</strong> &rarr; जेम्स विल्सन द्वारा प्रस्तुत</p>\n</li>\n<li data-start=\"2321\" data-end=\"2492\">\n<p data-start=\"2323\" data-end=\"2492\"><strong data-start=\"2323\" data-end=\"2367\">First Budget of Independent India (1947)</strong> &rarr; Presented by <strong data-start=\"2383\" data-end=\"2409\">R.K. Shanmukham Chetty</strong><br data-start=\"2409\" data-end=\"2412\" /><strong data-start=\"2414\" data-end=\"2450\">स्वतंत्र भारत का पहला बजट (1947)</strong> &rarr; आर.के. शन्मुखम चेट्टी द्वारा प्रस्तुत</p>\n</li>\n<li data-start=\"2494\" data-end=\"2620\">\n<p data-start=\"2496\" data-end=\"2620\"><strong data-start=\"2496\" data-end=\"2511\">2017 Merger</strong> &rarr; Railway Budget merged with General Budget<br data-start=\"2555\" data-end=\"2558\" /><strong data-start=\"2560\" data-end=\"2573\">2017 विलय</strong> &rarr; रेलवे बजट को सामान्य बजट में मिला दिया गया</p>\n</li>\n</ul>\n<p data-start=\"2627\" data-end=\"2668\"><strong data-start=\"2630\" data-end=\"2666\">Exam Trick (परीक्षा हेतु ट्रिक):</strong></p>\n<p></p>\n<ul data-start=\"2669\" data-end=\"2828\">\n<li data-start=\"2669\" data-end=\"2711\">\n<p data-start=\"2671\" data-end=\"2711\">Largest Receipt &rarr; <strong data-start=\"2689\" data-end=\"2709\">Borrowings (24%)</strong></p>\n</li>\n<li data-start=\"2712\" data-end=\"2761\">\n<p data-start=\"2714\" data-end=\"2761\">Largest Expenditure &rarr; <strong data-start=\"2736\" data-end=\"2759\">States&rsquo; Share (22%)</strong></p>\n</li>\n<li data-start=\"2762\" data-end=\"2794\">\n<p data-start=\"2764\" data-end=\"2794\">Article for Budget &rarr; <strong data-start=\"2785\" data-end=\"2792\">112</strong></p>\n</li>\n<li data-start=\"2795\" data-end=\"2828\">\n<p data-start=\"2797\" data-end=\"2828\">Money Bill Rule &rarr; <strong data-start=\"2815\" data-end=\"2826\">14 Days</strong></p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"179\" data-end=\"284\">The Fiscal Deficit for FY 2026-27 is estimated at:<br data-start=\"229\" data-end=\"232\" />वित्त वर्ष 2026-27 के लिए राजकोषीय घाटा अनुमानित है:</p>\n<p data-start=\"286\" data-end=\"351\">A. 3.5% of GDP<br data-start=\"300\" data-end=\"303\" />B. 4.3% of GDP<br data-start=\"317\" data-end=\"320\" />C. 4.8% of GDP<br data-start=\"334\" data-end=\"337\" />D. 5% of GDP</p>",
+    "comp": "",
+    "options": [
+      "<p>B</p>",
+      "<p>A</p>",
+      "<p>D</p>",
+      "<p>C</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"410\" data-end=\"501\">The New Income Tax Act, 2025 will be effective from:<br data-start=\"462\" data-end=\"465\" />नया आयकर अधिनियम, 2025 प्रभावी होगा:</p>\n<p></p>\n<p data-start=\"503\" data-end=\"575\">A. 1 April 2025<br data-start=\"518\" data-end=\"521\" />B. 1 January 2026<br data-start=\"538\" data-end=\"541\" />C. 1 April 2026<br data-start=\"556\" data-end=\"559\" />D. 1 July 2026</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>C</p>",
+      "<p>B</p>",
+      "<p>A</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  },
+  {
+    "question": "<p data-start=\"635\" data-end=\"737\">The largest share in government expenditure (Rupee Goes To) is:<br data-start=\"698\" data-end=\"701\" />सरकारी व्यय में सबसे बड़ा हिस्सा है:</p>\n<p></p>\n<p data-start=\"739\" data-end=\"840\">A. Interest Payments (20%)<br data-start=\"765\" data-end=\"768\" />B. Defence (11%)<br data-start=\"784\" data-end=\"787\" />C. States&rsquo; Share of Taxes (22%)<br data-start=\"818\" data-end=\"821\" />D. Subsidies (6%)</p>",
+    "comp": "",
+    "options": [
+      "<p>D</p>",
+      "<p>A</p>",
+      "<p>C</p>",
+      "<p>B</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "UNION BUDGET 2026-27"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 20;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CT 1: GA (Ancient Indian History)</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    CT 1: GA (Ancient Indian History) 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What was the main form of property in the Rig Veda?</div>
+  <div class="question lang-hi">ऋग्वेद में संपत्ति का मुख्य रूप क्या था?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Gold</div><div class="option correct">Cow</div><div class="option">Land</div><div class="option">House</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सोना</div><div class="option correct">गाय</div><div class="option">भूमि</div><div class="option">घर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Cow</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>The Cow</strong> was the <strong>main form of property of the Rig Vedic people</strong>. Most of the <strong>wars in the Rig Vedic period</strong> were fought for the <strong>sake of Cows</strong>. War is referred to as &#39;<strong>gavishthi</strong>&#39; in the Rig Veda. &quot;Gavishthi&quot; means to search for Cow. Cows were also given as gifts to priests.</p> <p><span style="font-weight: 700;">Rig Vedic:</span></p> <ul> <li style="text-align: justify;"><strong>Rig Vedic Aryans</strong> used the cost of<strong> mail and helmet</strong> in warfare whereas the people of Indus Valley Civilization did not leave any evidence of using them.</li> <li style="text-align: justify;">There is also evidence of <strong>swords, arrows, bows used during Rig Vedic Aryans.</strong></li> <li style="text-align: justify;">Rig Vedic Aryans had <strong>domesticated the horse</strong> whereas there is no evidence of Indus Valley people having been aware of this animal.</li> <li style="text-align: justify;">Rig Vedic Aryans know <strong>gold, silver, copper, iron </strong>whereas Indus valley people knew gold, copper, bronze but they did not know iron.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>गाय</strong></u><strong>&nbsp;</strong><span style="color: (33, 37, 41);">है।&nbsp;</span></p> <p><span style="color: (33, 37, 41);"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <p><strong>ऋग वैदिक लोगों की संपत्ति का मुख्य रूप</strong> <strong>गाय</strong> थी। ऋग वैदिक काल के अधिकांश <strong>युद्ध गायों की खातिर</strong> लड़े गए थे। युद्ध को ऋग्वेद में &#39;<strong>गविष्ठी</strong>&#39; के रूप में जाना जाता है। &quot;गविष्ठी&quot; का अर्थ है गाय की खोज करना। गायों को पुजारी को उपहार के रूप में भी दिया जाता था।</p> <p><span style="font-weight: 700;">ऋग वैदिक:</span></p> <ul> <li style="text-align: justify;"><strong>रिग वैदिक आर्यों </strong>ने युद्ध में <strong>मेल और हेलमेट</strong> की लागत का इस्तेमाल किया, जबकि सिंधु घाटी सभ्यता के लोगों ने उन्हें इस्तेमाल करने का कोई सबूत नहीं छोड़ा।</li> <li style="text-align: justify;"><strong>ऋग वैदिक आर्यों के दौरान प्रयुक्त तलवारों, तीरों, धनुषों</strong> का भी प्रमाण है।</li> <li style="text-align: justify;">ऋग वैदिक आर्यों ने<strong> घोड़े को पालतू</strong> बनाया था जबकि सिंधु घाटी के लोगों को इस जानवर के बारे में पता होने का कोई सबूत नहीं है।</li> <li style="text-align: justify;">ऋग्वेदिक आर्य लोग <strong>सोना, चांदी, तांबा, लोहा</strong> जानते हैं जबकि सिंधु घाटी के लोग सोना, तांबा, कांस्य जानते थे, लेकिन वे लोहे को नहीं जानते थे।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">How many Mahajanpadas were there in ancient India?</div>
+  <div class="question lang-hi">प्राचीन भारत में कितने महाजनपद थे?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">20</div><div class="option correct">16</div><div class="option">18</div><div class="option">10</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">20</div><div class="option correct">16</div><div class="option">18</div><div class="option">10</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The Correct Answer is&nbsp;<u style=""><span style="font-weight: 700;">16</span></u>.</p> <ul style=""> <li style="">During the lifetime of Lord Gautam Buddha,<strong> sixteen Mahajanpadas</strong> existed in the 7th and early 6th centuries BC.</li> <li style="">Mahajanpadas were the major kingdoms of vedic India during 6th Century BC.</li> </ul> <ol style="margin-left: 40px;"> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Kasi: Varanasi&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Kosala: Ayodhya</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Anga: Champa&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Magadha: For a time, Rajgir (known as Rajagriha in the past) was the capital, which was then shifted to Pataliputra&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Vajji: Vaishali</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Malla: Kushinara and Pava</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Chedi: Sothivati (Near Banda in Uttar Pradesh)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Vatsa or Vamsa: Kaushambi (Near Modern Allahabad)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Kuru: Indraprastha&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Panchala: Ahichatra (Northern Panchala) and Kampilya (Southern Panchala)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Matsya: Viratanagari&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Surasena: Mathura</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Assaka: Potana or Potali&nbsp;</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Avanti: Ujjain</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">Gandhara: Taxila</li> </ol> <ul style=""> <li style="">Buddha was born in&nbsp;<strong>563&nbsp;BC.</strong></li> <li style="">Buddha was born at Lumbini, near Kapilavastu in Nepal.</li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर <u style=""><span style="font-weight: 700;">16</span></u> है।</p> <ul style=""> <li style="">भगवान गौतम बुद्ध के जीवनकाल के दौरान, 7वीं और 6ठी शताब्दी ईसा पूर्व में <strong>सोलह महाजनपद</strong> अस्तित्व में थे।</li> <li style="">छठी शताब्दी ईसा पूर्व के दौरान महाजनपद वैदिक भारत के प्रमुख साम्राज्य थे।</li> </ul> <ol style="margin-left: 40px;"> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">काशी: वाराणसी</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">कोसल: अयोध्या</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">अंग: चंपा</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">मगध: एक समय के लिए, राजगीर (जिसे अतीत में राजगृह के नाम से जाना जाता था) राजधानी थी, जिसे बाद में पाटलिपुत्र में स्थानांतरित कर दिया गया था।</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">वज्जि: वैशाली</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">मल्ल: कुशीनारा और पावा</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">चेदि: सोथिवती (उत्तर प्रदेश में बांदा के पास)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">वत्स या वंश: कौशांबी (आधुनिक इलाहाबाद के पास)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">कुरु: इंद्रप्रस्थ</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">पंचाल: अहिछत्र (उत्तरी पंचाल) और काम्पिल्य (दक्षिणी पंचाल)</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">मत्स्यः विराटनगरी</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">सूरसेन: मथुरा</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">असाका: पोटाना या पोटाली</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">अवंती:उज्जैन</li> <li style="margin: 0px; padding: 0px; position: relative; line-height: 1.3;">गांधार: तक्षशिला</li> </ol> <ul style=""> <li style="">बुद्ध का जन्म <strong>563 ईसा पूर्व</strong> में हुआ था।</li> <li style="">बुद्ध का जन्म नेपाल में कपिलवस्तु के पास लुंबिनी में हुआ था।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Who among the following rulers established the Sunga Dynasty?</div>
+  <div class="question lang-hi">इनमें से किस शासक ने शुंग वंश की स्थापना की?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Agnimitra</div><div class="option correct">Pushyamitra</div><div class="option">Bhagabhadra</div><div class="option">Devabhuti</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">अग्निमित्र</div><div class="option correct">पुष्यमित्र</div><div class="option">भागभद्र</div><div class="option">देवभूति</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Pushyamitra</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>The Sunga dynasty was established by Pushyamitra Sunga.</strong></u></li> <li>Pushyamitra Sunga was a Brahmin.</li> <li>Pushyamitra Sunga was the commander in chief of the Last Mauryan king, Brihadratha.</li> <li>He assassinated Brihadratha in 184 BC.</li> <li>Pushyamitra destroyed many of the Ashokan Stupas and Inscriptions.</li> <li>Agnimitra was the son of Pushyamitra.</li> <li>Bhagabhadra was the son of Agnimitra and Devabhuti was the son of Bhagabhadra.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>पुष्यमित्र</strong></u> है।&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>शुंग वंश की स्थापना पुष्यमित्र शुंग ने की थी।</strong></u></li> <li>पुष्यमित्र शुंग एक ब्राह्मण था।</li> <li>पुष्यमित्र शुंग अंतिम मौर्य राजा, बृहद्रथ के सेनापति थे।</li> <li>उन्होंने 184 ईसा पूर्व में बृहद्रथ की हत्या की।</li> <li>पुष्यमित्र ने कई अशोक स्तूपों और शिलालेखों को नष्ट कर दिया।</li> <li>अग्निमित्र पुष्यमित्र का पुत्र था।</li> <li>भागभद्र, अग्निमित्र का&nbsp;पुत्र था&nbsp;और देवभूति, भागभद्र का&nbsp;पुत्र था।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Consider the following statements about the Stone Age in India:</p> <p>1. Different periods are identified on the basis of the type and technology of stone tools.</p> <p>2. There are no regional variations in the type and technology of tools in different periods.</p> <p>3. Stone Age cultures of different periods evolved uniformly in a near unilinear fashion all over the subcontinent.</p> <p>Which of the statements given above is/are correct?</p></div>
+  <div class="question lang-hi"><p>भारत में पाषाण काल के बारे में निम्नलिखित कथनों पर विचार कीजिए:</p> <p>1. विभिन्न अवधियों को पत्थर के औजारों के प्रकार और तकनीक के आधार पर पहचाना जाता है।&nbsp;</p> <p>2. विभिन्न अवधियों में उपकरणों के प्रकार और तकनीक में कोई क्षेत्रीय भिन्नता नहीं&nbsp;है।&nbsp;</p> <p>3. विभिन्न अवधियों के पाषाण काल की संस्कृतियां एक निकटतम एकरेखीय शैली में समान रूप से विकसित हुईं।</p> <p>उपरोक्त दिए गए कथनों में से कौन-सा कथन सही है/हैं?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">1 only&nbsp;</div><div class="option">1 and 2 only&nbsp;</div><div class="option">3 only&nbsp;</div><div class="option">1, 2 and 3</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">केवल 1&nbsp;</div><div class="option">केवल 1 और 2&nbsp;</div><div class="option">केवल 3&nbsp;</div><div class="option">1, 2 और 3&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en">The Correct Answer is Option <strong>1</strong>, i.e.&nbsp;<strong>1 only</strong>. <ul> <li>The stone age is a period defined by the use of tools by a human.</li> <li>The<strong> stone age</strong> is <strong>divided into 3 parts</strong> namely <strong>Paleolithic (Old Stone Age), Mesolithic (Middle Stone Age) and Neolithic( New Stone Age).</strong></li> <li>Palaeolithic Age: Paleolithic Age was developed in the <strong>Pleistocene period.&nbsp;</strong> <ul> <li><strong>Robert Bruce Foote</strong> was the first person to discover a Paleolithic Stone in India in 1863.</li> <li>The tools of this period were made of hard rock &#39;<strong>quartzite</strong>&#39; and hence <strong>people this age</strong> was called &quot;<strong>Quartzite Man</strong>&quot;.</li> <li>&#39;<strong>Palaeo&#39; means Old and &#39;Lithic&#39; means Stone</strong>. There was basically Hunting and food gathering culture</li> </ul> </li> <li>Mesolithic Age: It is a <strong>Transition </strong>period <strong>between Paleolithic and Neolithic.</strong> <ul> <li>Microliths tools are the main characteristics of the age.</li> <li><strong>Carlyle </strong>was the 1st person who <strong>discovered Microliths</strong> in <strong>1867 </strong>from Vindhyan Rock Shelters.</li> <li>Hence it is called <strong>Microloithic age.</strong></li> <li>Hunting, Fishing, and food gathering were the main occupations.</li> </ul> </li> <li>Neolithic Age: Le Mesurier discover the tools and implement of Neolithic Age. <ul> <li>Neolithic-Chalcolithic Culture as a Self Sufficient food economy was defined by <strong>V. Gardon Childe.</strong></li> <li>Agriculture, Domestication of Animals, polished and grinned stone tools were practices if this age.&nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <strong>1</strong> अर्थात् <strong>केवल 1 </strong>है।&nbsp;</p> <ul> <li>पाषाण काल मानव द्वारा औजारों के उपयोग द्वारा परिभाषित एक अवधि&nbsp;है।&nbsp;</li> <li><strong>पाषाण काल</strong> को <strong>3 भागों में विभाजित </strong>किया गया है अर्थात् <strong>पुरापाषाण (पुरानी पाषाण काल), मध्यपाषाण (मध्य पाषाण काल) और नवपाषाण (नया पाषाण काल)।&nbsp;</strong></li> <li>पुरापाषाण काल: पुरापाषाण काल <strong>पुरापाषाण अवधि </strong>में विकसित हुआ था।&nbsp; <ul> <li><strong>रॉबर्ट ब्रूस फूटे </strong>1863 में भारत में पुरापाषाण काल की खोज करने वाले पहले व्यक्ति थे।</li> <li>इस अवधि के औजार कठोर पत्थर <strong>&#39;क्वार्टजाइट&#39; </strong>से बने थे और इसलिए <strong>इस काल के लोगों को &quot;क्वार्टजाइट मैन&quot;</strong> कहा जाता था।</li> <li><strong>&#39;पुरा&#39; का अर्थ पुराना और &#39;पाषाण&#39; का अर्थ पत्थर है।</strong> मूल रूप से यह&nbsp;शिकार और भोजन एकत्र करने की संस्कृति थी।&nbsp;</li> </ul> </li> <li>मध्यपाषाण काल: यह <strong>पुरापाषाण और नवपाषाण के बीच का संक्रमण काल</strong> ​​है। <ul> <li>मध्यपाषाण औजार काल की मुख्य विशेषताएं हैं।&nbsp;</li> <li><strong>कार्लाइल</strong> <strong>1867 </strong>में विंध्यन रॉक शेल्टर से <strong>मध्यपाषाण की खोज </strong>करने वाले पहले व्यक्ति थे।</li> <li>इसलिए इसे <strong>मध्यपाषाण काल</strong> कहा जाता है।&nbsp;</li> <li>शिकार, मछली पकड़ना और भोजन एकत्र करना इनके&nbsp;मुख्य कार्य थे।</li> </ul> </li> <li>नवपाषाण काल: ली मेसुरियर ने उपकरण की खोज की और नवपाषाण काल के कार्यान्वयन को लागू किया। <ul> <li>स्व-पर्याप्त खाद्य अर्थव्यवस्था के रूप में नवपाषाण- ताम्रपाषाणयुगीन संस्कृति को <strong>वी.&nbsp;गार्डन चाइल्ड</strong> द्वारा परिभाषित किया गया था।</li> <li>कृषि, पशुओं का वर्चस्व, परिष्कृत और कटे हुए पत्थर के औजार इस काल की प्रथा थी।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is a correct statement about Indus Valley civilization?</div>
+  <div class="question lang-hi">सिंधु घाटी सभ्यता के बारे में निम्नलिखित में से कौन सा सही कथन है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Harappa is situated on the banks of Ravi and Mohenjodaro is located on the banks of river Indus</div><div class="option">Both Chanhudaro and Kalibangan were located within the boundaries of present day Rajasthan.</div><div class="option">Lothal site was located on the bank of Narmada river.</div><div class="option">None of the statement is correct</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">हड़प्पा रावी के तट पर स्थित है और मोहनजोदड़ो सिंधु नदी के तट पर स्थित है।</div><div class="option">चन्हुदड़ो और कालीबंगन दोनों वर्तमान राजस्थान की सीमाओं के भीतर स्थित थे।</div><div class="option">लोथल स्थल नर्मदा नदी के तट पर स्थित था।</div><div class="option">कोई भी कथन सही नहीं है।&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;Harappa is situated on the banks of Ravi and Mohenjodaro is located on the banks of river Indus</p> <p>About Harappa and Mohenjodaro:</p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td>Harappa</td> <td>Mohenjodaro</td> </tr> <tr> <td>located on the banks of the Ravi river</td> <td>located on the banks of the Indus River.</td> </tr> <tr> <td>Harappa was discovered by Dayaram Sahani in 1921. It was in the Punjab region.</td> <td>Mohenjodaro was discovered by Rakhal Das Banerjee in 1922. It was in the Sindh region (Present day, Pakistan)</td> </tr> <tr> <td>Both sites come under the Bronze Age known as the Indis Valley Civilization (2600-1900 BCE).</td> <td> <p>&nbsp;Both sites come under the Bronze Age known as the Indis Valley Civilization (2600-1900 BCE).&nbsp;The ruins of Mohenjodaro&nbsp;were designated aa a&nbsp;World Heritage site&nbsp;by UNESCO in 1980.</p> </td> </tr> <tr> <td>Harappans created seals,&nbsp;pottery, and&nbsp;sculptures, and jewelry from materials, such as&nbsp;metal, terracotta, and stone.</td> <td>It was known as the &quot;Mound of the Dead&quot; sites of the IVC. These are two large cities of IVC consisted of more than 100 villages and towns.</td> </tr> <tr> <td>The Indus Valley civilization apparently evolved from the villages of neighbors using the Mesopotamian technique of irrigated agriculture with sufficient skill to reap the advantages with the help of fertile&nbsp;Indus River.</td> <td>There is no surviving evidence of architectural elaboration, in Mohenjodaro though that may well have been confined to Timberwork that has disintegrated.</td> </tr> <tr> <td>The civilization was known as literate, and its script, with some 250 to 500 characters, has been part and tentatively deciphered in the&nbsp;Dravidian language.</td> <td>Aesthetically the most notable work of figurative art from this city is a famous Bronze&nbsp;of a young naked&nbsp;Dancing Girl, Wore for a multitude of armlets.</td> </tr> <tr> <td>In this site there are a number of small&nbsp;seals, generally made of steatite (a form of talc), which are distinctive in unique in quality, depicting and a wide variety of animals, like Rhinoceros, and Antelopes&nbsp;both real such as Elephants, and Tigers.</td> <td>Stone sculpture, too, is scarce; some fragments, however, include the competent Head and Shoulders of a Bearded Man with a low Forehead, narrowed and somewhat Glittered&nbsp;eyes, a Fillet around the Brow, and across the left shoulder a cloak carved in relief with trefoils formerly filled with Red Paste.</td> </tr> </tbody> </table> <p>&nbsp;</p></div>
+    <div class="lang-hi"><p>सही उत्तर यह है कि&nbsp;हड़प्पा रावी के तट पर स्थित है और मोहनजोदड़ो सिंधु नदी के तट पर स्थित है।</p> <p>हड़प्पा और मोहनजोदड़ो के बारे में :</p> <table border="1" cellpadding="1" cellspacing="1"> <tbody> <tr> <td>हड़प्पा</td> <td>मोहनजोदड़ो</td> </tr> <tr> <td>रावी नदी के तट पर स्थित है</td> <td>सिंधु नदी के तट पर स्थित है।</td> </tr> <tr> <td>हड़प्पा की खोज दयाराम सहानी ने 1921 में की थी। यह पंजाब क्षेत्र में था।</td> <td>मोहनजोदड़ो की खोज 1922 में राखल दास बनर्जी ने की थी। यह सिंध क्षेत्र (वर्तमान दिन, पाकिस्तान) में था</td> </tr> <tr> <td>दोनों स्थल कांस्य युग के अंतर्गत आते हैं, जिसे सिंधी घाटी सभ्यता (2600-1900 ईसा पूर्व) के रूप में जाना जाता है।</td> <td> <p>दोनों स्थल कांस्य युग के अंतर्गत आते हैं, जिसे सिंधी घाटी सभ्यता (2600-1900 ईसा पूर्व) के रूप में जाना जाता है। मोहनजोदड़ो के खंडहरों को 1980 में यूनेस्को द्वारा विश्व विरासत स्थल के रूप में नामित किया गया था।</p> </td> </tr> <tr> <td>हड़प्पा वासियों ने धातु, टेराकोटा और पत्थर जैसी सामग्री से मुहरें, मिट्टी के बर्तन और मूर्तियां और गहने बनाए।</td> <td>इसे IVC के &quot;माउंड ऑफ़ द डेड&quot; साइटों के रूप में जाना जाता था। ये आईवीसी के दो बड़े शहर हैं जिनमें 100 से अधिक गांव और कस्बे शामिल हैं।</td> </tr> <tr> <td>सिंधु घाटी सभ्यता स्पष्ट रूप से उपजाऊ कृषि की मेसोपोटामियन तकनीक का उपयोग करते हुए पड़ोसियों के गांवों से विकसित हुई, जो उपजाऊ सिंधु नदी की मदद से लाभ उठाने के लिए पर्याप्त कौशल के साथ सिंचित कृषि थी ।</td> <td>मोहनजोदड़ो में वास्तुकला के विस्तार का कोई जीवित प्रमाण नहीं है, हालांकि यह अच्छी तरह से विघटित हो चुके टिम्बरवर्क तक ही सीमित है।</td> </tr> <tr> <td>सभ्यता को साक्षर के रूप में जाना जाता था, और इसकी लिपि, 250 से 500 वर्णों के साथ, द्रविड़ भाषा में अंश और अस्थायी रूप से विखंडित रही है ।</td> <td>इस शहर से अलंकारिक कला का सबसे उल्लेखनीय काम एक युवा बी डांसिंग गर्ल का प्रसिद्ध बी रौंज है, जो कि कई प्रकार की बाजुओं के लिए पहना जाता है।</td> </tr> <tr> <td>इस साइट में कई छोटी-छोटी मुहरें हैं , जो आमतौर पर स्टीटाइट (तालक का एक रूप) से बनी होती हैं, जो गुणवत्ता में अद्वितीय, चित्रण और विस्तृत प्रकार के जानवरों की तरह विशिष्ट होती हैं, जैसे कि आर हिनोकोर्स, और एंटीलोप्स असली जैसे हाथी, और बाघ।</td> <td>पत्थर की मूर्तिकला भी दुर्लभ है; कुछ अंशों में, हालांकि, कम माथे के साथ एक दाढ़ी वाले आदमी के सक्षम सिर और कंधे शामिल हैं, संकुचित और कुछ हद तक चमकती हुई आँखें, ब्रो के चारों ओर एक पट्टिका, और बाएं कंधे के पार एक लबादा जो पहले लाल पेस्ट से भरी हुई टॉफी के साथ राहत में खुदी हुई थी।</td> </tr> </tbody> </table> <p>&nbsp;</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following Brahmanas is attached to the Yajur Veda?</div>
+  <div class="question lang-hi">निम्न में से कौन सा ब्राह्मण, यजुर्वेद से संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Aitereya Brahmana</div><div class="option">Kaushitaki Brahmana</div><div class="option">Gopatha Brahmana</div><div class="option correct">Satapatha Brahmana</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ऐतरेय ब्राह्मण</div><div class="option">कौषीतकि ब्राह्मण</div><div class="option">गोपथ ब्राह्मण</div><div class="option correct">शतपथ ब्राह्मण</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Satapatha Brahmana</strong></u></p> <p>The Brahmans are prose texts that explain the hymns in the Vedas and also give stories related to their&nbsp;origin. Each Vedas has its own set of Brahmanas.&nbsp;</p> <ul> <li>Satapatha Brahmana is attached to the Yajur Veda.</li> <li>Aitereya Brahmana and Kaushitaki Brahmanas are attached to the Rig Veda.</li> <li>The Gopatha Brahmana is associated&nbsp;with the Atharva Veda.</li> <li>The&nbsp;<span style="font-weight: 700;">Yajur Veda</span>&nbsp;is an ancient collection of Sanskrit mantras and verses, used in&nbsp;<span style="font-weight: 700;">Hindu worship and rituals</span>.</li> <li>The name was taken from the Sanskrit roots, yajur, meaning&nbsp;<span style="font-weight: 700;">&quot;worship&quot; or &quot;sacrifice&quot;</span>&nbsp;and&nbsp;<span style="font-weight: 700;">Veda, meaning &quot;knowledge&quot;</span>.</li> <li>Yajur Veda is sometimes translated as&nbsp;<span style="font-weight: 700;">&quot;Knowledge of the Sacrifice&quot;.</span></li> <li> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> </li> <li>Yajur Veda is one of the four primary scriptures of Hinduism known collectively as the Vedas. <ul> <li>The other three are<span style="font-weight: 700;">&nbsp;Rig Veda, Atharva Veda, and Sama Veda</span>.</li> </ul> </li> <li>Each of the four Vedas is assigned a specific Hindu priest. <ul> <li>Hota for Rig Veda, Adhvaryu for Yajur Veda, udgata for Sama Veda and brahman for Atharva Veda.</li> </ul> </li> <li><span style="font-weight: 700;">&quot;Rig Veda&quot;</span>&nbsp;is the oldest of the Vedas, and one of the oldest extant texts in any Indo-European language. <ul> <li>The &quot;Rig Veda&quot; outlines one of the most ancient forms of&nbsp;<span style="font-weight: 700;">yoga, and provides information</span>&nbsp;about the practice of yoga and other spiritual disciplines.</li> </ul> </li> <li><span style="font-weight: 700;">&quot;Sama Veda&quot;</span>&nbsp;should&nbsp;<span style="font-weight: 700;">not be read or recited, but sung</span>. <ul> <li>It is also called the&nbsp;<span style="font-weight: 700;">&quot;Book of Song&quot;</span>.</li> </ul> </li> <li>The&nbsp;<span style="font-weight: 700;">&quot;Atharva Veda&quot;&nbsp;</span>is dedicated to prolonging life and&nbsp;<span style="font-weight: 700;">healing illnesses, seeking cures from herbs, gaining a lover or partner, or world peace and the nature of good and evil</span>.</li> <li> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> </li> <li>The&nbsp;<span style="font-weight: 700;">Vedas</span>&nbsp;are the&nbsp;<span style="font-weight: 700;">oldest Hindu sacred texts</span>.</li> <li>The&nbsp;<span style="font-weight: 700;">Sanskrit word, Veda, means &quot;knowledge&quot;</span>. <ul> <li>The Vedas are also referred to by some as&nbsp;<span style="font-weight: 700;">sruti literature, meaning &ldquo;what is heard&rdquo;</span>.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>शतपथ ब्राह्मण</strong></u>&nbsp;है।</p> <p>ब्राह्मण गद्य ग्रंथ हैं जो वेदों में सूक्तों की व्याख्या करते हैं और उनकी उत्पत्ति से संबंधित कहानियां भी बतलाते हैं। प्रत्येक वेद का ब्राह्मणों का अपना समूह है।</p> <ul> <li>शतपथ ब्राह्मण यजुर्वेद से जुड़ा हुआ है।</li> <li>ऐतरेय ब्राह्मण और कौशीतकी ब्राह्मण ऋग्वेद से जुड़े हैं।</li> <li>गोपथ ब्राह्मण अथर्ववेद से जुड़ा है।</li> <li><strong>यजुर्वेद&nbsp;</strong>संस्कृत के मंत्रों और छंदों का एक प्राचीन संग्रह है, जिसका उपयोग <span style="font-weight: 700;">हिंदू पूजा और अनुष्ठानों</span> में किया जाता है।</li> <li>यह नाम संस्कृत की जड़ों से लिया गया था, यजुर, जिसका अर्थ है <span style="font-weight: 700;">&quot;पूजा&quot; या &quot;त्याग&quot;</span> और <span style="font-weight: 700;">वेद, जिसका अर्थ है &quot;ज्ञान&quot;</span>।</li> <li>यजुर्वेद को कभी-कभी <span style="font-weight: 700;">&quot;अनुष्ठानों के ज्ञान&quot; के</span> रूप में अनुवादित किया जाता है।</li> <li> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> </li> <li>यजुर्वेद हिंदू धर्म के चार प्राथमिक शास्त्रों में से एक है जिसे सामूहिक रूप से वेदों के रूप में जाना जाता है। <ul> <li>अन्य तीन <span style="font-weight: 700;">ऋग्वेद, अथर्ववेद, और साम वेद</span> हैं।</li> </ul> </li> <li>चार वेदों में से प्रत्येक को एक विशिष्ट हिंदू पुजारी सौंपा गया है। <ul> <li>ऋग्वेद के लिए होत, यजुर्वेद के लिए अधिदेव, सामवेद के लिए उद्गता और अथर्ववेद के लिए ब्राह्मण।</li> </ul> </li> <li><span style="font-weight: 700;">&quot;ऋग्वेद&quot;</span> वेदों में सबसे पुराना है, और किसी भी इंडो-यूरोपीय भाषा में सबसे पुराना मौजूदा ग्रंथों में से एक है। <ul> <li>&quot;ऋग्वेद&quot; <span style="font-weight: 700;">योग</span> के सबसे प्राचीन रूपों में से एक है<span style="font-weight: 700;">, और</span> योग और अन्य आध्यात्मिक विषयों के अभ्यास के बारे में <span style="font-weight: 700;">जानकारी प्रदान करता</span> है।</li> </ul> </li> <li><span style="font-weight: 700;">&quot;साम वेद&quot;</span> <span style="font-weight: 700;">पढ़ा या सुनाया नहीं</span> जाना चाहिए<span style="font-weight: 700;">, लेकिन गाया जाता है</span>। <ul> <li>इसे <span style="font-weight: 700;">&quot;बुक ऑफ सॉन्ग&quot;</span> भी कहा जाता है।</li> </ul> </li> <li><span style="font-weight: 700;">&quot;अथर्ववेद&quot;</span> जीवन को लंबा करने और <span style="font-weight: 700;">बीमारियों को ठीक</span> करने के लिए समर्पित है<span style="font-weight: 700;">, जड़ी-बूटियों से इलाज, </span><strong>प्रेमी या साथी प्राप्त करने, या विश्व शांति और अच्छे और बुरे की प्रकृति के लिए समर्पित</strong> है।</li> <li> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> </li> <li><span style="font-weight: 700;">वेद</span> <span style="font-weight: 700;">प्राचीनतम हिंदू पवित्र ग्रंथ हैं।&nbsp;</span></li> <li><span style="font-weight: 700;">संस्कृत शब्द, वेद का अर्थ&nbsp;&quot;ज्ञान&quot; </span>है।&nbsp;&nbsp; <ul> <li>वेदों को कुछ लोग <span style="font-weight: 700;">श्रुति साहित्य के</span> रूप में भी संदर्भित करते हैं<span style="font-weight: 700;">, जिसका अर्थ है &quot;जो सुना गया हो&quot;</span>।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Svetambara and Digambara are two sects of the _______ community.</div>
+  <div class="question lang-hi">श्वेतांबर और दिगंबर, _______ समुदाय के दो संप्रदाय हैं।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Zoroastrian</div><div class="option">Buddhist</div><div class="option">Maratha</div><div class="option correct">Jain</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">पारसी</div><div class="option">बौद्ध</div><div class="option">मराठा</div><div class="option correct">जैन</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><div style="margin-left:18pt;"> <ul> <li>Svetambara and Digambara are two sects of the <strong>Jain community.</strong></li> <li>Svetambara Jains are <strong>&ldquo;those who wear white&rdquo; </strong>and is one of the two important sects of Jainism.</li> <li>Svetambaras unlike Digambaras do not believe in renunciation of clothes for attaining liberation.</li> <li>They also believe that anybody can attain liberation(including women).</li> <li>Digamabara Jains are those to whom<strong> &ldquo;space is the garment&rdquo; </strong>and <strong>do not wear anything</strong>.</li> <li>The&nbsp;<em>Digambara</em>&nbsp;Jains <strong>worship completely nude idols</strong> of&nbsp;<strong><em>tirthankaras</em>&nbsp;</strong>(omniscient beings) and&nbsp;<em>siddha</em>&nbsp;(liberated souls). The&nbsp;<em>tirthankara</em>&nbsp;is represented either seated in yoga posture or standing in the&nbsp;<strong><em>Kayotsarga</em>&nbsp;</strong>posture.</li> <li>They believe that<strong> liberation can only be attained through male body</strong> and <strong>nudity is necessary</strong> to break the bondage of illusory world.</li> <li><u><strong>Extra:-</strong></u> <ul> <li><strong><span id="cke_bm_12119S" style="display: none;">&nbsp;</span><span id="cke_bm_12145S" style="display: none;">&nbsp;</span>Jainsim has 24 <em>teerthankaras&nbsp;</em></strong>(those who have conquered the illusory world and cycles of birth&nbsp;and death and those who lead others towards liberation)</li> <li><strong>Rishabnath was the first Jain teerthankar and the founder of Jainism.</strong></li> <li><strong>Mahavira was the last and 24<sup>th</sup> Jain teerthankar.</strong></li> <li><u><strong>Five main vows of Jainism:-</strong></u></li> </ul> </li> </ul> </div> <div style="margin-left:54pt;"> <ul style="list-style-type:circle;"> <li><strong><em>ahiṃsā</em></strong>&nbsp;(non-violence),<strong>&nbsp;<em>satya</em>&nbsp;</strong>(truth),&nbsp;<strong><em>asteya</em></strong>&nbsp;(not stealing),&nbsp;<strong><em>brahmacharya</em></strong>&nbsp;(celibacy or chastity or sexual continence), and&nbsp;<em><strong>aparigraha</strong></em><strong>&nbsp;</strong>(non-attachment)<span id="cke_bm_12145E" style="display: none;">&nbsp;</span><span id="cke_bm_12119E" style="display: none;">&nbsp;</span></li> </ul> </div></div>
+    <div class="lang-hi"><ul> <li>श्वेतांबर और दिगंबर <strong>जैन समुदाय </strong>के दो संप्रदाय हैं।</li> <li>श्वेतांबर जैन &quot;<strong>सफेद पहनने वाले</strong>&quot; होते हैं और ये जैन धर्म के दो महत्वपूर्ण संप्रदायों में से एक हैं।</li> <li>दिगंबरों के विपरीत श्वेतांबर मोक्ष प्राप्त करने के लिए कपड़े के त्याग पर विश्वास नहीं करते हैं।</li> <li>वे यह भी मानते हैं कि कोई भी (महिलाओं सहित) मुक्ति प्राप्त कर सकता है।</li> <li>दिगंबर जैन वे हैं जिनके लिए &quot;<strong>अंतरिक्ष वस्त्र है</strong>&quot; और <strong>कुछ भी नहीं पहनते </strong>हैं।</li> <li>दिगंबर जैन तीर्थंकरों (सर्वज्ञ प्राणियों) और सिद्ध (मुक्त आत्माओं) की पूरी तरह से नग्न मूर्तियों की पूजा करते हैं। तीर्थंकर का प्रतिनिधित्व या तो योग मुद्रा में बैठकर किया जाता है या कायोत्सर्ग मुद्रा में खड़े होते हैं।</li> <li>उनका मानना ​​है कि मुक्ति केवल पुरुष शरीर के माध्यम से प्राप्त की जा सकती है और भ्रम की दुनिया के बंधन को तोड़ने के लिए नग्नता आवश्यक है।</li> <li><u><strong>अतिरिक्त</strong>: -</u></li> </ul> <ol> <li><strong>जैन समुदाय&nbsp;में 24 तीर्थंकर हैं (</strong>जिन्होंने जन्म और मृत्यु के मायावी संसार और चक्रों पर विजय प्राप्त की और जो दूसरों को मोक्ष की ओर ले गए)</li> <li><strong>ऋषभनाथ पहले जैन तीर्थंकर और जैन धर्म के संस्थापक थे</strong>।</li> <li><strong>महावीर अंतिम और 24 वें जैन तीर्थंकर</strong> थे।</li> <li><strong>जैन धर्म के पाँच मुख्य व्रत: -</strong></li> <li><strong>अहिंसा, सत्य, अस्तेय (चोरी न करना), ब्रह्मचर्य (ब्रह्मचर्य या शुद्धता या यौन निरंतरता), और अपरिग्रह (अनासक्ति)</strong></li> </ol></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Who among the following was the last ruler of Mauryan dynasty?</div>
+  <div class="question lang-hi">मौर्य वंश के अंतिम शासक निम्नलिखित में से कौन थे?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Ashoka</div><div class="option">Chandragupta Maurya</div><div class="option correct">Brihadratha</div><div class="option">None of the above</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">अशोक</div><div class="option">चंद्रगुप्त मौर्य</div><div class="option correct">बृहद्रथ</div><div class="option">इनमें से कोई भी नहीं</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><ul> <li><strong><u>Brihadratha was the last ruler of the Mauryan dynasty.</u></strong></li> <li>Chandragupta Maurya was the founder of the Mauryan dynasty. He defeated the Nanda king Dhanananda with the help of Chanakya/Kautilya.</li> <li>Ashoka was the son of Bindusar and one of the greatest rulers of the Mauryan Empire. Ashoka fought the battle of Kalinga.</li> <li>Brihadratha was assassinated by Pushyamitra Sunga.</li> <li>Pushyamitra Sunga was the Brahmin Commander-in-chief of Brihadratha.</li> <li>Pushyamitra Sunga founded the Sunga dynasty.​</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>With the&nbsp;<span style="font-weight: 700;">help of Chanakya (Vishnugupta/ Kautilya)</span>,&nbsp;<span style="font-weight: 700;">Chandragupta Maurya</span>&nbsp;defeated<span style="font-weight: 700;">&nbsp;Dhana Nanda (322 BCE)&nbsp;</span>and&nbsp;<span style="font-weight: 700;">founded the Mauryan Dynasty.</span></li> <li><span style="font-weight: 700;">Chanakya</span>&nbsp;encouraged&nbsp;<span style="font-weight: 700;">Chandragupta Maurya and his army to take over the throne of Magadha.</span></li> <li>His vast empire included&nbsp;<span style="font-weight: 700;">Bihar, Bengal, Deccan (except modern Kerala, Tamilnadu, and parts of Northeast India), Eastern Afghanistan, Baluchistan, and the area west of the Indus river.</span></li> </ul> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></span></p> <p><span style="font-weight: 700;"><bindusara< span=""></bindusara<></span></p> <ul> <li>Chandragupta was succeeded by his son Bindusara.</li> <li>Bindusara ruled for approximately 25-26 years and his succession was disputed which ultimately gave India a great king called Ashoka.</li> </ul> <p><u><span style="font-weight: 700;">Ashoka</span></u></p> <ul> <li><span style="font-weight: 700;">Asoka</span>&nbsp;was the<span style="font-weight: 700;">&nbsp;third and the greatest of the Mauryan rulers.</span></li> <li>Ashoka is referred to as&nbsp;<span style="font-weight: 700;">Ashokavardhana.</span></li> </ul> <p><u><span style="font-weight: 700;">Kunala</span></u></p> <ul> <li>Kunala was the&nbsp;son of Emperor Ashoka and Queen Padmavati and the presumptive heir to Ashoka.</li> </ul></div>
+    <div class="lang-hi"><ul> <li><strong><u>बृहद्रथ मौर्य वंश का अंतिम शासक था।</u></strong></li> <li>चंद्रगुप्त मौर्य मौर्य वंश के संस्थापक थे। उसने चाणक्य / कौटिल्य की मदद से नंदा राजा धनानंद को हराया।</li> <li>अशोक बिन्दुसार का पुत्र था और मौर्य साम्राज्य के सबसे महान शासकों में से एक था। अशोक ने कलिंग की लड़ाई लड़ी।</li> <li>बृहद्रथ की हत्या पुष्यमित्र शुंग ने की थी।</li> <li>पुष्यमित्र शुंग बृहदराथ के ब्राह्मण सेनापति थे।</li> <li>पुष्यमित्र शुंग ने सुंग वंश की स्थापना की।</li> </ul> <p>​<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">चाणक्य (विष्णुगुप्त / कौटिल्य)</span> की मदद से, <span style="font-weight: 700;">चंद्रगुप्त मौर्य</span> <span style="font-weight: 700;">ने धन नंदा (322 ईसा पूर्व)</span> को हराया और <span style="font-weight: 700;">मौर्य राजवंश की स्थापना की।</span></li> <li><span style="font-weight: 700;">चाणक्य</span> <span style="font-weight: 700;">ने चंद्रगुप्त मौर्य और उनकी सेना को मगध का सिंहासन संभालने के लिए</span> प्रोत्साहित किया।</li> <li>उनके विशाल साम्राज्य में <span style="font-weight: 700;">बिहार, बंगाल, दक्कन (आधुनिक केरल, तमिलनाडु और पूर्वोत्तर भारत के कुछ हिस्सों को छोड़कर), पूर्वी अफ़गानिस्तान, बलूचिस्तान और सिंधु नदी का पश्चिम क्षेत्र शामिल था।</span></li> <li> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <p><bindusara< span=""></bindusara<></p> </li> <li>चंद्रगुप्त का उत्तराधिकार उसके पुत्र बिन्दुसार ने किया।</li> <li>बिन्दुसार ने लगभग 25-26 वर्षों तक शासन किया और उनका उत्तराधिकार विवादित रहा जिसने अंततः भारत को अशोक नामक एक महान राजा दिया।</li> </ul> <p><u><span style="font-weight: 700;">अशोक</span></u></p> <ul> <li><span style="font-weight: 700;">अशोक</span> <span style="font-weight: 700;">तीसरा और मौर्य शासकों में सबसे महान था।</span></li> <li><span style="font-weight: 700;">अशोक को अशोकवर्धन</span> कहा जाता है।</li> </ul> <p><u><span style="font-weight: 700;">कुनाला</span></u></p> <ul> <li>कुणाल सम्राट अशोक और रानी पद्मावती और अशोक के उत्तराधिकारी वारिस के पुत्र थे।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which among the following varna does Pushyamitra Sunga belonged to?</div>
+  <div class="question lang-hi"><p>पुष्यमित्र शुंग निम्न में से किस वर्ण से संबंधित&nbsp;है?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Brahmin</div><div class="option">Kshatriya</div><div class="option">Vaisya</div><div class="option">Shudra</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">ब्राह्मण</div><div class="option">क्षत्रिय</div><div class="option">वैश्य</div><div class="option">शूद्र</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><ul> <li><strong><u>Pushyamitra Sunga belonged to Brahmin Varna.</u></strong></li> <li>Pushyamitra Sunga was the Commander-in-chief of last Mauryan ruler Brihadratha.</li> <li>Pushyamitra Sunga Assassinated Brihadratha.</li> <li>He established the Sunga dynasty on the throne of the Magadhan Empire.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Pushyamitra Sunga was a Brahmin.</li> <li>Pushyamitra Sunga was the commander in chief of the Last Mauryan king, Brihadratha.</li> <li>He assassinated Brihadratha in 184 BC.</li> <li>Pushyamitra destroyed many of the Ashokan Stupas and Inscriptions.</li> <li>Agnimitra was the son of Pushyamitra.</li> <li>Bhagabhadra was the son of Agnimitra and Devabhuti was the son of Bhagabhadra.</li> </ul></div>
+    <div class="lang-hi"><ul> <li><strong><u>पुष्यमित्र शुंग ब्राह्मण वर्ण के थे।</u></strong></li> <li>पुष्यमित्र शुंग अंतिम मौर्य शासक बृहद्रथ के सेनापति थे।</li> <li>पुष्यमित्र शुंग ने बृहद्रथ का वध किया।</li> <li>उसने मगध साम्राज्य के सिंहासन पर शुंग वंश की स्थापना की।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /> <strong><span style="vertical-align: middle;font-size: 21px;"><u>अतिरिक्त जानकारी</u></span></strong></span></p> <ul> <li>पुष्यमित्र शुंग एक ब्राह्मण थे।</li> <li>पुष्यमित्र शुंग अंतिम मौर्य राजा, बृहद्रथ के प्रमुख सेनापति थे।</li> <li>उन्होंने 184 ईसा पूर्व में बृहद्रथ की हत्या कर दी थी।</li> <li>पुष्यमित्र ने अशोक के कई स्तूपों और शिलालेखों को नष्ट कर दिया।</li> <li>अग्निमित्र पुष्यमित्र के पुत्र थे।</li> <li>भगभद्र अग्निमित्र के पुत्र थे और देवभूति भगभद्र के पुत्र थे।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The reign of the ________ dynasty has been described as the golden age of Indian civilization.</div>
+  <div class="question lang-hi">________ वंश के शासनकाल को भारतीय सभ्यता के स्वर्ण युग के रूप में वर्णित किया गया है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Porus</div><div class="option">Harsha</div><div class="option">Buddha</div><div class="option correct">Gupta</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">पोरस</div><div class="option">हर्ष</div><div class="option">बुद्ध</div><div class="option correct">गुप्त</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Gupta.</strong></u></p> <ul> <li>The reign of the <strong>Gupta</strong> dynasty has been described as the golden age of Indian civilization.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>&nbsp;In Ancient India, the Gupta Dynasty ruled the middle of&nbsp;the<strong>&nbsp;3rd century (approximately) to 543 AD.</strong></li> <li>The Gupta dynasty period is referred to as the <strong>&#39;Classical Age or Golden Age of Ancient India.</strong></li> <li><strong>Sri Gupta</strong>&nbsp;was the&nbsp;founder&nbsp;Gupta&nbsp;dynasty</li> <li><strong>Sri Gupta </strong>was followed by his son <strong>Ghatokkacha</strong> and was followed by his son Chandragupta. Both assumed the title of <strong>Maharaja.</strong></li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>Chandragupta I (AD 319-335)</strong></u></p> <ul> <li>He was the first Gupta ruler to assume the title <strong>Maharajadhiraja.</strong></li> <li>He started the Gupta era in <strong>319 - 320 AD.</strong></li> <li>He was successful in building a small principality into a great kingdom.</li> <li>He established his authority over <strong>Magadha, Saketa, and Prayaga.</strong></li> <li>He issued gold coins.</li> </ul> <p><u><strong>Samudragupta&nbsp;</strong><span style="font-weight: 700;">(AD 335-380)</span></u></p> <ul> <li>Samudragupta was the son of Chandragupta I and Kumaradevi.</li> <li>The Allahabad inscription describes his bravery as composed by his court poet, Harisena.</li> <li>He defeated <strong>nine kings of the Ganges Valley, twelve kings from the southern region, and eighteen forest tribes.</strong></li> <li>He was also called <strong>&#39;Indian Napoleon&#39;</strong>&nbsp;by Vincent Smith.</li> <li>He also performed Ashvamedha&#39;s sacrifice. Hence, one of his coins refers to him as <strong>&#39;the restorer of Ashvamedha&#39;.</strong></li> <li>He was also called <strong>&#39;Kaviraja&#39;</strong>&nbsp;since he composed verses.</li> </ul> <p><u><strong>Chandragupta II(AD 380-415)</strong></u></p> <ul> <li>Son of Samudragupta and his queen Dattadevi and younger brother of Ramagupta.</li> <li>He was also known as <strong>&lsquo;Vikramaditya&rsquo;.</strong></li> <li>He issued silver coins<strong>.</strong></li> <li>He further annexed territories including Saurashtra which gave him the western coastline.</li> <li>He also annexed three Satrapa kingdoms and assumed the title Sakari (destroyer of the Sakas).</li> <li>He defeated the Saka king Rudrasimha III thus acquiring Saurashtra and Kathiawar.</li> <li>After East and West India, Chandragupta II defeated northern rulers also like the Hunas, Kambojas, Kiratas, etc.</li> <li>He was a brilliant conqueror and an able administrator as well.</li> <li>His other names (as mentioned in coins) include Vikrama, Devagupta, Devaraja, Simhavikrama, Vikramaditya Sakari, etc. &nbsp;</li> <li>His court had <strong>nine jewels or Navaratnas, nine people</strong> eminent in various fields of art, literature, and science. This included the great Sanskrit poet <strong>Kalidasa, Harisena, Amarasimha (lexicographer), and Dhanvantari (physician).</strong></li> <li><strong>Fa-Hien, </strong>a Buddhist from China visited India during his reign.</li> </ul> <p><u><strong>Kumaragupta (AD 415-455)</strong></u></p> <ul> <li>He founded <strong>Nalanda University.</strong></li> <li>He was the <strong>worshipper of Lord Kartikeya.</strong></li> </ul> <p><u><strong>Skandagupta (AD 455-467)</strong></u></p> <ul> <li>Skandagupta was the <strong>last great ruler</strong> of the Gupta dynasty</li> <li>He repulsed the <strong>ferocious Hunas attacks twice.</strong></li> <li>The continuous&nbsp;attack by the Hunas <strong>weakened the Gupta economy</strong> and the decline of the empire began soon after the death of&nbsp;Skandagupta</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>गुप्त</strong></u> है।</p> <ul> <li><strong>गुप्त </strong>वंश के शासनकाल को भारतीय सभ्यता के स्वर्ण युग के रूप में वर्णित किया गया है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>प्राचीन भारत में, गुप्त राजवंश ने <strong>543 ईस्वी </strong>के <strong>तीसरी शताब्दी</strong>&nbsp;(लगभग) के मध्य में शासन किया।</li> <li>गुप्त वंश काल को <strong>प्राचीन भारत</strong> का<strong> &#39;शास्त्रीय युग या स्वर्ण युग&#39; </strong>कहा जाता है।</li> <li><strong>श्री गुप्त </strong>गुप्त वंश के संस्थापक थे</li> <li><strong>श्रीगुप्त</strong> के बाद उसका पुत्र घटोत्कच और उसके बाद उसका पुत्र चंद्रगुप्त आया। दोनों ने महाराजा की उपाधि धारण की।</li> </ul> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <p><u><strong>चन्द्रगुप्त प्रथम&nbsp;(319-335 </strong><span style="font-weight: 700;">ईस्वी</span><strong>)</strong></u></p> <ul> <li>वह <strong>महाराजाधिराज </strong>की उपाधि धारण करने वाला पहला गुप्त शासक था।</li> <li>उन्हों<strong>ने 319 - 320 ईस्वी</strong> में गुप्त युग की शुरुआत की।</li> <li>वह एक छोटी रियासत को एक महान राज्य बनाने में सफल रहा।</li> <li>उन्होंने <strong>मगध, साकेत और प्रयाग</strong> पर अपना अधिकार स्थापित किया।</li> <li>उन्होंने&nbsp;सोने के सिक्के जारी किए।</li> </ul> <p><u><strong>समुद्रगुप्त</strong><span style="font-weight: 700;">(335-380 ईस्वी)</span></u></p> <ul> <li>समुद्रगुप्त, चंद्रगुप्त प्रथम और कुमारदेवी का पुत्र था।</li> <li>इलाहाबाद शिलालेख में उनकी बहादुरी का वर्णन उनके दरबारी कवि हरीसेना ने किया है।</li> <li>उन्होंने<strong> गंगा घाटी के नौ राजाओं, दक्षिणी क्षेत्र के बारह राजाओं और अठारह वन जनजातियों </strong>को हराया।</li> <li>विन्सेंट स्मिथ द्वारा उन्हें <strong>&#39;इंडियन नेपोलियन&#39; </strong>भी कहा जाता था।</li> <li>उन्होंने अश्वमेध यज्ञ भी किया। इसलिए, उनका एक सिक्का उन्हें <strong>&#39;अश्वमेध का पुनर्निवेशक&#39; </strong>के रूप में संदर्भित करता है।</li> <li>छंदों की रचना करने के बाद से उन्हें <strong>&#39;कविराज&#39;</strong> भी कहा जाता था।</li> </ul> <p><u><strong>चन्द्रगुप्त द्वितीय (380-415 </strong><span style="font-weight: 700;">ईस्वी</span><strong>)</strong></u></p> <ul> <li>ये समुद्रगुप्त और उसकी रानी दत्तादेवी के पुत्र&nbsp;और रामगुप्त के छोटे भाई थे।</li> <li>उन्हें<strong> &#39;विक्रमादित्य&#39; </strong>के नाम से भी जाना जाता था।</li> <li>उसने चांदी के सिक्के जारी किए।</li> <li>उन्होंने सौराष्ट्र सहित अन्य प्रदेशों का विस्तार किया जिससे उन्हें पश्चिमी समुद्र तट मिला।</li> <li>उन्होंने तीन सतराप राज्यों पर भी अधिकार कर लिया और शकरी (शक का नाश करने वाला) शीर्षक धारण किया।</li> <li>उन्होंने शक राजा रुद्रसिंह तृतीय को हराया और इस तरह सौराष्ट्र और काठियावाड़ को प्राप्त किया।</li> <li>पूर्व और पश्चिम भारत के बाद, चंद्रगुप्त द्वितीय ने उत्तरी शासकों को भी हराया, जैसे हूण, कंबोज, किरात, आदि।</li> <li>वह एक शानदार विजेता और सक्षम प्रशासक भी थे।</li> <li>उनके अन्य नामों (जैसा कि सिक्कों में उल्लेख किया गया है) में विक्रम, देवगुप्त, देवराज, सिम्भावक्रमा, विक्रमादित्य सकरी, आदि शामिल हैं।</li> <li>उनके दरबार में <strong>नौ गहने या नवरत्न थे,</strong> कला, साहित्य और विज्ञान के विभिन्न क्षेत्रों में प्रतिष्ठित<strong> नौ लोग थे</strong>। जिनमें संस्कृत के महान कवि <strong>कालीदास, हरिषेण, अमरसिंह&nbsp;(साहित्यकार), और धन्वंतरी (चिकित्सक) </strong>शामिल थे।</li> <li>चीन के एक बौद्ध व्यक्ति <strong>फ़ाहियान </strong>ने अपने शासनकाल के दौरान भारत का दौरा किया।</li> </ul> <p><u><strong>कुमारगुप्त (415-455 ईस्वी)</strong></u></p> <ul> <li>उन्होंने <strong>नालंदा विश्वविद्यालय </strong>की स्थापना की।</li> <li>वह <strong>भगवान कार्तिकेय के उपासक</strong> थे।</li> </ul> <p><u><strong>स्कंदगुप्त (455-467 ईस्वी)</strong></u></p> <ul> <li>स्कंदगुप्त गुप्त वंश का<strong> अंतिम महान शासक</strong> था।</li> <li>उन्होंने <strong>दो बार क्रूर हूण हमलों </strong>को दोहराया।</li> <li>हूणों के लगातार हमले ने <strong>गुप्त अर्थव्यवस्था को कमजोर कर दिया </strong>और स्कंदगुप्त की मृत्यु के बाद ही साम्राज्य का पतन शुरू हो गया।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

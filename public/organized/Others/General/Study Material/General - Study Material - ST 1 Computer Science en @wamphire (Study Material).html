@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ST 1: Computer Science</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    ST 1: Computer Science 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the full form of GB?</div>
+  <div class="question lang-hi">GB का पूर्ण रूप क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Generabyte</div><div class="option correct">Gigabyte</div><div class="option">Gainbyte</div><div class="option">Genbyte</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">जेनेराबाइट</div><div class="option correct">गीगाबाइट</div><div class="option">गेनबाइट</div><div class="option">जेनबाइट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is option <u><strong>2,</strong></u> i.e. <u><strong>Gigabyte</strong></u>.</p> <ul> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">Bits and bytes are the <b style="">basic</b> building blocks of <b style="">memory</b>. </span></span></li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">&quot;Bit&quot; stands for binary digit. A bit is a one or a zero, on or off, which is how all computer information is stored. </span></span></li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">A byte is made up of eight bits.</span></span></li> <li><strong style="">Byte:</strong> It is the fundamental unit to measure data. It contains 8 bits or is equal to 8 bits.&nbsp;</li> <li><strong style="">Kilobyte:</strong> A kilobyte contains 1024 bytes.</li> <li><strong style="">Megabyte:</strong> A megabyte contains 1024 kilobytes.</li> <li><strong style="">Gigabyte:</strong> A gigabyte contains 1024 megabyte.</li> <li><strong style="">Terabyte:</strong> A terabyte contains 1024 gigabytes.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <u><strong>2 है,</strong></u> अर्थात <u><strong>गीगाबाइट</strong></u>।</p> <ul> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">बिट्स और बाइट्स <b style="">मेमोरी</b> के <b style="">बुनियादी</b> बिल्डिंग ब्लॉक हैं।</span></span></li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">&quot;बिट&quot; बाइनरी अंक के लिए खड़ा है। एक बिट एक या एक शून्य, </span></span>ऑन <span class="ILfuVd NA6bn" style=""><span class="hgKElc" style=""> या </span></span>ऑफ&nbsp;<span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">है, जो है कि सभी कंप्यूटर जानकारी कैसे संग्रहीत की जाती है।</span></span></li> <li><span class="ILfuVd NA6bn" style=""><span class="hgKElc" style="">एक बाइट आठ बिट से बना होता है।</span></span></li> <li><strong style="">बाइट:</strong> यह डेटा को मापने की मूलभूत इकाई है। इसमें 8 बिट्स हैं या 8 बिट्स के बराबर है।</li> <li><strong style="">किलोबाइट:</strong> एक किलोबाइट में 1024 बाइट्स होते हैं।</li> <li><strong style="">मेगाबाइट:</strong> एक मेगाबाइट में 1024 किलोबाइट होते हैं।</li> <li><strong style="">गीगाबाइट:</strong> एक गीगाबाइट में 1024 मेगाबाइट होता है।</li> <li><strong style="">टेराबाइट:</strong> एक टेराबाइट में 1024 गीगाबाइट होते हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">Which of the following is <strong>not </strong>a mobile&nbsp;</span><span style="">Operating System?</span></div>
+  <div class="question lang-hi">निम्न में से कौन सा मोबाइल ऑपरेटिंग सिस्टम नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">Palm OS</span></div><div class="option"><span style="">Web OS</span></div><div class="option"><span style="">Symbian OS</span></div><div class="option correct"><span style="">Mac OS</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">पाम <span style="">OS</span></div><div class="option">वेब <span style="">OS</span></div><div class="option">सिम्बियन <span style="">OS</span></div><div class="option correct">मैक <span style="">OS</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Mac OS</strong>.</u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Mac OS</strong> is the primary <strong>Operating system for Apple Computers</strong>. It is a <strong>UNIX</strong> operating System. Mac OS is developed and marketed by <strong>Apple Inc. in California, USA.</strong>&nbsp;</li> <li><strong>Mac OS </strong>is the <strong>second most widely used operating system after Windows. </strong>Mac OS was initially developed at <strong>NEXT an American technology</strong> company by <strong>Steve Jobs in 1985.</strong></li> <li><strong>Mac OS Latest version</strong> at present is <strong>MOJAVE 10.14.</strong></li> <li><span style=""><strong>Palm OS&nbsp;(also known as Garnet&nbsp;OS)</strong> is a mobile operating system initially developed by&nbsp;Palm, Inc., for personal digital assistants (PDAs) in 1996.&nbsp;</span> <ul> <li><span style="">Palm OS&nbsp;was designed for ease of use with a touchscreen-based graphical user interface. It is provided with a suite of basic applications for personal information management.</span></li> </ul> </li> <li><strong>Symbian OS</strong> was the most widely-used smartphone operating system in the world until 2010 when it was overtaken by Android. <ul> <li>It was discontinued in May 2014.</li> </ul> </li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></strong></p> <ul style=""> <li><span style="font-weight: 700;">Father of Computer</span>&nbsp;&ndash; Charles Babbage</li> <li><span style="font-weight: 700;">Father of Modern Computer</span>- Alan Turing</li> <li><span style="font-weight: 700;">First Computer Programmer</span>- Lady Ada Lovelace</li> <li><span style="font-weight: 700;">First Supercomputer</span>&nbsp;&ndash; CDC 6600&nbsp;</li> <li><span style="font-weight: 700;">First Computer Virus</span>- Creeper</li> <li><span style="font-weight: 700;">World&rsquo;s Fastest Supercomputer</span>- Frontier by USA</li> <li><span style="font-weight: 700;">World&rsquo;s First Computer</span>&nbsp;&ndash; ABACUS</li> <li><span style="font-weight: 700;">World&rsquo;s First Electronic Computer</span>- ENIAC (Weighed 27 Tons)</li> <li><span style="font-weight: 700; ">World&rsquo;s First Operating System-&nbsp;</span><span style="">GM-NAA I/O in 1956<strong>&nbsp;</strong></span></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <u><strong>मैक <span style="">OS</span></strong></u> है<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>मैक <span style="">OS</span></strong> <strong>एप्पल कंप्यूटर्स के लिए </strong>प्राथमिक<strong> ऑपरेटिंग सिस्टम</strong> है। यह एक <span style="font-weight: 700; ">UNIX</span> ऑपरेटिंग सिस्टम है। मैक <span style="">OS</span> का विकास और विपणन एप्पल&nbsp;इनकार्पोरेशन द्वारा&nbsp;अमेरिका के कैलिफोर्निया में किया जाता है।</li> <li><strong>विंडोज के बाद </strong><span style="font-weight: 700; ">मैक&nbsp;OS</span><span style="">&nbsp;</span><strong>दूसरा सबसे व्यापक रूप से इस्तेमाल किया जाने वाला ऑपरेटिंग सिस्टम</strong> है। मैक <span style="">OS</span> को शुरू में <strong>1985 में स्टीव जॉब्स</strong> द्वारा <strong>एक अमेरिकी प्रौद्योगिकी </strong>कंपनी<strong> NEXT</strong> में विकसित किया गया था।</li> <li>वर्तमान में <strong>मैक <span style="">OS</span> का नवीनतम संस्करण</strong> <strong>MOJAVE 10.14</strong> है<strong>।</strong></li> <li><strong>पाम <span style="">OS</span> (जिसे गार्नेट <span style="">OS</span> के रूप में भी जाना जाता है)</strong> एक मोबाइल ऑपरेटिंग सिस्टम है जिसे 1996 में व्यक्तिगत डिजिटल सहायकों (PDA) के लिए शुरू में पाम <span style="">इनकार्पोरेशन&nbsp;</span>द्वारा विकसित किया गया था। <ul> <li>टचस्क्रीन-आधारित ग्राफिकल यूजर इंटरफेस के साथ उपयोग में आसानी के लिए <span style="">पाम&nbsp;</span><span style="">OS</span><span style="">&nbsp;को&nbsp;</span>डिजाइन किया गया था। यह व्यक्तिगत सूचना प्रबंधन के लिए बुनियादी अनुप्रयोगों के एक सूट के साथ प्रदान किया गया है।</li> </ul> </li> <li>दुनिया में सबसे व्यापक रूप से इस्तेमाल किया जाने वाला स्मार्टफोन ऑपरेटिंग सिस्टम <span style="font-weight: 700; ">सिम्बियन&nbsp;OS</span><span style="">&nbsp;</span>था। &nbsp;यह <span style="">2010&nbsp;</span><span style="">में&nbsp;</span>एंड्रॉइड से आगे निकल गया था। <ul> <li>मई 2014 में इसे बंद कर दिया गया था।</li> </ul> </li> </ul> <p><strong><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></strong></p> <ul style=""> <li><strong>कंप्यूटर के जनक &ndash;</strong> चार्ल्स बैबेज</li> <li><strong>आधुनिक कंप्यूटर के जनक-</strong> एलन ट्यूरिंग</li> <li><strong>प्रथम कंप्यूटर प्रोग्रामर-</strong> लेडी एडा लवलेस</li> <li><strong>पहला सुपरकंप्यूटर -</strong> CDC 6600&nbsp;</li> <li><strong>पहला कंप्यूटर वायरस-</strong> क्रीपर</li> <li><strong>विश्व का सबसे तेज सुपर कंप्यूटर-</strong> फ्रंटियर&nbsp;(USA)</li> <li><strong>विश्व का पहला कंप्यूटर -</strong> ABACUS</li> <li><strong>विश्व का पहला इलेक्ट्रॉनिक कंप्यूटर-</strong> ENIAC (27 टन वजनी)</li> <li><strong>दुनिया का पहला ऑपरेटिंग सिस्टम-</strong> 1956 में GM-NAA I/O</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">______________ is a free and open-source operating system.&nbsp;</div>
+  <div class="question lang-hi"><span style="">______________&nbsp;</span>मुफ़्त और ओपन-सोर्स ऑपरेटिंग सिस्टम है।&nbsp;</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">MAC</div><div class="option correct">GNU/Linux</div><div class="option">Android</div><div class="option">Windows</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">MAC</div><div class="option correct">जीएनयू/लिनक्स&nbsp;</div><div class="option">एंड्राइड</div><div class="option">विंडोज़</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>GNU/Linux</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style=""><u><strong>GNU/Linux&nbsp;is a free and open-source operating system</strong></u>.&nbsp;</span> <ul> <li>GNU/Linux is a Unix-like operating system made up of different OS components and services that create the Linux OS.</li> <li>In a GNU/Linux system, Linux is the kernel component.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="color: rgb(32, 33, 36); "><strong>MAC Address (Media Access Control Address)</strong> is&nbsp;</span>a 12-digit hexadecimal number assigned to each device connected to the network.&nbsp;</li> <li><strong>Android </strong>is a mobile operating system based on a modified version of the Linux kernel and other open-source software, designed primarily for touchscreen mobile devices such as smartphones and tablets.</li> <li><strong>Windows</strong>-&nbsp;The Windows operating system (Windows OS) for desktop PCs is more formally called&nbsp;Microsoft Windows&nbsp;and is actually&nbsp;a family&nbsp;of&nbsp;operating systems&nbsp;for personal computers.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>जीएनयू/लिनक्स</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>जीएनयू/लिनक्स एक मुफ़्त और ओपन-सोर्स ऑपरेटिंग सिस्टम है।</strong></u> <ul> <li>जीएनयू/लिनक्स एक यूनिक्स जैसा ऑपरेटिंग सिस्टम है जो विभिन्न OS घटकों और सेवाओं से बना है जो लिनक्स ओएस बनाता है।</li> <li>जीएनयू/लिनक्स सिस्टम में, लिनक्स&nbsp;कर्नेल घटक है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>मैक एड्रेस (मीडिया एक्सेस कंट्रोल एड्रेस) </strong>एक 12-अंकीय हेक्साडेसिमल नंबर है जो नेटवर्क से जुड़े प्रत्येक उपकरण को&nbsp;&nbsp;किया जाता है।</li> <li><strong>एंड्रॉइड </strong>एक मोबाइल ऑपरेटिंग सिस्टम है जो लिनक्स कर्नेल और अन्य ओपन-सोर्स सॉफ़्टवेयर के संशोधित संस्करण पर आधारित है, जिसे मुख्य रूप से स्मार्टफोन और टैबलेट जैसे टचस्क्रीन मोबाइल उपकरणों के लिए डिज़ाइन किया जाता है।</li> <li><strong>विंडोज- </strong>डेस्कटॉप पीसी के लिए विंडोज ऑपरेटिंग सिस्टम (विंडोज ओएस) को अधिक औपचारिक रूप से माइक्रोसॉफ्ट विंडोज कहा जाता है और वास्तव में पर्सनल कंप्यूटर के लिए ऑपरेटिंग सिस्टम का एक परिवार है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is an input device used to verify the legitimacy or originality of paper documents, especially cheques?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सा एक इनपुट डिवाइस है जिसका उपयोग कागजी दस्तावेजों, विशेषकर चेक की वैधता या मौलिकता को सत्यापित करने के लिए किया जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Electronic card reader</div><div class="option correct">Magnetic ink character recognition</div><div class="option">Non-impact printer</div><div class="option">Optical mark reader</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">इलेक्ट्रॉनिक कार्ड रीडर</div><div class="option correct">मैगनेटिक इंक करैक्टर&nbsp;रिकॉग्निशन&nbsp;</div><div class="option">नॉन-इम्पैक्ट प्रिंटर</div><div class="option">ऑप्टिकल मार्क रीडर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Magnetic ink character recognition.</strong></u></p> <ul style=""> <li><strong>MICR</strong> is used by the banking industry to ease the processing and clearance of cheques and other documents.</li> <li>Numbers and characters found on the bottom of checks are printed using the Magnetic Ink.</li> <li>When a document that contains this ink needs to be read, it passes through a machine, which magnetizes the ink and then translates the magnetic information into characters.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>A card </strong>reader is a data input device that reads and writes​ data from a card-shaped storage medium. <ul> <li>A card reader is a hardware device.</li> </ul> </li> <li><strong>Non-impact printers </strong>print the characters without using ribbons. <ul> <li>These printers print a complete page at a time so they are also called page printers.</li> </ul> </li> <li><strong>Optical Mark Reader (OMR)</strong> can be considered as a Scanning device.&nbsp; <ul> <li>Optical mark recognition is the process of capturing human-marked data from document forms such as surveys and tests.</li> <li>They are used to read questionnaires, multiple-choice examination papers in the form of shaded areas.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>मैगनेटिक इंक करैक्टर रिकग्निशन</strong></u> <u><strong>है।</strong></u></p> <ul style=""> <li><strong>MICR </strong>का उपयोग बैंकिंग उद्योग द्वारा चेक और अन्य दस्तावेजों की प्रसंस्करण और निकासी को आसान बनाने के लिए किया जाता है।</li> <li>चेक के नीचे पाए जाने वाले नंबर और अक्षर चुंबकीय स्याही का उपयोग करके मुद्रित किए जाते हैं।</li> <li>जब इस स्याही वाले दस्तावेज़ को पढ़ने की आवश्यकता होती है, तो यह एक मशीन से गुज़रता है, जो स्याही को चुंबकित करता है और फिर चुंबकीय जानकारी को वर्णों में अनुवादित करता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span> </span></p> <ul> <li><strong>कार्ड</strong> रीडर एक डेटा इनपुट डिवाइस है जो कार्ड के आकार के स्टोरेज माध्यम से डेटा को पढ़ता और लिखता है। <ul> <li>कार्ड रीडर एक हार्डवेयर डिवाइस है.</li> </ul> </li> <li><strong>नॉन-इम्पैक्ट प्रिंटर</strong> रिबन का उपयोग किए बिना अक्षरों को प्रिंट करते हैं। <ul> <li>ये प्रिंटर एक बार में पूरा पेज प्रिंट करते हैं इसलिए इन्हें पेज प्रिंटर भी कहा जाता है।</li> </ul> </li> <li><strong>ऑप्टिकल मार्क रीडर (OMR) को</strong> एक स्कैनिंग डिवाइस माना जा सकता है। <ul> <li>ऑप्टिकल मार्क पहचान सर्वेक्षण और परीक्षण जैसे दस्तावेज़ रूपों से मानव-चिह्नित डेटा को कैप्चर करने की प्रक्रिया है।</li> <li>इनका उपयोग छायांकित क्षेत्रों के रूप में प्रश्नावली, बहुविकल्पीय परीक्षा पत्रों को पढ़ने के लिए किया जाता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following memory is volatile?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सी मेमोरी वॉलटाइल&nbsp;है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">RAM</div><div class="option">ROM</div><div class="option">PROM</div><div class="option">EPROM</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">RAM</div><div class="option">ROM</div><div class="option">PROM</div><div class="option">EPROM</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is option&nbsp;<strong>1</strong> i.e <u><strong>RAM</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>RAM stands for&nbsp;<strong>Random-access memory</strong>. <ul> <li>RAM is a <strong>Primary memory</strong> in computers.</li> <li>It is a&nbsp;<strong>volatile memory</strong>.</li> <li>RAM loses its data when the computer is turned off.</li> <li>RAM is located on the motherboard.</li> <li>RAM is a <strong>temporary memory</strong>.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</p> <ul> <li><strong>ROM </strong>stands for Read-Only Memory. <ul> <li>ROM is a <strong>non-volatile memory</strong>.</li> <li>We can&#39;t change data stored on ROM.</li> </ul> </li> <li><strong>PROM</strong> stands for&nbsp;Programmable read-only memory.</li> <li><strong>EPROM </strong>stands for&nbsp;Erasable programmable read-only memory.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर विकल्प <strong>1</strong> <u style=""><span style="font-weight: 700;">है&nbsp;</span></u>अर्थात <u><strong>RAM.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>RAM&nbsp;का अर्थ&nbsp;<strong>रैंडम-एक्सेस मेमोरी&nbsp;है</strong>। <ul> <li>RAM कंप्यूटर में एक <strong>प्राथमिक मेमोरी</strong> है।</li> <li>यह एक <strong>वॉलटाइल</strong>&nbsp;<span style="font-weight: 700;">मेमोरी</span>&nbsp;<strong>है</strong>।</li> <li>कंप्यूटर के बंद होने पर RAM अपना डेटा खो देता है।</li> <li>RAM मदरबोर्ड पर स्थित है।</li> <li>RAM एक <strong>अस्थायी मेमोरी है</strong>।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</p> <ul> <li><strong>ROM</strong>&nbsp;का अर्थ रीड-ओनली मेमोरी है। <ul> <li>ROM एक <strong>नॉन</strong><strong>-वॉलटाइल</strong>&nbsp;<strong>मेमोरी है</strong>।</li> <li>हम ROM पर संग्रहीत डेटा को बदल नहीं सकते है।</li> </ul> </li> <li><strong>PROM </strong>का अर्थ&nbsp;प्रोग्रामेबल रीड-ओनली मेमोरी है।</li> <li><strong>EPROM </strong>का अर्थ&nbsp;इरेज़ेबल प्रोग्रामेबल रीड-ओनली मेमोरी&nbsp;है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">Each Microsoft Excel file is called a:</span></div>
+  <div class="question lang-hi">प्रत्येक माइक्रोसॉफ्ट एक्सेल फ़ाइल को कहा जाता है:</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">chart sheet</div><div class="option">PDF</div><div class="option correct">workbook</div><div class="option">worksheet</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">चार्ट शीट</div><div class="option">PDF</div><div class="option correct">वर्कबुक</div><div class="option">वर्कशीट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<strong> Workbooks</strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><br /> <strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>MS Excel, a spreadsheet program</strong>, is widely used for varied functions, as a result, the info is simple to avoid wasting time, and data is accessible and removed with zero discomforts and less labour.</li> <li>PDF: The full form of the <strong>PDF</strong> is <strong>Portable Document File</strong>. PDF is recognised as a <strong>file format </strong>developed by <strong>Adobe </strong>in the year <strong>1992</strong>.</li> <li><strong>Worksheet: </strong>The <strong>worksheet</strong> is referred to as the <strong>working area</strong> of <strong>MS Excel.</strong> It is also named a <strong>spreadsheet</strong>. The <strong>worksheet </strong>in MS Excel is filled with <strong>cells</strong>. In the worksheet, the user can perform mathematical calculations, store data and so on.</li> <li><strong>Workbook: </strong>After storing the data in MS Excel, the user saves the <strong>file </strong>with a <strong>proper name</strong>. This <strong>file</strong> is referred to as a<strong> workbook</strong>. The workbook can hold <strong>at least one</strong> or <strong>many worksheets</strong>.&nbsp;</li> </ul> <p>​<strong>Thus the correct answer is </strong><em>Workbook</em>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" />&nbsp;<strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>Given below area unit some necessary advantages of exploitation MS Excel: <ul> <li><strong>Easy To Store Data: </strong>Since there&#39;s no limit to the number of data that may be saved in an exceeding program, MS Excel is widely accustomed to saving or analysing information. Filtering info in stand out is simple and convenient.</li> <li><strong>Easy To Recover Data: </strong>If the data is written on a bit of paper, finding it should take longer, however, this is often not the case with Excel spreadsheets. Finding convalescent information is simple.</li> <li><strong>Application of Mathematical Formulas:</strong> Doing calculations has become more accessible and less time-taking with the formulas possibility in MS Excel.</li> <li><strong>More Secure: </strong>These spreadsheets are countersigned and secured in an exceedingly portable computer or laptop computer and therefore the chance of losing them is much lesser as compared to information written in registers or pieces of paper.</li> <li><strong>Data at One Place: </strong>Earlier, information was to be unbroken in several files and registers once the work was done. Now, this has become convenient as over one worksheet is accessible in an exceedingly single MS Excel file.</li> <li><strong>Neater and Clearer Visibility of Information:</strong> Once the info is saved within the type of a table, analysing it becomes easier. Thus, info may be a program that&#39;s a lot of legible and comprehensible.<br /> &nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <strong>वर्कबुक</strong> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>MS एक्सेल, एक स्प्रैडशीट प्रोग्राम, </strong>विभिन्न कार्यों के लिए व्यापक रूप से उपयोग किया जाता है, नतीजतन, समय बर्बाद करने से बचने के लिए इन्फो&nbsp;सिम्पल&nbsp;है, और डेटा एक्सेसिबल होता&nbsp;है और शून्य असुविधा और कम श्रम के साथ हटा दिया गया है।</li> <li>PDF: <strong>PDF</strong> का फुल फॉर्म <strong>पोर्टेबल डॉक्यूमेंट फाइल</strong> है। PDF को <strong>अडोबी</strong>&nbsp;द्वारा वर्ष <strong>1992</strong> में विकसित एक <strong>फ़ाइल फॉर्मैट</strong>&nbsp;के रूप में मान्यता प्राप्त है।</li> <li><strong>वर्कशीट: वर्कशीट</strong> को <strong>MS एक्सेल</strong> का <strong>कार्य क्षेत्र</strong> कहा जाता है। इसे <strong>स्प्रेडशीट</strong> का नाम भी दिया जाता है। MS एक्सेल में <strong>वर्कशीट</strong> <strong>सेल्स</strong> से भरी होती है। वर्कशीट में, यूजर&nbsp;गणितीय गणना कर सकता है और इसी तरह डेटा स्टोर कर सकता है।</li> <li><strong>वर्कबुक:</strong>&nbsp;MS एक्सेल में डेटा स्टोर करने के बाद, यूजर&nbsp;<strong>फ़ाइल</strong> को <strong>उचित नाम</strong> से सहेजता है। इस <strong>फ़ाइल</strong> को <strong>वर्कबुक</strong> कहा जाता है। वर्कबुक&nbsp;में <strong>कम से कम एक</strong> या <strong>अनेक वर्कशीट</strong>&nbsp;हो सकते हैं।</li> </ul> <p><strong>इस प्रकार सही उत्तर</strong> <em>वर्कबुक</em> <strong>है।</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>एरिया यूनिट&nbsp;के&nbsp;MS एक्सेल नीचे दिए गए एक्स्प्लॉइटेशन&nbsp;के कुछ आवश्यक लाभ: <ul> <li><strong>डेटा स्टोर करना आसान:</strong> चूंकि एक से अधिक प्रोग्राम में सहेजे जा सकने वाले डेटा की संख्या की कोई लिमिट&nbsp;नहीं होती&nbsp;है, इसलिए MS&nbsp;एक्सेल जानकारी को सहेजने या एनालाइज&nbsp;करने के लिए व्यापक रूप से अभ्यस्त होता&nbsp;है। स्टैंड आउट में फ़िल्टरिंग जानकारी सिम्पल&nbsp;और सुविधाजनक रहती है।</li> <li><strong>डेटा को पुनर्प्राप्त करना आसान:</strong> यदि डेटा पेपर&nbsp;के एक टुकड़े पर लिखा गया है, तो इसे खोजने में अधिक समय लगना चाहिए, हालांकि, एक्सेल स्प्रेडशीट के मामले में अक्सर ऐसा नहीं होता है। अच्छे&nbsp;लाभ की जानकारी प्राप्त करना सिम्पल होता&nbsp;है।</li> <li><strong>गणितीय सूत्रों का अनुप्रयोग: </strong>MS&nbsp;एक्सेल में सूत्रों की संभावना के साथ गणना करना अधिक एक्सेसिबल और कम समय लेने वाला हो गया है।</li> <li><strong>अधिक सुरक्षित:</strong> ये स्प्रैडशीट काउन्टरसाइन्ड&nbsp;हैं और अधिक&nbsp;पोर्टेबल कंप्यूटर या लैपटॉप कंप्यूटर में सुरक्षित रखते&nbsp;हैं और इसलिए रजिस्टरों या पेपर&nbsp;के टुकड़ों में लिखी गई जानकारी की तुलना में इनके खोने की संभावना बहुत कम रहती है।</li> <li><strong>एक स्थान पर डेटा:</strong> पहले, काम पूरा होने के बाद जानकारी को कई फाइलों और रजिस्टरों में सुरक्षित रखा&nbsp;जाता&nbsp;था। अब, यह सुविधाजनक हो गया है क्योंकि एक से अधिक MS एक्सेल&nbsp;फ़ाइल में एक से अधिक वर्कशीट तक पहुँचा जा सकता है।</li> <li><strong>सूचना की साफ&nbsp;और स्पष्ट विजिबीलीटी: </strong>एक बार टेबल&nbsp;के रूप में जानकारी सहेजे जाने के बाद, इसको&nbsp;एनालाइज&nbsp;करना आसान हो जाता है। इस प्रकार, इन्फो&nbsp;एक ऐसा प्रोग्राम&nbsp;हो सकता है जो बहुत सुपाठ्य और समझने योग्य&nbsp;हो।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>What are the two kinds of memory in a computer?</p></div>
+  <div class="question lang-hi"><p>कंप्यूटर में निम्नलिखित में कौन से दो प्रकार की मेमोरी होती हैं?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Hardware Memory and Software Memory</div><div class="option">Short Term Memory and Long Term Memory</div><div class="option">Arithmetic Memory and Logical Memory</div><div class="option correct">Read only Memory (ROM) and Random Access Memory (RAM)</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">हार्डवेयर मेमोरी और सॉफ्टवेयर मेमोरी</div><div class="option">शॉर्ट टर्म मेमोरी और लॉन्ग टर्म मेमोरी</div><div class="option">अर्थमेटिक मेमोरी और लॉजिकल मेमोरी</div><div class="option correct">रीड ओनली मेमोरी (ROM) और रैंडम एक्सेस मेमोरी (RAM)&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Read-only Memory (ROM) and Random Access Memory (RAM)</strong></u>.</p> <ul> <li><b style="color: rgb(32, 33, 36); ">Computer memory</b><span style="color: rgb(32, 33, 36); ">&nbsp;is a generic term for all of the different types of data storage technology that a&nbsp;</span><b style="color: rgb(32, 33, 36); ">computer</b><span style="color: rgb(32, 33, 36); ">&nbsp;may use, including <strong>RAM, ROM,</strong> and flash&nbsp;</span><b style="color: rgb(32, 33, 36); ">memory.</b></li> <li>Computer&nbsp;memory&nbsp;is any physical device capable of storing information temporarily.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span>&nbsp;</p> <ul> <li><span style="color: rgb(33, 37, 41); ">The acronym <strong>RAM</strong> stems from the fact that data stored in random access memory can be accessed &ndash; as the name suggests &ndash; in any random order. Or, put another way, any random bit of data can be accessed just as quickly as any other bit.</span></li> <li><span style="color: rgb(33, 37, 41); "><strong>ROM</strong> stands for <strong>read-only memory</strong>, and the name stems from the fact that while data can be read from this type of computer memory, data cannot normally be written to it.</span></li> <li>Memory devices utilize integrated circuits&nbsp;and are used by operating systems, hardware, and software.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>रीड ओनली मेमोरी (ROM) और रैंडम एक्सेस मेमोरी (RAM)</strong></u> है।</p> <ul> <li><b style="color: rgb(32, 33, 36); ">कंप्यूटर मेमोरी</b> <span style="color: rgb(32, 33, 36); ">सभी विभिन्न प्रकार के डेटा स्टोरेज तकनीक के लिए एक सामान्य शब्द है जिसका</span> <span style="color: rgb(32, 33, 36); ">उपयोग</span> <b style="color: rgb(32, 33, 36); ">कंप्यूटर</b><span style="color: rgb(32, 33, 36); ">, <strong>रैम, रोम</strong> और फ्लैश</span> <b style="color: rgb(32, 33, 36); ">मेमोरी</b>&nbsp;में कर<span style="color: rgb(32, 33, 36); ">&nbsp;सकता</span>&nbsp;है।</li> <li>कंप्यूटर मेमोरी कोई भी भौतिक उपकरण होता है जो सूचनाओं को अस्थायी रूप से संग्रहीत करने में सक्षम होता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></p> <ul> <li><span style="color: rgb(33, 37, 41); ">रेम (RAM) पद का अर्थ&nbsp;है कि - किसी भी यादृच्छिक क्रम में यादृच्छिक अभिगम स्मृति में संग्रहीत डेटा को एक्सेस कर&nbsp;सकता है - जैसा कि नाम से पता चलता है&nbsp;कि यादृच्छिक क्रम में या, अन्य तरीके&nbsp;से, जिसमें किसी भी यादृच्छिक बिट डेटा को किसी भी अन्य बिट के रूप में जल्दी से एक्सेस किया जा सकता है।</span></li> <li><strong>रोम</strong>&nbsp;<span style="color: rgb(33, 37, 41); "><strong>(ROM)</strong> का अर्थ<strong> रीड ओनली मेमोरी</strong> है&nbsp;और यह इसका अर्थ है कि जब डेटा को इस प्रकार की कंप्यूटर मेमोरी से पढ़ा जा सकता है, तो डेटा को आम तौर पर इसके लिए नहीं लिखा जा सकता है।</span></li> <li>मेमोरी डिवाइस एकीकृत सर्किट का उपयोग करते हैं और ऑपरेटिंग सिस्टम, हार्डवेयर और सॉफ्टवेयर द्वारा उपयोग किए जाते हैं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the extension to save power point document?</div>
+  <div class="question lang-hi">पॉवर पॉइंट डॉक्यूमेंट को सेव करने के लिए एक्सटेंशन क्या है ?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">.com</div><div class="option">.doc</div><div class="option">pdf</div><div class="option correct">.ppt&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">.com</div><div class="option">.doc</div><div class="option">pdf</div><div class="option correct">.ppt&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>The correct option is (4)</strong></p> <p>.ppt</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>You have the option of saving your PowerPoint presentation as either a PowerPoint 97-2003 Presentation or the most recent PowerPoint Presentation format (.pptx) (. ppt).</li> <li>Launch PowerPoint and open the presentation. Click Browse after selecting Save As on the File tab. Click PowerPoint Presentation (*. pptx) in the Save As type list of the Save As dialogue box.</li> <li>Microsoft PowerPoint Presentation file types (PPT and PPTX) are supported in the Document/Medical products. Slides, shapes, images, music, video, text, and other presentation content are stored in PPTX/PPT files as collections of records and structures.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span><strong>&nbsp;.pdf:-</strong>&nbsp;natively displays PDF files in the browser using HTML5. With the help of this extension, Chrome&#39;s default PDF viewer is PDF.js.</p> <p><strong>.com:-</strong>&nbsp;In the Internet&#39;s Domain Name System (DNS), the top-level domain (TLD).com is used.</p> <p><strong>.doc:-</strong>&nbsp;Word Processing Documents Stored on Microsoft&#39;s Exclusive Platform Use the.doc (an acronym for &quot;Document&quot;).</p></div>
+    <div class="lang-hi"><p><strong>सही विकल्प है</strong>&nbsp;<strong>(4)</strong></p> <p><strong>.ppt</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>आपके पास अपनी पावर प्वाइंट प्रेजेंटेशन को या तो पावर प्वाइंट&nbsp;97-2003 प्रेजेंटेशन या नवीनतम पावर प्वाइंट प्रेजेंटेशन&nbsp; फॉर्मेट&nbsp;(.pptx) (. ppt) के रूप में सेव करने का विकल्प है।</li> <li>पावर प्वाइंट शुरू&nbsp;कीजिए और प्रेजेंटेशन खोलें। फ़ाइल टैब पर <span style="">सेव&nbsp;</span>एज का चयन करने के बाद ब्राउज़ पर क्लिक कीजिए । <span style="">सेव एज&nbsp;डायलाग बॉक्स की</span>&nbsp;सेव एज&nbsp;टाइप लिस्ट&nbsp;में पावर प्वाइंट प्रेजेंटेशन (*. pptx) पर क्लिक कीजिए ।</li> <li>माइक्रोसॉफ्ट पावरप्वाइंट प्रेजेंटेशन फ़ाइल टाइप&nbsp;(PPT और PPTX) डॉक्यूमेंट/मेडिकल प्रोडक्ट में समर्थित हैं। स्लाइड, आकार, छवि, संगीत, वीडियो, टेक्स्ट और अन्य प्रेजेंटेशन कंटेंट&nbsp; रिकॉर्ड और स्ट्रक्चर&nbsp;के संग्रह के रूप में PPTX/PPT फ़ाइलों में संग्रहीत की जाती हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span><strong>&nbsp;.pdf:-</strong>&nbsp;HTML5 का उपयोग करके ब्राउज़र में मूल रूप से पीडीएफ फाइलों को प्रदर्शित करता है। इस एक्सटेंशन की मदद से क्रोम का डिफॉल्ट पीडीएफ व्यूअर PDF.js है।</p> <p><strong>.com:-</strong>इंटरनेट के डोमेन नेम सिस्टम (DNS) में, टॉप-लेवल&nbsp;डोमेन (TLD.com) का उपयोग किया जाता है।</p> <p><strong>.doc:-</strong>&nbsp;माइक्रोसॉफ्ट के अनन्य प्लेटफ़ॉर्म पर स्टोर्ड वर्ड प्रोसेसिंग डॉक्यूमेंट.doc (&quot;डॉक्यूमेंट&quot; के लिए संक्षिप्त रूप) का उपयोग कीजिए ।</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is <em><strong>not</strong></em> a valid version of Windows?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन विंडोज का वैध संस्करण नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Windows Vista</div><div class="option">Windows XP</div><div class="option correct">Windows 9</div><div class="option">Windows 10</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">विंडोज विस्टा</div><div class="option">विन्डोज़ एक्सपी</div><div class="option correct">विंडोज 9</div><div class="option">विंडोज 10</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Windows 9</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>The valid versions of windows in above-mentioned options are&nbsp; <ul> <li>Windows Vista,</li> <li>Windows XP and</li> <li>Windows 10</li> </ul> </li> <li>Whereas Windows 10 is the latest version released on <strong>29th July 2015.</strong> <ul> <li>It is the successor to&nbsp;<strong>Windows 8.1</strong>.</li> </ul> </li> <li>Windows 9 is not the valid version of Windows.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>विंडोज 9</strong></u>&nbsp;है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>उपर्युक्त विकल्पों में विंडोज के मान्य संस्करण हैं <ul> <li>विंडोज विस्टा,</li> <li>विंडोज XP&nbsp;और</li> <li>विंडोज 10</li> </ul> </li> <li><strong>जबकि 29 जुलाई 2015 को</strong> विंडोज 10 नवीनतम संस्करण है। <ul> <li><strong>यह विंडोज 8.1</strong> का उत्तराधिकारी है।</li> </ul> </li> <li>विंडोज 9 विंडोज का वैध संस्करण नहीं है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Choose the best option:</p> <p>An antivirus program is designed to _______ computer virus.</p></div>
+  <div class="question lang-hi"><p>सर्वोत्तम विकल्प का चयन कीजिए:</p> <p>एक एंटीवायरस प्रोग्राम, कंप्यूटर वायरस को _______ करने के लिए डिज़ाइन किया गया है।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">scan device and identify</div><div class="option correct">scan device, identify and eliminate</div><div class="option">scan device and eliminate</div><div class="option">identify and eliminate</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">डिवाइस को स्कैन करने और पहचानने के लिए</div><div class="option correct">डिवाइस को स्कैन करने, पहचानने और हटाने के लिए</div><div class="option">डिवाइस को स्कैन करने और हटाने के लिए</div><div class="option">पहचानने और हटाने के लिए</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u>scan device, identify and eliminate.</u></strong></p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul> <li>Antivirus software is a type of <strong>program designed </strong>and<strong> developed to protect computers from malware.</strong></li> <li>The prime objective of antivirus programs is to protect computers and<strong> remove viruses once detected.</strong></li> <li>It is accessible for <strong>Windows, Macintosh, and Unix platforms</strong>.</li> <li>It is a set of programs that are designed to <strong>prevent, search for, detect, and remove software viruses</strong>.</li> <li>&nbsp;It is a code or program designed to covertly enter a device.&nbsp;</li> <li>Antivirus software handled a wider range of <strong>malware attacks than antimalware software.&nbsp;</strong></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर, <u><strong>डिवाइस को स्कैन करने, पहचानने और हटाने के लिए</strong></u> है।</p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul> <li>एंटीवायरस सॉफ़्टवेयर एक प्रकार का <strong>प्रोग्राम है जिसे कंप्यूटर को मैलवेयर से बचाने के लिए डिज़ाइन और विकसित किया गया है।</strong></li> <li>एंटीवायरस प्रोग्राम का मुख्य उद्देश्य कंप्यूटरों की सुरक्षा करना और एक बार <strong>पता लगाए गए वायरस को हटाना है।</strong></li> <li>यह<strong> विंडोज, मैकिंटोश और यूनिक्स प्लेटफार्मों</strong> के लिए सुलभ है।</li> <li>यह उन प्रोग्रामों का एक समूह है जो सॉफ्टवेयर वायरस को <strong>रोकने, खोजने, और पता लगने पर हटाने के लिए</strong> डिज़ाइन किए गए हैं।</li> <li>यह एक कोड या प्रोग्राम है जो किसी डिवाइस में गुप्त रूप से<span lang="hi"> प्रवेश</span> करने के लिए डिज़ाइन किया गया है।</li> <li>एंटीवायरस सॉफ़्टवेयर ने <strong>एंटीमैलवेयर सॉफ़्टवेयर की तुलना में मैलवेयर हमलों</strong> की एक विस्तृत परास को संभाला है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The action &lsquo;Ctrl+B&rsquo; makes the text ________ in the MS-Word 2007.</div>
+  <div class="question lang-hi">MS वर्ड 2007 में, एक्शन &#39;Ctrl + B&#39; टेक्स्ट को ________&nbsp;बना देता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Bold</div><div class="option">Zoom</div><div class="option">Clear</div><div class="option">Italic</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">बोल्ड</div><div class="option">जूम</div><div class="option">क्लीयर</div><div class="option">इटैलिक</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Bold</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <table border="1" cellpadding="1" cellspacing="1" style="width:200px;"> <tbody> <tr> <td><strong>Ctrl + B</strong></td> <td><strong>Bold highlighted</strong> selection.</td> </tr> <tr> <td><strong>Ctrl + A</strong></td> <td><strong>Select all</strong> contents of the page.</td> </tr> <tr> <td><strong>Ctrl + V</strong></td> <td><strong>Paste</strong> selected text.</td> </tr> <tr> <td><strong>Ctrl + C</strong></td> <td><strong>Copy</strong> selected text.</td> </tr> <tr> <td><strong>Ctrl + I</strong></td> <td>Apply<strong> italic formatting</strong> to text.</td> </tr> <tr> <td><strong>Ctrl + Z</strong></td> <td>Undo the <strong>previous action</strong>.</td> </tr> <tr> <td><strong>Ctrl + X</strong></td> <td>Cut the selected content to the Clipboard.</td> </tr> <tr> <td><strong>Ctrl + Y</strong></td> <td>Redo the previous action, if possible.</td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p style=""><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u style=""><span style="font-weight: 700;">बोल्ड</span></u><font style="vertical-align: inherit;"> है।</font></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <table border="1" cellpadding="1" cellspacing="1" style=" width: 200px;"> <tbody> <tr> <td>Ctrl + B</td> <td>बोल्ड हाइलाइट<font style="vertical-align: inherit;">&nbsp;किया गया चयन।</font></td> </tr> <tr> <td>Ctrl + A</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पृष्ठ के सभी&nbsp; का&nbsp;</font><font style="vertical-align: inherit;">चयन करना।</font></font></td> </tr> <tr> <td>Ctrl + V</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">चयनित टेक्स्ट को पेस्ट करना</font></font><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + C</td> <td><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">चयनित </font></font><span style="">टेक्स्ट को</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;कॉपी</font><font style="vertical-align: inherit;">&nbsp;बना</font></font>ना<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + I</td> <td><font style="vertical-align: inherit;">टेक्स्ट में&nbsp;</font>इटैलिक फॉर्मेटिंग<font style="vertical-align: inherit;">&nbsp;लागू करना।</font></td> </tr> <tr> <td>Ctrl + Z</td> <td><span style="">पूर्व&nbsp;</span>कार्य<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;को अनडू करना</font><font style="vertical-align: inherit;">।</font></font></td> </tr> <tr> <td>Ctrl + X</td> <td><font style="vertical-align: inherit;">चयनित सामग्री को क्लिपबोर्ड पर कट करना</font><font style="vertical-align: inherit;">।</font></td> </tr> <tr> <td>Ctrl + Y</td> <td><font style="vertical-align: inherit;">यदि संभव हो तो </font><span style="">पूर्व में किए कार्य को रीडू&nbsp;करना&nbsp;</span></td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Identify the device that act as both input device and output device.</div>
+  <div class="question lang-hi">उस डिवाइस की पहचान करें जो इनपुट डिवाइस और आउटपुट डिवाइस दोनों के रूप में कार्य करता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Lightpen</div><div class="option correct">Touch Screen</div><div class="option">Mouse</div><div class="option">Visual Display Unit</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">लाइटपेन</div><div class="option correct">टच स्क्रीन</div><div class="option">माउस</div><div class="option">विसुअल डिस्प्ले यूनिट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Touch Screen</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><u><strong>Computer Input and Output Devices:</strong></u></p> <p>The functioning of a computer system is based on the combined usage of both input and output devices.</p> <p>Using an input device we can give instructions to the computer to perform an action and the device reverts to our action through an output device.&nbsp;</p> <p><strong>Input Device:</strong> A piece of equipment/hardware which helps us enter data into a computer is called an input device. For example keyboard, mouse, etc.&nbsp;</p> <p><strong>Output Device:</strong> A piece of equipment/hardware which gives out the result of the entered input, once it is processed (i.e. converts data from machine language to a human-understandable language), is called an output device. For example printer, monitor, etc.&nbsp;</p> <p><u><strong>Both Input-Output Devices:</strong></u></p> <ul> <li>Modems</li> <li>Network cards</li> <li><strong>Touch Screen</strong></li> <li>Headsets (Headset consists of Speakers and Microphone. Speaker act Output Device and Microphone act as Input device)</li> <li>Facsimile (FAX) (It has scanner to scan the document and also have printer to Print the document)</li> <li>Audio Cards / Sound Card</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>टच स्क्रीन</strong></u><strong> </strong>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><u><strong>कंप्यूटर इनपुट और आउटपुट डिवाइस:</strong></u></p> <p>कंप्यूटर सिस्टम की कार्यप्रणाली इनपुट और आउटपुट डिवाइस दोनों के संयुक्त उपयोग पर आधारित होती है।</p> <p>एक इनपुट डिवाइस का उपयोग करके हम कंप्यूटर को एक क्रिया करने के लिए निर्देश दे सकते हैं और डिवाइस एक आउटपुट डिवाइस के माध्यम से हमारी क्रिया में वापस आ जाता है।</p> <p><span style="font-weight: 700; ">इनपुट डिवाइस:</span><span style="">&nbsp;उपकरण/हार्डवेयर का एक भाग&nbsp;जो हमें कंप्यूटर में डेटा स्टोर&nbsp;करने में मदद करता है, इनपुट डिवाइस कहलाता है। उदाहरण के लिए कीबोर्ड, माउस आदि।</span></p> <p><strong>आउटपुट डिवाइस:</strong> उपकरण/हार्डवेयर का एक <span style="">भाग</span><span style="">&nbsp;</span>जो रिकॉर्ड&nbsp;किए गए इनपुट का परिणाम देता है, एक बार प्रोसेस&nbsp;होने के बाद (यानी मशीन भाषा से डेटा को मानव-समझने योग्य भाषा में परिवर्तित करता है), आउटपुट डिवाइस कहलाता है। उदाहरण के लिए प्रिंटर, मॉनिटर आदि।</p> <p><u><strong>इनपुट-आउटपुट&nbsp;डिवाइस </strong><span style="font-weight: 700;">दोनों</span><strong>:</strong></u></p> <ul> <li>मोडेम</li> <li>नेटवर्क कार्ड</li> <li><strong>टच स्क्रीन</strong></li> <li>हेडसेट (हेडसेट में स्पीकर और माइक्रोफ़ोन होते हैं। स्पीकर एक्ट आउटपुट डिवाइस और माइक्रोफ़ोन इनपुट डिवाइस के रूप में कार्य करता है)</li> <li><span style="">फेशिमाइल&nbsp;</span>(FAX) (इसमें डॉक्यूमेंट&nbsp;को स्कैन करने के लिए स्कैनर है और <span style="">डॉक्यूमेंट</span><span style="">&nbsp;</span>को प्रिंट करने के लिए प्रिंटर भी है)</li> <li>ऑडियो कार्ड/साउंड कार्ड</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which one of the following comes under output device category?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सा एक आउटपुट डिवाइस श्रेणी के अंतर्गत आता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Monitor</div><div class="option">Keyboard</div><div class="option">Light pen</div><div class="option">Mouse</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">मॉनिटर</div><div class="option">कीबोर्ड</div><div class="option">लाइट पेन</div><div class="option">माउस</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Monitor</strong></u>.</p> <ul> <li><u><strong>The monitor is an output device</strong></u>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Input Device</strong>: A piece of equipment/hardware that helps us enter data into a computer is called an input device. <ul> <li>For example <strong>keyboard</strong>, <strong>mouse</strong>,&nbsp;<strong>Light Pen,</strong> etc.&nbsp;</li> </ul> </li> <li><strong>Output Device</strong>: A piece of equipment/hardware that gives out the result of the entered input, once it is processed (i.e. converts data from machine language to a human-understandable language). <ul> <li>For example <strong>printers</strong>, <strong>monitors</strong>, etc.&nbsp;</li> </ul> </li> </ul> <p><img height="55px" src="https://storage.googleapis.com/tb-img/production/21/11/60a3b1aec4419f35b71b249e_16379168579521.png" width="180px" />&nbsp;</p> <ul> <li>A monitor is also referred to as a VDT (video display terminal) and VDU (video display unit), a monitor is an output device that displays video images and text.</li> <li>A monitor is made up of circuitry, a screen, a power supply, buttons to adjust screen settings, and a casing that holds all of these components.</li> <li>Like most early TVs, the first computer monitors were comprised of a CRT (cathode ray tube) and a fluorescent screen.</li> <li>Today, all monitors are created using flat panel display technology, usually backlit with LEDs (light-emitting diode).</li> </ul> <p><img alt="" src="https://images-na.ssl-images-amazon.com/images/I/71TrDy1ItOL._SL1500_.jpg" style="font-weight: 700; width: 295px; height: 224px;" /></p> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul style="list-style-type: disc;"> <li><span style="font-weight: 700;">Keyboard</span> <ul> <li>The&nbsp;keyboard&nbsp;is a basic input device that is used to&nbsp;<span style="font-weight: 700;">enter data into a computer</span>&nbsp;or any other electronic device by pressing keys.</li> <li>It has different&nbsp;<span style="font-weight: 700;">sets of keys for letters, numbers, characters, and functions.</span></li> <li>Keyboards are<span style="font-weight: 700;">&nbsp;connected to a computer through&nbsp;USB&nbsp;or a Bluetooth device for wireless communication.</span></li> <li>The three types of keyboards are&nbsp;<span style="font-weight: 700;">QWERTY, AWERTY, and DVORAK.</span></li> </ul> </li> <li><span style="font-weight: 700;">Mouse</span> <ul> <li>A mouse is a small handheld input device that controls a computer screen&#39;s cursor or pointer in conjunction with the way it is moved on a flat surface.&nbsp;</li> <li>The mouse term name originates from its likeness to a small, corded, and elliptical-shaped device that looks like a mouse tail.&nbsp;</li> <li>A mouse is device that have integrated features, such as extra buttons that may be programmed and assigned with different commands.</li> <li>The mouse was invented in 1963 by Douglas C. Engelbart from Stanford and later pioneered in 1981 by the Xerox Corporation.</li> <li>Modern mouse devices use optical technology, where cursor movements are controlled by a visible or invisible light beam.&nbsp;</li> </ul> </li> <li><strong>Light Pen</strong> <ul> <li>A light pen is a computer input device in the form of a light-sensitive wand used in conjunction with a computer&#39;s cathode-ray tube (CRT) display.</li> <li>It allows the user to point to displayed objects or draw on the screen in a similar way to a touchscreen but with greater positional accuracy.&nbsp;</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>मॉनिटर</strong></u> है।</p> <ul> <li><u><strong>मॉनिटर एक आउटपुट डिवाइस है</strong></u> ।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <ul> <li><strong>इनपुट डिवाइस</strong> : <span style="">डिवाइस/हार्डवेयर का एक भाग जो हमें कंप्यूटर में डेटा दर्ज करने में मदद करता है, इनपुट डिवाइस कहलाता है।</span> <ul> <li>उदाहरण के लिए <strong>कीबोर्ड</strong> , <strong>माउस</strong> , <strong>लाइट पेन आदि।</strong></li> </ul> </li> <li><strong>आउटपुट डिवाइस</strong> : <span style="">डिवाइस</span>/हार्डवेयर का एक <span style="">भाग&nbsp;</span>जो एक बार संसाधित होने के बाद दर्ज किए गए इनपुट का परिणाम देता है (यानी डेटा को मशीन भाषा से मानव-समझने योग्य भाषा में परिवर्तित करता है)। <ul> <li>उदाहरण के लिए <strong>प्रिंटर</strong> , <strong>मॉनिटर</strong> आदि।</li> </ul> </li> </ul> <p><img height="55px" src="https://storage.googleapis.com/tb-img/production/21/11/60a3b1aec4419f35b71b249e_16379168579521.png" width="180px" /></p> <ul> <li>एक&nbsp;मॉनिटर&nbsp;को&nbsp;VDT (वीडियो डिस्प्ले टर्मिनल)&nbsp;और&nbsp;VDU (वीडियो डिस्प्ले यूनिट) के&nbsp;रूप में भी जाना जाता है, एक मॉनिटर एक आउटपुट डिवाइस है जो वीडियो इमेज और टेक्स्ट प्रदर्शित करता है।</li> <li>एक मॉनिटर सर्किटरी, एक स्क्रीन, एक बिजली की आपूर्ति, स्क्रीन सेटिंग्स को समायोजित करने के लिए बटन और एक आवरण होता है जो इन सभी घटकों को रखता है।</li> <li>अधिकांश शुरुआती टीवी की तरह, पहले कंप्यूटर मॉनिटर में एक&nbsp;<span style="font-weight: 700;">CRT (कैथोड रे ट्यूब)</span>&nbsp;और एक फ्लोरोसेंट स्क्रीन शामिल थे।</li> <li>आज, आमतौर पर एलईडी (प्रकाश उत्सर्जक डायोड) के साथ बैकलिट, सभी मॉनिटर फ्लैट पैनल डिस्प्ले तकनीक का उपयोग करके बनाए जाते हैं।</li> </ul> <p><img alt="" src="https://images-na.ssl-images-amazon.com/images/I/71TrDy1ItOL._SL1500_.jpg" style="font-weight: 700; width: 295px; height: 224px;" /></p> <p>&nbsp;</p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul style="list-style-type: disc;"> <li><span style="font-weight: 700;">कीबोर्ड</span> <ul> <li><span style="font-weight: 700;">कीबोर्ड&nbsp;</span>एक बेसिक इनपुट डिवाइस है, जिसका उपयोग कीज (बटनों)&nbsp;को दबाकर कंप्यूटर या किसी अन्य इलेक्ट्रॉनिक उपकरण में डेटा दर्ज करने के लिए किया जाता है।</li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इसमें&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">अक्षरों, संख्याओं, वर्णों और कार्यों के लिए कुंजियों के</font></span><font style="vertical-align: inherit;">&nbsp;अलग-अलग&nbsp;</font></font><span style="font-weight: 700;">सेट&nbsp;</span>हैं।</li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कीबोर्ड&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">वायरलेस संचार के लिए&nbsp;</font></span><span style="font-weight: 700;"><font style="vertical-align: inherit;">USB</font></span><span style="font-weight: 700;"><font style="vertical-align: inherit;">&nbsp;या ब्लूटूथ डिवाइस&nbsp;के&nbsp;</font></span><span style="font-weight: 700;"><font style="vertical-align: inherit;">माध्यम से कंप्यूटर से जुड़े&nbsp;</font></span><font style="vertical-align: inherit;">होते&nbsp;</font></font>हैं।</li> <li>तीन प्रकार के कीबोर्ड <span style="font-weight: 700;">QWERTY, AWERTY और DVORAK हैं।</span></li> </ul> </li> <li><span style="font-weight: 700;">चूहा</span> <ul> <li>माउस एक छोटा हैंडहेल्ड इनपुट डिवाइस है, जो कंप्यूटर स्क्रीन के कर्सर या पॉइंटर को समतल सतह पर ले जाने के तरीके को नियंत्रित करता है।</li> <li>माउस शब्द का नाम इसकी समानता से उत्पन्न एक छोटी, घनीभूत और अण्डाकार आकार की डिवाइस है जो चूहे की&nbsp;पूंछ की तरह दिखता है।</li> <li>एक माउस एक उपकरण है</li> <li>कुछ माउस उपकरणों में एकीकृत विशेषताएं होती हैं, जैसे कि अतिरिक्त बटन जिन्हें अलग-अलग कमांड के साथ प्रोग्राम और असाइन किया जा सकता है।</li> <li>माउस का आविष्कार&nbsp;<span style="font-weight: 700;">1963 में स्टनफोर्ड से डगलस सि. एंगेलबार्ट द्वारा </span>किया गया था&nbsp;और&nbsp;बाद में&nbsp;ज़ीरक्सा कारपोरेशन द्वारा&nbsp;1981 में संचालित किया गया था।</li> <li>आधुनिक माउस डिवाइस ऑप्टिकल तकनीक का उपयोग करती है, जहाँ&nbsp;कर्सर&nbsp;का संचलन एक दृश्य या अदृश्य रौशनी की बीम द्वारा नियंत्रित होता हैं।</li> </ul> </li> <li><strong>लाइट पेन</strong> <ul> <li>एक लाइट पेन एक कंप्यूटर इनपुट डिवाइस है जो कंप्यूटर के कैथोड-रे ट्यूब (<span style="">CRT</span>) डिस्प्ले के संयोजन के साथ उपयोग किए जाने वाले प्रकाश-संवेदनशील छड़ी के रूप में होता है।</li> <li>यह उपयोगकर्ता को प्रदर्शित वस्तुओं को इंगित करने या स्क्रीन पर टचस्क्रीन के समान तरीके से आकर्षित करने की अनुमति देता है लेकिन अधिक स्थितिगत सटीकता के साथ।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following short cut keys is used to insert comment in MS Excel?</div>
+  <div class="question lang-hi">एमएस एक्सेल में कमेंट इन्सर्ट करने के लिए निम्नलिखित में से कौन-सी शॉर्ट कट कुंजी (की) का उपयोग&nbsp;किया जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Alt + C</div><div class="option correct">Shift + F2</div><div class="option">Alt + O</div><div class="option">Shift + F1</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">Alt + C</div><div class="option correct">Shift + F2</div><div class="option">Alt + O</div><div class="option">Shift + F1</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong> Shift+F2</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>MS Excel is spreadsheet software. It&nbsp;consists of rows and columns. In MS Excel, the cell is formed by the intersection of rows and columns. Here are some keyboard shortcuts discussed below which are used in MS Excel. <ul> <li>In MS Excel, <strong>Alt+ C&nbsp;</strong>is used to <strong>insert columns </strong>in the worksheet.</li> <li><span style="">In MS Excel</span>, <strong>Shift+ F2&nbsp;</strong>is used to <strong>insert comments</strong>&nbsp;in the worksheet.</li> <li><span style="">In MS Excel</span>, <strong>Alt+ O</strong>&nbsp;is used to <strong>open the format file menu</strong>.</li> <li>In MS Excel, <strong>Shift+ F1 </strong>is used to <strong>insert a new worksheet</strong>.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>In MS Excel,<strong> &#39;Alt+ =&#39;&nbsp;</strong>is used to perform <strong>Autosum</strong> in the worksheet.</li> <li>In MS Excel, <strong>Alt+ Enter&nbsp;</strong>is used to <strong>insert a new line</strong>&nbsp;in the <strong>same cell</strong>.</li> <li>In MS Excel, <b>Ctrl+Shift+0</b>&nbsp;is used to <strong>select all the cells that contain comments</strong>.</li> <li>In MS Excel, <strong>Ctrl+ P</strong>&nbsp;is used to <strong>print the file</strong>.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>Shift+F2</strong></u><span style="">&nbsp;है</span>।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>एम.एस. एक्सेल स्प्रेडशीट सॉफ्टवेयर है। इसमें रो&nbsp;और कॉलम&nbsp; होते हैं।&nbsp;एमएस एक्सेल में, सेल का निर्माण रो&nbsp;और <span style="">कॉलम</span> के इंटरसेक्शन&nbsp;से होता है। नीचे कुछ कीबोर्ड शॉर्टकट्स के बारे में बताया गया है जिनका उपयोग एम.एस. एक्सेल में किया जाता है।​ <ul> <li><span style="">एम.एस. एक्सेल</span> में, <strong>Alt+ C</strong> का उपयोग वर्कशीट में <strong>कॉलम इन्सर्ट करने के लिए </strong>किया जाता है।</li> <li><span style="">एम.एस. एक्सेल</span> में, <strong>Shift+ F2</strong> का उपयोग वर्कशीट में <strong>कमेंट्स इन्सर्ट करने के लिए</strong> किया जाता है।</li> <li><span style="">एम.एस. एक्सेल</span> में, <strong>Alt+ O </strong>का उपयोग <strong>फॉर्मेट&nbsp;फ़ाइल मेनू खोलने </strong>के लिए किया जाता है।</li> <li><span style="">एम.एस. एक्सेल</span> में <strong>नई वर्कशीट इन्सर्ट करने&nbsp;के लिए</strong> <strong>Shift+ F1</strong> का प्रयोग किया जाता है।</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><span style="">एम.एस. एक्सेल</span>&nbsp;में,<strong> &#39;Alt+ =&#39;</strong> का उपयोग वर्कशीट में <span style="font-weight: 700; ">Autosum</span><span style="">&nbsp;</span>करने के लिए किया जाता है।</li> <li><span style="">एम.एस. एक्सेल</span>&nbsp;में<strong> Alt+ Enter</strong> का इस्तेमाल उसी सेल में<strong> नई</strong> <strong>लाइन इन्सर्ट करने के लिए </strong>किया जाता है।</li> <li><span style="">एम.एस. एक्सेल</span>&nbsp;में, <strong>Ctrl+Shift+0</strong> का उपयोग <span style="font-weight: 700; ">कमेंट्स&nbsp;</span><strong>वाले</strong> <strong>सभी सेल&nbsp;का चयन करने के लि</strong>ए किया जाता है।</li> <li>एम.एस. एक्सेल&nbsp;में,<strong> फ़ाइल को प्रिंट </strong>करने के लिए <strong>Ctrl+ P</strong> का उपयोग किया जाता है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the shortcut key to move the next word in MS Word?&nbsp;&nbsp;</div>
+  <div class="question lang-hi">MS वर्ड में, अगले शब्द पर जाने के लिए शॉर्ट कट कुंजी क्या है?&nbsp;&nbsp;</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Ctrl + Down arrow&nbsp;</div><div class="option">Ctrl + Up arrow&nbsp;&nbsp;</div><div class="option correct">Ctrl + Right arrow</div><div class="option">Ctrl + Left arrow&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">Ctrl + Down arrow&nbsp;</div><div class="option">Ctrl + Up arrow&nbsp;&nbsp;</div><div class="option correct">Ctrl + Right arrow</div><div class="option">Ctrl + Left arrow&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style=""><u><strong>Ctrl + Right arrow</strong></u>.</span></p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><u><strong>Ctrl + Right Arrow&nbsp;</strong></u><span style="">is the <u><strong>shortcut key</strong></u> to move the <u><strong>next word</strong></u> in <u><strong>MS Word</strong></u></span>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <div> <table border="1" cellpadding="0" cellspacing="0" style="width:250px;"> <tbody> <tr> <td> <p style="text-align: center;"><strong>Shortcut keys</strong></p> </td> <td> <p style="text-align: center;"><strong>Action Performed</strong></p> </td> </tr> <tr> <td> <p style="text-align: center;">Ctrl + down arrow</p> </td> <td> <p style="text-align: center;">End of column</p> </td> </tr> <tr> <td> <p style="text-align: center;">Left arrow</p> </td> <td> <p style="text-align: center;">One cell Left</p> </td> </tr> <tr> <td> <p style="text-align: center;">Right arrow</p> </td> <td> <p style="text-align: center;">One cell right</p> </td> </tr> </tbody> </table> </div></div>
+    <div class="lang-hi"><p>सही उत्तर <u><span style="font-weight: 700;">Ctrl + Right arrow</span></u>&nbsp;है।</p> <p><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><u><strong>एमएस वर्ड </strong></u>में <u><strong>अगले शब्द </strong></u>पर स्थानांतरित होने के लिए <u><strong><span style="">Ctrl + Right arrow</span><strong> </strong>शॉर्टकट की (कुंजी)</strong></u> प्रयोग होती&nbsp;है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <div> <table border="1" cellpadding="0" cellspacing="0" style="width:250px;"> <tbody> <tr> <td> <p style="text-align: center;"><strong>शॉर्टकट की (कुंजी)</strong></p> </td> <td> <p style="text-align: center;"><strong>कार्य&nbsp;</strong><b>निष्पादन&nbsp;</b></p> </td> </tr> <tr> <td> <p style="text-align: center;">CTRL + <span style="">Down arrow&nbsp;</span></p> <p style="text-align: center;">&nbsp;</p> </td> <td> <p style="text-align: center;">स्तंभ (कॉलम)&nbsp;का अंत</p> <p style="text-align: center;">&nbsp;</p> </td> </tr> <tr> <td> <p style="text-align: center;">लेफ्ट एरो&nbsp;&nbsp;</p> </td> <td> <p style="text-align: center;">एक सेल के बाएं&nbsp;</p> </td> </tr> <tr> <td> <p style="text-align: center;">राइट एरो&nbsp;</p> </td> <td> <p style="text-align: center;">एक सेल <span style="text-align: center; ">के दाएँ</span></p> <p style="text-align: center;">&nbsp;</p> </td> </tr> </tbody> </table> </div></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q16</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is not correct about Linux?<span style="">&nbsp;</span></div>
+  <div class="question lang-hi"><span style="">लिनक्स के बारे में निम्नलिखित में से कौन सा विकल्प सही नहीं है?&nbsp;</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Linux is also used in embedded systems.</div><div class="option">It is an operating system.</div><div class="option correct">A unique feature of Linux is that it does not have a kernel.</div><div class="option">It can be installed on a computer, without a software license.</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">लिनक्स का उपयोग एम्बेडेड सिस्टम में भी किया जाता है।</span></div><div class="option"><span style="">यह एक ऑपरेटिंग सिस्टम है।</span></div><div class="option correct"><span style="">लिनक्स की एक अनूठी विशेषता यह है कि, इसमें कर्नेल नहीं है।</span></div><div class="option"><span style="">इसे बिना सॉफ्टवेयर लाइसेंस के कंप्यूटर पर इंस्टॉल किया जा सकता है।</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>The correct option is (3)</strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>A well-liked independent portable operating system is Linux. It is a multitasking operating system with features including memory management, shared virtual memory libraries, TCP/IP network capabilities, and features seen in common operating systems.</li> <li>In its most basic form, an embedded Linux system is one that employs Linux as the operating system in between an embedded device&#39;s hardware and its application.</li> <li>You can develop a Proof of Concept with Embedded Linux considerably faster than using a simpler platform.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>&nbsp;A computer&#39;s operating system (OS) is a type of system software that controls or maintains the hardware and software resources of the system and offers standard services to applications running on the system.</li> <li>The basic interface between the computer&#39;s physical hardware and the processes running on it is provided by the kernel, which is a fundamental part of an operating system.</li> </ul></div>
+    <div class="lang-hi"><p><strong>सही विकल्प&nbsp;(3) <span style="">है।</span></strong></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>एक लोकप्रिय स्वतंत्र पोर्टेबल ऑपरेटिंग सिस्टम लिनक्स है। यह एक मल्टीटास्किंग ऑपरेटिंग सिस्टम है जिसमें मेमोरी मैनेजमेंट, शेयर्ड वर्चुअल मेमोरी लाइब्रेरी, टीसीपी/आईपी नेटवर्क क्षमताएं और सामान्य ऑपरेटिंग सिस्टम में देखी जाने वाली विशेषताएं शामिल हैं।</li> <li>अपने सबसे बुनियादी रूप में, एक एम्बेडेड लिनक्स सिस्टम वह है जो एक एम्बेडेड डिवाइस के हार्डवेयर और उसके एप्लिकेशन के बीच ऑपरेटिंग सिस्टम के रूप में लिनक्स को नियोजित करता है।</li> <li>आप एक सरल प्लेटफॉर्म का उपयोग करने की तुलना में एम्बेडेड लिनक्स के साथ अवधारणा का प्रमाण विकसित कर सकते हैं।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li>कंप्यूटर का ऑपरेटिंग सिस्टम (OS) एक प्रकार का सिस्टम सॉफ़्टवेयर है जो सिस्टम के हार्डवेयर और सॉफ़्टवेयर संसाधनों को नियंत्रित या रखरखाव करता है और सिस्टम पर चलने वाले एप्लिकेशन को मानक सेवाएं प्रदान करता है।</li> <li>कंप्यूटर के भौतिक हार्डवेयर और उस पर चलने वाली प्रक्रियाओं के बीच बुनियादी इंटरफ़ेस कर्नेल द्वारा प्रदान किया जाता है, जो एक ऑपरेटिंग सिस्टम का एक मूलभूत हिस्सा है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q17</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which group has the header and footer function in slides of MS PowerPoint?</div>
+  <div class="question lang-hi"><span style="">MS&nbsp;</span>पॉवरपॉइंट में, किस ग्रुप में स्लाइड में हेडर और फुटर फंक्शन होते हैं?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Images</div><div class="option">Tables</div><div class="option correct">Text</div><div class="option">Symbols</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">इमेज</div><div class="option">टेबल</div><div class="option correct"><span style="">टेक्स्ट</span></div><div class="option">सिम्बल</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is&nbsp;<u><span style="font-weight: 700;">Text</span></u>.</p> <p style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li>The Text&nbsp;<span style="">group has the header and footer function in slides of MS PowerPoint.</span> <ul> <li>The&nbsp;<span style="font-weight: 700;">header</span>&nbsp;is a section of the document that appears in the&nbsp;<span style="font-weight: 700;">top margin</span>, while the&nbsp;<span style="font-weight: 700;">footer</span>&nbsp;is a section of the document that appears in the&nbsp;<span style="font-weight: 700;">bottom margin</span>.</li> <li><span style="font-weight: 700;">Headers</span>&nbsp;and&nbsp;<span style="font-weight: 700;">footers</span>&nbsp;generally contain&nbsp;<span style="font-weight: 700;">additional information</span>&nbsp;such as<span style="font-weight: 700;">&nbsp;page numbers, dates</span>, an<span style="font-weight: 700;">&nbsp;author&#39;s name</span>, and&nbsp;<span style="font-weight: 700;">footnotes</span>, which can help keep longer documents organized and make them easier to read.</li> <li>whatever&nbsp;<span style="font-weight: 700;">text</span>&nbsp;is entered in the&nbsp;<span style="font-weight: 700;">header</span>&nbsp;or&nbsp;<span style="font-weight: 700;">footer</span>&nbsp;will appear on&nbsp;<span style="font-weight: 700;">each page</span>&nbsp;of the&nbsp;<span style="font-weight: 700;">document.</span></li> <li>In <strong>PowerPoint, Press and hold Ctrl </strong>while you select each object. Select <strong>Format &gt;Group &gt; Group</strong>. The format or move the grouped object however you want.</li> <li>To group objects: <ul> <li><strong>Click and drag</strong> your mouse to form a selection box around the objects you want to group. The Format tab will appear.</li> <li>From the <strong>Format tab</strong>, click the Group command, then select Group. Grouping objects.</li> <li>The <strong>selected objects </strong>will now be <strong>grouped</strong>.</li> </ul> </li> </ul> </li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></span></p> <table border="1" cellpadding="1" cellspacing="1" style=" width: 400px;"> <tbody> <tr> <td style="text-align: center;"><span style="font-weight: 700;">Name</span></td> <td style="text-align: center;"><span style="font-weight: 700;">Details</span></td> </tr> <tr> <td style="text-align: center;"><span style="font-weight: 700;">Object group</span></td> <td> <p style="text-align: center;"><span style="font-weight: 700;">To group objects in PowerPoint using a keyboard shortcut:</span></p> <ul> <li>In Normal View or Slide Master View, Shift-click or Ctrl-click the pictures, shapes, or other objects you want to group.</li> <li>Press Ctrl + G. The selected objects will be grouped together and have a single set of selection and rotation handles.</li> </ul> </td> </tr> <tr> <td style="text-align: center;"><span style="font-weight: 700;"><span style="letter-spacing: 1px;">Illustrations group</span></span></td> <td> <p style="text-align: center;">Creating professional-looking slides with illustrations seems challenging, but PowerPoint 2007 makes using illustrations easy with the addition of SmartArt graphics.<br /> SmartArt graphics are a type of illustration that allows you to visually communicate information you might otherwise including<br /> a presentation as text.</p> </td> </tr> <tr> <td style="text-align: center;"><span style="font-weight: 700;">Tables group</span></td> <td> <p style="text-align: center;">When table elements are placed on a PowerPoint slide, the elements are placed in individual text boxes to allow for explicit positioning to match the other positioned drivers, such as PDF and DHTML.<br /> The PPTXGROUP parameter enables you to group elements together in a PPTX report.</p> </td> </tr> </tbody> </table></div>
+    <div class="lang-hi"><p style=""><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u><span style="font-weight: 700;">टेक्स्ट</span></u><font style="vertical-align: inherit;">&nbsp;है।</font></p> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul style=""> <li>टेक्स्ट&nbsp;ग्रुप में MS&nbsp;पॉवरपॉइंट की स्लाइड्स में <span style="">हेडर और फुटर</span>&nbsp;फंक्शन होते हैं<span style="">।</span> <ul> <li><strong><span style="color: rgb(33, 37, 41);">हेडर&nbsp;</span></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">डॉक्यूमेंट&nbsp;का वह भाग है जो <strong>टॉप(शीर्ष) मार्जिन</strong> में दिखाई देता है</font><font style="vertical-align: inherit;">,&nbsp;</font></font>जबकि&nbsp;<strong><span style="">फुटर</span></strong><font style="vertical-align: inherit;"><strong>&nbsp;</strong></font><span style="">डॉक्यूमेंट</span><font style="vertical-align: inherit;">&nbsp;का वह भाग है जो&nbsp;<strong>बॉटम(</strong></font><span style="font-weight: 700;">निचले) मार्जिन&nbsp;</span><font style="vertical-align: inherit;">में दिखाई देता है।</font></li> <li><strong>हेडर&nbsp;</strong><font style="vertical-align: inherit;">और&nbsp;</font><span style="font-weight: 700;">फुटर</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;में आम तौर पर&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">पृष्ठ संख्या, दिनांक</font></span><font style="vertical-align: inherit;"><strong>,</strong>&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">लेखक का नाम</font></span><font style="vertical-align: inherit;">&nbsp;और&nbsp;</font></font><span style="font-weight: 700; ">फु</span><font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">टनोट</font></span><font style="vertical-align: inherit;">&nbsp;जैसी&nbsp;</font></font><span style="font-weight: 700;">अतिरिक्त जानकारी</span><font style="vertical-align: inherit;">&nbsp;होती है, जो लंबे </font>डॉक्यूमेंटो<font style="vertical-align: inherit;">&nbsp;को व्यवस्थित रखने और उन्हें पढ़ने में आसान बनाने में मदद कर सकती है।</font></li> <li><strong>हेडर&nbsp;</strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">या&nbsp;</font></font><span style="font-weight: 700; ">फुटर</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;में जो भी&nbsp;</font></font><strong>टेक्स्ट</strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;दर्ज किया गया</font><font style="vertical-align: inherit;">&nbsp;है वह&nbsp;</font></font><strong><span style="">डॉक्यूमेंट</span></strong> के&nbsp;<font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">प्रत्येक पेज&nbsp;</font></span><font style="vertical-align: inherit;">पर दिखाई देगा</font></font><span style="">।</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;</font></font></li> <li><strong>पावर प्वाइंट</strong> में,&nbsp;प्रत्येक ऑ<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ब्जेक्ट का चयन करते समय&nbsp;</font></font><span style="font-weight: 700;">Ctrl दबाकर रखें। फॉर्मेट&nbsp;&gt; ग्रुप &gt; ग्रुप</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;चुनें</font><font style="vertical-align: inherit;">।&nbsp;</font></font><span style="">ग्रु</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्ड&nbsp;</font></font><span style="">ऑब्जेक्ट</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> को जैसे चाहें वैसे फोर्मेट या मूव करें।</font></font></li> <li><span style="">ऑब्जेक्ट</span><font style="vertical-align: inherit;"> को </font><span style="">ग्रुप</span><font style="vertical-align: inherit;"> करने के लिए:</font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जिन </font></font><span style="">ऑब्जेक्ट</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> को आप </font></font><span style="">ग्रुप</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> करना चाहते हैं, उनके चारों ओर एक चयन बॉक्स बनाने के लिए अपने माउस को&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">क्लिक करें और </font></span></font><strong>ड्रैग&nbsp;करें</strong><font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">।&nbsp;</font></span></font>फॉर्मेट&nbsp;टैब<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> दिखाई देगा।</font></font></li> <li><span style="font-weight: 700;"><font style="vertical-align: inherit;">फॉर्मेट</font></span><font style="vertical-align: inherit;">&nbsp;<span style="font-weight: 700;">टैब</span><font style="vertical-align: inherit;">&nbsp;से, </font></font><span style="">ग्रुप</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> कमांड पर क्लिक करें, फिर </font></font><span style="">ग्रुप</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> का चयन करें।&nbsp;</font></font><span style="">ऑब्जेक्ट</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> को </font></font><span style="">ग्रुप</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> करना।</font></font></li> <li><span style="font-weight: 700;">चयनित </span><strong><span style="">ग्रुप</span></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><strong>&nbsp;</strong>को&nbsp;</font><font style="vertical-align: inherit;">अब&nbsp;</font></font><strong><span style="">ग्रु</span><font style=" vertical-align: inherit;"><font style="vertical-align: inherit;">प्ड</font></font></strong><span style="font-weight: 700;"><strong> </strong>किया</span><font style="vertical-align: inherit;">&nbsp;जाएगा।</font></li> </ul> </li> </ul> </li> </ul> <p style=""><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex; gap: 6px; align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></span></span></p> <table border="1" cellpadding="1" cellspacing="1" style=" width: 400px;"> <tbody> <tr> <td style="text-align: center;"><strong><font color="#58595b">नाम</font></strong></td> <td style="text-align: center;"><strong><font color="#58595b">विवरण</font></strong></td> </tr> <tr> <td style="text-align: center;"><strong><font color="#58595b">ऑब्जेक्ट ग्रुप</font></strong></td> <td> <p style="text-align: center;"><strong><font color="#58595b">कीबोर्ड शॉर्टकट का उपयोग करके पावर प्वाइंट में ऑब्जेक्ट ग्रुप्ड करने के लिए:</font></strong></p> <ul> <li><font color="#58595b"><font style="vertical-align: inherit;">नॉर्मल व्यू या स्लाइड मास्टर व्यू में, उन तस्वीरों, आकृतियों या अन्य </font><span style="text-align: center; ">ऑब्जेक्ट</span><font style="vertical-align: inherit;"> को शिफ्ट-क्लिक या Ctrl-क्लिक करें जिन्हें आप </font>ग्रुप्ड<font style="vertical-align: inherit;"> करना चाहते हैं।</font></font></li> <li><font color="#58595b"><font style="vertical-align: inherit;">Ctrl + G दबाएं। चयनित </font><span style=" text-align: center;">ऑब्जेक्ट</span><font style="vertical-align: inherit;">&nbsp;को एक साथ</font> ग्रुप्ड<font style="vertical-align: inherit;"> किया जाएगा और चयन और रोटेशन हैंडल का एक ही सेट होगा।</font></font></li> </ul> </td> </tr> <tr> <td style="text-align: center;"><strong><font color="#58595b">इलस्ट्रेशन ग्रुप</font></strong></td> <td> <p style="text-align: center;"><font color="#58595b"><font style="vertical-align: inherit;">चित्रों के साथ </font>इलस्ट्रेशन <font style="vertical-align: inherit;">दिखने वाली स्लाइड बनाना चुनौतीपूर्ण लगता है, लेकिन </font>पावर प्वाइंट<font style="vertical-align: inherit;"> 2007 स्मार्टआर्ट ग्राफिक्स के साथ </font>इलस्ट्रेशन<font style="vertical-align: inherit;"> का उपयोग करना आसान बनाता है।</font><br /> <font style="vertical-align: inherit;">स्मार्टआर्ट</font><span style="text-align: center; ">&nbsp;ग्राफिक्स</span><font style="vertical-align: inherit;"> एक प्रकार का </font>इलस्ट्रेशन<font style="vertical-align: inherit;"> है जो आपको जानकारी को विसुअल्ली रूप से संप्रेषित करने की अनुमति देता है, अन्यथा आप</font><br /> <font style="vertical-align: inherit;">टेक्स्ट के रूप में प्रस्तुति को शामिल कर सकते हैं।</font></font></p> </td> </tr> <tr> <td style="text-align: center;"><strong><font color="#58595b">टेबल्स ग्रुप</font></strong></td> <td> <p style="text-align: center;"><font color="#58595b"><font style="vertical-align: inherit;">जब टेबल एलिमेंट को एक </font>पावर प्वाइंट<font style="vertical-align: inherit;"> स्लाइड पर रखा जाता है, तो </font><span style="text-align: center; ">एलिमेंट&nbsp;</span><font style="vertical-align: inherit;">को अलग-अलग टेक्स्ट बॉक्स में रखा जाता है ताकि स्पष्ट स्थिति के लिए अन्य स्थिति वाले ड्राइवरों, जैसे कि PDF और DHTML से मिलान किया जा सके।</font><br /> <font style="vertical-align: inherit;">PPTXGROUP पैरामीटर आपको PPTX रिपोर्ट में </font><span style="text-align: center; ">एलिमेंट</span><font style="vertical-align: inherit;"> को एक साथ </font><span style="">ग्रु</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्ड</font> करने में सक्षम बनाता है।</font></font></p> </td> </tr> </tbody> </table></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q18</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><span style="">Which one is not a Function in MS Excel ?</span></div>
+  <div class="question lang-hi">MS Excel में कौन-सा एक फंक्शन नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">SUM&nbsp;</span></div><div class="option correct"><span style="">AVG</span></div><div class="option"><span style="">MAX&nbsp;</span></div><div class="option"><span style="">MIN&nbsp;</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="">SUM </span></div><div class="option correct">AVG</div><div class="option"><span style="">MAX </span></div><div class="option"><span style="">MIN </span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong>AVG</strong>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>SUM(): </strong>The <strong>SUM() function</strong> in MS Excel, is used to <strong>add the selected cell values </strong>and produce the result. A minimum of <strong>two</strong> cells have to select to perform the SUM() function.</li> <li><strong>AVERAGE():&nbsp;</strong>The <strong>AVERAGE()</strong> function in MS Excel, is used to generate&nbsp;the<strong> average of selected cell values</strong>.&nbsp;A minimum of two cells have to select to perform the <strong>AVERAGE()</strong> function. There is <strong>no such</strong> <strong>AVG()</strong> function in <strong>MS Excel</strong>.</li> <li><strong>MAX(): </strong>The <strong>MAX() function</strong> in MS Excel, is used to find the <strong>largest number </strong>among the&nbsp;<strong>selected cell values</strong>. A minimum of <strong>two </strong>cells have to select to perform the <strong>MAX()</strong> function.&nbsp;</li> <li><strong>MIN():&nbsp;</strong>The <strong>MIN()</strong> function in MS Excel, is used to find the <strong>smallest number </strong>among the <strong>selected cell values</strong>. A minimum of <strong>two cells</strong> have to select to perform the <strong>MIN() </strong>function.&nbsp;</li> </ul> <p><strong>Thus the correct answer is</strong>&nbsp;<em>AVG</em>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>MS Excel, a spreadsheet program, </strong>is widely used for different kinds of functions, as a result, the info is simple to avoid wasting time, and data is accessible and removed with zero discomforts and less labour. Given below area unit some necessary advantages of exploitation MS Excel: <ul> <li><strong>Easy To Store Data:</strong> Since there&#39;s no limit to the number of data that may be saved in an exceeding program. MS Excel is widely accustomed to saving or analysing information. Filtering info in stand out is simple and convenient.</li> <li><strong>Easy To Recover Data: </strong>If the data is written on a bit of paper, finding it should take longer, however, this is often not the case with Excel spreadsheets. Finding convalescent information is simple.</li> <li><strong>Application of Mathematical Formulas:</strong> Doing calculations has become more accessible and less time-taking with the formulas possibility in MS Excel.</li> <li><strong>More Secure: </strong>These spreadsheets are countersigned and secured in an exceedingly portable computer or laptop computer; therefore, the chance of losing them is much lesser than information written in registers or pieces of paper.</li> <li><strong>Data at One Place: </strong>Earlier, information was to be unbroken in several files and registers once the work was done. Now, this has become convenient as over one worksheet is accessible in an exceedingly single MS Excel file.</li> <li><strong>Neater and Clearer Visibility of Information: </strong>Once the info is saved within the type of a table, analysing it becomes easier. Thus, info may be a program that&#39;s a lot of legible and comprehensible.</li> </ul> </li> </ul> <p>&nbsp;</p></div>
+    <div class="lang-hi"><p>सही उत्तर <b>AVG</b> है।<br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>SUM(): </strong>MS <span style="">Excel </span>में<strong> SUM () फ़ंक्शन </strong>का उपयोग<strong> सेलेक्ट किए हुए सेल मानों</strong> को जोड़ने और परिणाम देने के लिए किया जाता है। SUM() फ़ंक्शन करने के लिए कम से कम <strong>दो सेल</strong> को सेलेक्ट करना होगा।</li> <li><strong>AVERAGE(): MS</strong> एक्सेल में <strong>AVERAGE() </strong>फ़ंक्शन का उपयोग सेलेक्ट किए हुए सेल मानों का औसत निकालने के लिए किया जाता है। <strong>AVERAGE() </strong>फ़ंक्शन करने के लिए कम से कम दो सेल को सेलेक्ट करना होगा। <strong>MS एक्सेल</strong> में ऐसा कोई <strong>AVG()</strong> फंक्शन नहीं है।</li> <li><strong>MAX(): MS</strong> एक्सेल में <strong>MAX() फ़ंक्शन </strong>का उपयोग सेलेक्ट किए हुए सेल मानों में से सबसे बड़ी संख्या खोजने के लिए किया जाता है। <strong>MAX() </strong>फ़ंक्शन करने के लिए कम से कम <strong>दो सेल</strong> को सेलेक्ट करना होगा।</li> <li><strong>MIN():</strong> MS एक्सेल में <strong>MIN()</strong> फ़ंक्शन का उपयोग सेलेक्ट किए हुए सेल मानों में से सबसे छोटी संख्या खोजने के लिए किया जाता है।<strong> MIN() </strong>फ़ंक्शन करने के लिए कम से कम <strong>दो सेल</strong> को सेलेक्ट करना होगा।</li> </ul> <p><strong>इस प्रकार सही उत्तर </strong><em>AVG</em><strong> है।</strong><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>MS एक्सेल, एक स्प्रेडशीट प्रोग्राम, </strong>विभिन्न प्रकार के कार्यों के लिए व्यापक रूप से उपयोग किया जाता है, नतीजतन, समय बर्बाद करने से बचने के लिए सरल जानकारी प्रदान करता है और डेटा एक्सेसीबल होता है तथा शून्य असुविधा और कम श्रम के साथ निपटारा कर दिया जाता है। MS एक्सेल मे एरिया यूनिट के नीचे दिए गए उपयोग के कुछ आवश्यक लाभ हैं: <ul> <li><strong>डेटा स्टोर करना आसान:</strong> चूंकि एक से अधिक प्रोग्राम में सेव किये जा सकने वाले डेटा की संख्या की कोई सीमा नहीं होती है। MS एक्सेल व्यापक रूप से जानकारी को <span style="">सेव </span>करने या उसका विश्लेषण करने के लिए अभ्यस्त है। स्टैंड आउट में फ़िल्टरिंग जानकारी सरल और सुविधाजनक होती है।</li> <li><strong>डेटा को रिकवर करना आसान: </strong>यदि डेटा पेपर के एक भाग पर लिखा गया है, तो इसे खोजने में अधिक समय लगता है, हालांकि, एक्सेल स्प्रेडशीट के मामले में ऐसा नहीं होता है। इसमे अच्छे लाभ की जानकारी प्राप्त करना सरल होता है।</li> <li><strong>गणितीय सूत्रों का अनुप्रयोग: </strong>MS एक्सेल में सूत्रों की संभावना के साथ गणना करना अधिक सुलभ और कम समय लेने वाला हो गया है।</li> <li><strong>अधिक सुरक्षित: </strong>ये स्प्रैडशीट काउंटरसाइंड होते हैं और अधिक पोर्टेबल कंप्यूटर या लैपटॉप कंप्यूटर में सुरक्षित रहते हैं; इसलिए, रजिस्टरों या पेपर के भागों में लिखी गई जानकारी की तुलना में उनके खोने की संभावना बहुत कम होती है।</li> <li><strong>एक स्थान पर डेटा:</strong> पहले, काम पूरा होने के बाद जानकारी को कई फाइलों और रजिस्टरों में अखंडित किया जाता था। अब, यह सुविधाजनक हो गया है क्योंकि एक से अधिक MS एक्सेल फ़ाइल में एक से अधिक वर्कशीट तक पहुँचा जा सकता है।</li> <li><strong>सूचना की स्वच्छ</strong><strong> और स्पष्ट दृश्यता:</strong> एक बार टेबल के रूप में जानकारी सेव जाने के बाद, इसका विश्लेषण करना आसान हो जाता है। इस प्रकार, जानकारी एक ऐसा प्रोग्राम हो सकता है जो बहुत सुपाठ्य और समझने के योग्य हो।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q19</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Press _______ on a Windows system to open a new incognito browser window in Chrome.</div>
+  <div class="question lang-hi"><span style="">क्रोम में एक नई </span>इनकॉग्निटो<span style=""> ब्राउजर विंडो खोलने के लिए विंडोज सिस्टम पर क्या प्रेस किया जाता है?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Ctrl+Shift+N</div><div class="option">Ctrl+N</div><div class="option">Ctrl+Shift+P</div><div class="option">Alt+Ctrl+N</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">Ctrl+Shift+N</div><div class="option">Ctrl+N</div><div class="option">Ctrl+Shift+P</div><div class="option">Alt+Ctrl+N</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<span style="font-weight: 700; ">&quot;</span><strong>Ctrl+Shift+N</strong><span style="font-weight: 700; ">&quot;</span>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>I<strong>ncognito mode:</strong> The <strong>incognito mode</strong> in is referred to as a <strong>private mode </strong>for browsing the Internet. In incognito mode, the <strong>browser cannot remember </strong>its user&#39;s&nbsp;activity.</li> <li>Incognito mode always opens in a <strong>separate window </strong>from the normal Chrome browser windows. Whatever user searches in incognito mode, the search history will not save.</li> <li>The <strong>keyboard shortcut </strong>for opening&nbsp;a new <strong>incognito browser</strong> window in <strong>Chrome</strong>&nbsp;on a <strong>Windows system</strong> is <strong>CTRL+SHIFT+N</strong>.</li> </ul> <p><strong>Thus the correct answer is</strong> <em>Ctrl+Shift+N</em>.</p></div>
+    <div class="lang-hi"><p><span style="">सही उत्तर </span><span style=" font-weight: 700;">&quot;</span><span style="font-weight: 700; ">Ctrl+Shift+N</span><span style=" font-weight: 700;">&quot;</span><span style=""> है।</span></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>इनकॉग्निटो</strong><strong> </strong><span style="font-weight: 700;">मोड:</span> इंटरनेट ब्राउज करने के लिए <span style="font-weight: 700;">इनकॉग्निटो मोड</span> को एक <span style="font-weight: 700;">निजी मोड</span> के रूप में संदर्भित किया जाता है। इनकॉग्निटो मोड में, <span style="font-weight: 700;">ब्राउजर </span>अपने उपयोगकर्ता की गतिविधि को<span style="font-weight: 700;"> याद नहीं रख सकता है</span>।</li> <li>इनकॉग्निटो मोड हमेशा सामान्य क्रोम ब्राउजर विंडो से <span style="font-weight: 700;">अलग विंडो</span> में खुलता है। यूजर जो भी इनकॉग्निटो मोड में सर्च करता है, सर्च हिस्ट्री सेव नहीं होगी।</li> <li><span style="font-weight: 700;">विंडोज सिस्टम</span> पर <span style="font-weight: 700;">क्रोम</span> में एक नई <span style="font-weight: 700;">इनकॉग्निटो मोड</span> विंडो खोलने के लिए <span style="font-weight: 700;">कीबोर्ड शॉर्टकट,</span> <span style="font-weight: 700;">CTRL+SHIFT+N </span>है।</li> </ul> <strong>इस प्रकार सही उत्तर</strong> <em>Ctrl+Shift+N</em><strong> <span style="">है</span>।</strong></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q20</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is an input device of a computer?</div>
+  <div class="question lang-hi">कंप्यूटर का इनपुट डिवाइस निम्नलिखित में से कौन सा है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Scanner</div><div class="option">Printer</div><div class="option">Speaker</div><div class="option">Monitor</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">स्कैनर</div><div class="option">प्रिंटर</div><div class="option">स्पीकर</div><div class="option">मॉनिटर&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Scanner</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Input devices</strong> are used to enter data or instructions into a computer. <ul> <li>Keyboard</li> <li>Mouse</li> <li>Digital camera</li> <li><strong>Scanner</strong></li> <li>Mic</li> <li>Barcode reader</li> <li>Joystick</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Output Devices:</strong> <ul> <li>The output unit receives the information from the processing unit and provides the result in a human-readable form.</li> <li>A visual display unit (Monitor, Screen)</li> <li>Printer/Plotter</li> <li>Multimedia projector</li> <li>Speaker</li> </ul> </li> <li><strong>​Storage Devices</strong> <ul> <li>Storage devices are the computer hardware used to remember/store data.</li> <li>Floppy disks</li> <li>Hard disks</li> <li>CD/DVD</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<u><strong>स्कैनर</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>इनपुट डिवाइस</strong> का उपयोग डेटा या निर्देशों को कंप्यूटर में दर्ज करने के लिए किया जाता है। <ul> <li>कीबोर्ड&nbsp;</li> <li>माउस</li> <li>डिजिटल कैमरा</li> <li><strong>स्कैनर</strong></li> <li>माइक</li> <li>बारकोड रीडर&nbsp;</li> <li>जॉयस्टिक</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>आउटपुट डिवाइस:</strong> <ul> <li>आउटपुट यूनिट प्रोसेसिंग यूनिट से सूचना प्राप्त करता है और मानव-पठनीय रूप में परिणाम प्रदान करता है।</li> <li>विजुअल डिस्प्ले&nbsp;यूनिट&nbsp;(मॉनिटर, स्क्रीन)</li> <li>प्रिंटर/प्लॉटर</li> <li>मल्टीमीडिया प्रोजेक्टर</li> <li>स्पीकर</li> </ul> </li> <li><strong>​स्टोरेज डिवाइस</strong> <ul> <li>स्टोरेज डिवाइस कंप्यूटर हार्डवेयर होते हैं जिनका उपयोग डेटा को संगृहीत करने/स्टोर करने के लिए किया जाता है।</li> <li>फ्लॉपी डिस्क</li> <li>हार्ड डिस्क</li> <li>सीडी/डीवीडी</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Environment: Climate Change</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    Environment: Climate Change 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Consider the following Species:</p> <p>1. Molluscs</p> <p>2. Mosses</p> <p>3. Lichens</p> <p>Which of the above-mentioned species are&nbsp;sensitive to environmental changes in its ecosystem and gives early warning about Climate Change.</p></div>
+  <div class="question lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">निम्नलिखित प्रजातियों पर विचार कीजिए:</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. मोलस्क</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. मॉस</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3. लाइकेन</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">उपर्युक्त में से कौन सी प्रजाति अपने पारिस्थितिकी तंत्र में पर्यावरणीय परिवर्तनों के प्रति संवेदनशील है और जलवायु परिवर्तन के बारे में पूर्व चेतावनी देती है।</font></font></p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 and 2</div><div class="option">3 only</div><div class="option">2 and 3</div><div class="option correct">1, 2 and 3</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1 और 2</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 3</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2 और 3</font></font></div><div class="option correct"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>1, 2 and 3.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span><strong>Indicator Species:</strong></p> <ul> <li><strong>Indicator species are that flora and fauna which define a particular trait or change in the environment. </strong></li> <li>Such species are sensitive to environmental change and can act as early warning regarding adverse environmental changes in a particular area.</li> </ul> <p><strong>Lichens as Indicator Species</strong></p> <ul> <li><strong>Lichens are capable to indicate air pollution, water pollution, heavy metals as well as radioactive particles. Hence option 3 is correct.</strong></li> </ul> <p><strong>​</strong><strong>Algae as Indicator Species</strong></p> <ul> <li><strong>Algae (seaweeds) are good indicators of heavy metal levels in marine environments </strong>and could be used for monitoring such pollutants in seas.</li> <li>According to a new study in the Gulf of Kutch, which receives discharges containing heavy metals from several industries, various species of brown, red and green algae accumulate heavy metals from seawater and sediments.</li> <li>Heavy metals enter various organisms and trigger tissue damage.</li> </ul> <p><strong>Birds as Indicator Species</strong></p> <ul> <li><strong>Birds are considered to be excellent indicator species</strong>. There are three main reasons for this.</li> <li>Firstly, they live in every climate and biome</li> <li>Secondly,&nbsp; they respond quickly to environmental change</li> <li>Thirdly, they are relatively easy to track and count.</li> <li><strong>Certain molluscs indicate water pollution, while some mosses indicate soil pollution. Hence option 1 and 2 are correct.</strong></li> <li>The Mussel Watch Programme is a global project to assess environmental impacts in coastal regions</li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्तर </font></font><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></strong></u> है।</p> <p><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" style="" width="26px" /><span style="font-weight: 700; "><span style="vertical-align: middle; "><u>Key Points</u></span></span><br /> <br /> <strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">संकेतक प्रजातियां:</font></font></strong></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">संकेतक प्रजातियां वे वनस्पतियां और जीव हैं जो पर्यावरण में एक विशेष लक्षण या परिवर्तन को परिभाषित करती हैं। </font></font></strong></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ऐसी प्रजातियां पर्यावरण परिवर्तन के प्रति संवेदनशील होती हैं और किसी विशेष क्षेत्र में प्रतिकूल पर्यावरणीय परिवर्तनों के संबंध में पूर्व चेतावनी के रूप में कार्य कर सकती हैं।</font></font></li> </ul> <p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">संकेतक प्रजाति के रूप में लाइकेन</font></font></strong></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">लाइकेन वायु प्रदूषण, जल प्रदूषण, भारी धातुओं के साथ-साथ रेडियोधर्मी कणों को भी इंगित करने में सक्षम हैं। </font><font style="vertical-align: inherit;">अत: विकल्प 3 सही है।</font></font></strong></li> </ul> <p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">संकेतक प्रजाति के रूप में शैवाल</font></font></strong></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">शैवाल (समुद्री शैवाल) समुद्री वातावरण में भारी धातु के स्तर के अच्छे संकेतक हैं</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> और समुद्र में ऐसे प्रदूषकों की निगरानी के लिए इस्तेमाल किए जा सकते हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कच्छ की खाड़ी में एक नए अध्ययन के अनुसार, जो कई उद्योगों से भारी धातुओं से युक्त निर्वहन प्राप्त करता है, भूरे, लाल और हरे शैवाल की विभिन्न प्रजातियां समुद्री जल और तलछट से भारी धातु जमा करती हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">भारी धातुएं विभिन्न जीवों में प्रवेश करती हैं और ऊतक क्षति बढ़ाती&nbsp;हैं।</font></font></li> </ul> <p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">संकेतक प्रजाति के रूप में पक्षी</font></font></strong></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पक्षियों को उत्कृष्ट संकेतक प्रजाति माना जाता है</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">। </font><font style="vertical-align: inherit;">इसके तीन मुख्य कारण हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सबसे पहले, वे जलवायु और बायोम में रहते हैं</font></font><span style="color: rgb(33, 37, 41);">।</span></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">दूसरे, वे पर्यावरण परिवर्तन के लिए शीघ्रता से प्रतिक्रिया करते हैं</font></font><span style="color: rgb(33, 37, 41);">।</span></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">तीसरा, उन्हें ट्रैक करना और गिनना अपेक्षाकृत आसान है।</font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कुछ मोलस्क जल प्रदूषण का संकेत देते हैं, जबकि कुछ काई मृदा प्रदूषण का संकेत देते हैं। </font><font style="vertical-align: inherit;">अतः, विकल्प 1 और 2 सही हैं।</font></font></strong></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">मुसेल वॉच प्रोग्राम तटीय क्षेत्रों में पर्यावरणीय प्रभावों का आकलन करने के लिए एक वैश्विक परियोजना है</font></font>।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Which among the following is/are geoengineering methods to mitigate&nbsp;climate change?</p> <p>1. Ocean fertilization&nbsp;</p> <p>2.&nbsp;Stratospheric aerosol injection</p> <p>3. Shooting mirrors into space</p> <p>4.&nbsp;Cirrus cloud thinning</p> <p>5.&nbsp;Ground-based albedo modification</p> <p>Select the correct answer using the codes given below.</p></div>
+  <div class="question lang-hi"><p>निम्नलिखित में से कौन-सा/से जलवायु परिवर्तन को कम करने के लिए भू-अभियांत्रिकी विधियाँ हैं/हैं?</p> <p>1. महासागरीय&nbsp;निषेचन</p> <p>2. समतापमंडलीय&nbsp;एरोसोल इंजेक्शन</p> <p>3. अंतरिक्ष में दर्पणों की स्थापना</p> <p>4. पक्षाभ मेघ&nbsp;का पतला होना</p> <p>5. भू-आधारित ऐल्बिडो संशोधन</p> <p>नीचे दिए गए कूट का प्रयोग कर सही उत्तर चुनिए।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1, 3 and 5 only</div><div class="option">1, 2, 3 and 5 only</div><div class="option">3, 4 and 5 only</div><div class="option correct">1, 2, 3, 4 and 5&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1<span style="">, 3 और 5</span></div><div class="option">केवल&nbsp;1, 2, 3 और 5</div><div class="option">केवल&nbsp;3, 4 और 5</div><div class="option correct"><span style="">1, 2, 3, 4 और 5</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<strong><u><span style="">1, 2, 3, 4 and 5.</span></u></strong></p> <p><strong><u><span style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></u></strong></p> <ul> <li><strong>Climate engineering or geoengineering</strong> refers to large-scale schemes for intervention in the earth&rsquo;s oceans, soils, and atmosphere with the aim of reducing the effects of climate change, usually temporarily.</li> <li>Solar radiation management is one of the&nbsp;main categories of proposed geoengineering techniques. <ul> <li>It works to directly mitigate the effects of atmospheric warming due to the burning of fossil fuels and the subsequent release of greenhouse gases. <strong>Space mirrors</strong> fall under this category of geoengineering as they work to block solar radiation and lower the warming effects of the sun.&nbsp;<em style=""><span style="font-weight: 700;">Hence, 3&nbsp;is correct.</span></em></li> </ul> </li> <li><strong>Ocean fertilization</strong>, which some scientists refer to as bio-geoengineering, would involve dissolving iron or nitrates into the surface waters of specific ocean regions to promote the growth of phytoplankton where primary productivity is low.&nbsp;<em style=""><span style="font-weight: 700;">Hence, 1 is correct.</span></em> <ul> <li>The technique is designed to increase the uptake of carbon dioxide (CO2) from the air by phytoplankton, microscopic plants that reside at or near the surface of the ocean.</li> <li>The premise is that the phytoplankton, after blooming, would die and sink to the ocean floor, taking with them the CO2 that they had photosynthesized into new tissues.&nbsp;</li> </ul> </li> <li><strong>Stratospheric aerosol injection (SAI)</strong> is a proposed method of solar geoengineering (or solar radiation modification) to <strong>reduce human-induced global warming.&nbsp;</strong><em style=""><span style="font-weight: 700;">Hence, 2&nbsp;is correct.</span></em> <ul> <li><strong>​</strong>This would introduce aerosols into the stratosphere to create a cooling effect via global dimming, which occurs naturally from volcanic eruptions.</li> </ul> </li> <li><strong>Cirrus Cloud Thinning</strong> is a solar geoengineering proposal that aims to<strong> eliminate or thin cirrus clouds to allow heat to escape into space</strong>.&nbsp;<em style=""><span style="font-weight: 700;">Hence, 4 is correct.</span></em> <ul> <li>The wispy, elongated &ldquo;cirrus&rdquo; clouds are found at high altitudes, and often absorb more sunlight than they reflect because they form in cold temperatures and consist of ice crystals.&nbsp;</li> <li>However, this reduces the rate of precipitation to less than the required amount.</li> </ul> </li> <li><strong>Ground-based Albedo Modification </strong>is a geoengineering or climate engineering approach that reverses Global Warming by increasing the Earth&#39;s albedo and ability to reflect sunlight back into space. <em><strong>Hence, 5 is correct.</strong></em></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>1, 2, 3, 4 और 5</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>जलवायु अभियांत्रिकी</strong><strong>&nbsp;या भू-अभियांत्रिकी</strong>, आमतौर पर अस्थायी रूप से जलवायु परिवर्तन के प्रभावों को कम करने के उद्देश्य से पृथ्वी के महासागरों, मिट्टी और वातावरण में हस्तक्षेप के लिए बड़े पैमाने की योजनाओं को संदर्भित करता है।</li> <li>सौर विकिरण प्रबंधन प्रस्तावित भू-अभियांत्रिकी&nbsp;तकनीकों की मुख्य श्रेणियों में से एक है। <ul> <li>यह जीवाश्म ईंधन के दहन&nbsp;और ग्रीनहाउस गैसों के बाद के उत्सर्जन के कारण वायुमंडलीय ऊष्मन&nbsp;के प्रभावों को सीधे कम करने के लिए काम करता है। <strong>अंतरिक्ष दर्पण</strong> इस श्रेणी के भू-अभियांत्रिकी&nbsp;के अंतर्गत आते हैं क्योंकि वे सौर विकिरण को अवरुद्ध करने और सूर्य के ऊष्मन&nbsp;प्रभाव को कम करने के लिए काम करते हैं। <strong><em>अत: 3 सही है।</em></strong></li> </ul> </li> <li><strong>महासागर निषेचन</strong>, जिसे कुछ वैज्ञानिक जैव-भू-अभियांत्रिकी&nbsp;के रूप में संदर्भित करते हैं, में पादप प्लवक&nbsp;के विकास को बढ़ावा देने के लिए विशिष्ट महासागर क्षेत्रों के सतही जल में लौह या नाइट्रेट्स को विघटन&nbsp;करना शामिल होगा जहां प्राथमिक उत्पादकता कम है। <em><strong>अत: 1 सही है।</strong></em> <ul> <li>इस तकनीक को समुद्र की सतह पर या उसके आस-पास रहने वाले सूक्ष्म पौधों, पादप प्लवक द्वारा हवा से कार्बन डाइऑक्साइड (CO2) के अधिग्रहण को बढ़ाने के लिए अभिकल्पित&nbsp;किया गया है।</li> <li>आधार यह है कि पादप प्लवक, खिलने के बाद, नष्ट हो&nbsp;जाएगा और समुद्र तल पर डूब जाएगा, अपने साथ CO2 लेकर जाएगा जिसका उपयोग न्य ऊतकों के प्रकश संश्लेषण में किया गया था।</li> </ul> </li> <li>मानव-प्रेरित ग्लोबल वार्मिंग को कम करने के लिए <strong>समतापमंडलीय&nbsp;एरोसोल इंजेक्शन (SAI)</strong> सौर भू-अभियांत्रिकी&nbsp;(या सौर विकिरण संशोधन) का एक प्रस्तावित तरीका है। <em><strong>अत: 2 सही है।</strong></em> <ul> <li>यह ग्लोबल डिमिंग के माध्यम से शीतलन प्रभाव पैदा करने के लिए समताप मंडल में एरोसोल प्रेषित&nbsp;करेगा, जो कि प्राकृतिक रूप से ज्वालामुखी विस्फोट से उत्सर्जित&nbsp;होता है।</li> </ul> </li> <li><strong>पक्षाभ मेघ का&nbsp;पतला होना</strong>&nbsp;एक सौर भू-अभियांत्रिकी&nbsp;प्रस्ताव है जिसका उद्देश्य <strong>पक्षाभ मेघों&nbsp;को खत्म करना या पतला करना है ताकि ऊष्मा&nbsp;अंतरिक्ष में उत्सर्जित हो&nbsp;सके।</strong> <em><strong>अत: 4 सही है।</strong></em> <ul> <li>अस्पष्ट, लंबे &quot;पक्षाभ&quot; मेघ&nbsp;उच्च ऊंचाई पर पाए जाते हैं, और अक्सर अधिक सूर्य के प्रकाश को अवशोषित करते हैं, क्योंकि वे ठंडे तापमान में बनते हैं और बर्फ के क्रिस्टल से बने होते हैं।</li> <li>हालांकि, यह वर्षा की दर को अपेक्षित&nbsp;मात्रा से भी&nbsp;कम कर देता है।</li> </ul> </li> <li><strong>भू-आधारित ऐल्बिडो</strong>&nbsp;<b>संशोधन</b>&nbsp;एक भू-अभियांत्रिकी&nbsp;या जलवायु&nbsp;अभियांत्रिकी&nbsp;दृष्टिकोण है जो पृथ्वी के ऐल्बिडो&nbsp;को बढ़ाकर और सूर्य के प्रकाश को अंतरिक्ष में वापस प्रतिबिंबित करने की क्षमता को बढ़ाकर ग्लोबल वार्मिंग को उलट देता है।<strong><em> अत: 5 सही है।</em></strong></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Consider the following statements about Ocean acidification:</p> <p>1. Ocean acidification is the change in ocean chemistry by an increment&nbsp;of ocean pH.</p> <p>2. Acid rain and&nbsp;Eutrophication are the chief causes of ocean acidification.</p> <p>3. Ocean acidification can adversely impact aquatic organisms like cold-water corals, molluscs, crustaceans.</p> <p>Which of the above statement(s) is/are correct?</p></div>
+  <div class="question lang-hi"><p><font style="vertical-align: inherit;">महासागरीय अम्लीकरण के बारे में निम्नलिखित कथनों पर विचार कीजिये:</font></p> <p><font style="vertical-align: inherit;">1. महासागरीय अम्लीकरण समुद्र के </font>pH&nbsp;<font style="vertical-align: inherit;">में वृद्धि से समुद्र के रसायन&nbsp;में परिवर्तन है।</font></p> <p><font style="vertical-align: inherit;">2. अम्लीय वर्षा और सुपोषण महासागरीय अम्लीकरण के प्रमुख कारण हैं।</font></p> <p><font style="vertical-align: inherit;">3. महासागरीय अम्लीकरण ठंडे पानी के कोरल, मोलस्क, क्रस्टेशियआई&nbsp;जैसे जलीय जीवों पर प्रतिकूल प्रभाव डाल सकता है।</font></p> <p><font style="vertical-align: inherit;">उपरोक्त में से कौन सा(से) कथन सही है/हैं?</font></p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 and 2 only</div><div class="option">2 and 3 only</div><div class="option correct">3 only</div><div class="option">1, 2, and 3&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1 और 2</div><div class="option">केवल 2 और 3</div><div class="option correct">केवल 3&nbsp;</div><div class="option">1, 2, और 3&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is<span style="font-weight: 700;">&nbsp;</span><u><strong>3 only</strong></u><span style="font-weight: 700;">.</span></p> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <ul> <li><strong>Ocean acidification</strong> is the change in ocean chemistry by<strong>&nbsp;lowering ocean pH</strong> (i.e. increase in the concentration of hydrogen ions) driven by the uptake of carbon compounds by the ocean from the atmosphere. <em><strong>Hence, statement 1 is incorrect</strong>.</em></li> <li><strong>Ocean acidification</strong>:- As the <strong>uptake of atmospheric carbon dioxide by the ocean increases</strong>, the<strong> concentration of hydrogen ions in the ocean increases</strong>, the <strong>concentration of carbonate ions decreases, the pH of the oceans decreases, and the oceans become less alkaline. </strong>This process is known as <strong>ocean acidification</strong>.&nbsp;</li> <li><strong>Acid rain and Eutrophication can locally influence the chemical reactions of CO<sub>2 </sub></strong>with seawater and add to the effects of ocean acidification. But, it is not the main reason.</li> <li>The <strong>chief cause of </strong><span style="font-weight: 700;">ocean acidification&nbsp;</span><strong>is&nbsp;the rise in&nbsp;atmospheric carbon dioxide</strong>.&nbsp;<em><strong>Hence, statement 2&nbsp;is incorrect</strong>.</em></li> <li><strong>Ocean acidification</strong> can adversely impact aquatic organisms like&nbsp;cold-water corals, mollusks, crustaceans because&nbsp;i<strong>ncreases in atmospheric CO<sub>2</sub>&nbsp; levels lead to a decrease in pH level, an increase in the concentration of carbonic acid, and bicarbonate ions, causing a decrease in the concentration of carbonate ions </strong>which essential for these organisms to build their skeletons.&nbsp;<em><span style="font-weight: 700;">Hence, statement 3 is correct</span>.<span style="font-weight: 700;">​</span></em></li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font><u><span style="font-weight: 700;"><font style="vertical-align: inherit;">केवल 3</font></span></u></font>&nbsp;है।&nbsp;&nbsp;<span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style="font-weight: 700;">महासागरीय अम्लीकरण&nbsp;समुद्र के pH</span><span style="font-weight: 700;">&nbsp;को कम करके</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;(जल हाइड्रोजन आयनों की सांद्रता में वृद्धि)&nbsp;</font><font style="vertical-align: inherit;">द्वारा समुद्र के रसायन में परिवर्तन है,&nbsp;</font><font style="vertical-align: inherit;">जो वायुमंडल से महासागर द्वारा कार्बन यौगिकों के उत्थान द्वारा संचालित होता है।&nbsp;</font></font><em><span style="font-weight: 700;">अतः कथन 1 गलत है</span><font style="vertical-align: inherit;">।</font></em></li> <li><span style="font-weight: 700;">महासागरीय अम्लीकरण</span><font style="vertical-align: inherit;">:- जैसे-जैसे&nbsp;</font><span style="font-weight: 700;">समुद्र द्वारा वायुमंडलीय कार्बन डाइऑक्साइड का अवशोषण बढ़ता है</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">,&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">समुद्र&nbsp;</font></span></font><span style="font-weight: 700;">में हाइड्रोजन आयनों</span><font style="vertical-align: inherit;">&nbsp;की&nbsp;</font><span style="font-weight: 700;">सांद्रता&nbsp;</span><font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">बढ़ती है</font></span><font style="vertical-align: inherit;">,&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">कार्बोनेट आयनों</font></span><font style="vertical-align: inherit;">&nbsp;की&nbsp;</font><span style="font-weight: 700;"><font style="vertical-align: inherit;">सांद्रता घटती है, महासागरों का pH कम होता है, और महासागर कम क्षारीय हो जाते हैं।&nbsp;</font></span><font style="vertical-align: inherit;">इस प्रक्रिया को&nbsp;</font></font><span style="font-weight: 700;">महासागरीय अम्लीकरण के</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;रूप में जाना जाता&nbsp;</font></font>है।&nbsp;</li> <li><span style="font-weight: 700;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">अम्लीय वर्षा और सुपोषण स्थानीय रूप</font></font></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;से समुद्री जल के साथ&nbsp;</font></font><span style="font-weight: 700;">CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span></span><font style="vertical-align: inherit;"><span style="font-weight: 700;"><font style="vertical-align: inherit;">&nbsp;की रासायनिक प्रतिक्रियाओं को प्रभावित कर सकते हैं</font></span><font style="vertical-align: inherit;">&nbsp;और समुद्र के अम्लीकरण के प्रभावों को जोड़ सकते हैं।&nbsp;</font><font style="vertical-align: inherit;">लेकिन, यह मुख्य कारण नहीं है।</font></font></li> <li><span style="color: rgb(37, 37, 37); "><strong>समुद्र के अम्लीकरण का मुख्य कारण वायुमंडलीय कार्बन डाइऑक्साइड में वृद्धि </strong>है</span><font style="vertical-align: inherit;">।&nbsp;</font><em><span style="font-weight: 700;">इसलिए, कथन 2 गलत है</span><font style="vertical-align: inherit;">।</font></em></li> <li><span style="color: rgb(37, 37, 37); ">महासागरीय अम्लीकरण ठंडे पानी के कोरल, मोलस्क, क्रस्टेशियआई&nbsp;जैसे जलीय जीवों पर प्रतिकूल प्रभाव डाल सकता है क्योंकि <strong>वायुमंडलीय CO<sub>2</sub> के स्तर में वृद्धि से </strong></span><strong><span style="font-weight: 700;">pH&nbsp;</span></strong><span style="color: rgb(37, 37, 37); "><strong>स्तर में कमी, कार्बोनिक एसिड और बाइकार्बोनेट आयनों की एकाग्रता में वृद्धि होती है, जिससे कार्बोनेट आयन </strong>की एकाग्रता में कमी आती है। जो इन जीवों के लिए अपने कंकाल बनाने के लिए आवश्यक हैं।</span><font style="vertical-align: inherit;">&nbsp;</font><em><span style="font-weight: 700;">अत: कथन 3 सही है</span><font style="vertical-align: inherit;">।</font></em></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>With respect to ozone depletion, consider the following statements:</p> <p>1. Chlorofluorocarbons (CFCs) are nontoxic organic molecules that help in ozone depletion.</p> <p>2. Polar stratospheric clouds provide a surface for the reactions causing ozone depletion.</p> <p>3. Free Chlorine radicals form when CFCs are broken down by UV radiations.</p> <p>Which of the statements given above are correct?</p></div>
+  <div class="question lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ओजोन</font></font>&nbsp;ह्रास<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> के संबंध में, निम्नलिखित कथनों पर विचार कीजिएः</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. क्लोरोफ्लोरोकार्बन (CFC) गैर-विषैले कार्बनिक अणु हैं जो ओजोन के</font></font>&nbsp;ह्रास<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> में सहायक हैं।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. ध्रुवीय समतापमंडलीय बादल ओजोन</font></font>&nbsp;ह्रास<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;के लिए उत्तरदायी&nbsp;प्रतिक्रियाओं के लिए एक सतह प्रदान करते हैं।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3. मुक्त&nbsp;</font></font>क्लोरीन परमाणु<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;तब बनते हैं जब CFC को </font></font><span style="">&nbsp;UV विकिरणों द्वारा&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">तोड़ दिया जाता है।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ऊपर दिए गए कथनों में से कौन-से सही हैं?</font></font></p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">1 and 2 only</span></div><div class="option"><span style="">2 and 3 only</span></div><div class="option"><span style="">1 and 3 only</span></div><div class="option correct"><span style="">1, 2 and 3</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 1 और 2</font></font></span></div><div class="option"><span style=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 2 और 3</font></font></span></div><div class="option"><span style=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 1 और 3</font></font></span></div><div class="option correct"><span style=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>1, 2, and 3</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong><span style="">Ozone depletion</span></strong></p> <ul> <li><strong>Ozone in the stratosphere </strong>is a product of UV radiations acting on dioxygen (O2) molecules.</li> <li>The UV radiations split apart molecular oxygen into free oxygen (O) atoms.</li> <li><strong>Ozone is thermodynamically</strong> <strong>unstable </strong>and decomposes to molecular oxygen. Thus, a dynamic equilibrium exists between the production and decomposition of ozone molecules.</li> <li>In recent years, there have been reports of the depletion of this protective ozone layer because of the presence of certain chemicals in the stratosphere.</li> <li>The main reason for ozone layer depletion is the release of <strong>chlorofluorocarbon compounds (CFCs)</strong>, also known as <strong>freons. </strong></li> <li>These compounds are nonreactive, nonflammable, <strong>nontoxic organic molecules </strong>and therefore used in refrigerators, air conditioners, in the production of plastic foam, and by the electronic industry for cleaning computer parts, etc.</li> <li>Once CFCs are released into the atmosphere, they mix with the normal atmospheric gases and eventually reach the stratosphere. <strong>In the stratosphere, they get broken down by powerful UV radiations, releasing</strong> <strong>chlorine-free radicals. </strong></li> <li>The chlorine radicals then react with stratospheric ozone to form chlorine monoxide radicals and molecular oxygen.</li> <li>The reaction of chlorine monoxide radical with atomic oxygen produces more chlorine radicals. The chlorine radicals are continuously regenerated and cause the breakdown of ozone. Thus, <strong>CFCs are transporting agents for continuously generating chlorine</strong> <strong>radicals into the stratosphere and damaging the ozone layer. Hence, Statements 1 and 3 are correct.</strong></li> <li>In winter, a special type of cloud called <strong>polar stratospheric cloud </strong>is formed over Antarctica.</li> <li>These polar stratospheric clouds <strong>provide a surface on which chlorine nitrate formed </strong>gets hydrolyzed to form hypochlorous acid. It also reacts with hydrogen chloride produced as per reaction (v) to give molecular chlorine.</li> <li>When sunlight returns to Antarctica in the spring, the sun&rsquo;s warmth breaks up the clouds, and <strong>HOCl and Cl2 are photolyzed by sunlight. </strong>The chlorine radicals thus formed, initiate the chain reaction for <strong>ozone depletion </strong>as described earlier. <strong>Hence statement 2 is correct.</strong></li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्तर </font></font><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></strong></u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> है।</font></font></p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <p><strong><span style=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ओजोन&nbsp;ह्रास</font></font></span></strong></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">समताप मंडल में ओजोन,</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> </font></font>डाइऑक्सीजन<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> (O2) अणुओं पर&nbsp;UV विकिरणों की प्रतिक्रिया का एक उत्पाद है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">UV विकिरण आणविक ऑक्सीजन को मुक्त ऑक्सीजन (O) परमाणुओं में विभाजित करते हैं।</font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ओजोन </font></font>ऊष्मगतिकीय&nbsp;</strong><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">रूप से अस्थिर है</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> और आणविक ऑक्सीजन में विघटित हो जाती&nbsp;है। </font><font style="vertical-align: inherit;">इस प्रकार, ओजोन अणुओं के उत्पादन और अपघटन के बीच एक गतिशील संतुलन मौजूद है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">हाल के वर्षों में, समताप मंडल में कुछ रसायनों की उपस्थिति के कारण इस सुरक्षात्मक ओजोन परत के ह्रास होने की खबरें आई हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ओजोन परत में</font></font>&nbsp;ह्रास<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> का मुख्य कारण </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">क्लोरोफ्लोरोकार्बन यौगिकों (CFC)</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;का उत्सर्जन है&nbsp;</font><font style="vertical-align: inherit;">, जिन्हें&nbsp;</font><strong><font style="vertical-align: inherit;">फ्रीऑन</font></strong><font style="vertical-align: inherit;"> भी कहा जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये यौगिक गैर-प्रतिक्रियाशील, गैर-ज्वलनशील, </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">गैर-विषैले कार्बनिक अणु हैं</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> और इसलिए रेफ्रिजरेटर, एयर कंडीशनर, प्लास्टिक फोम के उत्पादन में और इलेक्ट्रॉनिक उद्योग द्वारा कंप्यूटर भागों की सफाई आदि के लिए इसका उपयोग किया जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक बार जब CFC को वायुमंडल में छोड़ दिया जाता है, तो वे सामान्य वायुमंडलीय गैसों के साथ मिल जाते हैं और अंततः समताप मंडल में पहुँच जाते हैं। </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">समताप मंडल में, वे शक्तिशाली UV विकिरणों की प्रतिक्रियास्वरूप विखंडित होते&nbsp;हैं, जिससे मुक्त&nbsp;</font></font></strong><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">क्लोरीन परमाणु निकलते&nbsp;हैं।</font></font></strong></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">क्लोरीन परमाणु&nbsp;तब समतापमंडलीय ओजोन के साथ प्रतिक्रिया करके क्लोरीन मोनोऑक्साइड&nbsp;और आणविक ऑक्सीजन बनाते हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">परमाणु ऑक्सीजन के साथ क्लोरीन मोनोऑक्साइड अणु&nbsp;की प्रतिक्रिया अधिक क्लोरीन परमाणु उत्सर्जित करती है। </font><font style="vertical-align: inherit;">क्लोरीन परमाणु&nbsp;लगातार पुनर्निर्मित&nbsp;होते हैं और ओजोन के टूटने का कारण बनते हैं। </font><font style="vertical-align: inherit;">इस प्रकार, </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">CFC&nbsp;</font></font></strong><font style="vertical-align: inherit;"><strong><font style="vertical-align: inherit;">समताप मंडल में </font></strong><strong><font style="vertical-align: inherit;">लगातार क्लोरीन परमाणु</font></strong><strong><font style="vertical-align: inherit;">&nbsp;</font></strong><strong><font style="vertical-align: inherit;">उत्पन्न करने </font></strong><strong><font style="vertical-align: inherit;">और ओजोन परत को नुकसान पहुँचाने के </font></strong><strong><font style="vertical-align: inherit;">लिए कारकों&nbsp;का प्रेषण&nbsp;कर रहे हैं </font></strong></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">। </font><font style="vertical-align: inherit;">अत: कथन 1 और 3 सही हैं।</font></font></strong></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">शीतऋतु में, </font><font style="vertical-align: inherit;">अंटार्कटिका के ऊपर </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ध्रुवीय समतापमंडलीय बादल</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> नामक एक विशेष प्रकार के </font><strong><font style="vertical-align: inherit;">बादल</font></strong><font style="vertical-align: inherit;"> का निर्माण होता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये ध्रुवीय समतापमंडलीय बादल </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक सतह प्रदान करते हैं जिस पर बनने वाले क्लोरीन नाइट्रेट</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> हाइड्रोलाइज्ड होकर हाइपोक्लोरस अम्ल बनाते हैं। </font><font style="vertical-align: inherit;">यह आणविक क्लोरीन उत्सर्जन हेतु प्रतिक्रिया (v) के अनुसार उत्पादित हाइड्रोजन क्लोराइड के साथ भी प्रतिक्रिया करता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जब बसंत&nbsp;ऋतु में सूर्य का प्रकाश अंटार्कटिका में लौटता है, तो सूर्य की गर्मी बादलों को नष्ट कर देती है, </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">और HOCL और Cl2 सूर्य के प्रकाश द्वारा प्रकाश-अपघटित हो जाते हैं। </font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इस प्रकार बनने वाले क्लोरीन परमाणु&nbsp;</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ओजोन </font></font>के&nbsp;ह्रास​<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><strong> </strong>के</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> लिए उपरोक्त वर्णित&nbsp;श्रृंखला प्रतिक्रिया की शुरुआत करते हैं</font><font style="vertical-align: inherit;">। </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">अतः कथन 2 सही है।</font></font></strong></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Consider the following statements regarding the&nbsp;Carbon Sequestration:</p> <p>1.&nbsp;Carbon sequestration is the long-term storage of carbon in plants, soils, geologic formations, and the ocean.</p> <p>2. Carbon sequestration occurs both naturally and as a result of anthropogenic activities and typically refers to the storage of carbon.</p> <p>Which of the statements given above is/are&nbsp;correct?</p></div>
+  <div class="question lang-hi"><p>कार्बन प्रच्छादन के संबंध में निम्नलिखित कथनों पर विचार कीजिए:</p> <p>1. कार्बन प्रच्छादन पौधों, मिट्टी, भूगर्भिक संरचनाओं और समुद्र में कार्बन का दीर्घकालिक भंडारण है।</p> <p>2. कार्बन प्रच्छादन&nbsp;प्राकृतिक रूप से और मानवजनित गतिविधियों दोनों के परिणामस्वरूप होता है और आमतौर पर कार्बन के भंडारण को संदर्भित करता है।</p> <p>ऊपर दिए गए कथनों में से कौन सा सही है/हैं?</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 only</div><div class="option">2 only&nbsp;</div><div class="option correct">Both 1 and 2</div><div class="option">Neither 1 nor 2</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1&nbsp;</div><div class="option">केवल 2</div><div class="option correct">दोनों&nbsp;1 और 2&nbsp;</div><div class="option">न तो 1 और न ही 2</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Both 1 and 2</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <p><strong>About Carbon sequestration:</strong></p> <ul> <li><strong>Carbon sequestration is the long-term storage of carbon in plants, soils, geologic formations, and the ocean</strong>.</li> <li><strong>Carbon sequestration occurs both naturally and as a result of anthropogenic activities and typically refers to the storage of carbon</strong>.&nbsp;<strong>Hence statements 1 and 2 are correct.</strong></li> </ul> <p><strong>Types</strong>:</p> <ul> <li><strong>Terrestrial Carbon Sequestration:</strong> <ul> <li>Terrestrial carbon sequestration is the process through which CO<sub>2</sub>&nbsp;from the atmosphere is absorbed by trees and plants through photosynthesis and stored as carbon in soils and biomass (tree trunks, branches, foliage, and roots)</li> </ul> </li> <li><strong>Geologic Carbon Sequestration:</strong> <ul> <li>CO2 can be stored, including oil reservoirs, gas reservoirs, unmineable coal seams, saline formations, and shale formations with high organic content.</li> </ul> </li> <li><strong>Ocean Carbon Sequestration:</strong> <ul> <li>Oceans absorb, release and store large amounts of CO<sub>2</sub>&nbsp;from the atmosphere. <ul> <li>This can be done <strong>in two ways</strong>- enhancing the productivity of ocean biological systems through Iron fertilization and injecting CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> into the deep ocean.</li> </ul> </li> <li>The dumping of iron stimulates phytoplankton production, which in turn leads to enhanced photosynthesis from these microorganisms, helping in CO&nbsp;absorption.</li> </ul> </li> </ul> <p><strong>Methods</strong>:</p> <ul> <li><strong>Natural Carbon Sequestration:</strong> <ul> <li>It is the process by which nature has achieved a balance of carbon dioxide in our atmosphere suitable for sustaining life. <ul> <li>Animals expel carbon dioxide, as do plants during the night.</li> </ul> </li> <li>Nature provided trees, the oceans, the earth, and the animals themselves as carbon sinks or sponges. <ul> <li>All organic life on this planet is carbon-based and when plants and animals die, much of the carbon goes back into the ground where it has little impact on contributing to global warming.</li> </ul> </li> </ul> </li> <li><strong>Artificial Carbon Sequestration:</strong> <ul> <li>Artificial carbon sequestration refers to several processes whereby carbon emissions are captured at the point of production (e.g. Factory Chimneys) and then buried.</li> <li>One proposed method is ocean sequestration whereby carbon dioxide is injected deep into the ocean, forming lakes of CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span>. <ul> <li>In theory, the CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> will stay down deep due to the pressure and temperature of the surrounding water, gradually dissolving into that water over time.</li> </ul> </li> <li>Another example is <strong>geological sequestration</strong> where the carbon dioxide is pumped into underground chambers such as old oil reservoirs, aquifers, and coal seams that are unable to be mined.​</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>दोनों&nbsp;1 और 2</strong></u>&nbsp;है।<span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <p><strong>कार्बन प्रच्छादन</strong><strong> के बारे में:</strong></p> <ul> <li><strong>कार्बन प्रच्छादन पौधों, मिट्टी, भूगर्भिक संरचनाओं और समुद्र&nbsp;में कार्बन का <span style="color: rgb(37, 37, 37); ">लंबा</span> भंडारण है।</strong></li> <li><strong>कार्बन प्रच्छादन मानवोद्भव गतिविधियों के परिणामस्वरूप और स्वाभाविक रूप से कार्बन के भंडारण को संदर्भित करता है</strong>।&nbsp;<strong>अतः कथन 1 और 2 सही हैं।</strong></li> </ul> <p><strong>प्रकार:</strong></p> <ul> <li><strong>स्थलीय कार्बन </strong><span style="font-weight: 700;">प्रच्छादन</span><strong>:</strong> <ul> <li>स्थलीय कार्बन प्रच्छादन वह प्रक्रिया है जिसके माध्यम से वायुमंडल से CO<sub>2</sub> को प्रकाश संश्लेषण के माध्यम से पेड़ों और पौधों द्वारा अवशोषित किया जाता है और मिट्टी और जैवईंधन&nbsp;(पेड़ <span style="color: rgb(37, 37, 37); ">के तने</span>, शाखाओं, पर्ण और जड़ों) में कार्बन के रूप में संग्रहीत किया जाता है।</li> </ul> </li> <li><strong>भूगर्भीय कार्बन </strong><span style="font-weight: 700;">प्रच्छादन</span><strong>:</strong> <ul> <li>CO2 को भंडारित किया जा सकता है, जिसमें तेल भंडार, गैस जलाशय, निर्विवाद कोयला सीम, नमकीन निर्माण और उच्च कार्बनिक सामग्री के साथ मिश्रित संरचनाएं शामिल हैं।</li> </ul> </li> <li><strong>समुद्र​ कार्बन </strong><span style="font-weight: 700;">प्रच्छादन</span><strong>:</strong> <ul> <li>वातावरण से CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> की बड़ी मात्रा को समुद्र अवशोषित, निष्कर्षित&nbsp;और संग्रहीत करता है। <ul> <li>यह <strong>दो तरीकों से</strong> किया जा सकता है - लौह निषेचन के माध्यम से समुद्रीय&nbsp;जैविक प्रणालियों की उत्पादकता को बढ़ाना और CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;">2&nbsp;</span>को गहरे समुद्र में अंतर्विष्ट&nbsp;करना।</li> </ul> </li> <li>लोहे का डंपिंग पादप प्लवक उत्पादन को उत्तेजित करता है, जो बदले में इन सूक्ष्मजीवों से प्रकाश संश्लेषण को बढ़ाता है, जिससे CO अवशोषण में मदद मिलती है।</li> </ul> </li> </ul> <p><strong>तरीके:</strong></p> <ul> <li><strong>प्राकृतिक कार्बन </strong><span style="font-weight: 700;">प्रच्छादन</span><strong>:</strong> <ul> <li>यह वह प्रक्रिया है जिसके द्वारा प्रकृति ने हमारे जीवन को बनाए रखने के लिए उपयुक्त वातावरण में कार्बन डाइऑक्साइड का संतुलन हासिल किया है। <ul> <li>पशु कार्बन डाइऑक्साइड को निष्कासित करते हैं, जैसे कि रात के दौरान पौधे करते हैं।</li> </ul> </li> <li>प्रकृति ने पेड़ों, समुद्रों, पृथ्वी और पशुओं&nbsp;को स्वयं कार्बन सिंक या स्पॉन्ज प्रदान किया। <ul> <li>इस ग्रह पर सभी जैविक जीवन कार्बन-आधारित है और जब पौधे और पशु&nbsp;मर जाते हैं, तो कार्बन का अधिकांश हिस्सा वापस जमीन में चला जाता है, जहां इसका वैश्विक तापन&nbsp;में योगदान पर बहुत कम प्रभाव पड़ता है।</li> </ul> </li> </ul> </li> <li><strong>कृत्रिम कार्बन </strong><span style="font-weight: 700;">प्रच्छादन</span><strong>:</strong> <ul> <li>कृत्रिम कार्बन प्रच्छादन कई प्रक्रियाओं को संदर्भित करता है जिससे उत्पादन के बिंदु पर कार्बन उत्सर्जन पर अधिकृत&nbsp;कर लिया जाता है (जैसे फैक्टरी चिमनी) और फिर दफनाया जाता है।</li> <li>एक प्रस्तावित विधि समुद्रीय&nbsp;प्रच्छादन है जिससे कार्बन डाइऑक्साइड को समुद्र में गहराई से अंतर्विष्ट&nbsp;किया जाता है, जिससे CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> की झीलें बनती हैं। <ul> <li>सिद्धांत रूप में, CO<span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> आसपास के जल के दाब&nbsp;और तापमान के कारण गहराई से नीचे रहता है, धीरे-धीरे समय के साथ उस जल&nbsp;में घुल जाता है।</li> </ul> </li> <li>एक अन्य उदाहरण <strong>भूवैज्ञानिक </strong><span style="font-weight: 700;">प्रच्छादन</span> है, जहां कार्बन डाइऑक्साइड को पुराने तेल जलाशयों, एक्वीफ़र्स और कोयले के सीम जैसे भूमिगत कक्षों में अंतर्विष्ट&nbsp; किया जाता है जहाँ खनन नहीं किया जाता है।</li> </ul> </li> </ul> <p>&nbsp;</p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Which of the following is/are the possible impacts of Global Warming?</p> <p>1.&nbsp;Rise in Sea level.</p> <p>2.&nbsp;Changes in rainfall patterns.</p> <p>3.&nbsp;Spread of disease.</p> <p>4.&nbsp;Melting of glaciers.</p> <p>Select the correct answer by using the codes given below.</p></div>
+  <div class="question lang-hi"><p>निम्नलिखित में से कौन-सा&nbsp;भूमंडलीय ऊष्मीकरण (ग्लोबल वार्मिंग) का संभावित प्रभाव है?</p> <p>1. समुद्र के स्तर में वृद्धि</p> <p>2. वर्षा के स्वरुप में परिवर्तन</p> <p>3. रोग का फैलाव</p> <p>4. ग्लेशियरों का पिघलना</p> <p>नीचे दिए गए विकल्पों का प्रयोग कर सही उत्तर चुनिए।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1, 2 and 4 only</div><div class="option">2, 3 and 4 only</div><div class="option">1 and 3 only</div><div class="option correct">1, 2, 3 and 4&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1, 2 और 4</div><div class="option">केवल 2, 3 और 4</div><div class="option">केवल 1 और 3</div><div class="option correct">1, 2, 3 और 4</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>1, 2, 3 and 4.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <p><strong>Global warming:</strong></p> <ul> <li><strong>Global warming is an average increase in the temperature of the atmosphere near the Earth&rsquo;s surface and in the troposphere, which can contribute to changes in global climate patterns.</strong></li> <li>Global warming can occur from a variety of causes, both natural and human-induced.</li> <li>In common usage, &ldquo;global warming&rdquo; often refers to the warming that can occur as a result of increased emissions of greenhouse gases from human activities.&rdquo;</li> </ul> <p><strong>Global Warming - Impacts:</strong></p> <ul> <li><strong>The rise in Sea level.<em>&nbsp;Hence, 1 is correct.</em></strong></li> <li><strong>Changes in rainfall patterns.&nbsp;</strong><em><span style="font-weight: 700;">Hence, 2&nbsp;is correct.</span></em></li> <li>Increased likelihood of extreme events such as heatwave, flooding, hurricanes, etc.</li> <li><span style="font-weight: 700;">Spread of disease (like malaria, etc).&nbsp;<em>Hence,&nbsp;3&nbsp;is correct.</em></span></li> <li>Melting of the ice caps.</li> <li><strong>Melting of glaciers.&nbsp;</strong><em><span style="font-weight: 700;">Hence,&nbsp;4&nbsp;is correct.</span></em></li> <li>Widespread vanishing of animal populations due to habitat loss.</li> <li>Bleaching of Coral Reefs.</li> <li>Loss of Plankton due to warming of seas.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर<strong> </strong><u><strong>1, 2, 3 और 4</strong></u> है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><strong>भूमंडलीय ऊष्मीकरण(ग्लोबल वार्मिंग):</strong></p> <ul> <li><strong>भूमंडलीय ऊष्मीकरण पृथ्वी की सतह के पास और क्षोभमंडल में वातावरण के तापमान में औसत वृद्धि है, जो वैश्विक जलवायु स्वरुप में बदलाव में योगदान कर सकती है।</strong></li> <li>भूमंडलीय ऊष्मीकरण विभिन्न कारणों से हो सकती है, प्राकृतिक और मानव-प्रेरित दोनों।</li> <li>सामान्य उपयोग में, &quot;भूमंडलीय ऊष्मीकरण&quot; अक्सर उस ऊष्मीकरण को संदर्भित करता है जो मानव गतिविधियों से ग्रीनहाउस गैसों के बढ़ते उत्सर्जन के परिणामस्वरूप हो सकता है।&quot;</li> </ul> <p><strong>भूमंडलीय ऊष्मीकरण - प्रभाव:</strong></p> <ul> <li><strong>समुद्र के स्तर में वृद्धि। <em>इसलिए,&nbsp;1 सही है।</em></strong></li> <li><strong>वर्षा पैटर्न में परिवर्तन। <em>इसलिए,&nbsp;2 सही है।</em></strong></li> <li>गर्मी की लहर, बाढ़, तूफान आदि जैसी चरम घटनाओं की संभावना बढ़ जाती है।</li> <li><strong>रोग का प्रसार (जैसे मलेरिया, आदि)। <em>इसलिए,&nbsp;3 सही है।</em></strong></li> <li>बर्फ की चोटियों का पिघलना।</li> <li><strong>ग्लेशियरों का पिघलना। <em>इसलिए,&nbsp;4 सही है</em></strong><em>।</em></li> <li>निवास स्थान के नुकसान के कारण पशु आबादी का व्यापक रूप से लुप्त होना।</li> <li>प्रवाल भित्तियों का विरंजन।</li> <li>समुद्र के गर्म होने के कारण प्लवक की हानि।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>With reference to &lsquo;Carbon Credit&rsquo;, consider the following statements:</p> <p>1. It is a tradeable certificate or permit representing the right to emit 5 tonnes of Carbon or Carbon dioxide equivalent.</p> <p>2. Carbon, like any other commodity, has begun to be traded on India&#39;s Multi Commodity Exchange.</p> <p>Which of the statements given above are correct?</p> <ol> </ol></div>
+  <div class="question lang-hi"><p>&#39;कार्बन क्रेडिट&#39; के संदर्भ में, निम्नलिखित कथनों पर विचार कीजिएः</p> <p>1. यह एक व्यापार योग्य प्रमाण पत्र या परमिट है जो 5 टन कार्बन या कार्बन डाइऑक्साइड समकक्ष उत्सर्जित करने के अधिकार का प्रतिनिधित्व करता है।</p> <p>2. कार्बन, किसी भी अन्य वस्तु की तरह, भारत के मल्टी कमोडिटी एक्सचेंज में कारोबार करना शुरू कर दिया है।&nbsp;</p> <p>उपरोक्त कथनों में से कौन-से सत्य हैं?</p> <ol> </ol></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 only</div><div class="option correct">2 only</div><div class="option">Both 1 and 2&nbsp;</div><div class="option">Neither 1 nor 2</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1</div><div class="option correct">केवल 2</div><div class="option">दोनों 1 और 2</div><div class="option">न तो 1 और न ही 2</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <strong><u>2 only.</u></strong></p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul> <li>A <strong>carbon credit&nbsp;</strong>is a tradeable certificate or permits representing the <strong>right to emit 1&nbsp;tonne of Carbon or Carbon dioxide equivalent. <em>Hence statement 1 is incorrect.</em></strong></li> <li>One carbon credit is <strong>equal to one ton of carbon dioxide </strong>or in some materials, carbon dioxide equivalent gases.</li> <li>An organization that <strong>produces one tonne less of carbon or carbon dioxide equivalent</strong> than the standard level of carbon emission allowed for its outfit or activity<strong> earns a carbon credit.</strong></li> <li>Countries that are <strong>signatories to the Kyoto protocol under the UNFCC</strong> have laid down gas emission norms for their companies to be met by 2012. In such cases, a company has two ways to reduce emissions- <ul> <li>It can<strong> reduce greenhouse gas</strong> by adopting new technology or improving upon the existing technology to attain the new norms for the emission of gases.</li> <li>It can<strong> tie up with developing nations and help them set up new technology</strong> that is eco-friendly, thereby helping developing nations earn credits.</li> </ul> </li> <li>Developing countries like <strong>India and China </strong>are likely to emerge as the <strong>biggest sellers</strong> and<strong> Europe </strong>is going to be the <strong>biggest buyers of carbon credits.</strong></li> <li><strong>Carbon, </strong>like any other commodity, has begun to be traded on <strong>India&#39;s Multi Commodity Exchange.</strong><span style="font-weight: 700; ">Hence statement 2 is correct.</span></li> </ul> <p><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>Carbon credit:</span></p> <ul style="color: rgb(33, 37, 41);"> <li>A&nbsp;<span style="font-weight: bolder;">carbon credit&nbsp;</span>is a tradeable certificate or permit&nbsp;representing the&nbsp;<span style="font-weight: bolder;">right to emit 1&nbsp;tonne of Carbon or Carbon dioxide equivalent.&nbsp;<em>Hence statement 1 is incorrect.</em></span></li> <li>One carbon credit is&nbsp;<span style="font-weight: bolder;">equal to one ton of carbon dioxide&nbsp;</span>or in some materials, carbon dioxide equivalent gases.</li> <li>Developing countries like&nbsp;<span style="font-weight: bolder;">India and China&nbsp;</span>are likely to emerge as the&nbsp;<span style="font-weight: bolder;">biggest sellers</span>&nbsp;and<span style="font-weight: bolder;">&nbsp;Europe&nbsp;</span>is going to be the&nbsp;<span style="font-weight: bolder;">biggest buyers of carbon credits.</span></li> <li><span style="font-weight: bolder;">Carbon,&nbsp;</span>like any other commodity, has begun to be traded on&nbsp;<span style="font-weight: bolder;">India&#39;s Multi Commodity Exchange.</span><em><span style="font-weight: 700;">Hence statement 2 is correct.<img alt="" src="https://storage.googleapis.com/tb-img/production/24/09/Screenshot%202024-09-02%20131148.png" style="width: 480px; height: 259px;" /></span></em></li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>केवल 2</strong></u> है।</p> <p><strong><u><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul> <li><strong>कार्बन क्रेडिट </strong>एक व्यापार योग्य प्रमाण पत्र या परमिट है जो <strong>एक&nbsp;टन कार्बन या कार्बन डाइऑक्साइड समकक्ष के उत्सर्जन के अधिकार </strong>का प्रतिनिधित्व करता है। <strong>अतः कथन 1 असत्य है।</strong></li> <li>एक कार्बन क्रेडिट <strong>एक टन कार्बन डाइऑक्साइड</strong> या कुछ सामग्रियों में कार्बन डाइऑक्साइड समकक्ष गैसों<strong> के बराबर </strong>होता है।</li> <li>एक संगठन जो अपनी योजना या गतिविधि के लिए अनुमत कार्बन उत्सर्जन के मानक स्तर के बराबर <strong>कार्बन या कार्बन डाइऑक्साइड का एक टन कम उत्पादन करता है,</strong> वह कार्बन क्रेडिट अर्जित करता है।</li> <li><strong>संयुक्त राज्य जलवायु परिवर्तन&nbsp;के तहत क्योटो प्रोटोकॉल पर हस्ताक्षर करने वाले</strong> देशों ने वर्ष 2012 तक अपनी कंपनियों के लिए गैस उत्सर्जन मानदंड निर्धारित किए हैं। ऐसे मामलों में, एक कंपनी के पास उत्सर्जन को कम करने के दो तरीके हैं- <ul> <li>यह गैसों के उत्सर्जन के लिए नए मानदंडों को प्राप्त करने के लिए नई तकनीक को अपनाकर या मौजूदा तकनीक में सुधार करके <strong>ग्रीनहाउस गैस को कम कर </strong>सकता है।</li> <li>यह <strong>विकासशील देशों के साथ गठजोड़ कर सकता है और उन्हें नई तकनीक स्थापित करने में मदद कर</strong> सकता है जो पर्यावरण के अनुकूल है, जिससे विकासशील देशों को क्रेडिट अर्जित करने में मदद मिलती है।</li> </ul> </li> <li><strong>भारत और चीन </strong>जैसे विकासशील देशों के <strong>सबसे बड़े विक्रेता</strong> के रूप में उभरने की संभावना है और <strong>यूरोप कार्बन क्रेडिट का सबसे बड़ा खरीदार </strong>बनने जा रहा है।</li> <li><strong>कार्बन,</strong> किसी भी अन्य वस्तु की तरह, <strong>भारत के मल्टी कमोडिटी एक्सचेंज</strong> में कारोबार करना शुरू कर दिया है।&nbsp;<span style="font-weight: 700; ">अतः कथन 2 सत्य है।</span></li> </ul> <p><span style="font-weight: 700; "><img alt="" src="https://storage.googleapis.com/tb-img/production/24/09/Screenshot%202024-09-02%20131148.png" style="width: 480px; height: 259px;" /></span></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">&ldquo;Century Plant&rdquo;, &ldquo;Shute Creek Gas Processing Plant&rdquo;, and &ldquo;Great Plains Synfuels Plant&rdquo; is related to which of the following?</div>
+  <div class="question lang-hi">&quot;सेंचुरी प्लांट&quot;, &quot;शट क्रीक गैस प्रोसेसिंग प्लांट&quot;, और &quot;ग्रेट प्लेन्स सिनफ्यूल्स प्लांट&quot; निम्नलिखित में से किससे संबंधित है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option"><span style="">Nuclear Power Generator</span></div><div class="option correct"><span style="">Carbon Capture and Storage</span></div><div class="option"><span style="">Solar Power Generator</span></div><div class="option"><span style="">Coal Storage and Processing</span></div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">परमाणु ऊर्जा जनरेटर</div><div class="option correct"><span style="">कार्बन कैप्चर एंड स्टोरेज</span></div><div class="option">सौर ऊर्जा जनरेटर</div><div class="option">कोयला भंडारण और प्रसंस्करण</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <span style=""><u><strong>Carbon Capture and Storage</strong></u>.</span></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li>These are some of the facilities for <strong>Carbon capture and storage (CCS).</strong></li> <li><strong>Century Plant -</strong> It is owned by Occidental Petroleum, the Century natural gas processing facility in West Texas, US, is the world&rsquo;s single biggest CCS plant.</li> <li><strong>Shute Creek Gas Processing Plant- </strong>Owned by ExxonMobil, the Shute Creek gas processing plant is located in Wyoming, US. The CCS facility, built near LaBarge, Lincoln County, captures approximately 365 million cubic feet per day&nbsp;of CO2, which is equivalent to removing more than 1.5 million cars off the road.</li> <li><strong>Great Plains Synfuels Plant &ndash; </strong>The Great Plains Synfuels Plant is owned and operated by Dakota Gasification, was built near Beulah, North Dakota, with an investment of $2.1bn (&pound;1.68bn).</li> <li>The <strong>facility captures and compresses up to three million tonnes of CO2 a year.</strong></li> <li>Th<strong>e CO2 captured by the facility</strong> is a<strong> byproduct of a coal gasification proces</strong>s that produces natural gas from coal.</li> <li><strong>Carbon capture and storage (CCS) facilities</strong> are considered as<strong> key contributors to emissions reduction</strong>&nbsp;with 18 of the world&rsquo;s large-scale CCS plants currently capturing approximately 40 million tonnes per annum (Mtpa) of carbon dioxide (CO2)&nbsp;according to The Global CCS Institute.</li> </ul> <p><strong>Carbon sequestration</strong></p> <ul> <li>It is the <strong>process</strong> of<strong> capturing</strong> and<strong> long-term storage</strong> of <strong>atmospheric carbon dioxide</strong> to<strong> mitigate global warming</strong> and to avoid the dangerous impacts of climate change.</li> <li>The Carbon Capture And Storage (CCS) chain consists of<strong> three parts</strong> <ul> <li>Capturing the carbon dioxide</li> <li>Transporting the carbon dioxide</li> <li>Securely storing the carbon dioxide emissions, underground in depleted oil and gas fields or deep saline aquifer formations.</li> </ul> </li> </ul> <p><strong>Environmental Effects</strong></p> <ul> <li><strong>Reduction of CO2 emissions by up to 90%, </strong>depending on plant type.</li> <li>Generally, environmental effects from the use of CCS arise during power production, CO2capture, transport, and storage.</li> </ul> <p><strong>Issues relating to storage&nbsp;</strong></p> <ul> <li><strong>Additional energy is required </strong>for CO2 capture, and this means that substantially more fuel has to be used, depending on the plant type.</li> <li><strong>Fuel use</strong> and <strong>environmental problems</strong> arising from mining and extraction of coal or gas increase accordingly.</li> <li><strong>Plants </strong>equipped with<strong> flue gas desulfurization (FGD) </strong>systems<strong> for sulfur dioxide control </strong>require proportionally<strong> greater amounts of limestone</strong>, and systems equipped with selective catalytic reduction systems for nitrogen oxides produced during combustion require proportionally greater amounts of ammonia.</li> <li>IPCC has provided estimates of air emissions from various CCS plant designs.</li> <li>While <strong>CO2</strong> is <strong>drastically reduced</strong> though<strong> never completely captured</strong>,<strong> emissions of air pollutants increase significantly,</strong> generally <strong>due to the energy</strong> <strong>penalty of capture. </strong></li> <li>Hence, the use of CCS entails a reduction in air quality.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <u><strong>कार्बन कैप्चर एंड स्टोरेज</strong></u> है।</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <ul> <li><strong>कार्बन कैप्चर और स्टोरेज (CCS) </strong>के लिए ये कुछ सुविधाएं हैं।</li> <li><strong>सेंचुरी प्लांट - </strong>इसका स्वामित्व ऑक्सिडेंटल पेट्रोलियम के पास है, वेस्ट टेक्सास, US में सेंचुरी प्राकृतिक गैस प्रसंस्करण सुविधा, दुनिया का सबसे बड़ा CCS प्लांट है।</li> <li><strong>शट क्रीक गैस प्रोसेसिंग प्लांट- </strong>एक्सॉनमोबिल के स्वामित्व वाला, श्यूट क्रीक गैस प्रोसेसिंग प्लांट व्योमिंग, US में स्थित है। लिंकन काउंटी के लाबार्ज के पास निर्मित CCS सुविधा, प्रतिदिन लगभग 365 मिलियन क्यूबिक फीट CO<sub>2</sub> को अवशोषित करती है, जो सड़क से 1.5 मिलियन से अधिक कारों को हटाने के बराबर है।</li> <li><strong>ग्रेट प्लेन्स सिनफ्यूल्स प्लांट - </strong>द ग्रेट प्लेन्स सिनफ्यूल्स प्लांट का स्वामित्व और संचालन डकोटा गैसीफिकेशन द्वारा किया जाता है, इसे बेउला, नॉर्थ डकोटा के पास $2.1bn (&pound;1.68bn) के निवेश के साथ बनाया गया था।</li> <li><strong>यह सुविधा सालाना तीन मिलियन टन <span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> को </strong><span style="font-weight: 700; ">कैप्चर करती</span><strong>&nbsp;है और संपीडित</strong>&nbsp;<strong>करती है।</strong></li> <li><strong>सुविधा द्वारा </strong><span style="font-weight: 700; ">कैप्चर</span><strong> कर लिया गया <span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> कोयला गैसीकरण प्रक्रिया का एक उपोत्पाद है </strong>जो कोयले से प्राकृतिक गैस का उत्पादन करता है।</li> <li>ग्लोबल CCS इंस्टीट्यूट के अनुसार कार्बन <strong>कैप्चर और स्टोरेज (CCS) सुविधाओं</strong> को दुनिया के बड़े पैमाने पर 18 CCS संयंत्रों के साथ <strong>उत्सर्जन में कमी के लिए महत्वपूर्ण योगदानकर्ता</strong> माना जाता है, जो वर्तमान में कार्बन डाइऑक्साइड (<span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span>) के लगभग 40 मिलियन टन प्रति वर्ष&nbsp;पर कब्जा कर रहे हैं।</li> </ul> <p><strong>कार्बन पृथक्करण</strong></p> <ul> <li>यह <strong>ग्लोबल वार्मिंग को कम करने</strong> और जलवायु परिवर्तन के खतरनाक प्रभावों से बचने के लिए <strong>वायुमंडलीय कार्बन डाइऑक्साइड को पकड़ने</strong> और <strong>दीर्घकालिक भंडारण की प्रक्रिया</strong> है।</li> <li>कार्बन कैप्चर एंड स्टोरेज (CCS) श्रृंखला में <strong>तीन भाग</strong> होते हैं <ul> <li>कार्बन डाइऑक्साइड पर कब्जा</li> <li>कार्बन डाइऑक्साइड का परिवहन</li> <li>कार्बन डाइऑक्साइड उत्सर्जन को सुरक्षित रूप से संग्रहित करना, भूमिगत तेल और गैस क्षेत्रों या गहरे खारे जलभृत संरचनाओं में</li> </ul> </li> </ul> <p><strong>पर्यावरणीय प्रभाव</strong></p> <ul> <li>पौधे के प्रकार के<strong> आधार पर </strong><span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2&nbsp;</span><strong>उत्सर्जन में 90% तक की कमी</strong></li> <li>आम तौर पर, बिजली उत्पादन, <span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> कैप्चर, परिवहन और भंडारण के दौरान CCS के उपयोग से पर्यावरणीय प्रभाव उत्पन्न होते हैं।</li> </ul> <p><strong>भंडारण से संबंधित मुद्दे</strong></p> <ul> <li><span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> को पकड़ने के लिए <strong>अतिरिक्त ऊर्जा की आवश्यकता होती है,</strong> और इसका मतलब है कि संयंत्र के प्रकार के आधार पर काफी अधिक ईंधन का उपयोग करना पड़ता है।</li> <li>कोयले या गैस के खनन और निष्कर्षण से उत्पन्न होने वाले <strong>ईंधन के उपयोग और पर्यावरणीय समस्याओं</strong> में तदनुसार वृद्धि होती है।</li> <li><strong>सल्फर डाइऑक्साइड नियंत्रण के लिए</strong> <strong>ग्रिप गैस डिसल्फराइजेशन (FGD)</strong> सिस्टम से लैस <strong>पौधों</strong> को आनुपातिक रूप से <strong>अधिक मात्रा में चूना पत्थर की</strong> आवश्यकता होती है, और दहन के दौरान उत्पादित नाइट्रोजन ऑक्साइड के लिए चयनात्मक उत्प्रेरक कमी प्रणाली से लैस सिस्टम को आनुपातिक रूप से अधिक मात्रा में अमोनिया की आवश्यकता होती है।</li> <li><span style="">IPCC</span> ने विभिन्न CCS संयंत्र डिजाइनों से वायु उत्सर्जन के अनुमान प्रदान किए हैं।</li> <li>जबकि <strong><span style="color: rgb(33, 37, 41);">CO</span><span style="position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;">2</span> में भारी कमी आई है, हालांकि पूरी तरह से कब्जा नहीं किया गया है, वायु प्रदूषकों के उत्सर्जन में काफी वृद्धि हुई है, </strong>आमतौर<strong> पर कैप्चर के ऊर्जा दंड के कारण</strong></li> <li>इसलिए, CCS के उपयोग से वायु गुणवत्ता में कमी आती है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Which of the following can be the concerns from the&nbsp;Genetic Modification of Crops?</p> <p>1. Adverse effects on human health</p> <p>2. Development of tolerant or resistant weeds&nbsp;</p> <p>3.&nbsp;Genetic erosion&nbsp;</p> <p>4.&nbsp;Outcrossing</p> <p>Select the correct answer from the code given below.&nbsp;</p></div>
+  <div class="question lang-hi"><p>निम्नलिखित में से कौन फसलों के आनुवंशिक परिवर्तन&nbsp;से संबंधित हो सकता है?</p> <p>1.&nbsp;मानव स्वास्थ्य पर प्रतिकूल प्रभाव</p> <p>2. सहनशील या प्रतिरोधी खरपतवार का विकास</p> <p>3. आनुवंशिक क्षरण</p> <p>4. <span class="e in l ms-2" style="color: var(--c5lc); margin-left: 0.5rem !important;">बहि:संकरण</span></p> <p>नीचे दिए गए कूट से सही उत्तर का चयन कीजिए।</p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 , 2 and 3 only</div><div class="option">2 and 3 only</div><div class="option">1 and 4 only</div><div class="option correct">1, 2, 3 and 4&nbsp;</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">केवल 1, 2 और 3&nbsp;&nbsp;</div><div class="option">केवल 2 और 3</div><div class="option">केवल 1 और 4</div><div class="option correct">1, 2, 3 और 4</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>1, 2, 3 and 4.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u><strong>Genetic Modification:</strong></p> <ul> <li>The technology is often called <strong>&ldquo;modern biotechnology&rdquo; or &ldquo;gene technology&rdquo;,</strong> sometimes also <strong>&ldquo;recombinant DNA technology&rdquo; or &ldquo;genetic engineering&rdquo;.</strong></li> <li>It allows selected individual genes to be <strong>transferred from one organism into another</strong>, also between nonrelated species.</li> <li>Foods produced from or <strong>using GM organisms</strong> are often referred to as<strong> GM foods.</strong></li> <li><strong>Genetically modified crops:</strong> It can be defined as crops&nbsp;in which the <strong>genetic material (DNA)</strong> has been altered in a way that does not occur naturally by mating and/or natural recombination.</li> <li><strong>Concerns from the&nbsp;Genetic Modification Of Crops:</strong> <ul> <li><strong>Risk of toxicity</strong>, due to the nature of the product or the changes in the metabolism and the composition of the organisms resulting from gene transfer.</li> <li><strong>Newer proteins in transgenic crops</strong> from the organisms, which have not been consumed as foods, sometimes have the risk of these proteins becoming allergens.</li> <li>Gene flow due to cross-pollination for the traits involving resistance can result in the <strong>development of tolerant or resistant weeds</strong> that are difficult to eradicate.</li> <li>GM crops could lead to<strong> erosion of biodiversity</strong> and pollute gene pools of endangered plant species.</li> <li><strong>Genetic erosion</strong> has occurred as the farmers have replaced&nbsp;the use of traditional varieties with monocultures.</li> <li>The migration of genes from GM plants into conventional crops or related species in the wild (<strong>referred to as &ldquo;outcrossing&rdquo;</strong>), as well as the <strong>mixing of crops derived from conventional seeds with GM crops</strong>, may have an indirect effect on food safety and food security.&nbsp; <ul> <li><strong>Hence statements 1,2, 3 and 4 are correct.</strong></li> </ul> </li> </ul> </li> </ul></div>
+    <div class="lang-hi"><div>सही उत्तर <u><strong>1, 2, 3 और 4</strong></u> है।</div> <div><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></div> <div><strong>अनुवंशिक परिवर्तन:&nbsp;</strong></div> <div>&nbsp;</div> <ul> <li>प्रौद्योगिकी को अक्सर &quot;<strong>आधुनिक जैव प्रौद्योगिकी</strong>&quot; या &quot;<strong>जीन प्रौद्योगिकी</strong>&quot; कहा जाता है, कभी-कभी &quot;<strong>पुनः संयोजक डीएनए प्रौद्योगिकी</strong>&quot; या &quot;<strong>जेनेटिक इंजीनियरिंग</strong>&quot; भी कहा जाता है।</li> <li>यह चयनित व्यक्तिगत जीन को<strong> एक जीव से दूसरे जीव में स्थानांतरित करने की अनुमति देता है</strong>, वह भी असंबंधित प्रजातियों के बीच।</li> <li><strong>GM जीवों </strong>से उत्पादित या उनका उपयोग करने वाले खाद्य पदार्थों को अक्सर <strong>GM खाद्य</strong> पदार्थ कहा जाता है।</li> <li><strong>आनुवंशिक रूप से संशोधित फसलें</strong>: इसे फसलों के रूप में परिभाषित किया जा सकता है जिसमें <strong>आनुवंशिक सामग्री (DNA) </strong>को इस तरह से बदल दिया गया है जो प्राकृतिक रूप से संभोग और / या प्राकृतिक पुनर्संयोजन द्वारा नहीं होता है।</li> <li><strong>फसलों के आनुवंशिक संशोधन से चिंताएँ:</strong> <ul> <li>उत्पाद की प्रकृति या चयापचय में परिवर्तन और जीन स्थानांतरण के परिणामस्वरूप जीवों की संरचना के कारण<strong> विषाक्तता का जोखिम।</strong></li> <li><strong>जीवों से ट्रांसजेनिक फसलों में नए प्रोटीन</strong>, जिनका भोजन के रूप में सेवन नहीं किया गया है, कभी-कभी इन प्रोटीनों से एलर्जी होने का खतरा होता है।</li> <li>प्रतिरोध से जुड़े लक्षणों के लिए क्रॉस-परागण के कारण जीन प्रवाह के परिणामस्वरूप <strong>सहनशील&nbsp;या प्रतिरोधी खरपतवारों का विकास</strong> हो सकता है जिन्हें मिटाना मुश्किल है।</li> <li>GM फसलों से<strong> जैव विविधता का क्षरण</strong> हो सकता है और लुप्तप्राय पौधों की प्रजातियों के जीन पूल प्रदूषित हो सकते हैं।</li> <li>आनुवंशिक क्षरण हुआ है क्योंकि किसानों ने पारंपरिक किस्मों के उपयोग को मोनोकल्चर के साथ बदल दिया है।</li> <li>GM&nbsp;पौधों से पारंपरिक फसलों या जंगली में संबंधित प्रजातियों में जीन का प्रवास (<strong>जिसे &quot;</strong>बहि:संकरण<strong>&quot; कहा जाता </strong>है),साथ ही<strong> पारंपरिक बीजों से प्राप्त फसलों को GM फसलों के साथ मिलाने से</strong> खाद्य सुरक्षा और खाद्य सुरक्षा पर अप्रत्यक्ष प्रभाव पड़ सकता है। <ul> <li><strong>अतः कथन 1,2, 3 और 4 सही हैं।</strong></li> </ul> </li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>With reference to the Sanitary Landfills, consider the following statements:</p> <p>1. Methane produced from the decomposition of&nbsp;trash in landfills is collected to generate electricity.</p> <p>2. High-density plastics are used on top of first layer clay for reinforcement.</p> <p>3. Topping of landfills is done with synthetic plastic to prevent methane from escaping.</p> <p>Which of the statements given above is/are correct?</p></div>
+  <div class="question lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सेनेटरी लैंडफिल के संदर्भ में, निम्नलिखित कथनों पर विचार कीजिएः</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. लैंडफिल में कचरे के अपघटन से उत्पन्न मीथेन को बिजली उत्पन्न करने के लिए एकत्र किया जाता है।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. सुदृढीकरण के लिए पहली परत मिट्टी के ऊपर उच्च घनत्व वाले प्लास्टिक का उपयोग किया जाता है।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3. मीथेन को निकलने से रोकने के लिए लैंडफिल की टॉपिंग सिंथेटिक प्लास्टिक से की जाती है।</font></font></p> <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ऊपर दिए गए कथनों में से कौन-सा/से सही है/हैं?</font></font></p></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 and 3 only</div><div class="option">2 and 3 only</div><div class="option">1 and 2 only</div><div class="option correct">1, 2 and 3</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 1 और 3</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 2 और 3</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">केवल 1 और 2</font></font></div><div class="option correct"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>1, 2 and 3</strong></u>.</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></strong></u></p> <p><strong>Sanitary landfills:</strong></p> <ul> <li>It&nbsp;is a pit with a protected bottom where trash is buried in layers and compressed to make it more solid.</li> <li>It is done by confining the solid waste to the smallest practical area, reducing it to the smallest practical volume &amp; covering it with a layer of soil&nbsp;at the end of each day&#39;s operation or at more frequent intervals.</li> </ul> <p><span style="font-weight: 700;">When a sanitary landfill gets filled, landfill topping is done.</span></p> <ul> <li><span style="font-weight: 700;">This is the process of topping the landfill with synthetic plastic&nbsp;to prevent methane gas from escaping into the atmosphere.&nbsp;<em>Hence, statement 3 is correct.</em></span></li> </ul> <p><strong><u>Working of&nbsp;Sanitary Landfills:</u></strong></p> <ul> <li><strong>First layer -&nbsp;The Liner system:</strong> <ul> <li>In this layer,&nbsp;a foundation is laid for the sanitary landfill.</li> <li>Foundation comprises the application of compact and&nbsp;dense clay to prevent the seeping in or out of liquids generated after decomposition.</li> <li><strong>A layer of&nbsp;high-density plastic is laid&nbsp;on top of the clay for reinforcement and to prevent contamination of the underground water. <em>Hence, statement 2 is correct.</em></strong></li> </ul> </li> <li>Second layer - The Drainage system: <ul> <li><strong>​</strong>The drainage system takes care of the liquid produced from the decomposition of waste materials.</li> <li>To save underground water from being toxic, the drainage layer aids in draining away this liquid to avoid it from getting close to the first layer.</li> </ul> </li> <li><strong>Third layer - The Gas collection system:</strong> <ul> <li><strong>Methane gas </strong>and other toxic gases<strong> are released in the process of decomposition.&nbsp;</strong></li> <li><strong>Extraction pipes trap methane gas and transport it to treatment plants to treat the gas and thereafter, use it to produce electricity and to power various processes. <em>Hence, statement 1 is correct.</em></strong></li> </ul> </li> <li><strong>Fourth layer - The trash</strong>: <ul> <li>Periodically, trash from various sources is dumped in this layer and&nbsp;compacted on a daily basis.</li> <li>Once this has been done, a layer of compacted soil is applied to the surface of the sanitary landfill.</li> </ul> </li> </ul> <p><strong><img alt="" src="https://storage.googleapis.com/tb-img/production/21/11/SANITARY.png" style="width: 480px; height: 292px;" /></strong></p></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्तर&nbsp;</font></font><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1, 2 और 3</font></font></strong></u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> है।</font></font></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></strong></u></p> <p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सेनेटरी लैंडफिल:</font></font></strong></p> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक संरक्षित तल वाला एक गड्ढा है जहां कचरे को परतों में दबा दिया जाता है और इसे और अधिक ठोस बनाने के लिए संकुचित किया जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह ठोस कचरे को सबसे छोटे व्यावहारिक क्षेत्र तक सीमित करके, इसे सबसे छोटी व्यावहारिक मात्रा तक कम करके और प्रत्येक दिन के संचालन के अंत में या अधिक लगातार अंतराल पर मिट्टी की एक परत के साथ कवर करके किया जाता है।</font></font></li> </ul> <p><span style="font-weight: 700;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">जब एक सैनिटरी लैंडफिल भर जाता है, तो लैंडफिल टॉपिंग की जाती है।</font></font></span></p> <ul> <li><span style="font-weight: 700;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह मीथेन गैस को वातावरण में जाने से रोकने के लिए सिंथेटिक प्लास्टिक के साथ लैंडफिल को भरने की प्रक्रिया है।&nbsp;</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">अत: कथन 3 सही है।</font></font></em></span></li> </ul> <p><strong><u>सेनेटरी लैंडफिल का कार्य:</u></strong></p> <ul> <li>पहली परत - लाइनर सिस्टम: <ul> <li>इस परत में सैनिटरी लैंडफिल की नींव रखी जाती है।</li> <li>फाउंडेशन में अपघटन के बाद उत्पन्न तरल पदार्थ के अंदर या बाहर रिसने को रोकने के लिए कॉम्पैक्ट और घनी मिट्टी का अनुप्रयोग शामिल है।</li> <li><strong>मिट्टी के ऊपर उच्च घनत्व वाले प्लास्टिक की एक परत सुदृढीकरण के लिए और भूमिगत जल के प्रदूषण को रोकने के लिए रखी जाती है। अत: कथन 2 सही है।​</strong></li> </ul> </li> <li>दूसरी परत - ड्रेनेज सिस्टम: <ul> <li><strong>​</strong>ड्रेनेज सिस्टम अपशिष्ट पदार्थों के अपघटन से उत्पन्न तरल का ख्याल रखता है।</li> <li>भूमिगत जल को विषाक्त होने से बचाने के लिए, जल निकासी परत इस तरल को पहली परत के करीब जाने से बचाने में मदद करती है।</li> </ul> </li> <li><strong>तीसरी परत - गैस संग्रह प्रणाली:</strong> <ul> <li><strong>अपघटन की प्रक्रिया में मीथेन गैस </strong>और अन्य जहरीली गैसें <strong>निकलती हैं</strong>।<strong>&nbsp;</strong></li> <li><strong>निष्कर्षण पाइप मीथेन गैस को फँसाते हैं और इसे गैस के उपचार के लिए उपचार संयंत्रों में ले जाते हैं और उसके बाद, बिजली का उत्पादन करने और विभिन्न प्रक्रियाओं को बिजली देने के लिए इसका इस्तेमाल करते हैं। अत: कथन 1 सही है।​</strong></li> </ul> </li> <li><strong>चौथी परत - कचरा</strong>: <ul> <li>समय-समय पर, विभिन्न स्रोतों से कचरा इस परत में डाला जाता है और दैनिक आधार पर जमा किया जाता है।</li> <li>एक बार यह हो जाने के बाद, सैनिटरी लैंडफिल की सतह पर संकुचित मिट्टी की एक परत लगाई जाती है।</li> </ul> </li> </ul> <p><strong><img alt="" src="https://storage.googleapis.com/tb-img/production/21/11/SANITARY.png" style="width: 480px; height: 292px;" /></strong></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

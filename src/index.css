@@ -1,3 +1,112 @@
 @import './styles/theme.css';
 @import './styles/content.css';
 @import './styles/apple-motion.css';
+@import './styles/mobile.css';
+
+/* ── Apple Typography polish — optical sizing, tracking by scale ────────────
+   System font already carries optical sizing; we amplify with explicit rules.
+   Tracking tightens as type grows; leading loosens for body. */
+@layer base {
+  h1, .display {
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    font-optical-sizing: auto;
+  }
+  h2 {
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+  }
+  h3 {
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  p, li {
+    letter-spacing: -0.01em;
+  }
+  small, .caption {
+    letter-spacing: 0.01em;
+  }
+}
+
+/* ── Mobile polish — thumb reach, safe-area, tap feedback — APK PERFECT ── */
+@layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+  html {
+    /* Prevent double-tap zoom, enable momentum scroll, no horizontal overflow */
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100%;
+  }
+  html::-webkit-scrollbar { display: none; }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* APK: 16px prevents auto-zoom on focus + better readability */
+  @media (max-width: 640px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+    /* Slightly larger base for APK readability */
+    html { font-size: 15.5px; }
+  }
+  /* Safe-area for notched phones + Android gesture bar - APK fullscreen */
+  body {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-top: env(safe-area-inset-top, 0px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100%;
+    min-height: 100dvh;
+    background: var(--bg);
+    position: relative;
+  }
+  /* APK mobile: allow native scroll, contain only where needed (exam handles its own) */
+  html, body {
+    overscroll-behavior-y: auto;
+    overscroll-behavior-x: none;
+  }
+  @media (pointer: coarse) {
+    html, body {
+      overscroll-behavior-y: auto;
+    }
+  }
+  /* APK: hide horizontal scrollbar, smooth momentum */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Ensure no element causes horizontal overflow on APK */
+  img, video, iframe {
+    max-width: 100%;
+  }
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@utility pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+@utility pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+@utility h-safe-nav {
+  height: calc(3.5rem + env(safe-area-inset-top, 0px));
+}
+@utility min-h-safe-nav {
+  min-height: calc(3.5rem + env(safe-area-inset-top, 0px));
+}

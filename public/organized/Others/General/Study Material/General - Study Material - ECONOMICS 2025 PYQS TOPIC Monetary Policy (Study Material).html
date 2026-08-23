@@ -1,0 +1,1826 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>YATRI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #6a5af9; --secondary: #5041d5; --accent: #f72585;
+    --bg-light: #f4f7fc; --bg-dark: #161925;
+    --surface-light: #ffffff; --surface-dark: #232a40;
+    --text-light: #212529; --text-dark: #e8eaed;
+    --border-light: rgba(0, 0, 0, 0.1); --border-dark: rgba(255, 255, 255, 0.1);
+    --glass-light: rgba(255, 255, 255, 0.7); --glass-dark: rgba(35, 42, 64, 0.7);
+    --success: #20c997; --danger: #e63946; --warning: #ffb703; --info: #0096c7;
+
+    /* Dynamic Font Size Variable - Default 16px */
+    --dynamic-size: 16px;
+  }
+
+  html {
+      font-size: 14px; 
+      -webkit-text-size-adjust: 100%;
+      height: 100%;
+  }
+
+  * { 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden; 
+    height: 100%;
+    min-height: 100vh; 
+    min-height: -webkit-fill-available;
+  }
+  body.dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
+  /* --- Home Screen --- */
+  #home-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 0 !important; 
+    overflow-y: auto;
+  }
+  .home-header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+  }
+  .home-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 2rem 1rem; 
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    background-color: var(--surface-light);
+  }
+  body.dark-mode .home-card {
+    background-color: var(--surface-dark);
+    border-color: var(--border-dark);
+  }
+
+  /* Inner wrapper to keep text centered and readable */
+  .home-content-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+  }
+
+  .home-card h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+  }
+  .test-details p {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.8rem;
+  }
+  body.dark-mode .test-details p {
+      border-bottom-color: var(--border-dark);
+  }
+  .test-details p span:first-child {
+      font-weight: 500;
+      opacity: 0.8;
+      white-space: nowrap;
+      margin-right: 15px;
+  }
+  .test-details p span:last-child {
+      font-weight: 600;
+      text-align: right;
+      word-break: break-word; 
+  }
+  #startQuizBtn {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      touch-action: manipulation;
+      margin-top: 10px;
+  }
+   #startQuizBtn:hover {
+      background-color: var(--secondary);
+   }
+  .home-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 30px;
+      font-weight: 600;
+      opacity: 0.9;
+      font-size: 0.9rem;
+  }
+  .home-footer a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+  }
+  .home-footer a:hover {
+      color: var(--primary);
+      text-decoration: underline;
+  }
+
+
+  /* --- Main Layout --- */
+  .quiz-layout {
+    display: block; 
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* MAIN CONTAINER */
+  .quiz-main {
+    padding: 0; 
+    position: relative;
+    height: 100vh; 
+    height: 100dvh; 
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+  }
+
+  /* --- POPUP MODAL FOR PALETTE (Replaces Sidebar) --- */
+
+  .palette-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2000;
+      background-color: rgba(0, 0, 0, 0.7); 
+
+      display: flex; 
+      justify-content: center;
+      align-items: center;
+
+
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+
+
+      transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+      will-change: opacity;
+  }
+
+  .palette-modal.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.2s ease-out, visibility 0s linear 0s; 
+  }
+
+  .palette-content-box {
+      width: 90%;
+      max-width: 380px; 
+      max-height: 85vh;
+      background-color: var(--surface-light);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      /* Optimised transform animation */
+      transform: scale(0.95) translate3d(0, 10px, 0);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform;
+      backface-visibility: hidden;
+  }
+  .palette-modal.show .palette-content-box {
+      transform: scale(1) translate3d(0, 0, 0);
+  }
+  body.dark-mode .palette-content-box {
+      background-color: var(--surface-dark);
+      border: 1px solid var(--border-dark);
+  }
+
+  .palette-header {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-light);
+  }
+  body.dark-mode .palette-header {
+      border-bottom-color: var(--border-dark);
+      background: var(--bg-dark);
+  }
+
+  .palette-body {
+      padding: 15px;
+      overflow-y: auto;
+      flex-grow: 1;
+  }
+
+  .palette-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-light);
+  }
+  body.dark-mode .palette-footer {
+      border-top-color: var(--border-dark);
+      background: var(--bg-dark);
+  }
+
+
+  /* --- Shared Card Style --- */
+  .card-ui {
+    background-color: var(--surface-light);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  body.dark-mode .card-ui {
+    background-color: var(--surface-dark);
+    border-color: var(--border-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* --- Integrated Sidebar Blocks --- */
+  .sidebar-section {
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 15px;
+  }
+  body.dark-mode .sidebar-section { border-bottom-color: var(--border-dark); }
+  .sidebar-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .timer-box { text-align: center; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 10px; }
+  body.dark-mode .timer-box { background: rgba(255,255,255,0.05); }
+  .timer-display { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; line-height: 1; margin-bottom: 5px; }
+  #timeProgress { height: 6px; border-radius: 3px; }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+  .stat-item { 
+      text-align: center; 
+      background: rgba(0,0,0,0.03); 
+      padding: 4px 2px; 
+      border-radius: 6px; 
+  }
+  body.dark-mode .stat-item { background: rgba(255,255,255,0.05); }
+  .stat-item .value { font-weight: 700; font-size: 0.9rem; line-height: 1.2; } 
+  .stat-item .label { font-size: 0.65rem; opacity: 0.7; }
+  .value.correct { color: var(--success); }
+  .value.incorrect { color: var(--danger); }
+  .value.marked { color: var(--info); }
+  .value.unattempted { color: var(--warning); }
+
+
+  /* --- Main Content Area --- */
+  .quiz-main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    flex-shrink: 0; 
+    background-color: var(--bg-light);
+    z-index: 10;
+    border-bottom: 1px solid transparent;
+  }
+  body.dark-mode .quiz-main-header {
+      background-color: var(--bg-dark);
+  }
+
+  /* Header Timer Style */
+  .header-timer {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-left: 15px;
+      margin-right: auto;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s;
+  }
+  .header-timer:active { transform: scale(0.95); opacity: 0.8; }
+  .header-timer::after { content: '⛶'; font-size: 0.8em; margin-left: 5px; opacity: 0.5; vertical-align: middle; }
+
+  /* Trigger Button for Palette - Visible on All Screens */
+  .palette-trigger { 
+      background: none; 
+      border: none; 
+      font-size: 1.375rem; 
+      color: var(--text-light); 
+      padding: 5px; 
+      cursor: pointer; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  body.dark-mode .palette-trigger { color: var(--text-dark); }
+  .palette-trigger:hover { color: var(--primary); }
+
+  /* --- SCROLLABLE QUESTION AREA --- */
+  .quiz-content-area {
+      flex: 1; 
+      overflow-y: auto; 
+
+      padding: 10px 0 90px 0; 
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+  }
+
+  /* Specific styling for Question Card to be Full Width (Clean Mode) */
+  .quiz-content-area .card-ui {
+      border-radius: 0; 
+      border-left: none;
+      border-right: none;
+      margin-left: 0;
+      margin-right: 0;
+      box-shadow: none;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+
+      padding: 8px 15px 15px 15px; 
+  }
+
+  .results-container.card-ui {
+      border-radius: 12px;
+      margin: 15px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 20px;
+  }
+
+  .thin-progress-bar {
+    height: 4px;
+    background-color: var(--border-light);
+    border-radius: 0; 
+    margin-bottom: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  body.dark-mode .thin-progress-bar {
+      background-color: var(--border-dark);
+  }
+  .thin-progress-bar-inner {
+      height: 100%;
+      width: 0%;
+      background-color: var(--primary);
+      border-radius: 2px;
+      transition: width 0.3s ease-in-out;
+  }
+
+  /* --- DYNAMIC FONT SIZING CLASSES --- */
+  .q-text { 
+      font-size: var(--dynamic-size); 
+      font-weight: 500; 
+      margin: 0; 
+      line-height: 1.5; 
+      white-space: normal; 
+      word-wrap: break-word;
+  }
+
+  /* Context box adjustment to remove gap */
+  .q-text > .context-box:first-child {
+      margin-top: 0;
+  }
+
+  .context-box {
+      background-color: #f0f4f8;
+      border-left: 4px solid var(--info);
+      padding: 10px 12px; 
+      border-radius: 8px;
+      margin-bottom: 8px; 
+      font-size: calc(var(--dynamic-size) * 0.9);
+      line-height: 1.45;
+      color: var(--text-light);
+      white-space: normal; 
+  }
+  body.dark-mode .context-box {
+      background-color: rgba(36, 129, 204, 0.15);
+      color: var(--text-dark);
+      border-left-color: var(--info);
+  }
+
+  .q-context-preview {
+      font-size: calc(var(--dynamic-size) * 0.9);
+      margin-bottom: 12px;
+      padding: 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 8px;
+      white-space: normal; 
+  }
+  body.dark-mode .q-context-preview {
+      background: rgba(255,255,255,0.05);
+  }
+
+  .option-btn {
+    width: 100%; text-align: left;
+    border: 1px solid var(--border-light);
+    background: transparent; color: inherit;
+    border-radius: 10px; padding: 12px 16px;
+    margin: 6px 0; transition: .2s ease all; 
+    font-size: var(--dynamic-size);
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    white-space: normal; 
+  }
+  body.dark-mode .option-btn { border-color: var(--border-dark); }
+  .option-btn:hover { border-color: var(--primary); background: rgba(106,90,249, 0.05); transform: translateY(-1px); }
+  .option-btn.selected { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+  .option-btn.correct { background: var(--success) !important; color: #fff; border-color: var(--success) !important; }
+  .option-btn.incorrect { background: var(--danger) !important; color: #fff; border-color: var(--danger) !important; }
+
+  /* User Selection Checkmark */
+  .user-check {
+      font-size: 1.1em;
+      margin-left: 10px;
+      display: none; 
+      flex-shrink: 0;
+  }
+  .option-btn.selected .user-check { display: inline-block; }
+
+  .explanation {
+    background: rgba(106,90,249, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px; padding: 12px; margin-top: 15px;
+    font-size: calc(var(--dynamic-size) * 0.9);
+    white-space: normal; 
+  }
+
+  /* --- STATIC FONT SIZING (Header, Meta, Nav) --- */
+  .q-meta-container {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+  }
+  /* Meta text keeps static size */
+  .q-meta-container h5 { font-size: 1.1rem; margin-bottom: 0; } 
+
+  .q-timer {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: rgba(106,90,249, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+  }
+
+  /* Marking Indicator Style */
+  .q-marks {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.05);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-light);
+  }
+  body.dark-mode .q-marks { background: rgba(255,255,255,0.1); color: var(--text-dark); }
+
+  /* Marks Colors for Review Mode */
+  .q-marks.positive { color: var(--success); background: rgba(32, 201, 151, 0.1); }
+  .q-marks.negative { color: var(--danger); background: rgba(230, 57, 70, 0.1); }
+
+  .q-accuracy {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--success);
+      background: rgba(32, 201, 151, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+  }
+  body.dark-mode .q-timer { color: #9d8fff; background: rgba(106,90,249, 0.2); }
+  body.dark-mode .q-accuracy { color: #4ade80; background: rgba(32, 201, 151, 0.2); }
+
+  /* --- Fixed Bottom Navigation (ABSOLUTE POSITIONING FIX) --- */
+  .quiz-nav-buttons { 
+      position: absolute; 
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex; 
+      justify-content: space-between; 
+      margin: 0;
+      padding: 15px 20px;
+      border-top: 1px solid var(--border-light);
+      background: var(--surface-light);
+      z-index: 500;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  }
+  body.dark-mode .quiz-nav-buttons {
+      border-top-color: var(--border-dark);
+      background: var(--surface-dark);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  }
+  .btn-nav { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; touch-action: manipulation; }
+
+  /* --- Palette Grid --- */
+  .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 8px; }
+  .q-tile {
+    width: 100%; aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border-light);
+    border-radius: 8px; font-weight: 600; cursor: pointer;
+    transition: .2s ease all;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+  body.dark-mode .q-tile { border-color: var(--border-dark); }
+  .q-tile:hover { transform: scale(1.08); }
+  .q-tile.current { background-color: var(--primary); color: #fff; border-color: var(--primary); }
+  .q-tile.answered { background-color: var(--success); color: #fff; border-color: var(--success); }
+  .q-tile.marked { box-shadow: 0 0 0 2px var(--info) inset; }
+  .q-tile.review-correct { background-color: var(--success); color: #fff; border-color: transparent; }
+  .q-tile.review-incorrect { background-color: var(--danger); color: #fff; border-color: transparent; }
+  .q-tile.review-unattempted { background-color: var(--warning); color: #fff; border-color: transparent; }
+
+  /* Palette Legend specific styles to fix color issues */
+  .palette-legend-box {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      margin-right: 5px;
+      border: 1px solid var(--border-light);
+  }
+  body.dark-mode .palette-legend-box { border-color: var(--border-dark); }
+  .palette-legend-box.visit { background: transparent; }
+  .palette-legend-box.done { background: var(--success); border-color: var(--success); }
+  .palette-legend-box.mark { background: transparent; border-color: var(--info); box-shadow: 0 0 0 2px var(--info) inset; }
+  .palette-legend-box.curr { background: var(--primary); border-color: var(--primary); }
+
+  /* --- Results View --- */
+  .results-container { text-align: center; }
+  .final-score { font-size: 4rem; font-weight: 800; color: var(--primary); }
+  .results-tabs .nav-link { color: inherit; opacity: 0.7; }
+  .results-tabs .nav-link.active { color: var(--primary); font-weight: 600; opacity: 1; border-bottom: 2px solid var(--primary); border-radius: 0; background: none; }
+  .chart-container { height: 250px; }
+
+  /* Leaderboard Styles */
+  .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+  .leaderboard-table th, .leaderboard-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-light); }
+  body.dark-mode .leaderboard-table th, body.dark-mode .leaderboard-table td { border-bottom-color: var(--border-dark); }
+  .leaderboard-table th { font-weight: 600; opacity: 0.8; }
+  .rank-1 { color: #FFD700; font-weight: bold; }
+  .rank-2 { color: #C0C0C0; font-weight: bold; }
+  .rank-3 { color: #CD7F32; font-weight: bold; }
+
+  /* --- Header Action Buttons --- */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-grow: 1;
+    gap: 5px;
+  }
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .action-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(0,0,0,0.05);
+  }
+  body.dark-mode .action-btn {
+    color: var(--text-dark);
+  }
+  body.dark-mode .action-btn:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+
+  /* Single Font Button Style */
+  #fontToggleBtn {
+      font-weight: 700;
+      font-family: serif;
+      width: auto;
+      padding: 0 10px;
+  }
+
+  #languageSwitch button {
+    font-weight: 700;
+    min-width: 50px;
+    padding: 0 5px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+    box-shadow: none;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  body.dark-mode #languageSwitch button {
+    background-color: transparent;
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+  }
+  #languageSwitch button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+  }
+
+  /* --- Responsive Design (Mobile) --- */
+  @media (max-width: 992px) {
+
+    .header-timer { font-size: 1rem; margin-left: 10px; }
+
+    .quiz-main-header {
+        padding: 15px 15px 10px 15px; 
+    }
+
+    /* Mobile Fixed Bottom Nav handled by main absolute styling */
+    .quiz-nav-buttons {
+        padding: 15px 15px;
+    }
+
+    .home-card, .results-container {
+        border-radius: 12px; 
+        margin: 20px;
+        width: auto;
+    }
+
+    /* Ensure home-card overrides general mobile margin rules to stay full width */
+    .home-card {
+        margin: 0;
+        border-radius: 0;
+        width: 100%;
+    }
+  }
+
+  /* --- Image Optimization for Telegram Content --- */
+  img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 10px auto;
+      border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="home-screen">
+    <h1 class="home-header">YATRI</h1>
+    <div class="card-ui home-card">
+        <div class="home-content-wrapper">
+            <h2>Test</h2>
+            <div class="test-details">
+                <p><span>Topic</span> <span id="homeTopic">Topic Name Here</span></p>
+                <p><span>Q.</span> <span id="homeQuestions">0</span></p>
+                <p><span>Timer</span> <span id="homeTime">0 Minutes</span></p>
+                <p><span>N.Mark</span> <span id="homeNegative">0</span></p>
+            </div>
+            <button id="startQuizBtn">Start</button>
+        </div>
+    </div>
+    <footer class="home-footer">
+        <!-- Clickable Links -->
+        <a href="https://t.me/+onyiRcm00J8xNzRl" target="_blank">Join Telegram</a>
+        <a href="https://t.me/+onyiRcm00J8xNzRl" target="_blank">YATRI</a>
+    </footer>
+</div>
+
+
+<div id="quiz-screen" style="display: none;">
+    <audio id="clickSound"  preload="auto"></audio>
+    <audio id="swipeSound"  preload="auto"></audio>
+    <audio id="correctSound"  preload="auto"></audio>
+    <audio id="wrongSound"  preload="auto"></audio>
+
+    <div class="quiz-layout">
+      <!-- MAIN CONTENT AREA -->
+      <main class="quiz-main">
+        <div class="quiz-main-header">
+          <!-- Spacer or Logo -->
+          <div class="quiz-brand fw-bold text-primary m-0" style="font-size: 1.1rem;">YATRI</div>
+
+          <!-- MAIN HEADER TIMER (Fullscreen Toggle Integrated) -->
+          <div class="header-timer" id="headerTimerDisp" title="Click to Toggle Fullscreen">00:00</div>
+
+          <div class="header-actions">
+              <div id="languageSwitch">
+                  <button id="langToggleBtn">BILI</button>
+              </div>
+              <button class="action-btn" id="fontToggleBtn" aria-label="Cycle font size">Aa+</button>
+              <button class="action-btn" id="themeToggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
+          </div>
+
+          <!-- PALETTE TOGGLE (Visible on ALL devices) -->
+          <button class="palette-trigger ms-2" id="openPaletteBtn" aria-label="Open Question Palette">
+              <i class="fas fa-th-large"></i>
+          </button>
+        </div>
+
+        <div class="thin-progress-bar">
+            <div id="thinProgressBarInner" class="thin-progress-bar-inner"></div>
+        </div>
+
+        <div class="quiz-content-area">
+            <div id="questionArea"></div>
+            <div id="resultsContainer" class="results-container card-ui" style="display: none;"></div>
+        </div>
+
+        <div id="quizNav" class="quiz-nav-buttons" style="display: none;"></div>
+
+      </main>
+    </div>
+
+    <!-- POPUP MODAL PALETTE (Replaces Sidebar) -->
+    <div class="palette-modal" id="paletteModal">
+        <div class="palette-content-box">
+            <div class="palette-header">
+                <h5 class="fw-bold m-0">Quiz Control</h5>
+                <button class="palette-trigger" id="closePaletteBtn"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="palette-body">
+                <!-- Integrated Timer & Stats Section -->
+                <div class="sidebar-section">
+                    <div class="timer-box mb-3">
+                        <div class="timer-display"><span id="minutes">00</span>:<span id="seconds">00</span></div>
+                        <div class="progress mt-2" style="height: 6px;">
+                          <div id="timeProgress" class="progress-bar bg-primary" style="width:100%"></div>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="value correct" id="statAnswered">0</div>
+                            <div class="label">Answered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="value unattempted" id="statUnanswered">0</div>
+                            <div class="label">Left</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="value marked" id="statMarked">0</div>
+                            <div class="label">Marked</div>
+                        </div>
+                         <div class="stat-item">
+                            <div class="value" id="statTotal">0</div>
+                            <div class="label">Total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Palette Grid -->
+                <h6 class="fw-bold mb-3 mt-2">Question Palette</h6>
+                <div class="palette-grid" id="qList"></div>
+            </div>
+
+            <div class="palette-footer">
+                <div class="d-flex flex-wrap gap-2 small text-muted mb-3 justify-content-center">
+                    <div class="d-flex align-items-center"><div class="palette-legend-box visit"></div> Visit</div>
+                    <div class="d-flex align-items-center"><div class="palette-legend-box done"></div> Done</div>
+                    <div class="d-flex align-items-center"><div class="palette-legend-box mark"></div> Mark</div>
+                    <div class="d-flex align-items-center"><div class="palette-legend-box curr"></div> Curr</div>
+                </div>
+                <button id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script ></script>
+<script ></script>
+
+<script>
+// Placeholder quizData, will be replaced by Python
+const quizData = {
+  "settings": {
+    "topic": "ECONOMICS 2025 PYQS \n[ TOPIC-\u00a0Monetary Policy \u00a0  ]\n\n \n \n",
+    "totalTimeSec": 550,
+    "negativeMarkPerWrong": 0.0
+  },
+  "questions": [
+    {
+      "text": "<b>Q1.</b> In which of the following situations is a liquidity trap said to have occurred? / \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u093f\u0938 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902 \u0924\u0930\u0932\u0924\u093e \u091c\u093e\u0932 (liquidity trap) \u0909\u0924\u094d\u092a\u0928\u094d\u0928 \u0939\u0941\u0906 \u0915\u0939\u093e \u091c\u093e\u0924\u093e \u0939\u0948? [Ssc phase 13, 24/07/2025]",
+      "options": [
+        "Increase in money supply leads to increase in interest rate / \u092e\u0941\u0926\u094d\u0930\u093e \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f \u0938\u0947 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f \u0939\u094b\u0924\u0940 \u0939\u0948",
+        "Perfectly elastic demand with respect to interest rate / \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0915\u0947 \u0938\u0902\u092c\u0902\u0927 \u092e\u0947\u0902 \u092a\u0942\u0930\u094d\u0923\u0924\u0903 \u0932\u094b\u091a\u0926\u093e\u0930 \u092e\u093e\u0902\u0917",
+        "Decrease in money supply leads to decrease in interest rate / \u092e\u0941\u0926\u094d\u0930\u093e \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u092e\u0947\u0902 \u0915\u092e\u0940 \u0938\u0947 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u092e\u0947\u0902 \u0915\u092e\u0940 \u0906\u0924\u0940 \u0939\u0948",
+        "Perfectly inelastic demand with respect to interest rate / \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0915\u0947 \u0938\u0902\u092c\u0902\u0927 \u092e\u0947\u0902 \u092a\u0942\u0930\u094d\u0923\u0924\u0903 \u092c\u0947\u0932\u094b\u091a\u0926\u093e\u0930 \u092e\u093e\u0902\u0917"
+      ],
+      "correctIndex": 1,
+      "explanation": "A Liquidity Trap occurs when nominal interest rates are remarkably close to zero, and savings rates are exceptionally high, rendering expansionary monetary policy entirely ineffective. In this situation, the speculative demand for money becomes perfectly elastic (a horizontal demand curve) because consumers prefer holding cash rather than investing in bonds. / \u0924\u0930\u0932\u0924\u093e \u091c\u093e\u0932 \u0924\u092c \u0939\u094b\u0924\u093e \u0939\u0948 \u091c\u092c \u0928\u093e\u092e\u092e\u093e\u0924\u094d\u0930 \u0915\u0940 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u0936\u0942\u0928\u094d\u092f \u0915\u0947 \u092c\u0939\u0941\u0924 \u0915\u0930\u0940\u092c \u0939\u094b\u0924\u0940 \u0939\u0948\u0902, \u0914\u0930 \u092c\u091a\u0924 \u0926\u0930\u0947\u0902 \u0905\u0938\u093e\u0927\u093e\u0930\u0923 \u0930\u0942\u092a \u0938\u0947 \u0909\u091a\u094d\u091a \u0939\u094b\u0924\u0940 \u0939\u0948\u0902, \u091c\u093f\u0938\u0938\u0947 \u0935\u093f\u0938\u094d\u0924\u093e\u0930\u0935\u093e\u0926\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0905\u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u0939\u094b \u091c\u093e\u0924\u0940 \u0939\u0948\u0964 \u0907\u0938 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902, \u092a\u0948\u0938\u0947 \u0915\u0940 \u0938\u091f\u094d\u091f\u093e \u092e\u093e\u0902\u0917 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0932\u094b\u091a\u0926\u093e\u0930 (\u090f\u0915 \u0915\u094d\u0937\u0948\u0924\u093f\u091c \u092e\u093e\u0902\u0917 \u0935\u0915\u094d\u0930) \u0939\u094b \u091c\u093e\u0924\u0940 \u0939\u0948 \u0915\u094d\u092f\u094b\u0902\u0915\u093f \u0909\u092a\u092d\u094b\u0915\u094d\u0924\u093e \u092c\u093e\u0902\u0921 \u092e\u0947\u0902 \u0928\u093f\u0935\u0947\u0936 \u0915\u0930\u0928\u0947 \u0915\u0947 \u092c\u091c\u093e\u092f \u0928\u0915\u0926 \u0930\u0916\u0928\u093e \u092a\u0938\u0902\u0926 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q2.</b> Which of the following best illustrates a liquidity trap? / \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0924\u0930\u0932\u0924\u093e \u091c\u093e\u0932 (liquidity trap) \u0915\u093e \u0938\u092c\u0938\u0947 \u0905\u091a\u094d\u091b\u093e \u0909\u0926\u093e\u0939\u0930\u0923 \u0939\u0948? [Ssc phase 13, 28/07/2025]",
+      "options": [
+        "The central bank raises interest rates to control inflation. / \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0915\u094b \u0928\u093f\u092f\u0902\u0924\u094d\u0930\u093f\u0924 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u092c\u0922\u093c\u093e\u0924\u093e \u0939\u0948\u0964",
+        "The government increases taxes to reduce fiscal deficit. / \u0930\u093e\u091c\u0915\u094b\u0937\u0940\u092f \u0918\u093e\u091f\u0947 \u0915\u094b \u0915\u092e \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0938\u0930\u0915\u093e\u0930 \u0915\u0930 \u092c\u0922\u093c\u093e\u0924\u0940 \u0939\u0948\u0964",
+        "Interest rates are near zero, but people prefer holding cash instead of investing. / \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u0936\u0942\u0928\u094d\u092f \u0915\u0947 \u0915\u0930\u0940\u092c \u0939\u0948\u0902, \u0932\u0947\u0915\u093f\u0928 \u0932\u094b\u0917 \u0928\u093f\u0935\u0947\u0936 \u0915\u0930\u0928\u0947 \u0915\u0947 \u092c\u091c\u093e\u092f \u0928\u0915\u0926\u0940 \u0930\u0916\u0928\u093e \u092a\u0938\u0902\u0926 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964",
+        "Commercial banks stop lending due to high default risks. / \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915 \u0909\u091a\u094d\u091a \u0921\u093f\u092b\u093c\u0949\u0932\u094d\u091f \u091c\u094b\u0916\u093f\u092e\u094b\u0902 \u0915\u0947 \u0915\u093e\u0930\u0923 \u090b\u0923 \u0926\u0947\u0928\u093e \u092c\u0902\u0926 \u0915\u0930 \u0926\u0947\u0924\u0947 \u0939\u0948\u0902\u0964"
+      ],
+      "correctIndex": 2,
+      "explanation": "A liquidity trap is distinctly characterized by a catastrophic macroeconomic situation where baseline interest rates are near zero, yet the broader economy remains stubbornly stagnant because anxious people and risk-averse businesses prefer hoarding cash rather than spending or investing, fundamentally rendering central bank cash injections absolutely ineffective. / \u0924\u0930\u0932\u0924\u093e \u091c\u093e\u0932 \u0938\u094d\u092a\u0937\u094d\u091f \u0930\u0942\u092a \u0938\u0947 \u090f\u0915 \u0935\u093f\u0928\u093e\u0936\u0915\u093e\u0930\u0940 \u0938\u092e\u0937\u094d\u091f\u093f-\u0906\u0930\u094d\u0925\u093f\u0915 \u0938\u094d\u0925\u093f\u0924\u093f \u0915\u0940 \u0935\u093f\u0936\u0947\u0937\u0924\u093e \u0939\u0948 \u091c\u0939\u093e\u0902 \u0906\u0927\u093e\u0930\u092d\u0942\u0924 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u0936\u0942\u0928\u094d\u092f \u0915\u0947 \u0915\u0930\u0940\u092c \u0939\u094b\u0924\u0940 \u0939\u0948\u0902, \u092b\u093f\u0930 \u092d\u0940 \u0935\u094d\u092f\u093e\u092a\u0915 \u0905\u0930\u094d\u0925\u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u091c\u093f\u0926\u094d\u0926\u0940 \u0930\u0942\u092a \u0938\u0947 \u0938\u094d\u0925\u093f\u0930 \u0930\u0939\u0924\u0940 \u0939\u0948 \u0915\u094d\u092f\u094b\u0902\u0915\u093f \u091a\u093f\u0902\u0924\u093f\u0924 \u0932\u094b\u0917 \u0914\u0930 \u091c\u094b\u0916\u093f\u092e \u0938\u0947 \u092c\u091a\u0928\u0947 \u0935\u093e\u0932\u0947 \u0935\u094d\u092f\u0935\u0938\u093e\u092f \u0916\u0930\u094d\u091a \u0915\u0930\u0928\u0947 \u092f\u093e \u0928\u093f\u0935\u0947\u0936 \u0915\u0930\u0928\u0947 \u0915\u0947 \u092c\u091c\u093e\u092f \u0928\u0915\u0926\u0940 \u091c\u092e\u093e \u0915\u0930\u0928\u093e \u092a\u0938\u0902\u0926 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902, \u091c\u094b \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0915\u0947 \u0928\u0915\u0926 \u092a\u094d\u0930\u0935\u093e\u0939 \u0915\u094b \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0905\u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u092c\u0928\u093e \u0926\u0947\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q3.</b> Name the situation when the central bank reduces interest rates to stimulate economic growth? / \u0909\u0938 \u0938\u094d\u0925\u093f\u0924\u093f \u0915\u093e \u0928\u093e\u092e \u092c\u0924\u093e\u0907\u090f \u091c\u092c \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0906\u0930\u094d\u0925\u093f\u0915 \u0935\u093f\u0915\u093e\u0938 \u0915\u094b \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u093f\u0924 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u0915\u094b \u0915\u092e \u0915\u0930\u0924\u093e \u0939\u0948? [Ssc phase 13, 28/07/2025]",
+      "options": [
+        "Expansionary monetary policy / \u0935\u093f\u0938\u094d\u0924\u093e\u0930\u0935\u093e\u0926\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f",
+        "Fiscal stimulus / \u0930\u093e\u091c\u0915\u094b\u0937\u0940\u092f \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u0928 (Fiscal stimulus)",
+        "Contractionary monetary policy / \u0938\u0902\u0915\u0941\u091a\u0928\u0915\u093e\u0930\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f",
+        "Quantitative easing / \u092e\u093e\u0924\u094d\u0930\u093e\u0924\u094d\u092e\u0915 \u0938\u0939\u091c\u0924\u093e (Quantitative easing)"
+      ],
+      "correctIndex": 0,
+      "explanation": "An Expansionary Monetary Policy explicitly involves the central bank actively intervening to massively increase the overall money supply and significantly reduce prevailing interest rates. The overarching macroeconomic goal is to vigorously stimulate economic growth by making crucial borrowing substantially cheaper for businesses and everyday consumers. / \u0935\u093f\u0938\u094d\u0924\u093e\u0930\u0935\u093e\u0926\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u092e\u0947\u0902 \u0938\u094d\u092a\u0937\u094d\u091f \u0930\u0942\u092a \u0938\u0947 \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0938\u092e\u0917\u094d\u0930 \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u094b \u092c\u0921\u093c\u0947 \u092a\u0948\u092e\u093e\u0928\u0947 \u092a\u0930 \u092c\u0922\u093c\u093e\u0928\u0947 \u0914\u0930 \u092a\u094d\u0930\u091a\u0932\u093f\u0924 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u0915\u094b \u0915\u093e\u092b\u0940 \u0915\u092e \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u0939\u0938\u094d\u0924\u0915\u094d\u0937\u0947\u092a \u0915\u0930\u0924\u093e \u0939\u0948\u0964 \u0907\u0938\u0915\u093e \u0935\u094d\u092f\u093e\u092a\u0915 \u0938\u092e\u0937\u094d\u091f\u093f-\u0906\u0930\u094d\u0925\u093f\u0915 \u0932\u0915\u094d\u0937\u094d\u092f \u0935\u094d\u092f\u0935\u0938\u093e\u092f\u094b\u0902 \u0914\u0930 \u0906\u092e \u0909\u092a\u092d\u094b\u0915\u094d\u0924\u093e\u0913\u0902 \u0915\u0947 \u0932\u093f\u090f \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 \u0909\u0927\u093e\u0930\u0940 \u0915\u094b \u0915\u093e\u092b\u0940 \u0938\u0938\u094d\u0924\u093e \u092c\u0928\u093e\u0915\u0930 \u0906\u0930\u094d\u0925\u093f\u0915 \u0935\u093f\u0915\u093e\u0938 \u0915\u094b \u092e\u091c\u092c\u0942\u0924\u0940 \u0938\u0947 \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u093f\u0924 \u0915\u0930\u0928\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q4.</b> How does the Central Bank do debt monetization? / \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u090b\u0923 \u092e\u0941\u0926\u094d\u0930\u0940\u0915\u0930\u0923 (debt monetization) \u0915\u0948\u0938\u0947 \u0915\u0930\u0924\u093e \u0939\u0948? [Ssc phase 13, 26/07/2025]",
+      "options": [
+        "The central bank reduces the money supply in the economy / \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0905\u0930\u094d\u0925\u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u092e\u0947\u0902 \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u094b \u0915\u092e \u0915\u0930\u0924\u093e \u0939\u0948",
+        "The government borrows money from foreign countries / \u0938\u0930\u0915\u093e\u0930 \u0935\u093f\u0926\u0947\u0936\u094b\u0902 \u0938\u0947 \u092a\u0948\u0938\u093e \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u0940 \u0939\u0948",
+        "The central bank directly finances the government by purchasing its debt / \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0938\u0940\u0927\u0947 \u0938\u0930\u0915\u093e\u0930 \u0915\u093e \u0915\u0930\u094d\u091c \u0916\u0930\u0940\u0926\u0915\u0930 \u0909\u0938\u0947 \u0935\u093f\u0924\u094d\u0924\u092a\u094b\u0937\u093f\u0924 \u0915\u0930\u0924\u093e \u0939\u0948",
+        "The central bank increases interest rates to control inflation / \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0915\u094b \u0928\u093f\u092f\u0902\u0924\u094d\u0930\u093f\u0924 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u092c\u0922\u093c\u093e\u0924\u093e \u0939\u0948"
+      ],
+      "correctIndex": 2,
+      "explanation": "Debt monetization specifically refers to the highly aggressive macroeconomic process where the Central Bank directly and systematically finances the sovereign government&#x27;s budget deficit by purchasing government bonds (debt). This effectively means officially printing new fiat money to pay for heavy government spending, which massively increases the money supply. / \u090b\u0923 \u092e\u0941\u0926\u094d\u0930\u0940\u0915\u0930\u0923 \u0935\u093f\u0936\u0947\u0937 \u0930\u0942\u092a \u0938\u0947 \u0909\u0938 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0938\u092e\u0937\u094d\u091f\u093f-\u0906\u0930\u094d\u0925\u093f\u0915 \u092a\u094d\u0930\u0915\u094d\u0930\u093f\u092f\u093e \u0915\u094b \u0938\u0902\u0926\u0930\u094d\u092d\u093f\u0924 \u0915\u0930\u0924\u093e \u0939\u0948 \u091c\u0939\u093e\u0902 \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0938\u0930\u0915\u093e\u0930\u0940 \u092c\u093e\u0902\u0921 (\u090b\u0923) \u0916\u0930\u0940\u0926\u0915\u0930 \u0938\u0940\u0927\u0947 \u0914\u0930 \u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093f\u0924 \u0930\u0942\u092a \u0938\u0947 \u0938\u0902\u092a\u094d\u0930\u092d\u0941 \u0938\u0930\u0915\u093e\u0930 \u0915\u0947 \u092c\u091c\u091f \u0918\u093e\u091f\u0947 \u0915\u093e \u0935\u093f\u0924\u094d\u0924\u092a\u094b\u0937\u0923 \u0915\u0930\u0924\u093e \u0939\u0948\u0964 \u0907\u0938\u0915\u093e \u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u0905\u0930\u094d\u0925 \u0939\u0948 \u092d\u093e\u0930\u0940 \u0938\u0930\u0915\u093e\u0930\u0940 \u0916\u0930\u094d\u091a \u0915\u0947 \u092d\u0941\u0917\u0924\u093e\u0928 \u0915\u0947 \u0932\u093f\u090f \u0906\u0927\u093f\u0915\u093e\u0930\u093f\u0915 \u0924\u094c\u0930 \u092a\u0930 \u0928\u0908 \u092b\u093f\u090f\u091f \u092e\u0941\u0926\u094d\u0930\u093e \u091b\u093e\u092a\u0928\u093e, \u091c\u094b \u092e\u0941\u0926\u094d\u0930\u093e \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u094b \u092c\u0921\u093c\u0947 \u092a\u0948\u092e\u093e\u0928\u0947 \u092a\u0930 \u092c\u0922\u093c\u093e\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "\n            <div class=\"context-box\">\n                Q5. Consider the following statements: / \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u0915\u0925\u0928\u094b\u0902 \u092a\u0930 \u0935\u093f\u091a\u093e\u0930 \u0915\u0930\u0947\u0902: [SSC Steno, 06/08/2025, Shift-2]<br><br>1. A bank&#x27;s main liability is the deposits it holds. / 1. \u090f\u0915 \u092c\u0948\u0902\u0915 \u0915\u0940 \u092e\u0941\u0916\u094d\u092f \u0926\u0947\u0928\u0926\u093e\u0930\u0940 (liability) \u0909\u0938\u0915\u0947 \u092a\u093e\u0938 \u091c\u092e\u093e \u0930\u093e\u0936\u093f (deposits) \u0939\u0948\u0964<br><br>2. Open Market Operations involve buying and selling government bonds. / 2. \u0916\u0941\u0932\u0947 \u092c\u093e\u091c\u093e\u0930 \u0915\u0947 \u0938\u0902\u091a\u093e\u0932\u0928 (Open Market Operations) \u092e\u0947\u0902 \u0938\u0930\u0915\u093e\u0930\u0940 \u092c\u093e\u0902\u0921 \u0916\u0930\u0940\u0926\u0928\u093e \u0914\u0930 \u092c\u0947\u091a\u0928\u093e \u0936\u093e\u092e\u093f\u0932 \u0939\u0948\u0964<br><br>3. The Bank Rate is the rate at which RBI lends to commercial banks. / 3. \u092c\u0948\u0902\u0915 \u0926\u0930 (Bank Rate) \u0935\u0939 \u0926\u0930 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 RBI \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u090b\u0923 \u0926\u0947\u0924\u093e \u0939\u0948\u0964\n            </div>\n            <b>Q5.</b> Which of the statements above is/are correct? / \ud83d\udc49 \u0909\u092a\u0930\u094b\u0915\u094d\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0938\u093e/\u0938\u0947 \u0915\u0925\u0928 \u0938\u0939\u0940 \u0939\u0948/\u0939\u0948\u0902?",
+      "options": [
+        "I, II and III all three statements are correct / I, II \u0914\u0930 III \u0924\u0940\u0928\u094b\u0902 \u0915\u0925\u0928 \u0938\u0939\u0940 \u0939\u0948\u0902",
+        "Only Statements II and III are correct / \u0915\u0947\u0935\u0932 \u0915\u0925\u0928 II \u0914\u0930 III \u0938\u0939\u0940 \u0939\u0948\u0902",
+        "Only Statements I and II are correct / \u0915\u0947\u0935\u0932 \u0915\u0925\u0928 I \u0914\u0930 II \u0938\u0939\u0940 \u0939\u0948\u0902",
+        "Only Statement III is correct / \u0915\u0947\u0935\u0932 \u0915\u0925\u0928 III \u0938\u0939\u0940 \u0939\u0948"
+      ],
+      "correctIndex": 0,
+      "explanation": "All three foundational statements are absolutely correct. Deposits are direct liabilities because banks literally owe this exact money back to depositors. OMO refers precisely to the RBI actively buying/selling government securities to aggressively adjust liquidity. Bank Rate is the standard long-term lending rate. / \u0924\u0940\u0928\u094b\u0902 \u092e\u0942\u0932\u092d\u0942\u0924 \u0915\u0925\u0928 \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u0938\u0939\u0940 \u0939\u0948\u0902\u0964 \u091c\u092e\u093e \u092a\u094d\u0930\u0924\u094d\u092f\u0915\u094d\u0937 \u0926\u0947\u0928\u0926\u093e\u0930\u093f\u092f\u093e\u0902 \u0939\u0948\u0902 \u0915\u094d\u092f\u094b\u0902\u0915\u093f \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0936\u093e\u092c\u094d\u0926\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u092f\u0939 \u0938\u091f\u0940\u0915 \u092a\u0948\u0938\u093e \u091c\u092e\u093e\u0915\u0930\u094d\u0924\u093e\u0913\u0902 \u0915\u094b \u0935\u093e\u092a\u0938 \u0926\u0947\u0928\u093e \u0939\u094b\u0924\u093e \u0939\u0948\u0964 OMO \u0915\u093e \u0905\u0930\u094d\u0925 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u0938\u092e\u093e\u092f\u094b\u091c\u093f\u0924 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f RBI \u0926\u094d\u0935\u093e\u0930\u093e \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u0938\u0930\u0915\u093e\u0930\u0940 \u092a\u094d\u0930\u0924\u093f\u092d\u0942\u0924\u093f\u092f\u094b\u0902 \u0915\u094b \u0916\u0930\u0940\u0926\u0928\u0947/\u092c\u0947\u091a\u0928\u0947 \u0938\u0947 \u0939\u0948\u0964 \u092c\u0948\u0902\u0915 \u0926\u0930 \u092e\u093e\u0928\u0915 \u0926\u0940\u0930\u094d\u0918\u0915\u093e\u0932\u093f\u0915 \u090b\u0923 \u0926\u0930 \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q6.</b> What does &#x27;repo rate&#x27; refer to in India&#x27;s monetary policy? / \u092d\u093e\u0930\u0924 \u0915\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u092e\u0947\u0902 &#x27;\u0930\u0947\u092a\u094b \u0930\u0947\u091f&#x27; (repo rate) \u0938\u0947 \u0915\u094d\u092f\u093e \u0924\u093e\u0924\u094d\u092a\u0930\u094d\u092f \u0939\u0948? [SSC Steno, 08/08/2025, Shift-3]",
+      "options": [
+        "Rate of foreign exchange transactions / \u0935\u093f\u0926\u0947\u0936\u0940 \u092e\u0941\u0926\u094d\u0930\u093e \u0932\u0947\u0928\u0926\u0947\u0928 \u0915\u0940 \u0926\u0930",
+        "Rate at which the government borrows from banks / \u0935\u0939 \u0926\u0930 \u091c\u093f\u0938 \u092a\u0930 \u0938\u0930\u0915\u093e\u0930 \u092c\u0948\u0902\u0915\u094b\u0902 \u0938\u0947 \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u0940 \u0939\u0948",
+        "Rate at which consumers take loans / \u0935\u0939 \u0926\u0930 \u091c\u093f\u0938 \u092a\u0930 \u0909\u092a\u092d\u094b\u0915\u094d\u0924\u093e \u090b\u0923 \u0932\u0947\u0924\u0947 \u0939\u0948\u0902",
+        "Rate at which commercial banks borrow from the RBI / \u0935\u0939 \u0926\u0930 \u091c\u093f\u0938 \u092a\u0930 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915 RBI \u0938\u0947 \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u0947 \u0939\u0948\u0902"
+      ],
+      "correctIndex": 3,
+      "explanation": "The Repo Rate (Repurchase Option Rate) is the absolutely critical benchmark interest rate at which domestic commercial banks actively borrow money directly from the Reserve Bank of India for the short term, typically against approved government securities, to aggressively maintain their daily liquidity. / \u0930\u0947\u092a\u094b \u0930\u0947\u091f (\u092a\u0941\u0928\u0930\u094d\u0916\u0930\u0940\u0926 \u0935\u093f\u0915\u0932\u094d\u092a \u0926\u0930) \u090f\u0915 \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 \u092c\u0947\u0902\u091a\u092e\u093e\u0930\u094d\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 \u0918\u0930\u0947\u0932\u0942 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915 \u0905\u092a\u0928\u0940 \u0926\u0948\u0928\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u092c\u0928\u093e\u090f \u0930\u0916\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0905\u0932\u094d\u092a\u093e\u0935\u0927\u093f \u0915\u0947 \u0932\u093f\u090f \u0938\u0940\u0927\u0947 \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u093c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 \u0938\u0947 (\u0906\u092e\u0924\u094c\u0930 \u092a\u0930 \u0905\u0928\u0941\u092e\u094b\u0926\u093f\u0924 \u0938\u0930\u0915\u093e\u0930\u0940 \u092a\u094d\u0930\u0924\u093f\u092d\u0942\u0924\u093f\u092f\u094b\u0902 \u0915\u0947 \u092c\u0926\u0932\u0947) \u092a\u0948\u0938\u093e \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u0947 \u0939\u0948\u0902\u0964",
+      "reference": ""
+    },
+    {
+      "text": "\n            <div class=\"context-box\">\n                Q7. Read the following Assertion (A) and Reason (R) carefully and choose the correct option. / \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u0905\u092d\u093f\u0915\u0925\u0928 (A) \u0914\u0930 \u0915\u093e\u0930\u0923 (R) \u0915\u094b \u0927\u094d\u092f\u093e\u0928 \u0938\u0947 \u092a\u0922\u093c\u0947\u0902 \u0914\u0930 \u0938\u0939\u0940 \u0935\u093f\u0915\u0932\u094d\u092a \u091a\u0941\u0928\u0947\u0902\u0964 [SSC CGL Tier 1, 23 Sep 2025, Shift-1]<br><br>Assertion (A): Financial intermediaries are essential in transmitting monetary policy to the real economy. / \u0905\u092d\u093f\u0915\u0925\u0928 (A): \u0935\u093f\u0924\u094d\u0924\u0940\u092f \u092e\u0927\u094d\u092f\u0938\u094d\u0925 (financial intermediaries) \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u094b \u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u0905\u0930\u094d\u0925\u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u0924\u0915 \u092a\u0939\u0941\u0901\u091a\u093e\u0928\u0947 \u092e\u0947\u0902 \u0906\u0935\u0936\u094d\u092f\u0915 \u0939\u0948\u0902\u0964<br><br>Reason (R): They adjust lending and deposit rates in response to policy rates set by the MPC. / \u0915\u093e\u0930\u0923 (R): \u0935\u0947 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0938\u092e\u093f\u0924\u093f (MPC) \u0926\u094d\u0935\u093e\u0930\u093e \u0928\u093f\u0930\u094d\u0927\u093e\u0930\u093f\u0924 \u0928\u0940\u0924\u093f\u0917\u0924 \u0926\u0930\u094b\u0902 \u0915\u0947 \u091c\u0935\u093e\u092c \u092e\u0947\u0902 \u090b\u0923 \u0914\u0930 \u091c\u092e\u093e \u0926\u0930\u094b\u0902 \u0915\u094b \u0938\u092e\u093e\u092f\u094b\u091c\u093f\u0924 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964\n            </div>\n            <b>Q7.</b> Which of the statements above is/are correct? / \ud83d\udc49 \u0909\u092a\u0930\u094b\u0915\u094d\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0938\u093e/\u0938\u0947 \u0915\u0925\u0928 \u0938\u0939\u0940 \u0939\u0948/\u0939\u0948\u0902?",
+      "options": [
+        "A is false, but R is true / A \u0917\u0932\u0924 \u0939\u0948, \u0932\u0947\u0915\u093f\u0928 R \u0938\u0939\u0940 \u0939\u0948",
+        "A is true, but R is false / A \u0938\u0939\u0940 \u0939\u0948, \u0932\u0947\u0915\u093f\u0928 R \u0917\u0932\u0924 \u0939\u0948",
+        "Both A and R are true, R explains A / A \u0914\u0930 R \u0926\u094b\u0928\u094b\u0902 \u0938\u0939\u0940 \u0939\u0948\u0902, R, A \u0915\u0940 \u0938\u0939\u0940 \u0935\u094d\u092f\u093e\u0916\u094d\u092f\u093e \u0915\u0930\u0924\u093e \u0939\u0948",
+        "Both A and R are true, R does not explain A / A \u0914\u0930 R \u0926\u094b\u0928\u094b\u0902 \u0938\u0939\u0940 \u0939\u0948\u0902, R, A \u0915\u0940 \u0938\u0939\u0940 \u0935\u094d\u092f\u093e\u0916\u094d\u092f\u093e \u0928\u0939\u0940\u0902 \u0915\u0930\u0924\u093e \u0939\u0948"
+      ],
+      "correctIndex": 2,
+      "explanation": "Both statements are perfectly true and R robustly explains A. The entire effectiveness of national monetary policy depends heavily on the transmission mechanism (Assertion). Commercial banks (financial intermediaries) facilitate this crucial process by actively passing on exact changes in the RBI&#x27;s policy rates (like Repo Rate) to the real economy through adjusted consumer lending and deposit rates (Reason). / \u0926\u094b\u0928\u094b\u0902 \u0915\u0925\u0928 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0938\u0924\u094d\u092f \u0939\u0948\u0902 \u0914\u0930 R \u092e\u091c\u092c\u0942\u0924\u0940 \u0938\u0947 A \u0915\u0940 \u0935\u094d\u092f\u093e\u0916\u094d\u092f\u093e \u0915\u0930\u0924\u093e \u0939\u0948\u0964 \u0930\u093e\u0937\u094d\u091f\u094d\u0930\u0940\u092f \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u0940 \u0938\u0902\u092a\u0942\u0930\u094d\u0923 \u092a\u094d\u0930\u092d\u093e\u0935\u0936\u0940\u0932\u0924\u093e \u0938\u0902\u091a\u0930\u0923 \u0924\u0902\u0924\u094d\u0930 (\u0905\u092d\u093f\u0915\u0925\u0928) \u092a\u0930 \u092c\u0939\u0941\u0924 \u0905\u0927\u093f\u0915 \u0928\u093f\u0930\u094d\u092d\u0930 \u0915\u0930\u0924\u0940 \u0939\u0948\u0964 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915 (\u0935\u093f\u0924\u094d\u0924\u0940\u092f \u092e\u0927\u094d\u092f\u0938\u094d\u0925) \u0909\u092a\u092d\u094b\u0915\u094d\u0924\u093e \u090b\u0923 \u0914\u0930 \u091c\u092e\u093e \u0926\u0930\u094b\u0902 (\u0915\u093e\u0930\u0923) \u0915\u094b \u0938\u092e\u093e\u092f\u094b\u091c\u093f\u0924 \u0915\u0930\u0915\u0947 \u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u0905\u0930\u094d\u0925\u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u092e\u0947\u0902 \u0906\u0930\u092c\u0940\u0906\u0908 \u0915\u0940 \u0928\u0940\u0924\u093f\u0917\u0924 \u0926\u0930\u094b\u0902 (\u091c\u0948\u0938\u0947 \u0930\u0947\u092a\u094b \u0926\u0930) \u092e\u0947\u0902 \u0938\u091f\u0940\u0915 \u092c\u0926\u0932\u093e\u0935\u094b\u0902 \u0915\u094b \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u092a\u093e\u0930\u093f\u0924 \u0915\u0930\u0915\u0947 \u0907\u0938 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 \u092a\u094d\u0930\u0915\u094d\u0930\u093f\u092f\u093e \u0915\u094b \u0938\u0941\u0935\u093f\u0927\u093e\u091c\u0928\u0915 \u092c\u0928\u093e\u0924\u0947 \u0939\u0948\u0902\u0964",
+      "reference": ""
+    },
+    {
+      "text": "\n            <div class=\"context-box\">\n                Q8. Read the following Assertion (A) and Reason (R) carefully and choose the correct option. / \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u0905\u092d\u093f\u0915\u0925\u0928 (A) \u0914\u0930 \u0915\u093e\u0930\u0923 (R) \u0915\u094b \u0927\u094d\u092f\u093e\u0928 \u0938\u0947 \u092a\u0922\u093c\u0947\u0902 \u0914\u0930 \u0938\u0939\u0940 \u0935\u093f\u0915\u0932\u094d\u092a \u091a\u0941\u0928\u0947\u0902\u0964 [SSC CGL Tier 1, 23 Sep 2025, Shift-3]<br><br>Assertion (A): CRR and SLR requirements increase the lending capacity of banks. / \u0905\u092d\u093f\u0915\u0925\u0928 (A): \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u0914\u0930 \u0935\u0948\u0927\u093e\u0928\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0905\u0928\u0941\u092a\u093e\u0924 (SLR) \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e\u090f\u0901 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0940 \u090b\u0923 \u0926\u0947\u0928\u0947 \u0915\u0940 \u0915\u094d\u0937\u092e\u0924\u093e \u0915\u094b \u092c\u0922\u093c\u093e\u0924\u0940 \u0939\u0948\u0902\u0964<br><br>Reason (R): These requirements reduce the amount of money banks can lend to the public. / \u0915\u093e\u0930\u0923 (R): \u092f\u0947 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e\u090f\u0901 \u0909\u0938 \u0927\u0928\u0930\u093e\u0936\u093f \u0915\u094b \u0915\u092e \u0915\u0930 \u0926\u0947\u0924\u0940 \u0939\u0948\u0902 \u091c\u094b \u092c\u0948\u0902\u0915 \u091c\u0928\u0924\u093e \u0915\u094b \u0909\u0927\u093e\u0930 \u0926\u0947 \u0938\u0915\u0924\u0947 \u0939\u0948\u0902\u0964\n            </div>\n            <b>Q8.</b> Which of the statements above is/are correct? / \ud83d\udc49 \u0909\u092a\u0930\u094b\u0915\u094d\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0938\u093e/\u0938\u0947 \u0915\u0925\u0928 \u0938\u0939\u0940 \u0939\u0948/\u0939\u0948\u0902?",
+      "options": [
+        "Both A and R are true, R explains A / A \u0914\u0930 R \u0926\u094b\u0928\u094b\u0902 \u0938\u0939\u0940 \u0939\u0948\u0902, R, A \u0915\u0940 \u0938\u0939\u0940 \u0935\u094d\u092f\u093e\u0916\u094d\u092f\u093e \u0915\u0930\u0924\u093e \u0939\u0948",
+        "A is false, but R is true / A \u0917\u0932\u0924 \u0939\u0948, \u0932\u0947\u0915\u093f\u0928 R \u0938\u0939\u0940 \u0939\u0948",
+        "Both A and R are true, R does not explain A / A \u0914\u0930 R \u0926\u094b\u0928\u094b\u0902 \u0938\u0939\u0940 \u0939\u0948\u0902, R, A \u0915\u0940 \u0938\u0939\u0940 \u0935\u094d\u092f\u093e\u0916\u094d\u092f\u093e \u0928\u0939\u0940\u0902 \u0915\u0930\u0924\u093e \u0939\u0948",
+        "A is true, but R is false / A \u0938\u0939\u0940 \u0939\u0948, \u0932\u0947\u0915\u093f\u0928 R \u0917\u0932\u0924 \u0939\u0948"
+      ],
+      "correctIndex": 1,
+      "explanation": "Assertion (A) is completely false: High mandatory CRR and SLR requirements strictly force commercial banks to park vastly more funds idly with the RBI or in specific government securities, thereby aggressively reducing (not increasing) the total funds available for active lending. Reason (R) is undeniably true. / \u0905\u092d\u093f\u0915\u0925\u0928 (A) \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0917\u0932\u0924 \u0939\u0948: \u0909\u091a\u094d\u091a \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f CRR \u0914\u0930 SLR \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e\u090f\u0902 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0906\u0930\u092c\u0940\u0906\u0908 \u0915\u0947 \u092a\u093e\u0938 \u092f\u093e \u0935\u093f\u0936\u093f\u0937\u094d\u091f \u0938\u0930\u0915\u093e\u0930\u0940 \u092a\u094d\u0930\u0924\u093f\u092d\u0942\u0924\u093f\u092f\u094b\u0902 \u092e\u0947\u0902 \u092c\u0939\u0941\u0924 \u0905\u0927\u093f\u0915 \u0927\u0928\u0930\u093e\u0936\u093f \u0915\u094b \u0928\u093f\u0937\u094d\u0915\u094d\u0930\u093f\u092f \u0930\u0916\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0938\u0916\u094d\u0924\u0940 \u0938\u0947 \u092e\u091c\u092c\u0942\u0930 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902, \u091c\u093f\u0938\u0938\u0947 \u0938\u0915\u094d\u0930\u093f\u092f \u090b\u0923 \u0926\u0947\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0909\u092a\u0932\u092c\u094d\u0927 \u0915\u0941\u0932 \u0927\u0928\u0930\u093e\u0936\u093f \u092e\u0947\u0902 \u092d\u093e\u0930\u0940 \u0915\u092e\u0940 (\u0935\u0943\u0926\u094d\u0927\u093f \u0928\u0939\u0940\u0902) \u0939\u094b\u0924\u0940 \u0939\u0948\u0964 \u0915\u093e\u0930\u0923 (R) \u0928\u093f\u0930\u094d\u0935\u093f\u0935\u093e\u0926 \u0930\u0942\u092a \u0938\u0947 \u0938\u0924\u094d\u092f \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "\n            <div class=\"context-box\">\n                Q9. Consider the following statements about factors affecting the Money Multiplier (MM): / \u092e\u0941\u0926\u094d\u0930\u093e \u0917\u0941\u0923\u0915 (Money Multiplier) \u0915\u094b \u092a\u094d\u0930\u092d\u093e\u0935\u093f\u0924 \u0915\u0930\u0928\u0947 \u0935\u093e\u0932\u0947 \u0915\u093e\u0930\u0915\u094b\u0902 \u0915\u0947 \u092c\u093e\u0930\u0947 \u092e\u0947\u0902 \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u0915\u0925\u0928\u094b\u0902 \u092a\u0930 \u0935\u093f\u091a\u093e\u0930 \u0915\u0930\u0947\u0902: [SSC CGL Tier 1, 24 Sep 2025, Shift-2]<br><br>1. Cash held by individuals acts as a leakage and reduces the money multiplier. / 1. \u0935\u094d\u092f\u0915\u094d\u0924\u093f\u092f\u094b\u0902 \u0926\u094d\u0935\u093e\u0930\u093e \u0930\u0916\u0940 \u0917\u0908 \u0928\u0915\u0926\u0940 \u090f\u0915 \u0930\u093f\u0938\u093e\u0935 (leakage) \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u0915\u093e\u0930\u094d\u092f \u0915\u0930\u0924\u0940 \u0939\u0948 \u0914\u0930 \u092e\u0941\u0926\u094d\u0930\u093e \u0917\u0941\u0923\u0915 \u0915\u094b \u0915\u092e \u0915\u0930\u0924\u0940 \u0939\u0948\u0964<br><br>2. Higher reserves held by banks with the RBI increase the money multiplier. / 2. \u092c\u0948\u0902\u0915\u094b\u0902 \u0926\u094d\u0935\u093e\u0930\u093e RBI \u0915\u0947 \u092a\u093e\u0938 \u0930\u0916\u0947 \u0917\u090f \u0909\u091a\u094d\u091a \u092d\u0902\u0921\u093e\u0930 \u092e\u0941\u0926\u094d\u0930\u093e \u0917\u0941\u0923\u0915 \u0915\u094b \u092c\u0922\u093c\u093e\u0924\u0947 \u0939\u0948\u0902\u0964<br><br>3. A higher Cash Reserve Ratio (CRR) reduces the banking system&#x27;s capacity to create money. / 3. \u0909\u091a\u094d\u091a \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u092c\u0948\u0902\u0915\u093f\u0902\u0917 \u092a\u094d\u0930\u0923\u093e\u0932\u0940 \u0915\u0940 \u0927\u0928 \u0938\u0943\u091c\u0928 \u0915\u094d\u0937\u092e\u0924\u093e \u0915\u094b \u0915\u092e \u0915\u0930\u0924\u093e \u0939\u0948\u0964\n            </div>\n            <b>Q9.</b> Which of the statements above is/are correct? / \ud83d\udc49 \u0909\u092a\u0930\u094b\u0915\u094d\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0938\u093e/\u0938\u0947 \u0915\u0925\u0928 \u0938\u0939\u0940 \u0939\u0948/\u0939\u0948\u0902?",
+      "options": [
+        "Only 2 and 3 / \u0915\u0947\u0935\u0932 2 \u0914\u0930 3",
+        "Only 1 and 2 / \u0915\u0947\u0935\u0932 1 \u0914\u0930 2",
+        "Only 1 and 3 / \u0915\u0947\u0935\u0932 1 \u0914\u0930 3",
+        "All 1, 2 and 3 / \u0938\u092d\u0940 1, 2 \u0914\u0930 3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Statements 1 and 3 are absolutely correct. Cash withdrawals act as a severe leakage, drastically reducing the ability of banks to create credit. A higher CRR mandates banks to hold more idle reserves, reducing lendable funds. Statement 2 is entirely incorrect: Higher reserve requirements mathematically reduce the money multiplier. / \u0915\u0925\u0928 1 \u0914\u0930 3 \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u0938\u0939\u0940 \u0939\u0948\u0902\u0964 \u0928\u0915\u0926 \u0928\u093f\u0915\u093e\u0938\u0940 \u090f\u0915 \u0917\u0902\u092d\u0940\u0930 \u0930\u093f\u0938\u093e\u0935 \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u0915\u093e\u0930\u094d\u092f \u0915\u0930\u0924\u0940 \u0939\u0948, \u091c\u094b \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0940 \u090b\u0923 \u092c\u0928\u093e\u0928\u0947 \u0915\u0940 \u0915\u094d\u0937\u092e\u0924\u093e \u0915\u094b \u0915\u093e\u092b\u0940 \u0915\u092e \u0915\u0930 \u0926\u0947\u0924\u0940 \u0939\u0948\u0964 \u090f\u0915 \u0909\u091a\u094d\u091a CRR \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0905\u0927\u093f\u0915 \u0928\u093f\u0937\u094d\u0915\u094d\u0930\u093f\u092f \u092d\u0902\u0921\u093e\u0930 \u0930\u0916\u0928\u0947 \u0915\u093e \u0906\u0926\u0947\u0936 \u0926\u0947\u0924\u093e \u0939\u0948, \u091c\u093f\u0938\u0938\u0947 \u090b\u0923 \u0926\u0947\u0928\u0947 \u092f\u094b\u0917\u094d\u092f \u0927\u0928 \u0915\u092e \u0939\u094b \u091c\u093e\u0924\u093e \u0939\u0948\u0964 \u0915\u0925\u0928 2 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0917\u0932\u0924 \u0939\u0948: \u0909\u091a\u094d\u091a \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e\u090f\u0902 \u0917\u0923\u093f\u0924\u0940\u092f \u0930\u0942\u092a \u0938\u0947 \u092e\u0941\u0926\u094d\u0930\u093e \u0917\u0941\u0923\u0915 \u0915\u094b \u0915\u092e \u0915\u0930\u0924\u0940 \u0939\u0948\u0902\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q10.</b> In which year was the fixed rate repos in government securities introduced to give maneuverability in liquidity management? / \u0924\u0930\u0932\u0924\u093e \u092a\u094d\u0930\u092c\u0902\u0927\u0928 \u092e\u0947\u0902 \u0917\u0924\u093f\u0936\u0940\u0932\u0924\u093e \u092a\u094d\u0930\u0926\u093e\u0928 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0938\u0930\u0915\u093e\u0930\u0940 \u092a\u094d\u0930\u0924\u093f\u092d\u0942\u0924\u093f\u092f\u094b\u0902 \u092e\u0947\u0902 &#x27;\u0928\u093f\u0936\u094d\u091a\u093f\u0924 \u0926\u0930 \u0930\u0947\u092a\u094b&#x27; (fixed rate repos) \u0915\u093f\u0938 \u0935\u0930\u094d\u0937 \u0936\u0941\u0930\u0942 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0925\u093e? [SSC CHSL, 18 Nov 2025, Shift-1]",
+      "options": [
+        "1998",
+        "1997",
+        "1995",
+        "1996"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fixed rate repos were officially and strategically introduced specifically in November 1997 to explicitly provide the powerful Reserve Bank of India with an advanced, robust mechanism to dynamically manage short-term liquidity and clearly signal benchmark interest rates to the open market. / \u0928\u093f\u0936\u094d\u091a\u093f\u0924 \u0926\u0930 \u0930\u0947\u092a\u094b (Fixed rate repos) \u0915\u094b \u0935\u093f\u0936\u0947\u0937 \u0930\u0942\u092a \u0938\u0947 \u0928\u0935\u0902\u092c\u0930 1997 \u092e\u0947\u0902 \u0906\u0927\u093f\u0915\u093e\u0930\u093f\u0915 \u0914\u0930 \u0930\u0923\u0928\u0940\u0924\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u092a\u0947\u0936 \u0915\u093f\u092f\u093e \u0917\u092f\u093e \u0925\u093e \u0924\u093e\u0915\u093f \u0936\u0915\u094d\u0924\u093f\u0936\u093e\u0932\u0940 \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 \u0915\u094b \u0905\u0932\u094d\u092a\u0915\u093e\u0932\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0915\u093e \u0917\u0924\u093f\u0936\u0940\u0932 \u0930\u0942\u092a \u0938\u0947 \u092a\u094d\u0930\u092c\u0902\u0927\u0928 \u0915\u0930\u0928\u0947 \u0914\u0930 \u0916\u0941\u0932\u0947 \u092c\u093e\u091c\u093e\u0930 \u0915\u094b \u092c\u0947\u0902\u091a\u092e\u093e\u0930\u094d\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u0915\u093e \u0938\u094d\u092a\u0937\u094d\u091f \u0938\u0902\u0915\u0947\u0924 \u0926\u0947\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u090f\u0915 \u0909\u0928\u094d\u0928\u0924, \u092e\u091c\u092c\u0942\u0924 \u0924\u0902\u0924\u094d\u0930 \u092a\u094d\u0930\u0926\u093e\u0928 \u0915\u093f\u092f\u093e \u091c\u093e \u0938\u0915\u0947\u0964",
+      "reference": ""
+    },
+    {
+      "text": "\n            <div class=\"context-box\">\n                Q11. Consider the following tools of economic policy: / \u0906\u0930\u094d\u0925\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u0947 \u0928\u093f\u092e\u094d\u0928\u0932\u093f\u0916\u093f\u0924 \u0909\u092a\u0915\u0930\u0923\u094b\u0902 \u092a\u0930 \u0935\u093f\u091a\u093e\u0930 \u0915\u0930\u0947\u0902: [SSC MTS, 05 Feb 2026, Shift-3]<br><br>1. Reverse repo operations / 1. \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0938\u0902\u091a\u093e\u0932\u0928 (Reverse repo operations)<br><br>2. Transfer payments / 2. \u0939\u0938\u094d\u0924\u093e\u0902\u0924\u0930\u0923 \u092d\u0941\u0917\u0924\u093e\u0928 (Transfer payments)\n            </div>\n            <b>Q11.</b> Which of the above is/are the main tool(s) of monetary policy of the Reserve Bank of India? / \ud83d\udc49 \u0909\u092a\u0930\u094b\u0915\u094d\u0924 \u092e\u0947\u0902 \u0938\u0947 \u0915\u094c\u0928 \u0938\u093e/\u0938\u0947 \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 \u0915\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u093e \u092e\u0941\u0916\u094d\u092f \u0909\u092a\u0915\u0930\u0923 \u0939\u0948/\u0939\u0948\u0902?",
+      "options": [
+        "Only I",
+        "Both I and II",
+        "Neither I nor II",
+        "Only II"
+      ],
+      "correctIndex": 0,
+      "explanation": "The RBI aggressively utilizes precise quantitative instruments exactly like Repo and Reverse Repo operations to tightly control the national money supply and aggressively tackle inflation. Conversely, unilateral Transfer payments (like state pensions or subsidies) are strictly powerful tools of Fiscal Policy entirely managed by the Central Government. / RBI \u0930\u093e\u0937\u094d\u091f\u094d\u0930\u0940\u092f \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u094b \u0938\u0916\u094d\u0924\u0940 \u0938\u0947 \u0928\u093f\u092f\u0902\u0924\u094d\u0930\u093f\u0924 \u0915\u0930\u0928\u0947 \u0914\u0930 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0938\u0947 \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u0928\u093f\u092a\u091f\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0930\u0947\u092a\u094b \u0914\u0930 \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0938\u0902\u091a\u093e\u0932\u0928 \u091c\u0948\u0938\u0947 \u0938\u091f\u0940\u0915 \u092e\u093e\u0924\u094d\u0930\u093e\u0924\u094d\u092e\u0915 \u0909\u092a\u0915\u0930\u0923\u094b\u0902 \u0915\u093e \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u0909\u092a\u092f\u094b\u0917 \u0915\u0930\u0924\u093e \u0939\u0948\u0964 \u0907\u0938\u0915\u0947 \u0935\u093f\u092a\u0930\u0940\u0924, \u090f\u0915\u0924\u0930\u092b\u093e \u0939\u0938\u094d\u0924\u093e\u0902\u0924\u0930\u0923 \u092d\u0941\u0917\u0924\u093e\u0928 (\u091c\u0948\u0938\u0947 \u0930\u093e\u091c\u094d\u092f \u092a\u0947\u0902\u0936\u0928 \u092f\u093e \u0938\u092c\u094d\u0938\u093f\u0921\u0940) \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0915\u0947\u0902\u0926\u094d\u0930 \u0938\u0930\u0915\u093e\u0930 \u0926\u094d\u0935\u093e\u0930\u093e \u092a\u094d\u0930\u092c\u0902\u0927\u093f\u0924 \u0930\u093e\u091c\u0915\u094b\u0937\u0940\u092f \u0928\u0940\u0924\u093f \u0915\u0947 \u0938\u0916\u094d\u0924 \u0936\u0915\u094d\u0924\u093f\u0936\u093e\u0932\u0940 \u0909\u092a\u0915\u0930\u0923 \u0939\u0948\u0902\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q12.</b> In the evolving framework of liquidity management by the Reserve Bank of India (RBI), what does the adoption of the Variable Rate Repo (VRR) mechanism signify, and how does it differ from the fixed rate repo in terms of market dynamics and monetary policy transmission? / \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 (RBI) \u0926\u094d\u0935\u093e\u0930\u093e \u0924\u0930\u0932\u0924\u093e \u092a\u094d\u0930\u092c\u0902\u0927\u0928 \u0915\u0947 \u0935\u093f\u0915\u0938\u093f\u0924 \u0922\u093e\u0902\u091a\u0947 \u092e\u0947\u0902, \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928\u0940\u092f \u0926\u0930 \u0930\u0947\u092a\u094b (VRR) \u0924\u0902\u0924\u094d\u0930 \u0915\u094b \u0905\u092a\u0928\u093e\u0928\u093e \u0915\u094d\u092f\u093e \u0926\u0930\u094d\u0936\u093e\u0924\u093e \u0939\u0948, \u0914\u0930 \u092f\u0939 \u092c\u093e\u091c\u093e\u0930 \u0915\u0940 \u0917\u0924\u093f\u0936\u0940\u0932\u0924\u093e \u0914\u0930 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u092a\u094d\u0930\u0938\u093e\u0930\u0923 \u0915\u0947 \u0938\u0902\u0926\u0930\u094d\u092d \u092e\u0947\u0902 \u0928\u093f\u0936\u094d\u091a\u093f\u0924 \u0926\u0930 \u0930\u0947\u092a\u094b \u0938\u0947 \u0915\u0948\u0938\u0947 \u092d\u093f\u0928\u094d\u0928 \u0939\u0948? [Head Constable (AWO)/(TPO) in Delhi Police Examination, 2025, 21 Jan 2026, Shift-1]",
+      "options": [
+        "VRR allows banks to lend to RBI at rates of their choice, replacing reverse repo operations / VRR \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0905\u092a\u0928\u0940 \u092a\u0938\u0902\u0926 \u0915\u0940 \u0926\u0930\u094b\u0902 \u092a\u0930 RBI \u0915\u094b \u0909\u0927\u093e\u0930 \u0926\u0947\u0928\u0947 \u0915\u0940 \u0905\u0928\u0941\u092e\u0924\u093f \u0926\u0947\u0924\u093e \u0939\u0948, \u091c\u093f\u0938\u0938\u0947 \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0938\u0902\u091a\u093e\u0932\u0928 \u0915\u0940 \u091c\u0917\u0939 \u0932\u0947 \u0932\u0940 \u091c\u093e\u0924\u0940 \u0939\u0948",
+        "VRR is used only in cases of inflation control and remains unrelated to daily liquidity management / VRR \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0947\u0935\u0932 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0928\u093f\u092f\u0902\u0924\u094d\u0930\u0923 \u0915\u0947 \u092e\u093e\u092e\u0932\u094b\u0902 \u092e\u0947\u0902 \u0915\u093f\u092f\u093e \u091c\u093e\u0924\u093e \u0939\u0948 \u0914\u0930 \u092f\u0939 \u0926\u0948\u0928\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u092a\u094d\u0930\u092c\u0902\u0927\u0928 \u0938\u0947 \u0905\u0938\u0902\u092c\u0902\u0927\u093f\u0924 \u0930\u0939\u0924\u093e \u0939\u0948",
+        "VRR eliminates the need for CRR and SLR requirements, giving banks more flexibility in reserve management / VRR \u0938\u0940\u0906\u0930\u0906\u0930 (CRR) \u0914\u0930 \u090f\u0938\u090f\u0932\u0906\u0930 (SLR) \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e\u0913\u0902 \u0915\u094b \u0938\u092e\u093e\u092a\u094d\u0924 \u0915\u0930\u0924\u093e \u0939\u0948, \u091c\u093f\u0938\u0938\u0947 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u092a\u094d\u0930\u092c\u0902\u0927\u0928 \u092e\u0947\u0902 \u0905\u0927\u093f\u0915 \u0932\u091a\u0940\u0932\u093e\u092a\u0928 \u092e\u093f\u0932\u0924\u093e \u0939\u0948",
+        "Under VRR, banks bid for liquidity at market-determined rates above or below the policy repo rate, enhancing competitive price discovery and fine-tuning of liquidity conditions / VRR \u0915\u0947 \u0924\u0939\u0924, \u092c\u0948\u0902\u0915 \u092a\u0949\u0932\u093f\u0938\u0940 \u0930\u0947\u092a\u094b \u0926\u0930 \u0915\u0947 \u090a\u092a\u0930 \u092f\u093e \u0928\u0940\u091a\u0947 \u092c\u093e\u091c\u093e\u0930-\u0928\u093f\u0930\u094d\u0927\u093e\u0930\u093f\u0924 \u0926\u0930\u094b\u0902 \u092a\u0930 \u0924\u0930\u0932\u0924\u093e \u0915\u0947 \u0932\u093f\u090f \u092c\u094b\u0932\u0940 \u0932\u0917\u093e\u0924\u0947 \u0939\u0948\u0902, \u091c\u093f\u0938\u0938\u0947 \u092a\u094d\u0930\u0924\u093f\u0938\u094d\u092a\u0930\u094d\u0927\u0940 \u092e\u0942\u0932\u094d\u092f \u0916\u094b\u091c \u0914\u0930 \u0924\u0930\u0932\u0924\u093e \u0915\u0940 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902 \u0938\u0941\u0927\u093e\u0930 \u0939\u094b\u0924\u093e \u0939\u0948"
+      ],
+      "correctIndex": 3,
+      "explanation": "The RBI highly strategically utilizes the Variable Rate Repo (VRR) mechanism to actively fine-tune precise short-term liquidity. Unlike the traditional fixed-rate repo, VRR requires domestic banks to fiercely and competitively bid for funds at dynamic market-determined rates, profoundly enhancing highly efficient price discovery. / RBI \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u0938\u091f\u0940\u0915 \u0905\u0932\u094d\u092a\u0915\u093e\u0932\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0920\u0940\u0915 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0930\u0923\u0928\u0940\u0924\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928\u0940\u092f \u0926\u0930 \u0930\u0947\u092a\u094b (VRR) \u0924\u0902\u0924\u094d\u0930 \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0930\u0924\u093e \u0939\u0948\u0964 \u092a\u093e\u0930\u0902\u092a\u0930\u093f\u0915 \u0928\u093f\u0936\u094d\u091a\u093f\u0924 \u0926\u0930 \u0930\u0947\u092a\u094b \u0915\u0947 \u0935\u093f\u092a\u0930\u0940\u0924, VRR \u0915\u0947 \u0932\u093f\u090f \u0918\u0930\u0947\u0932\u0942 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0917\u0924\u093f\u0936\u0940\u0932 \u092c\u093e\u091c\u093e\u0930-\u0928\u093f\u0930\u094d\u0927\u093e\u0930\u093f\u0924 \u0926\u0930\u094b\u0902 \u092a\u0930 \u0927\u0928 \u0915\u0947 \u0932\u093f\u090f \u091c\u092e\u0915\u0930 \u0914\u0930 \u092a\u094d\u0930\u0924\u093f\u0938\u094d\u092a\u0930\u094d\u0927\u093e\u0924\u094d\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u092c\u094b\u0932\u0940 \u0932\u0917\u093e\u0928\u0947 \u0915\u0940 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u094b\u0924\u0940 \u0939\u0948, \u091c\u094b \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0915\u0941\u0936\u0932 \u092e\u0942\u0932\u094d\u092f \u0916\u094b\u091c \u0915\u094b \u0917\u0939\u0930\u093e\u0908 \u0938\u0947 \u092c\u0922\u093c\u093e\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q13.</b> What is the rate at which the RBI borrows money from commercial banks called? / \u0935\u0939 \u0926\u0930 \u0915\u094d\u092f\u093e \u0915\u0939\u0932\u093e\u0924\u0940 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 RBI \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0938\u0947 \u092a\u0948\u0938\u093e \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u093e \u0939\u0948? [Delhi Police Constable, 30 Dec 2025, Shift-2]",
+      "options": [
+        "Repo Rate / \u0930\u0947\u092a\u094b \u0930\u0947\u091f",
+        "Reverse Repo Rate / \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0930\u0947\u091f",
+        "Inflation Rate / \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0926\u0930",
+        "Fiscal Rate / \u0930\u093e\u091c\u0915\u094b\u0937\u0940\u092f \u0926\u0930"
+      ],
+      "correctIndex": 1,
+      "explanation": "The &#x27;Reverse Repo Rate&#x27; is a remarkably critical, highly effective monetary policy tool actively utilized by the RBI. It is the precise benchmark interest rate at which the RBI strategically borrows excess, completely idle funds from domestic commercial banks to aggressively suck out excess liquidity from the market. / &#x27;\u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0930\u0947\u091f&#x27; \u090f\u0915 \u0909\u0932\u094d\u0932\u0947\u0916\u0928\u0940\u092f \u0930\u0942\u092a \u0938\u0947 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923, \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0909\u092a\u0915\u0930\u0923 \u0939\u0948 \u091c\u093f\u0938\u0915\u093e RBI \u0926\u094d\u0935\u093e\u0930\u093e \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u0909\u092a\u092f\u094b\u0917 \u0915\u093f\u092f\u093e \u091c\u093e\u0924\u093e \u0939\u0948\u0964 \u092f\u0939 \u0935\u0939 \u0938\u091f\u0940\u0915 \u092c\u0947\u0902\u091a\u092e\u093e\u0930\u094d\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 RBI \u092c\u093e\u091c\u093e\u0930 \u0938\u0947 \u0905\u0924\u093f\u0930\u093f\u0915\u094d\u0924 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u091a\u0942\u0938\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0918\u0930\u0947\u0932\u0942 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0938\u0947 \u0930\u0923\u0928\u0940\u0924\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u0905\u0924\u093f\u0930\u093f\u0915\u094d\u0924, \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0928\u093f\u0937\u094d\u0915\u094d\u0930\u093f\u092f \u0927\u0928 \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q14.</b> What is the term for the interest rate at which the RBI borrows money from commercial banks? / \u0909\u0938 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0915\u0947 \u0932\u093f\u090f \u0915\u093f\u0938 \u0936\u092c\u094d\u0926 \u0915\u093e \u092a\u094d\u0930\u092f\u094b\u0917 \u0915\u093f\u092f\u093e \u091c\u093e\u0924\u093e \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 RBI \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0938\u0947 \u092a\u0948\u0938\u093e \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u093e \u0939\u0948? [Delhi Police Constable, 02 Jan 2026, Shift-3]",
+      "options": [
+        "Bank Rate / \u092c\u0948\u0902\u0915 \u0926\u0930",
+        "Reverse Repo Rate / \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0930\u0947\u091f",
+        "Inflation Rate / \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0926\u0930",
+        "Repo Rate / \u0930\u0947\u092a\u094b \u0930\u0947\u091f"
+      ],
+      "correctIndex": 1,
+      "explanation": "The &#x27;Reverse Repo Rate&#x27; is exactly the specific rate at which the Reserve Bank of India (RBI) effectively borrows funds from commercial banks in India (or rather, absorbs massive excess liquidity from the market). Conversely, the &#x27;Repo Rate&#x27; is for lending money to banks. / &#x27;\u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0930\u0947\u091f&#x27; \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u0935\u093f\u0936\u093f\u0937\u094d\u091f \u0926\u0930 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u093c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 (RBI) \u092d\u093e\u0930\u0924 \u092e\u0947\u0902 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0938\u0947 \u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u0922\u0902\u0917 \u0938\u0947 \u0927\u0928 \u0909\u0927\u093e\u0930 \u0932\u0947\u0924\u093e \u0939\u0948 (\u092f\u093e \u092f\u094b\u0902 \u0915\u0939\u0947\u0902, \u092c\u093e\u091c\u093e\u0930 \u0938\u0947 \u092c\u0921\u093c\u0947 \u092a\u0948\u092e\u093e\u0928\u0947 \u092a\u0930 \u0905\u0924\u093f\u0930\u093f\u0915\u094d\u0924 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0905\u0935\u0936\u094b\u0937\u093f\u0924 \u0915\u0930\u0924\u093e \u0939\u0948)\u0964 \u0907\u0938\u0915\u0947 \u0935\u093f\u092a\u0930\u0940\u0924, \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u092a\u0948\u0938\u093e \u0909\u0927\u093e\u0930 \u0926\u0947\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f &#x27;\u0930\u0947\u092a\u094b \u0930\u0947\u091f&#x27; \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q15.</b> If the RBI increases the Cash Reserve Ratio (CRR), what will be the impact on the banking system? / \u092f\u0926\u093f RBI \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u092c\u0922\u093c\u093e\u0924\u093e \u0939\u0948, \u0924\u094b \u092c\u0948\u0902\u0915\u093f\u0902\u0917 \u092a\u094d\u0930\u0923\u093e\u0932\u0940 \u092a\u0930 \u0915\u094d\u092f\u093e \u092a\u094d\u0930\u092d\u093e\u0935 \u092a\u0921\u093c\u0947\u0917\u093e? [Delhi Police Constable, 03 Jan 2026, Shift-1]",
+      "options": [
+        "Banks will decrease interest rates on loans / \u092c\u0948\u0902\u0915 \u090b\u0923 \u092a\u0930 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u0947\u0902 \u0915\u092e \u0915\u0930 \u0926\u0947\u0902\u0917\u0947",
+        "Banks&#x27; lending capacity will increase / \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0940 \u090b\u0923 \u0926\u0947\u0928\u0947 \u0915\u0940 \u0915\u094d\u0937\u092e\u0924\u093e \u092c\u0922\u093c \u091c\u093e\u090f\u0917\u0940",
+        "Liquidity with banks will decrease / \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0947 \u092a\u093e\u0938 \u0924\u0930\u0932\u0924\u093e \u0915\u092e \u0939\u094b \u091c\u093e\u090f\u0917\u0940",
+        "No impact on money supply / \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u092a\u0930 \u0915\u094b\u0908 \u092a\u094d\u0930\u092d\u093e\u0935 \u0928\u0939\u0940\u0902 \u092a\u0921\u093c\u0947\u0917\u093e"
+      ],
+      "correctIndex": 2,
+      "explanation": "The Cash Reserve Ratio (CRR) is the strict, mandatory percentage of total commercial deposits that banks absolutely must keep locked in cash directly with the RBI. If the RBI drastically increases the CRR, banks are forcefully required to park far more money, which directly decreases the surplus liquidity available for public lending. / \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u0915\u0941\u0932 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u091c\u092e\u093e\u0913\u0902 \u0915\u093e \u0935\u0939 \u0938\u0916\u094d\u0924, \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f \u092a\u094d\u0930\u0924\u093f\u0936\u0924 \u0939\u0948 \u091c\u093f\u0938\u0947 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0928\u0915\u0926 \u092e\u0947\u0902 \u0938\u0940\u0927\u0947 RBI \u0915\u0947 \u092a\u093e\u0938 \u092c\u0902\u0926 \u0930\u0916\u0928\u093e \u091a\u093e\u0939\u093f\u090f\u0964 \u092f\u0926\u093f RBI \u0938\u0940\u0906\u0930\u0906\u0930 \u092e\u0947\u0902 \u092d\u093e\u0930\u0940 \u0935\u0943\u0926\u094d\u0927\u093f \u0915\u0930\u0924\u093e \u0939\u0948, \u0924\u094b \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u092c\u0932\u092a\u0942\u0930\u094d\u0935\u0915 \u092c\u0939\u0941\u0924 \u0905\u0927\u093f\u0915 \u092a\u0948\u0938\u093e \u091c\u092e\u093e \u0915\u0930\u0928\u0947 \u0915\u0940 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u094b\u0924\u0940 \u0939\u0948, \u091c\u094b \u0938\u093e\u0930\u094d\u0935\u091c\u0928\u093f\u0915 \u090b\u0923 \u0915\u0947 \u0932\u093f\u090f \u0909\u092a\u0932\u092c\u094d\u0927 \u0905\u0927\u093f\u0936\u0947\u0937 \u0924\u0930\u0932\u0924\u093e \u0915\u094b \u0938\u0940\u0927\u0947 \u0915\u092e \u0915\u0930 \u0926\u0947\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q16.</b> What is the banking term for the portion of deposits that commercial banks must mandatorily keep with themselves in liquid assets (like gold or cash)? / \u091c\u092e\u093e \u0915\u0947 \u0909\u0938 \u0939\u093f\u0938\u094d\u0938\u0947 \u0915\u0947 \u0932\u093f\u090f \u092c\u0948\u0902\u0915\u093f\u0902\u0917 \u0936\u092c\u094d\u0926 \u0915\u094d\u092f\u093e \u0939\u0948 \u091c\u093f\u0938\u0947 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f \u0930\u0942\u092a \u0938\u0947 \u0924\u0930\u0932 \u0938\u0902\u092a\u0924\u094d\u0924\u093f (\u091c\u0948\u0938\u0947 \u0938\u094b\u0928\u093e \u092f\u093e \u0928\u0915\u0926) \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u0905\u092a\u0928\u0947 \u092a\u093e\u0938 \u0930\u0916\u0928\u093e \u091a\u093e\u0939\u093f\u090f? [Delhi Police Constable , 06 Jan 2026, Shift-3]",
+      "options": [
+        "Cash Reserve Ratio (CRR) / \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR)",
+        "Reverse Repo Rate / \u0930\u093f\u0935\u0930\u094d\u0938 \u0930\u0947\u092a\u094b \u0926\u0930",
+        "Repo Rate / \u0930\u0947\u092a\u094b \u0926\u0930",
+        "Statutory Liquidity Ratio (SLR) / \u0935\u0948\u0927\u093e\u0928\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0905\u0928\u0941\u092a\u093e\u0924 (SLR)"
+      ],
+      "correctIndex": 3,
+      "explanation": "The &#x27;Statutory Liquidity Ratio&#x27; (SLR) is the strict, legally mandated percentage of a commercial bank&#x27;s total Net Demand and Time Liabilities (NDTL) that it absolutely must maintain safely with itself purely in the highly secure form of liquid assets such as actual physical gold or unencumbered government securities. / &#x27;\u0935\u0948\u0927\u093e\u0928\u093f\u0915 \u0924\u0930\u0932\u0924\u093e \u0905\u0928\u0941\u092a\u093e\u0924&#x27; (SLR) \u090f\u0915 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915 \u0915\u0940 \u0915\u0941\u0932 \u0936\u0941\u0926\u094d\u0927 \u092e\u093e\u0902\u0917 \u0914\u0930 \u0938\u092e\u092f \u0926\u0947\u0928\u0926\u093e\u0930\u093f\u092f\u094b\u0902 (NDTL) \u0915\u093e \u0938\u0916\u094d\u0924, \u0915\u093e\u0928\u0942\u0928\u0940 \u0930\u0942\u092a \u0938\u0947 \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f \u092a\u094d\u0930\u0924\u093f\u0936\u0924 \u0939\u0948 \u091c\u093f\u0938\u0947 \u0909\u0938\u0947 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0938\u0941\u0930\u0915\u094d\u0937\u093f\u0924 \u0930\u0942\u092a \u092e\u0947\u0902 \u0924\u0930\u0932 \u0938\u0902\u092a\u0924\u094d\u0924\u093f \u091c\u0948\u0938\u0947 \u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u092d\u094c\u0924\u093f\u0915 \u0938\u094b\u0928\u0947 \u092f\u093e \u092d\u093e\u0930\u092e\u0941\u0915\u094d\u0924 \u0938\u0930\u0915\u093e\u0930\u0940 \u092a\u094d\u0930\u0924\u093f\u092d\u0942\u0924\u093f\u092f\u094b\u0902 \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u0938\u0941\u0930\u0915\u094d\u0937\u093f\u0924 \u0930\u0942\u092a \u0938\u0947 \u092c\u0928\u093e\u090f \u0930\u0916\u0928\u093e \u091a\u093e\u0939\u093f\u090f\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q17.</b> What happens when there is a decrease in the Cash Reserve Ratio (CRR)? / \u091c\u092c \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u092e\u0947\u0902 \u0915\u092e\u0940 \u0939\u094b\u0924\u0940 \u0939\u0948 \u0924\u094b \u0915\u094d\u092f\u093e \u0939\u094b\u0924\u093e \u0939\u0948? [Delhi Police Constable, 18 Dec 2025, Shift-2]",
+      "options": [
+        "Contraction of credit / \u090b\u0923 \u0915\u093e \u0938\u0902\u0915\u0941\u091a\u0928",
+        "Reduction in money supply / \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u092e\u0947\u0902 \u0915\u092e\u0940",
+        "Increase in interest rates / \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f",
+        "Increase in banks&#x27; lendable resources / \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0947 \u090b\u0923 \u092f\u094b\u0917\u094d\u092f \u0938\u0902\u0938\u093e\u0927\u0928\u094b\u0902 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f"
+      ],
+      "correctIndex": 3,
+      "explanation": "The Cash Reserve Ratio (CRR) is the strictly mandated minimum percentage of total deposits that commercial banks must rigidly hold in cash with the RBI. When the RBI decides to actively decrease the CRR, banks are required to hold less money in reserve, which instantly and directly leads to an immense Increase in banks&#x27; lendable resources. / \u0928\u0915\u0926 \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0905\u0928\u0941\u092a\u093e\u0924 (CRR) \u0915\u0941\u0932 \u091c\u092e\u093e \u0915\u093e \u0915\u0921\u093c\u093e\u0908 \u0938\u0947 \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f \u0928\u094d\u092f\u0942\u0928\u0924\u092e \u092a\u094d\u0930\u0924\u093f\u0936\u0924 \u0939\u0948 \u091c\u093f\u0938\u0947 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b RBI \u0915\u0947 \u092a\u093e\u0938 \u0928\u0915\u0926 \u092e\u0947\u0902 \u0915\u0920\u094b\u0930\u0924\u093e \u0938\u0947 \u0930\u0916\u0928\u093e \u091a\u093e\u0939\u093f\u090f\u0964 \u091c\u092c RBI \u0938\u0940\u0906\u0930\u0906\u0930 \u0915\u094b \u0938\u0915\u094d\u0930\u093f\u092f \u0930\u0942\u092a \u0938\u0947 \u0915\u092e \u0915\u0930\u0928\u0947 \u0915\u093e \u092b\u0948\u0938\u0932\u093e \u0915\u0930\u0924\u093e \u0939\u0948, \u0924\u094b \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0906\u0930\u0915\u094d\u0937\u093f\u0924 \u0930\u0942\u092a \u092e\u0947\u0902 \u0915\u092e \u092a\u0948\u0938\u093e \u0930\u0916\u0928\u0947 \u0915\u0940 \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u094b\u0924\u0940 \u0939\u0948, \u091c\u094b \u0924\u0941\u0930\u0902\u0924 \u0914\u0930 \u0938\u0940\u0927\u0947 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0947 \u090b\u0923 \u0926\u0947\u0928\u0947 \u092f\u094b\u0917\u094d\u092f \u0938\u0902\u0938\u093e\u0927\u0928\u094b\u0902 \u092e\u0947\u0902 \u092d\u093e\u0930\u0940 \u0935\u0943\u0926\u094d\u0927\u093f \u0915\u0940 \u0913\u0930 \u0932\u0947 \u091c\u093e\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q18.</b> If the investment-saving curve (IS curve) is vertical, monetary policy is: / \u092f\u0926\u093f \u0928\u093f\u0935\u0947\u0936-\u092c\u091a\u0924 \u0935\u0915\u094d\u0930 (IS \u0935\u0915\u094d\u0930) \u0932\u0902\u092c\u0935\u0924 (vertical) \u0939\u0948, \u0924\u094b \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0939\u0948: [Delhi Police Constable, 18 Dec 2025, Shift-2]",
+      "options": [
+        "Ineffective / \u0905\u092a\u094d\u0930\u092d\u093e\u0935\u0940",
+        "Partially effective / \u0906\u0902\u0936\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u092a\u094d\u0930\u092d\u093e\u0935\u0940",
+        "Highly effective / \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u092a\u094d\u0930\u092d\u093e\u0935\u0940",
+        "Effective / \u092a\u094d\u0930\u092d\u093e\u0935\u0940"
+      ],
+      "correctIndex": 0,
+      "explanation": "In the complex IS-LM macroeconomic model, a completely vertical IS curve definitively indicates that domestic investment is entirely and completely inelastic (totally unresponsive) to any changes in the interest rate. Therefore, if the central bank aggressively uses expansionary Monetary policy to lower interest rates, it will absolutely fail to stimulate investment, making it entirely Ineffective. / \u091c\u091f\u093f\u0932 IS-LM \u0938\u092e\u0937\u094d\u091f\u093f-\u0906\u0930\u094d\u0925\u093f\u0915 \u092e\u0949\u0921\u0932 \u092e\u0947\u0902, \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0932\u0902\u092c\u0935\u0924 IS \u0935\u0915\u094d\u0930 \u0928\u093f\u0936\u094d\u091a\u093f\u0924 \u0930\u0942\u092a \u0938\u0947 \u0907\u0902\u0917\u093f\u0924 \u0915\u0930\u0924\u093e \u0939\u0948 \u0915\u093f \u0918\u0930\u0947\u0932\u0942 \u0928\u093f\u0935\u0947\u0936 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u092e\u0947\u0902 \u0915\u093f\u0938\u0940 \u092d\u0940 \u092c\u0926\u0932\u093e\u0935 \u0915\u0947 \u0932\u093f\u090f \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u092c\u0947\u0932\u094b\u091a\u0926\u093e\u0930 (\u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0905\u0928\u0941\u0924\u094d\u0924\u0930\u0926\u093e\u092f\u0940) \u0939\u0948\u0964 \u0907\u0938\u0932\u093f\u090f, \u092f\u0926\u093f \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u0915\u094b \u0915\u092e \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u0935\u093f\u0938\u094d\u0924\u093e\u0930\u0935\u093e\u0926\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0930\u0924\u093e \u0939\u0948, \u0924\u094b \u092f\u0939 \u0928\u093f\u0935\u0947\u0936 \u0915\u094b \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u093f\u0924 \u0915\u0930\u0928\u0947 \u092e\u0947\u0902 \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u0935\u093f\u092b\u0932 \u0930\u0939\u0947\u0917\u093e, \u091c\u093f\u0938\u0938\u0947 \u092f\u0939 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0905\u092a\u094d\u0930\u092d\u093e\u0935\u0940 \u0939\u094b \u091c\u093e\u090f\u0917\u093e\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q19.</b> Which organisation is responsible for formulating India&#x27;s monetary policy? / \u092d\u093e\u0930\u0924 \u0915\u0940 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0924\u0948\u092f\u093e\u0930 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0915\u094c\u0928 \u0938\u093e \u0938\u0902\u0917\u0920\u0928 \u091c\u093f\u092e\u094d\u092e\u0947\u0926\u093e\u0930 \u0939\u0948? [Delhi Police Constable, 19 Dec 2025, Shift-2]",
+      "options": [
+        "SEBI / \u0938\u0947\u092c\u0940",
+        "NITI Aayog / \u0928\u0940\u0924\u093f \u0906\u092f\u094b\u0917",
+        "RBI / \u0906\u0930\u092c\u0940\u0906\u0908 (RBI)",
+        "Ministry of Finance / \u0935\u093f\u0924\u094d\u0924 \u092e\u0902\u0924\u094d\u0930\u093e\u0932\u092f"
+      ],
+      "correctIndex": 2,
+      "explanation": "In India, the absolutely critical, legally binding responsibility of meticulously formulating and aggressively implementing the nation&#x27;s overarching monetary policy lies entirely and exclusively with the Reserve Bank of India (RBI), which majestically operates as the supreme central bank utilizing the specialized Monetary Policy Committee (MPC). / \u092d\u093e\u0930\u0924 \u092e\u0947\u0902, \u0926\u0947\u0936 \u0915\u0940 \u0935\u094d\u092f\u093e\u092a\u0915 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u094b \u0938\u093e\u0935\u0927\u093e\u0928\u0940\u092a\u0942\u0930\u094d\u0935\u0915 \u0924\u0948\u092f\u093e\u0930 \u0915\u0930\u0928\u0947 \u0914\u0930 \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u0932\u093e\u0917\u0942 \u0915\u0930\u0928\u0947 \u0915\u0940 \u092c\u093f\u0932\u094d\u0915\u0941\u0932 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923, \u0915\u093e\u0928\u0942\u0928\u0940 \u0930\u0942\u092a \u0938\u0947 \u092c\u093e\u0927\u094d\u092f\u0915\u093e\u0930\u0940 \u091c\u093f\u092e\u094d\u092e\u0947\u0926\u093e\u0930\u0940 \u092a\u0942\u0930\u0940 \u0924\u0930\u0939 \u0938\u0947 \u0914\u0930 \u0935\u093f\u0936\u0947\u0937 \u0930\u0942\u092a \u0938\u0947 \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u093c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 (RBI) \u0915\u0940 \u0939\u0948, \u091c\u094b \u0935\u093f\u0936\u0947\u0937 \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0938\u092e\u093f\u0924\u093f (MPC) \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0930\u0924\u0947 \u0939\u0941\u090f \u0938\u0930\u094d\u0935\u094b\u091a\u094d\u091a \u0915\u0947\u0902\u0926\u094d\u0930\u0940\u092f \u092c\u0948\u0902\u0915 \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u0936\u093e\u0928\u0926\u093e\u0930 \u0922\u0902\u0917 \u0938\u0947 \u0915\u093e\u0930\u094d\u092f \u0915\u0930\u0924\u093e \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q20.</b> The shift to market-determined interest rates aimed to: / \u092c\u093e\u091c\u093e\u0930-\u0928\u093f\u0930\u094d\u0927\u093e\u0930\u093f\u0924 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u092e\u0947\u0902 \u092c\u0926\u0932\u093e\u0935 \u0915\u093e \u0909\u0926\u094d\u0926\u0947\u0936\u094d\u092f \u0915\u094d\u092f\u093e \u0925\u093e? [Delhi Police Constable, 20 Dec 2025, Shift-1]",
+      "options": [
+        "Control inflation only. / \u0915\u0947\u0935\u0932 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0915\u094b \u0928\u093f\u092f\u0902\u0924\u094d\u0930\u093f\u0924 \u0915\u0930\u0928\u093e\u0964",
+        "Reduce foreign investment. / \u0935\u093f\u0926\u0947\u0936\u0940 \u0928\u093f\u0935\u0947\u0936 \u0915\u092e \u0915\u0930\u0928\u093e\u0964",
+        "Encourage efficient allocation of financial resources. / \u0935\u093f\u0924\u094d\u0924\u0940\u092f \u0938\u0902\u0938\u093e\u0927\u0928\u094b\u0902 \u0915\u0947 \u0915\u0941\u0936\u0932 \u0906\u0935\u0902\u091f\u0928 \u0915\u094b \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u093f\u0924 \u0915\u0930\u0928\u093e\u0964",
+        "Increase public borrowing. / \u0938\u093e\u0930\u094d\u0935\u091c\u0928\u093f\u0915 \u0909\u0927\u093e\u0930\u0940 \u092c\u0922\u093c\u093e\u0928\u093e\u0964"
+      ],
+      "correctIndex": 2,
+      "explanation": "As an incredibly crucial, foundational pillar of the massive 1991 banking and financial sector reforms, the RBI deliberately and strategically shifted directly from a highly rigid, government-administered interest rate regime to highly dynamic, market-determined interest rates specifically to heavily encourage the highly efficient, competitive allocation of severely scarce financial resources. / \u092c\u0921\u093c\u0947 \u092a\u0948\u092e\u093e\u0928\u0947 \u092a\u0930 1991 \u0915\u0947 \u092c\u0948\u0902\u0915\u093f\u0902\u0917 \u0914\u0930 \u0935\u093f\u0924\u094d\u0924\u0940\u092f \u0915\u094d\u0937\u0947\u0924\u094d\u0930 \u0915\u0947 \u0938\u0941\u0927\u093e\u0930\u094b\u0902 \u0915\u0947 \u0905\u0935\u093f\u0936\u094d\u0935\u0938\u0928\u0940\u092f \u0930\u0942\u092a \u0938\u0947 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923, \u092e\u0942\u0932\u092d\u0942\u0924 \u0938\u094d\u0924\u0902\u092d \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902, RBI \u0928\u0947 \u091c\u093e\u0928\u092c\u0942\u091d\u0915\u0930 \u0914\u0930 \u0930\u0923\u0928\u0940\u0924\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0915\u0920\u094b\u0930, \u0938\u0930\u0915\u093e\u0930 \u0926\u094d\u0935\u093e\u0930\u093e \u092a\u094d\u0930\u0936\u093e\u0938\u093f\u0924 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u0938\u0947 \u0938\u0940\u0927\u0947 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0917\u0924\u093f\u0936\u0940\u0932, \u092c\u093e\u091c\u093e\u0930-\u0928\u093f\u0930\u094d\u0927\u093e\u0930\u093f\u0924 \u092c\u094d\u092f\u093e\u091c \u0926\u0930\u094b\u0902 \u092e\u0947\u0902 \u092c\u0926\u0932\u093e\u0935 \u0915\u093f\u092f\u093e \u0924\u093e\u0915\u093f \u0935\u093f\u0936\u0947\u0937 \u0930\u0942\u092a \u0938\u0947 \u0905\u0924\u094d\u092f\u0902\u0924 \u0926\u0941\u0930\u094d\u0932\u092d \u0935\u093f\u0924\u094d\u0924\u0940\u092f \u0938\u0902\u0938\u093e\u0927\u0928\u094b\u0902 \u0915\u0947 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0915\u0941\u0936\u0932, \u092a\u094d\u0930\u0924\u093f\u0938\u094d\u092a\u0930\u094d\u0927\u0940 \u0906\u0935\u0902\u091f\u0928 \u0915\u094b \u092d\u093e\u0930\u0940 \u0930\u0942\u092a \u0938\u0947 \u092a\u094d\u0930\u094b\u0924\u094d\u0938\u093e\u0939\u093f\u0924 \u0915\u093f\u092f\u093e \u091c\u093e \u0938\u0915\u0947\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q21.</b> What is the effect of an increase in the repo rate by the Reserve Bank of India? / \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 \u0926\u094d\u0935\u093e\u0930\u093e \u0930\u0947\u092a\u094b \u0926\u0930 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f \u0915\u093e \u0915\u094d\u092f\u093e \u092a\u094d\u0930\u092d\u093e\u0935 \u0939\u094b\u0924\u093e \u0939\u0948? [Delhi Police Constable, 20 Dec 2025, Shift-2]",
+      "options": [
+        "Increase investment and consumption. / \u0928\u093f\u0935\u0947\u0936 \u0914\u0930 \u0916\u092a\u0924 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f\u0964",
+        "Have no effect on the economy / \u0905\u0930\u094d\u0925\u0935\u094d\u092f\u0935\u0938\u094d\u0925\u093e \u092a\u0930 \u0915\u094b\u0908 \u092a\u094d\u0930\u092d\u093e\u0935 \u0928\u0939\u0940\u0902\u0964",
+        "Reduce money supply and investment. / \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0914\u0930 \u0928\u093f\u0935\u0947\u0936 \u0915\u094b \u0915\u092e \u0915\u0930\u0928\u093e\u0964",
+        "Increase inflation immediately. / \u0924\u0941\u0930\u0902\u0924 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f\u0964"
+      ],
+      "correctIndex": 2,
+      "explanation": "The Repo Rate is the highly critical benchmark interest rate at which the powerful RBI aggressively lends massive short-term funds directly to commercial banks. When the RBI strategically decides to implement a strict contractionary policy by increasing the repo rate, borrowing costs inflate, which drastically reduces the overall Money supply and severely curbs corporate Investment. / \u0930\u0947\u092a\u094b \u0926\u0930 \u0935\u0939 \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 \u092c\u0947\u0902\u091a\u092e\u093e\u0930\u094d\u0915 \u092c\u094d\u092f\u093e\u091c \u0926\u0930 \u0939\u0948 \u091c\u093f\u0938 \u092a\u0930 \u0936\u0915\u094d\u0924\u093f\u0936\u093e\u0932\u0940 RBI \u0906\u0915\u094d\u0930\u093e\u092e\u0915 \u0930\u0942\u092a \u0938\u0947 \u092c\u0921\u093c\u0947 \u092a\u0948\u092e\u093e\u0928\u0947 \u092a\u0930 \u0905\u0932\u094d\u092a\u0915\u093e\u0932\u093f\u0915 \u0927\u0928 \u0938\u0940\u0927\u0947 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u094b \u0909\u0927\u093e\u0930 \u0926\u0947\u0924\u093e \u0939\u0948\u0964 \u091c\u092c RBI \u0930\u0923\u0928\u0940\u0924\u093f\u0915 \u0930\u0942\u092a \u0938\u0947 \u0930\u0947\u092a\u094b \u0926\u0930 \u092c\u0922\u093c\u093e\u0915\u0930 \u090f\u0915 \u0938\u0916\u094d\u0924 \u0938\u0902\u0915\u0941\u091a\u0928\u0915\u093e\u0930\u0940 \u0928\u0940\u0924\u093f \u0915\u094b \u0932\u093e\u0917\u0942 \u0915\u0930\u0928\u0947 \u0915\u093e \u0928\u093f\u0930\u094d\u0923\u092f \u0932\u0947\u0924\u093e \u0939\u0948, \u0924\u094b \u0909\u0927\u093e\u0930 \u0932\u0947\u0928\u0947 \u0915\u0940 \u0932\u093e\u0917\u0924 \u092c\u0922\u093c \u091c\u093e\u0924\u0940 \u0939\u0948, \u091c\u094b \u0938\u092e\u0917\u094d\u0930 \u092e\u0941\u0926\u094d\u0930\u093e \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u094b \u0915\u093e\u092b\u0940 \u0915\u092e \u0915\u0930 \u0926\u0947\u0924\u0940 \u0939\u0948 \u0914\u0930 \u0915\u0949\u0930\u094d\u092a\u094b\u0930\u0947\u091f \u0928\u093f\u0935\u0947\u0936 \u092a\u0930 \u0917\u0902\u092d\u0940\u0930 \u0930\u0942\u092a \u0938\u0947 \u0905\u0902\u0915\u0941\u0936 \u0932\u0917\u093e\u0924\u0940 \u0939\u0948\u0964",
+      "reference": ""
+    },
+    {
+      "text": "<b>Q22.</b> What will be the effect of the rise in the repo rate by the Reserve Bank of India? / \u092d\u093e\u0930\u0924\u0940\u092f \u0930\u093f\u091c\u0930\u094d\u0935 \u092c\u0948\u0902\u0915 \u0926\u094d\u0935\u093e\u0930\u093e \u0930\u0947\u092a\u094b \u0926\u0930 \u092e\u0947\u0902 \u0935\u0943\u0926\u094d\u0927\u093f \u0915\u093e \u0915\u094d\u092f\u093e \u092a\u094d\u0930\u092d\u093e\u0935 \u0939\u094b\u0917\u093e? [Delhi Police Constable, 20 Dec 2025, Shift-3]",
+      "options": [
+        "Aggregate demand will increase. / \u0915\u0941\u0932 \u092e\u093e\u0902\u0917 \u092c\u0922\u093c\u0947\u0917\u0940\u0964",
+        "Money supply will expand. / \u0927\u0928 \u0906\u092a\u0942\u0930\u094d\u0924\u093f \u0915\u093e \u0935\u093f\u0938\u094d\u0924\u093e\u0930 \u0939\u094b\u0917\u093e\u0964",
+        "Credit to businesses will become costlier. / \u0935\u094d\u092f\u0935\u0938\u093e\u092f\u094b\u0902 \u0915\u0947 \u0932\u093f\u090f \u090b\u0923 (\u0915\u094d\u0930\u0947\u0921\u093f\u091f) \u092e\u0939\u0902\u0917\u093e \u0939\u094b \u091c\u093e\u090f\u0917\u093e\u0964",
+        "Banks will reduce lending rates. / \u092c\u0948\u0902\u0915 \u090b\u0923 \u0926\u0930\u094b\u0902 \u0915\u094b \u0915\u092e \u0915\u0930\u0947\u0902\u0917\u0947\u0964"
+      ],
+      "correctIndex": 2,
+      "explanation": "When the immensely powerful RBI deliberately decides to strictly tighten monetary policy to violently fight severe inflation, it forcefully causes a sharp &quot;rise in the repo rate.&quot; Consequently, the absolute fundamental cost of acquiring essential funds becomes significantly higher for all commercial banks, making crucial &quot;Credit to businesses significantly costlier.&quot; / \u091c\u092c \u0905\u0924\u094d\u092f\u0927\u093f\u0915 \u0936\u0915\u094d\u0924\u093f\u0936\u093e\u0932\u0940 RBI \u091c\u093e\u0928\u092c\u0942\u091d\u0915\u0930 \u0917\u0902\u092d\u0940\u0930 \u092e\u0941\u0926\u094d\u0930\u093e\u0938\u094d\u092b\u0940\u0924\u093f \u0938\u0947 \u0939\u093f\u0902\u0938\u0915 \u0930\u0942\u092a \u0938\u0947 \u0932\u0921\u093c\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u092e\u094c\u0926\u094d\u0930\u093f\u0915 \u0928\u0940\u0924\u093f \u0915\u094b \u0915\u0921\u093c\u093e\u0908 \u0938\u0947 \u0915\u0921\u093c\u093e \u0915\u0930\u0928\u0947 \u0915\u093e \u092b\u0948\u0938\u0932\u093e \u0915\u0930\u0924\u093e \u0939\u0948, \u0924\u094b \u092f\u0939 \u092c\u0932\u092a\u0942\u0930\u094d\u0935\u0915 &quot;\u0930\u0947\u092a\u094b \u0926\u0930 \u092e\u0947\u0902 \u0924\u0947\u091c \u0935\u0943\u0926\u094d\u0927\u093f&quot; \u0915\u093e \u0915\u093e\u0930\u0923 \u092c\u0928\u0924\u093e \u0939\u0948\u0964 \u0928\u0924\u0940\u091c\u0924\u0928, \u0938\u092d\u0940 \u0935\u093e\u0923\u093f\u091c\u094d\u092f\u093f\u0915 \u092c\u0948\u0902\u0915\u094b\u0902 \u0915\u0947 \u0932\u093f\u090f \u0906\u0935\u0936\u094d\u092f\u0915 \u0927\u0928 \u092a\u094d\u0930\u093e\u092a\u094d\u0924 \u0915\u0930\u0928\u0947 \u0915\u0940 \u092a\u0942\u0930\u094d\u0923 \u092e\u094c\u0932\u093f\u0915 \u0932\u093e\u0917\u0924 \u0915\u093e\u092b\u0940 \u0905\u0927\u093f\u0915 \u0939\u094b \u091c\u093e\u0924\u0940 \u0939\u0948, \u091c\u093f\u0938\u0938\u0947 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 &quot;\u0935\u094d\u092f\u0935\u0938\u093e\u092f\u094b\u0902 \u0915\u0947 \u0932\u093f\u090f \u090b\u0923 \u0915\u093e\u092b\u0940 \u092e\u0939\u0902\u0917\u093e \u0939\u094b \u091c\u093e\u0924\u093e \u0939\u0948\u0964&quot;",
+      "reference": ""
+    }
+  ],
+  "leaderboard": {"rankings": [{"name": "Vaishu", "score": 22.0, "accuracy": 100.0}, {"name": "N\u1d07\u1d00\u0274\u1d05\u1d07\u0280\u1d1b\u029c\u1d00\u029f", "score": 22.0, "accuracy": 100.0}, {"name": "Sejal \u2661", "score": 20.0, "accuracy": 90.9090909090909}, {"name": "....", "score": 19.0, "accuracy": 100.0}, {"name": "PG__", "score": 16.0, "accuracy": 76.19047619047619}, {"name": "Shivansh", "score": 15.0, "accuracy": 71.42857142857143}, {"name": "Abhinav", "score": 13.0, "accuracy": 76.47058823529412}, {"name": "Gaurav", "score": 13.0, "accuracy": 65.0}, {"name": "Mikasa!", "score": 12.0, "accuracy": 54.54545454545454}, {"name": "Varsha", "score": 12.0, "accuracy": 54.54545454545454}, {"name": "R", "score": 11.0, "accuracy": 52.38095238095239}, {"name": "\ud835\udcdc\ud835\udcee\ud835\udcf7\ud835\udced\ud835\udcf8\ud835\udcf5\ud835\udcf8\ud835\udcfb\ud835\udcf2\ud835\udcea\ud835\udcf7 \ud83d\udd73", "score": 10.0, "accuracy": 47.61904761904761}, {"name": "Peace", "score": 9.0, "accuracy": 60.0}, {"name": "\u0a32\u0a32\u0a3f\u0a24 \u0930\u093e\uaa9d\u0924 (.-..\ud83e\udee0--)", "score": 8.0, "accuracy": 61.53846153846154}, {"name": "\ud835\udc7a\ud835\udc89\ud835\udc86\ud835\udc8c\ud835\udc89\ud835\udc82\ud835\udc98\ud835\udc82\ud835\udc95\u26a1\ufe0f", "score": 8.0, "accuracy": 61.53846153846154}, {"name": "Shreya", "score": 8.0, "accuracy": 36.36363636363637}, {"name": ".", "score": 7.0, "accuracy": 36.84210526315789}, {"name": "\ud83c\udf3c \u00a7", "score": 7.0, "accuracy": 31.818181818181817}, {"name": "Ritika", "score": 6.0, "accuracy": 60.0}, {"name": "\uff2e\uff29\uff23\uff2b \uff26\uff35\uff32\uff39\u26a1", "score": 5.0, "accuracy": 100.0}, {"name": "Piuli", "score": 3.0, "accuracy": 50.0}, {"name": "Shridev", "score": 2.0, "accuracy": 33.33333333333333}, {"name": "Kartikey Singh", "score": 1.0, "accuracy": 100.0}, {"name": "TOXIC", "score": 1.0, "accuracy": 25.0}, {"name": "Risha", "score": 0.0, "accuracy": 0.0}, {"name": "Gogo", "score": 0.0, "accuracy": 0.0}], "question_stats": {"0": {"correct": 5, "total": 12}, "1": {"correct": 11, "total": 13}, "2": {"correct": 9, "total": 17}, "3": {"correct": 13, "total": 17}, "4": {"correct": 7, "total": 16}, "5": {"correct": 10, "total": 18}, "6": {"correct": 15, "total": 18}, "7": {"correct": 9, "total": 17}, "8": {"correct": 10, "total": 18}, "9": {"correct": 8, "total": 18}, "10": {"correct": 8, "total": 19}, "11": {"correct": 14, "total": 19}, "12": {"correct": 13, "total": 17}, "13": {"correct": 14, "total": 18}, "14": {"correct": 9, "total": 18}, "15": {"correct": 11, "total": 20}, "16": {"correct": 16, "total": 20}, "17": {"correct": 3, "total": 17}, "18": {"correct": 15, "total": 20}, "19": {"correct": 18, "total": 20}, "20": {"correct": 16, "total": 19}, "21": {"correct": 16, "total": 19}}}
+};
+
+(function(){
+  // ----- Config from quizData.settings -----
+  const TOTAL_TIME = (quizData.settings && quizData.settings.totalTimeSec) || 20*60;
+  const NEGATIVE = (quizData.settings && quizData.settings.negativeMarkPerWrong) || (1/3);
+
+  // ----- State -----
+  const state = {
+    current: 0,
+    answers: Array(quizData.questions.length).fill(null),
+    markedForReview: Array(quizData.questions.length).fill(false),
+    startTime: new Date(),
+    timePerQ: Array(quizData.questions.length).fill(0),
+    submitted: false,
+    inReviewMode: false,
+    darkMode: false,
+    totalTime: TOTAL_TIME,
+    negativeMark: NEGATIVE,
+    avgTime: 0,
+    timerInterval: null,
+    qTimerInterval: null,
+    lastSoundIdx: -1,
+    currentLang: 'both', // 'both', 'hn', 'en'
+    currentFontSize: 16 // Default px size
+  };
+
+  // ----- Elements -----
+  const questionArea = document.getElementById('questionArea');
+  const resultsContainer = document.getElementById('resultsContainer');
+  const submitBtn = document.getElementById('submitBtn');
+  const qListGrid = document.getElementById('qList');
+  const themeToggle = document.getElementById('themeToggle');
+  const clickSound = document.getElementById('clickSound');
+  const correctSound = document.getElementById('correctSound');
+  const wrongSound = document.getElementById('wrongSound');
+  const quizNav = document.getElementById('quizNav');
+  const langToggleBtn = document.getElementById('langToggleBtn');
+
+  // ----- Init -----
+  document.addEventListener('DOMContentLoaded', () => {
+    setupHomePage();
+    document.getElementById('startQuizBtn').addEventListener('click', startQuiz);
+  });
+
+  function setupHomePage() {
+    const totalQuestions = quizData.questions.length;
+    const totalTimeMinutes = Math.floor(quizData.settings.totalTimeSec / 60);
+    const negativeMark = quizData.settings.negativeMarkPerWrong;
+
+    // Linkify Topic Name logic
+    let rawTopic = quizData.settings.topic || "General Knowledge";
+
+    // Sanitize HTML entities to prevent XSS
+    rawTopic = rawTopic.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&#039;");
+
+    // Regex to detect URLs and convert to <a> tags
+    const topicWithLinks = rawTopic.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+        return `<a href="${url}" target="_blank" style="color: var(--primary); text-decoration: underline; font-weight: bold; position: relative; z-index: 10;">${url}</a>`;
+    });
+
+    document.getElementById('homeTopic').innerHTML = topicWithLinks;
+    document.getElementById('homeQuestions').textContent = totalQuestions;
+    document.getElementById('homeTime').textContent = `${totalTimeMinutes} Minutes`;
+    document.getElementById('homeNegative').textContent = negativeMark > 0 ? `-${negativeMark} per wrong answer` : "No negative marking";
+
+    initTheme(); // Init theme on home page as well
+  }
+
+  function startQuiz() {
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    initQuiz();
+  }
+
+  function initQuiz() {
+    buildQuestionTiles();
+    renderQuestion(0);
+    initTimer();
+    initNav();
+    initFullscreen();
+    initFontSizeControls();
+    initLanguageSwitcher();
+    initSwipeNavigation();
+    updateStats();
+    quizNav.style.display = 'flex';
+  }
+
+  function initNav(){
+    submitBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to submit the quiz?')) {
+            submitQuiz();
+        }
+    });
+
+    // --- MODAL TOGGLE LOGIC ---
+    const paletteModal = document.getElementById('paletteModal');
+    const openBtn = document.getElementById('openPaletteBtn');
+    const closeBtn = document.getElementById('closePaletteBtn');
+
+    const openModal = () => paletteModal.classList.add('show');
+    const closeModal = () => paletteModal.classList.remove('show');
+
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+
+    // Close if clicking outside content box
+    paletteModal.addEventListener('click', (e) => {
+        if(e.target === paletteModal) closeModal();
+    });
+
+    // keyboard
+    document.addEventListener('keydown',(e)=>{
+      if(e.target.tagName === 'INPUT') return;
+      if(e.key==='ArrowLeft') go(-1);
+      if(e.key==='ArrowRight') go(1);
+    });
+  }
+
+  function initTheme(){
+    const saved = localStorage.getItem('qa_theme');
+    if(saved==='dark'){ 
+        document.body.classList.add('dark-mode'); 
+        state.darkMode=true; 
+    }
+    updateThemeIcon();
+    themeToggle.addEventListener('click', ()=>{
+      state.darkMode = !state.darkMode;
+      document.body.classList.toggle('dark-mode', state.darkMode);
+      localStorage.setItem('qa_theme', state.darkMode?'dark':'light');
+      updateThemeIcon();
+      if(state.submitted) buildCharts(state.lastResultData);
+    });
+  }
+  function updateThemeIcon(){
+    const i = themeToggle.querySelector('i');
+    i.classList.toggle('fa-moon', !state.darkMode);
+    i.classList.toggle('fa-sun',  state.darkMode);
+  }
+
+  function initFullscreen() {
+    // Integrated into Header Timer
+    const timerDisplay = document.getElementById('headerTimerDisp');
+    if (!timerDisplay) return;
+
+    timerDisplay.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    });
+  }
+
+  function initFontSizeControls() {
+      const fontBtn = document.getElementById('fontToggleBtn');
+      const fontSizes = [16, 18, 20, 22, 24]; // Larger sizes for clarity
+      let fontIndex = 0; // Starts at 16px
+
+      fontBtn.addEventListener('click', () => {
+          fontIndex = (fontIndex + 1) % fontSizes.length;
+          state.currentFontSize = fontSizes[fontIndex];
+          // Update the CSS Variable, not the root element
+          document.documentElement.style.setProperty('--dynamic-size', state.currentFontSize + 'px');
+      });
+  }
+
+  function initLanguageSwitcher() {
+      // Toggle order: Both -> Hindi -> English -> Both
+      const langOrder = ['both', 'hn', 'en'];
+
+      langToggleBtn.addEventListener('click', () => {
+          const currentIndex = langOrder.indexOf(state.currentLang);
+          const nextIndex = (currentIndex + 1) % langOrder.length;
+          state.currentLang = langOrder[nextIndex];
+
+          updateLangButton();
+          renderQuestion(state.current);
+      });
+  }
+
+  function updateLangButton() {
+      let label = 'BILI';
+      if (state.currentLang === 'hn') label = 'HIN';
+      if (state.currentLang === 'en') label = 'ENG';
+      langToggleBtn.textContent = label;
+  }
+
+  function translateText(text) {
+      if (!text) return text;
+      if (state.currentLang === 'both') return text;
+
+      // Check if string has HTML tags to decide between simple split and DOM traversal
+      const hasTags = /<[a-z][\s\S]*>/i.test(text);
+
+      if (hasTags) {
+          const div = document.createElement('div');
+          div.innerHTML = text;
+          walkAndTranslate(div);
+          return div.innerHTML;
+      } else {
+          // Plain text path
+          if (text.includes(' / ')) {
+              const parts = text.split(' / ');
+              if (parts.length >= 2) {
+                  const en = parts[0];
+                  const hn = parts.slice(1).join(' / ');
+                  return state.currentLang === 'hn' ? hn.trim() : en.trim();
+              }
+          }
+          return text;
+      }
+  }
+
+  function walkAndTranslate(node) {
+      if (node.nodeType === 3) { // Text node
+          const val = node.nodeValue;
+          if (val && val.includes(' / ')) {
+              const parts = val.split(' / ');
+              if (parts.length >= 2) {
+                  const en = parts[0];
+                  const hn = parts.slice(1).join(' / ');
+                  node.nodeValue = state.currentLang === 'hn' ? hn.trim() : en.trim();
+              }
+          }
+      } else if (node.nodeType === 1) { // Element node
+          for (let i = 0; i < node.childNodes.length; i++) {
+              walkAndTranslate(node.childNodes[i]);
+          }
+      }
+  }
+
+
+  function initSwipeNavigation() {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const swipeThreshold = 50; // Minimum distance for a swipe
+    const swipeRatio = 0.5; // Vertical distance should be less than half of horizontal
+
+    const swipeArea = document.querySelector('.quiz-main');
+
+    swipeArea.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    swipeArea.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        if (state.submitted && !state.inReviewMode) return;
+
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+
+        if (Math.abs(dx) > swipeThreshold && Math.abs(dy) < Math.abs(dx) * swipeRatio) {
+            if (dx < 0) {
+                go(1); // Swiped left
+            } else {
+                go(-1); // Swiped right
+            }
+        }
+    }
+  }
+
+  // ----- Timer -----
+  function initTimer(){
+    const start = Date.now();
+    const duration = state.totalTime*1000;
+    const end = start + duration;
+    tick(); state.timerInterval = setInterval(tick, 1000);
+    function tick(){
+      const now = Date.now();
+      const left = Math.max(0, end-now);
+      const m = String(Math.floor(left/60000)).padStart(2,'0');
+      const s = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+
+      // Sidebar timer
+      document.getElementById('minutes').textContent = m;
+      document.getElementById('seconds').textContent = s;
+
+      // Header timer (NEW)
+      const headerTimer = document.getElementById('headerTimerDisp');
+      if(headerTimer) headerTimer.textContent = `${m}:${s}`;
+
+      const pct = (left/duration)*100;
+      const bar = document.getElementById('timeProgress');
+      bar.style.width = pct + '%';
+      if(left<=0){ clearInterval(state.timerInterval); submitQuiz(); }
+      else if(pct<25) bar.className='progress-bar bg-danger';
+      else if(pct<50) bar.className='progress-bar bg-warning';
+      else bar.className='progress-bar bg-primary';
+    }
+  }
+
+  // ----- Sidebar tiles -----
+  function buildQuestionTiles(){
+    qListGrid.innerHTML = '';
+    quizData.questions.forEach((_,i)=>{
+      const d = document.createElement('div');
+      d.className='q-tile'; d.textContent=i+1;
+      d.addEventListener('click', ()=>{
+        // Close modal IMMEDIATELY upon clicking, before rendering or anything else
+        document.getElementById('paletteModal').classList.remove('show');
+
+        if(!state.submitted) updateTime();
+        renderQuestion(i);
+      });
+      qListGrid.appendChild(d);
+    });
+  }
+
+  function updateTiles(){
+    document.querySelectorAll('.q-tile').forEach((el,idx)=>{
+      el.className='q-tile'; // Reset
+      if(state.submitted){
+          if(state.answers[idx] === quizData.questions[idx].correctIndex) el.classList.add('review-correct');
+          else if(state.answers[idx] !== null) el.classList.add('review-incorrect');
+          else el.classList.add('review-unattempted');
+      } else {
+        if(state.answers[idx] !== null) el.classList.add('answered');
+        if(state.markedForReview[idx]) el.classList.add('marked');
+      }
+      if(idx === state.current) el.classList.add('current');
+    });
+  }
+
+  // ----- Render question -----
+  function renderQuestion(idx){
+    if (idx < 0 || idx >= quizData.questions.length) return;
+
+    // Stop previous Question Timer
+    if (state.qTimerInterval) clearInterval(state.qTimerInterval);
+
+    state.current=idx;
+    const q=quizData.questions[idx];
+
+    // Live Accuracy Calculation
+    let accuracyBadge = '';
+    if (quizData.leaderboard && quizData.leaderboard.question_stats && quizData.leaderboard.question_stats[idx]) {
+        const stats = quizData.leaderboard.question_stats[idx];
+        if(stats.total > 0) {
+            const acc = Math.round((stats.correct / stats.total) * 100);
+            accuracyBadge = `<span class="q-accuracy" title="Based on ${stats.total} Telegram users"><i class="fas fa-bullseye me-1"></i>${acc}%</span>`;
+        }
+    }
+
+    // --- Marking Scheme Badge Logic ---
+    let markHtml = '';
+    const posMark = 1; // Assuming +1 for correct
+    const negMark = state.negativeMark;
+
+    if (!state.submitted) {
+        // Live Mode: Show full scheme
+        markHtml = `<span class="q-marks" title="Marking Scheme"><i class="fas fa-star-half-alt me-1"></i>+${posMark} / -${negMark}</span>`;
+    } else {
+        // Review Mode: Show result
+        const userAns = state.answers[idx];
+        const isCorrect = userAns === q.correctIndex;
+        const isSkipped = userAns === null;
+
+        if (isSkipped) {
+             markHtml = `<span class="q-marks text-muted">0</span>`;
+        } else if (isCorrect) {
+             markHtml = `<span class="q-marks positive">+${posMark}</span>`;
+        } else {
+             markHtml = `<span class="q-marks negative">-${negMark}</span>`;
+        }
+    }
+
+    // Question Card HTML
+    // Updated: Completely removed bottom margin and padding from header row
+    // Updated: Trimmed q.text and removed internal indentation artifacts from JSON source
+    let textContent = q.text;
+    if(typeof textContent === 'string') {
+        textContent = textContent.trim();
+        // Regex to replace newline followed by whitespace with a single space
+        // This collapses the indentation from the JSON string which causes layout gaps
+        textContent = textContent.replace(/\n\s+/g, ' '); 
+    }
+
+    let questionHtml=`
+      <div class="card-ui">
+        <div class="d-flex justify-content-between align-items-center mb-0 pb-0 border-bottom-0" style="min-height: 24px;">
+            <div class="q-meta-container">
+                <h5 class="fw-bold m-0" style="line-height:1;">Question ${idx+1}</h5>
+                <span class="q-timer"><i class="fas fa-stopwatch me-1"></i><span id="qTimerDisp">0s</span></span>
+                ${markHtml}
+                ${accuracyBadge}
+            </div>
+            ${q.reference ? `<div class="small opacity-75">${q.reference}</div>` : ''}
+        </div>
+        <!-- Removed mt-2 for tighter spacing -->
+        <div class="q-text mt-2">${translateText(textContent)}</div>
+        <div class="options">`;
+    q.options.forEach((opt,i)=>{
+      let cls='option-btn';
+      // User selection logic for Live Mode
+      if(state.answers[idx]===i) cls+=' selected';
+
+      // Review Mode Logic
+      if(state.submitted){
+        if(i===q.correctIndex) cls+=' correct';
+        else if(state.answers[idx]===i) cls+=' incorrect';
+      }
+
+      // Add Checkmark span (only visible via CSS if selected)
+      questionHtml += `<button class="${cls}" data-i="${i}">
+          <span>${translateText(opt)}</span>
+          <span class="user-check"><i class="fas fa-check-circle"></i></span>
+      </button>`;
+    });
+    const translatedExplanation = translateText(q.explanation || 'Not available.');
+    questionHtml += `</div>
+        ${state.submitted ? `<div class="explanation mt-3"><strong>Explanation:</strong> ${translatedExplanation}</div>` : ''}
+      </div>
+    `;
+    questionArea.innerHTML = questionHtml;
+
+    // Start per-question timer logic (Visual only)
+    if (!state.submitted) {
+        // Start from time already spent
+        let secondsSpent = Math.floor(state.timePerQ[idx] || 0);
+        const timerEl = document.getElementById('qTimerDisp');
+        if(timerEl) {
+            timerEl.textContent = secondsSpent + 's';
+            state.qTimerInterval = setInterval(() => {
+                secondsSpent++;
+                timerEl.textContent = secondsSpent + 's';
+            }, 1000);
+        }
+    } else {
+        // Show static time if submitted
+         const timerEl = document.getElementById('qTimerDisp');
+         if(timerEl) timerEl.textContent = Math.floor(state.timePerQ[idx] || 0) + 's';
+    }
+
+
+    // Navigation Buttons HTML
+    let buttonsHtml = `
+      <button id="prevBtn" class="btn btn-outline-secondary btn-nav"><i class="fas fa-chevron-left me-2"></i>Previous</button>
+      <button id="markBtn" class="btn btn-outline-info btn-nav">
+          ${state.markedForReview[idx] ? '<i class="fas fa-bookmark me-2"></i>Unmark' : '<i class="far fa-bookmark me-2"></i>Mark for Review'}
+      </button>
+      <button id="nextBtn" class="btn btn-primary btn-nav">Next<i class="fas fa-chevron-right ms-2"></i></button>
+    `;
+    quizNav.innerHTML = buttonsHtml;
+
+
+    // Add event listeners to new elements
+    document.getElementById('prevBtn').addEventListener('click', () => go(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => go(1));
+    document.getElementById('markBtn').addEventListener('click', toggleMark);
+
+    if(state.submitted) {
+        document.getElementById('markBtn').style.display = 'none';
+    }
+
+    document.querySelectorAll('.option-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(state.submitted) return;
+        clickSound.currentTime=0; clickSound.play();
+        const i = parseInt(btn.dataset.i);
+        state.answers[state.current] = (state.answers[state.current] === i) ? null : i; // Allow un-selecting
+        renderQuestion(state.current); // Re-render to show selection change
+        updateStats();
+        updateTiles();
+      });
+    });
+
+    updateTiles();
+    updateProgress();
+
+    // Sound for review mode
+    if(state.inReviewMode && state.lastSoundIdx!==idx){
+      state.lastSoundIdx=idx;
+      const isAttempted = state.answers[idx]!==null;
+      const isCorrect = isAttempted && state.answers[idx]===q.correctIndex;
+      if(isAttempted){
+        setTimeout(()=>{ (isCorrect?correctSound:wrongSound).play(); }, 250);
+      }
+    }
+  }
+
+  function go(dir){
+    const i = state.current + dir;
+    if(i>=0 && i<quizData.questions.length){
+      if(!state.submitted) updateTime();
+      renderQuestion(i);
+    }
+  }
+
+  function toggleMark() {
+    state.markedForReview[state.current] = !state.markedForReview[state.current];
+    renderQuestion(state.current); // Re-render to update button text
+    updateTiles();
+    updateStats();
+  }
+
+  function updateTime(){
+    const now = new Date();
+    state.timePerQ[state.current] += (now - state.startTime)/1000;
+    state.startTime = now;
+  }
+
+  function updateStats() {
+    const answeredCount = state.answers.filter(a => a !== null).length;
+    const markedCount = state.markedForReview.filter(m => m).length;
+    const totalCount = quizData.questions.length;
+    document.getElementById('statAnswered').textContent = answeredCount;
+    document.getElementById('statUnanswered').textContent = totalCount - answeredCount;
+    document.getElementById('statMarked').textContent = markedCount;
+    document.getElementById('statTotal').textContent = totalCount;
+  }
+
+  function updateProgress() {
+      const answeredCount = state.answers.filter(a => a !== null).length;
+      const totalCount = quizData.questions.length;
+      const percent = totalCount > 0 ? (answeredCount / totalCount) * 100 : 0;
+      const progressBar = document.getElementById('thinProgressBarInner');
+      if (progressBar) {
+          progressBar.style.width = `${percent}%`;
+      }
+  }
+
+  // ----- Submit & Results -----
+  function submitQuiz(){
+    if(state.submitted) return;
+
+    // Explicitly CLOSE the palette if it is open
+    document.getElementById('paletteModal').classList.remove('show');
+
+    clearInterval(state.timerInterval);
+    if(state.qTimerInterval) clearInterval(state.qTimerInterval); // Stop question timer
+
+    updateTime();
+    state.submitted=true;
+
+    let correct=0, incorrect=0, unattempted=0, score=0, neg=0;
+    state.answers.forEach((a,i)=>{
+      if(a===null){ unattempted++; }
+      else if(a===quizData.questions[i].correctIndex){ correct++; score+=1; }
+      else { incorrect++; score-=state.negativeMark; neg+=state.negativeMark; }
+    });
+
+    state.avgTime = state.timePerQ.reduce((s,t)=>s+t,0)/quizData.questions.length;
+    const pct = (score/quizData.questions.length)*100;
+
+    questionArea.style.display = 'none';
+    quizNav.style.display = 'none';
+    submitBtn.style.display = 'none';
+    document.querySelector('.quiz-main-header').style.display = 'none';
+
+    renderResults({correct, incorrect, unattempted, score, neg, pct});
+    resultsContainer.style.display = 'block';
+
+    updateTiles();
+
+    if(pct>=70){ confetti(); correctSound.play(); }
+    else if(pct<50){ wrongSound.play(); }
+  }
+
+  function renderResults(resData) {
+      const { correct, incorrect, unattempted, score, neg, pct } = resData;
+      const total = quizData.questions.length;
+      state.lastResultData = resData; // Save for redrawing charts on theme change
+
+      let html = `
+        <div class="text-center">
+            <h2 class="fw-bold">Quiz Completed!</h2>
+            <p>Here is your performance summary.</p>
+            <div class="final-score">${pct.toFixed(1)}%</div>
+            <div class="fs-4 fw-bold mb-4">${score.toFixed(2)} / ${total}</div>
+        </div>
+
+        <ul class="nav nav-pills justify-content-center mb-3 results-tabs" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation"><button class="nav-link active" id="pills-summary-tab" data-bs-toggle="pill" data-bs-target="#pills-summary" type="button" role="tab">Summary</button></li>
+          <li class="nav-item" role="presentation"><button class="nav-link" id="pills-analysis-tab" data-bs-toggle="pill" data-bs-target="#pills-analysis" type="button" role="tab">Analysis</button></li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="pills-summary" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-md-6"><div class="p-3 bg-light rounded d-flex justify-content-between"><span>Total Questions</span><span class="fw-bold">${total}</span></div></div>
+                <div class="col-md-6"><div class="p-3 bg-light rounded d-flex justify-content-between"><span>Correct</span><span class="fw-bold text-success">${correct}</span></div></div>
+                <div class="col-md-6"><div class="p-3 bg-light rounded d-flex justify-content-between"><span>Incorrect</span><span class="fw-bold text-danger">${incorrect}</span></div></div>
+                <div class="col-md-6"><div class="p-3 bg-light rounded d-flex justify-content-between"><span>Unattempted</span><span class="fw-bold text-warning">${unattempted}</span></div></div>
+                <div class="col-md-6"><div class="p-3 bg-light rounded d-flex justify-content-between"><span>Negative Marks</span><span class="fw-bold text-danger">-${neg.toFixed(2)}</span></div></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="pills-analysis" role="tabpanel">
+            <div class="chart-container mb-3"><canvas id="performanceChart"></canvas></div>
+            <div class="chart-container" style="height: 300px;"><canvas id="timeAnalysisChart"></canvas></div>
+
+            <h5 class="fw-bold mt-5 mb-3 text-center">Telegram Leaderboard</h5>
+            <div id="leaderboardSection"></div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+            <button id="reviewBtn" class="btn btn-primary btn-lg"><i class="fas fa-search me-2"></i>Review Answers</button>
+        </div>
+      `;
+      resultsContainer.innerHTML = html;
+
+      document.getElementById('reviewBtn').addEventListener('click', reviewMode);
+
+      // Render Leaderboard
+      const lbSection = document.getElementById('leaderboardSection');
+      if (quizData.leaderboard && quizData.leaderboard.rankings && quizData.leaderboard.rankings.length > 0) {
+          let lbHtml = `<table class="leaderboard-table">
+              <thead><tr><th>Rank</th><th>User</th><th>Score</th><th>Acc</th></tr></thead>
+              <tbody>`;
+
+          quizData.leaderboard.rankings.forEach((rank, i) => {
+              const rankClass = i < 3 ? `rank-${i+1}` : '';
+              lbHtml += `<tr>
+                  <td class="${rankClass}">#${i+1}</td>
+                  <td>${rank.name}</td>
+                  <td>${rank.score.toFixed(1)}</td>
+                  <td>${rank.accuracy.toFixed(0)}%</td>
+              </tr>`;
+          });
+
+          lbHtml += `</tbody></table>`;
+          lbSection.innerHTML = lbHtml;
+      } else {
+          lbSection.innerHTML = `<div class="text-muted small text-center p-3">No Telegram comparison data available yet.</div>`;
+      }
+
+      // Trigger chart build after tab is shown
+      const analysisTab = document.getElementById('pills-analysis-tab');
+      analysisTab.addEventListener('shown.bs.tab', () => buildCharts(resData), { once: true });
+  }
+
+  let performanceChartInstance, timeAnalysisChartInstance;
+  function buildCharts(res){
+    const {correct, incorrect, unattempted} = res;
+    Chart.defaults.color = state.darkMode ? '#e8eaed' : '#6c757d';
+
+    if (performanceChartInstance) performanceChartInstance.destroy();
+    performanceChartInstance = new Chart(document.getElementById('performanceChart').getContext('2d'),{
+      type:'doughnut',
+      data:{ labels:['Correct','Incorrect','Unattempted'],
+        datasets:[{ data:[correct,incorrect,unattempted],
+          backgroundColor:['#20c997','#e63946','#ffb703'], borderWidth: 0 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+    });
+
+    const labels = Array.from({length:quizData.questions.length},(_,i)=>`Q${i+1}`);
+    const correctTimes = state.timePerQ.map((t,i) => state.answers[i] === quizData.questions[i].correctIndex ? t : 0);
+    const incorrectTimes = state.timePerQ.map((t,i) => (state.answers[i] !== null && state.answers[i] !== quizData.questions[i].correctIndex) ? t : 0);
+
+    if(timeAnalysisChartInstance) timeAnalysisChartInstance.destroy();
+    timeAnalysisChartInstance = new Chart(document.getElementById('timeAnalysisChart').getContext('2d'),{
+      type:'bar',
+      data:{ labels,
+        datasets:[
+          {label:'Correct', data:correctTimes, backgroundColor:'rgba(32, 201, 151, 0.7)'},
+          {label:'Incorrect', data:incorrectTimes, backgroundColor:'rgba(230, 57, 70, 0.7)'}
+        ]},
+      options:{ responsive:true, maintainAspectRatio:false, indexAxis: 'x',
+        scales:{ x:{stacked:true, grid: {color: state.darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}},
+                 y:{stacked:true, title:{display:true,text:'Time (s)'}, grid: {color: state.darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}} },
+      }
+    });
+  }
+
+  function reviewMode(){
+    state.inReviewMode=true; state.lastSoundIdx=-1;
+    questionArea.style.display='block';
+    quizNav.style.display = 'flex';
+    resultsContainer.style.display='none';
+    document.querySelector('.quiz-main-header').style.display = 'flex';
+    renderQuestion(0);
+  }
+
+  function confetti(){
+    const colors=['#6a5af9','#f72585','#20c997','#ffb703'];
+    for(let i=0;i<100;i++){
+      const d=document.createElement('div');
+      d.style.cssText=`position:fixed;width:10px;height:10px;top:-10px;left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};z-index:1300;`;
+      document.body.appendChild(d);
+      const dy = Math.random()*500+500, rot = Math.random()*360;
+      const anim = d.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:`translateY(${dy}px) rotate(${rot}deg)`,opacity:0}],
+        {duration:Math.random()*2000+2000, easing:'ease-out'});
+      anim.onfinish=()=>d.remove();
+    }
+  }
+})();
+</script>

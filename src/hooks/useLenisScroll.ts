@@ -4,9 +4,8 @@ import Lenis from 'lenis';
 interface UseLenisScrollOptions {
   /** Lerp factor — lower = springier. Apple default: 0.08 */
   lerp?: number;
-  /** Wheel multiplier. Kept for parity with the old provider prop; Lenis folds
-      this into `lerp`/`duration`, so it is accepted but currently unused. */
-  multiplier?: number;
+  /** When true, Lenis is destroyed / not created (e.g. exam takes over scroll) */
+  disabled?: boolean;
 }
 
 interface UseLenisScrollReturn {
@@ -35,11 +34,25 @@ export function useLenisScroll(options: UseLenisScrollOptions = {}): UseLenisScr
   const instanceRef = useRef<Lenis | null>(null);
   const rafIdRef = useRef<number>(0);
   const [instance, setInstance] = useState<Lenis | null>(null);
-  const { lerp = 0.08 } = options;
+  const { lerp = 0.08, disabled = false } = options;
 
   useEffect(() => {
+    if (disabled) {
+      // Tear down any existing instance when disabled (e.g. entering exam)
+      if (instanceRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        instanceRef.current.destroy();
+        instanceRef.current = null;
+        setInstance(null);
+      }
+      return;
+    }
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (mq.matches) return;
+    // APK mobile: use native scroll, not Lenis — fixes scroll freeze on Android WebView
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+    const isNative = typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform?.() === true;
+    if (isCoarse || isNative) return;
 
     const lenis = new Lenis({ lerp, smoothWheel: true });
     instanceRef.current = lenis;
@@ -57,11 +70,13 @@ export function useLenisScroll(options: UseLenisScrollOptions = {}): UseLenisScr
       instanceRef.current = null;
       setInstance(null);
     };
-  }, [lerp]);
+  }, [lerp, disabled]);
 
   const scrollTo = useCallback(
     (target: string | number | HTMLElement, o?: { offset?: number; duration?: number }) => {
-      instanceRef.current?.scrollTo(target as never, {
+      // Lenis accepts number | string | HTMLElement; our union matches, so a
+      // plain call is well-typed — no cast needed.
+      instanceRef.current?.scrollTo(target, {
         offset: o?.offset ?? 0,
         duration: o?.duration ?? 0.8,
       });

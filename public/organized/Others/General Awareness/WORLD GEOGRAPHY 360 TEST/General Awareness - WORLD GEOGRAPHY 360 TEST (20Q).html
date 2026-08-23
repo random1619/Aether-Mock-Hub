@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam - cp_795610</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .welcome-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            margin: 20px auto;
+        }
+        
+        .welcome-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .test-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .section-info {
+            margin-bottom: 25px;
+        }
+        
+        .section-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        .section-table th,
+        .section-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .subsec-container {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .subsec-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .welcome-instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        
+        .welcome-instructions h3 {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .start-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover {
+            background: #1e3a8a;
+        }
+        
+        .channel-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .channel-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* CBT Exam Interface */
+        .exam-container {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .exam-container.active {
+            display: flex;
+        }
+        
+        /* Top Header */
+        .exam-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .timer-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Candidate Info Bar */
+        .candidate-bar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+        
+        .candidate-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .candidate-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .candidate-id {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .section-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area - FIXED LAYOUT */
+        .exam-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        
+        /* Question Area with separate scroll */
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            min-width: 0;
+        }
+        
+        .question-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg);
+        }
+        
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .question-marks {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+            background: var(--bg);
+            padding: 3px;
+            border-radius: 4px;
+        }
+        
+        .lang-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .comprehension {
+            background: #eff6ff;
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .comprehension h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option:hover:not(.submitted) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        
+        .option-indicator {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        
+        .option.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .option.correct .option-indicator {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+        
+        .option.wrong .option-indicator {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .solution-box {
+            background: #d1fae5;
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .solution-box.show {
+            display: block;
+        }
+        
+        .solution-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .solution-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Navigation Controls - FIXED AT BOTTOM OF QUESTION AREA */
+        .navigation-bar {
+            background: white;
+            padding: 15px 20px;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-prev {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-review {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-review.marked {
+            background: #92400e;
+        }
+        
+        .btn-submit {
+            background: var(--success);
+            color: white;
+        }
+        
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        /* Question Navigator Sidebar - SEPARATE SCROLL */
+        .navigator-sidebar {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .navigator-header {
+            padding: 15px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+        
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .nav-question {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .nav-question:hover {
+            background: var(--bg);
+        }
+        
+        .nav-question.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-question.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .nav-question.review {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+        
+        .nav-question.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .nav-question.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .navigator-legend {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Mobile Navigator Panel */
+        .mobile-navigator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+        }
+        
+        .mobile-navigator.open {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Result Modal */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .result-modal.show {
+            display: flex;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .result-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .result-stat.correct .result-stat-value {
+            color: var(--success);
+        }
+        
+        .result-stat.incorrect .result-stat-value {
+            color: var(--danger);
+        }
+        
+        .section-results {
+            margin-bottom: 25px;
+        }
+        
+        .section-results h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .section-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-results-table th,
+        .section-results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        .section-results-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+        
+        .section-results-table .subsection-row {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+        
+        .section-results-table .subsection-row td:first-child {
+            padding-left: 30px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .result-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-close {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-review-ans {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .navigator-sidebar {
+                display: flex;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            .navigation-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .question-scroll {
+                padding: 15px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .exam-header {
+                padding: 10px 15px;
+            }
+            
+            .exam-title {
+                font-size: 14px;
+            }
+            
+            .timer-box {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .navigator-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .result-container {
+                padding: 20px;
+            }
+            
+            .section-results-table {
+                font-size: 13px;
+            }
+            
+            .section-results-table th,
+            .section-results-table td {
+                padding: 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .exam-header,
+            .candidate-bar,
+            .navigation-bar,
+            .navigator-sidebar,
+            .mobile-navigator {
+                display: none !important;
+            }
+            
+            .question-scroll {
+                padding: 0;
+            }
+            
+            .question-card {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+            }
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <h1><i class="fas fa-graduation-cap"></i> cp_795610</h1>
+                <p>Computer Based Test</p>
+            </div>
+            
+            <div class="test-details">
+                <div class="detail-item">
+                    <div class="detail-label">Test ID</div>
+                    <div class="detail-value">27999361</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Questions</div>
+                    <div class="detail-value">20</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Marks</div>
+                    <div class="detail-value">40.0</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">30 mins</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Marking Scheme</div>
+                    <div class="detail-value">+2.0 / -0.5</div>
+                </div>
+            </div>
+            
+            
+        <div class="welcome-instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Read each question carefully before answering</li>
+                <li>You can mark questions for review and come back later</li>
+                <li>The timer will automatically submit the test when time is up</li>
+                <li>Negative marking applies for wrong answers</li>
+            </ul>
+        </div>
+        
+            
+            <div class="welcome-actions">
+                <button class="start-btn" id="startBtn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <a href="https://t.me/mocks_wallah_again" target="_blank" class="channel-link">
+                    <i class="fab fa-telegram"></i> Join Channel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Exam Interface -->
+    <div class="exam-container" id="examContainer">
+        <!-- Top Header -->
+        <div class="exam-header">
+            <div class="exam-title">cp_795610</div>
+            <div class="exam-timer">
+                <div class="timer-box" id="mainTimer">30:00</div>
+                <button class="nav-btn btn-submit mobile-only" id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Candidate Info Bar -->
+        <div class="candidate-bar">
+            <div class="candidate-info">
+                <div class="candidate-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-details">
+                    <div class="candidate-name">Candidate</div>
+                    <div class="candidate-id">Test ID: 27999361</div>
+                </div>
+            </div>
+            <div class="section-badge" id="sectionBadge">
+                <span id="sectionName"></span>
+                <span id="sectionTimer"></span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="exam-main">
+            <!-- Question Area -->
+            <div class="question-area">
+                <div class="question-scroll">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-number" id="questionNum">Question 1 of 20</div>
+                                <div class="question-marks" id="questionMarks">Marks: 2.0</div>
+                            </div>
+                            <div class="lang-toggle">
+                                <button class="lang-btn active" id="engBtn">English</button>
+                                <button class="lang-btn" id="hinBtn">हिंदी</button>
+                            </div>
+                        </div>
+                        
+                        <div class="comprehension" id="comprehension" style="display:none;">
+                            <h4><i class="fas fa-book-open"></i> Comprehension</h4>
+                            <div id="comprehensionText"></div>
+                        </div>
+                        
+                        <div class="question-text" id="questionText"></div>
+                        
+                        <div class="options-list" id="optionsList"></div>
+                        
+                        <div class="solution-box" id="solutionBox">
+                            <div class="solution-header">
+                                <i class="fas fa-lightbulb"></i> Solution
+                            </div>
+                            <div class="solution-stats" id="solutionStats"></div>
+                            <div id="solutionText"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Bar inside Question Area -->
+                <div class="navigation-bar">
+                    <button class="nav-btn btn-prev" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="progress-info">
+                        <div id="progressText">Question 1 of 20</div>
+                        <div style="font-size:11px;margin-top:4px">
+                            Answered: <span id="answeredCount">0</span> | 
+                            <a href="https://t.me/mocks_wallah_again" style="color:var(--primary)">Mocks Wallah</a>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn btn-review" id="reviewBtn">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                    
+                    <button class="nav-btn mobile-only" id="navigatorBtn">
+                        <i class="fas fa-th"></i> Questions
+                    </button>
+                    
+                    <button class="nav-btn btn-submit desktop-only" id="submitBtnDesktop">Submit</button>
+                    
+                    <button class="nav-btn btn-next" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Desktop Navigator Sidebar -->
+            <div class="navigator-sidebar desktop-only">
+                <div class="navigator-header">Question Navigator</div>
+                <div class="navigator-grid" id="desktopNav"></div>
+                <div class="navigator-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--success)"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--warning)"></div>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:var(--danger)"></div>
+                        <span>Incorrect</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                        <span>Not Visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigator Panel -->
+    <div class="mobile-navigator" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Question Navigator</h3>
+            <button class="close-nav" id="closeNav">&times;</button>
+        </div>
+        <div class="navigator-grid" id="mobileNavGrid"></div>
+        <div class="navigator-legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--success)"></div>
+                <span>Answered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--warning)"></div>
+                <span>Marked for Review</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:var(--danger)"></div>
+                <span>Incorrect</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background:white;border:2px solid var(--border)"></div>
+                <span>Not Visited</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result Modal -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-container">
+            <div class="result-header">
+                <h2>Test Completed!</h2>
+                <div class="result-score" id="resultScore">0/40.0</div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Correct</div>
+                </div>
+                <div class="result-stat incorrect">
+                    <div class="result-stat-value" id="incorrectCount">0</div>
+                    <div class="result-stat-label">Incorrect</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="unattemptedCount">0</div>
+                    <div class="result-stat-label">Unattempted</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="timeTaken">0</div>
+                    <div class="result-stat-label">Minutes</div>
+                </div>
+            </div>
+            
+            <div class="section-results" id="sectionResults" style="display:none;">
+                <h3>Section-wise Performance</h3>
+                <table class="section-results-table" id="sectionResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Attempted</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionResultsBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn btn-close" id="closeResult">Close</button>
+                <button class="result-btn btn-review-ans" id="reviewAnswers">Review Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+  {
+    "question": "<p><strong>Consider the following statements:</strong></p>\n<ol>\n<li>Each orbit of the International Space Station (ISS) takes <strong>90-93 minutes</strong>.</li>\n<li>The time taken by Mars to complete one spin on its axis is <strong>1 day</strong>.</li>\n<li>The <strong>asteroid belt</strong> lies between <strong>Mars and Jupiter</strong>.</li>\n<li>In early 1610, <strong>Simon Marius</strong> discovered with his newly invented telescope that <strong>Jupiter has four moons</strong>.</li>\n</ol>\n<p>Which of the following statements are <strong>correct</strong>?<br /><strong>अंतर्राष्ट्रीय स्पेस स्टेशन (ISS) के बारे में निम्नलिखित कथनों पर विचार करें:</strong></p>\n<p></p>\n<ol>\n<li>अंतर्राष्ट्रीय स्पेस स्टेशन (ISS) को एक बार परिक्रमा पूरी करने में <strong>90-93 मिनट</strong> लगते हैं।</li>\n<li>मंगल ग्रह को अपनी धुरी पर एक घूर्णन पूरा करने में <strong>1 दिन</strong> लगता है।</li>\n<li><strong>क्षुद्रग्रह बेल्ट</strong> मंगल और बृहस्पति के बीच स्थित है।</li>\n<li>1610 की शुरुआत में, <strong>साइमन मारियस</strong> ने अपनी नई टेलीस्कोप से यह खोज की कि <strong>बृहस्पति के चार चंद्रमा हैं।</strong></li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>1, 2 &amp; 3</p>",
+      "<p>2, 3 &amp; 4</p>",
+      "<p>1 &amp; 2 only&nbsp;</p>",
+      "<p>3 &amp; 4 only</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><strong>Statement 4:</strong> Incorrect. The <strong>four moons of Jupiter</strong> (Galilean moons) were discovered by <strong>Galileo Galilei</strong>, not Simon Marius, though Marius named them later.</p>\n<h3><strong>Rotation Time of Planets (Bilingual)</strong></h3>\n<ul>\n<li>\n<p><strong>Mars:</strong> ~24 hours 37 minutes (<strong>~1 Earth day</strong>).<br />(मंगल: ~24 घंटे 37 मिनट <strong>(~1 पृथ्वी दिवस)</strong>)।</p>\n</li>\n<li>\n<p><strong>Earth:</strong> 23 hours 56 minutes (~1 day).<br />(पृथ्वी: 23 घंटे 56 मिनट <strong>(~1 दिन)</strong>)।</p>\n</li>\n<li>\n<p><strong>Jupiter:</strong> 9 hours 56 minutes (Fastest).<br />(बृहस्पति: 9 घंटे 56 मिनट <strong>(सबसे तेज़)</strong>)।</p>\n</li>\n<li>\n<p><strong>Saturn:</strong> 10 hours 40 minutes.<br />(शनि: 10 घंटे 40 मिनट)।</p>\n</li>\n<li>\n<p><strong>Uranus:</strong> 17 hours 14 minutes.<br />(अरुण: 17 घंटे 14 मिनट)।</p>\n</li>\n<li>\n<p><strong>Neptune:</strong> 16 hours.<br />(वरुण: 16 घंटे)।</p>\n</li>\n</ul>\n<p><strong>Key Point:</strong> Mars takes approximately <strong>1 Earth day</strong> for one rotation.<br />(मुख्य बिंदु: मंगल को एक घूर्णन पूरा करने में लगभग <strong>1 पृथ्वी दिवस</strong> लगता है।)</p>\n<p></p>\n<p><strong>ADDITIONAL FROM SSC POV</strong></p>\n<p></p>\n<h3><strong>Celestial Bodies (Heavenly Bodies)&nbsp;</strong></h3>\n<p><strong>Definition:</strong><br />Celestial bodies are natural objects in space, including <strong>Planets, Stars, Satellites, Comets, Asteroids, Meteors and Meteorites, and Galaxies.</strong><br />(आकाशीय पिंड अंतरिक्ष में प्राकृतिक वस्तुएं हैं, जिनमें <strong>ग्रह, तारे, उपग्रह, धूमकेतु, क्षुद्रग्रह, उल्कापिंड और आकाशगंगाएं</strong> शामिल हैं।)</p>\n<hr />\n<h3><strong>Key Examples (मुख्य उदाहरण):</strong></h3>\n<ol>\n<li>\n<p><strong>Planets:</strong> Large celestial objects orbiting a star, like Earth or Jupiter.<br />(ग्रह: तारे की परिक्रमा करने वाले बड़े आकाशीय पिंड, जैसे पृथ्वी या बृहस्पति।)</p>\n</li>\n<li>\n<p><strong>Stars:</strong> Massive, luminous celestial bodies, such as the Sun.<br />(तारे: विशाल और चमकीले आकाशीय पिंड, जैसे सूर्य।)</p>\n</li>\n<li>\n<p><strong>Satellites:</strong> Natural or artificial objects orbiting planets, like the Moon.<br />(उपग्रह: ग्रहों की परिक्रमा करने वाले प्राकृतिक या कृत्रिम पिंड, जैसे चंद्रमा।)</p>\n</li>\n<li>\n<p><strong>Comets:</strong> Ice and dust bodies with glowing tails, like <strong>Halley's Comet</strong> (visible every <strong>75&ndash;79 years</strong>).<br />(धूमकेतु: बर्फ और धूल से बने पिंड, जिनकी चमकदार पूंछ होती है, जैसे <strong>हैले का धूमकेतु</strong> (<strong>75&ndash;79 वर्षों</strong> में एक बार दिखाई देता है।))</p>\n</li>\n<li>\n<p><strong>Asteroids:</strong> Rocky objects, mostly in the asteroid belt between Mars and Jupiter.<br />(क्षुद्रग्रह: पत्थरीले पिंड, जो ज्यादातर मंगल और बृहस्पति के बीच क्षुद्रग्रह बेल्ट में पाए जाते हैं।)</p>\n</li>\n<li>\n<p><strong>Meteors and Meteorites:</strong> Space rocks entering Earth&rsquo;s atmosphere (meteors) and reaching the surface (meteorites).<br />(उल्का और उल्कापिंड: पृथ्वी के वायुमंडल में प्रवेश करने वाले (उल्का) और सतह पर गिरने वाले (उल्कापिंड) अंतरिक्षीय पत्थर।)</p>\n</li>\n<li>\n<p><strong>Galaxies:</strong> Massive systems of stars, planets, and cosmic matter, like the Milky Way.<br />(आकाशगंगा: तारों, ग्रहों और ब्रह्मांडीय पदार्थों की विशाल प्रणाली, जैसे आकाशगंगा।)</p>\n</li>\n</ol>\n<hr />\n<p><strong>Key Highlight (मुख्य बिंदु):</strong></p>\n<ul>\n<li><strong>Halley's Comet (1P/Halley):</strong> A famous short-period comet visible every <strong>75&ndash;79 years</strong>.<br />(हैले का धूमकेतु (1P/Halley): एक प्रसिद्ध धूमकेतु जो हर <strong>75&ndash;79 वर्षों</strong> में दिखाई देता है।)</li>\n</ul>\n<h3><strong>Important Constellations for SSC (Based on Previous Year Questions)</strong></h3>\n<hr />\n<ol>\n<li>\n<p><strong>Orion (ऑरियन)</strong></p>\n<ul>\n<li>Known as the \"Hunter,\" it is one of the most recognizable constellations in the sky.</li>\n<li>Contains prominent stars like Betelgeuse and Rigel.</li>\n</ul>\n</li>\n<li>\n<p><strong>Ursa Major (उर्सा मेजर)</strong></p>\n<ul>\n<li>Also known as the \"Great Bear\" or \"The Big Dipper.\"</li>\n<li>Contains the famous \"Pointer Stars\" that lead to the North Star (Polaris).</li>\n</ul>\n</li>\n<li>\n<p><strong>Ursa Minor (उर्सा माइनर)</strong></p>\n<ul>\n<li>Known as the \"Little Bear\" and home to the North Star, Polaris.</li>\n<li>The North Star is crucial for navigation.</li>\n</ul>\n</li>\n<li>\n<p><strong>Leo (सिंह)</strong></p>\n<ul>\n<li>Known as the \"Lion,\" this constellation contains the bright star Regulus.</li>\n<li>It is prominent in the spring sky.</li>\n</ul>\n</li>\n<li>\n<p><strong>Scorpius (वृश्चिक)</strong></p>\n<ul>\n<li>Known as the \"Scorpion,\" it is most prominent in the summer months.</li>\n<li>Contains the bright star Antares, often called the \"Heart of the Scorpion.\"</li>\n</ul>\n</li>\n<li>\n<p><strong>Taurus (वृषभ)</strong></p>\n<ul>\n<li>Known as the \"Bull,\" it contains the Pleiades (Seven Sisters) cluster and the star Aldebaran.</li>\n<li>Visible in the winter months.</li>\n</ul>\n</li>\n<li>\n<p><strong>Sagittarius (धनु)</strong></p>\n<ul>\n<li>Known as the \"Archer,\" it contains the galactic center of the Milky Way.</li>\n<li>Often depicted as a centaur aiming an arrow.</li>\n</ul>\n</li>\n<li>\n<p><strong>Aquila (अक्विला)</strong></p>\n<ul>\n<li>Known as the \"Eagle,\" it contains the bright star Altair.</li>\n<li>It is prominent in the summer sky.</li>\n</ul>\n</li>\n<li>\n<p><strong>Cassiopeia (कसिओपिया)</strong></p>\n<ul>\n<li>Known for its distinctive \"W\" shape.</li>\n<li>It is visible year-round in the northern hemisphere.</li>\n</ul>\n</li>\n<li>\n<p><strong>Canis Major (कैन्स मेजर)</strong></p>\n<ul>\n<li>Known as the \"Greater Dog,\" it contains the brightest star in the night sky, Sirius.</li>\n<li>It is visible in the winter months.</li>\n</ul>\n</li>\n<li>\n<p><strong>Canis Minor (कैन्स माइनर)</strong></p>\n<ul>\n<li>Known as the \"Lesser Dog,\" it contains the bright star Procyon.</li>\n<li>Visible in the winter sky.</li>\n</ul>\n</li>\n<li>\n<p><strong>Capella (कैपेला)</strong></p>\n<ul>\n<li>A bright star located in the constellation Auriga.</li>\n<li>One of the brightest stars in the northern sky.</li>\n</ul>\n</li>\n<li>\n<p><strong>Pegasus (पेगासस)</strong></p>\n<ul>\n<li>Known as the \"Winged Horse,\" this constellation is associated with a square-shaped asterism.</li>\n<li>It is visible in the autumn months.</li>\n</ul>\n</li>\n<li>\n<p><strong>Andromeda (एंड्रोमेडा)</strong></p>\n<ul>\n<li>Known for the Andromeda Galaxy, the closest spiral galaxy to the Milky Way.</li>\n<li>Visible in the autumn months.</li>\n</ul>\n</li>\n<li>\n<p><strong>Lyra (लाइरा)</strong></p>\n<ul>\n<li>Known for containing the bright star Vega, one of the brightest stars in the night sky.</li>\n<li>It is visible during the summer months.</li>\n</ul>\n</li>\n<li>\n<p><strong>Puppis (पुप्पिस)</strong></p>\n<ul>\n<li>Known as the \"Poop Deck\" of the ancient ship Argo.</li>\n<li>Contains the bright star Naos.</li>\n</ul>\n</li>\n<li>\n<p><strong>Hydra (हाइड्रा)</strong></p>\n<ul>\n<li>The largest constellation, known as the \"Water Snake.\"</li>\n<li>It spans a large part of the southern sky.</li>\n</ul>\n</li>\n<li>\n<p><strong>Virgo (कन्या)</strong></p>\n<ul>\n<li>One of the zodiac constellations, it contains the bright star Spica.</li>\n<li>It is visible in the spring.</li>\n</ul>\n</li>\n<li>\n<p><strong>Cetus (सीटस)</strong></p>\n<ul>\n<li>Known as the \"Whale,\" it is a large constellation visible in the autumn months.</li>\n<li>Contains the star Mira, a variable star.</li>\n</ul>\n</li>\n<li>\n<p><strong>Crux (क्रक्स)</strong></p>\n<ul>\n<li>Known as the \"Southern Cross,\" it is the most famous constellation in the southern sky.</li>\n<li>Crucial for navigation in the southern hemisphere.</li>\n</ul>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>&nbsp;Consider the following statements:</strong></p>\n<ol>\n<li><strong>Jupiter, Saturn, Neptune, and Uranus</strong> are the planets in our solar system that have rings around them.</li>\n<li>A shooting star is a star.</li>\n<li>A lunar eclipse occurs when the Earth is between the Sun and the Moon.</li>\n<li>The Earth's rotation helps in the location of the Tropic of Cancer and the Tropic of Capricorn.</li>\n</ol>\n<p><strong>Which of the above statements are correct?</strong><br /><strong>निम्नलिखित कथनों पर विचार करें:</strong></p>\n<ol>\n<li><strong>बृहस्पति, शनि, वरुण और अरुण</strong> हमारे सौर मंडल के ग्रह हैं जिनके चारों ओर छल्ले होते हैं।</li>\n<li>टूटता हुआ तारा वास्तव में एक तारा होता है।</li>\n<li>चंद्र ग्रहण तब होता है जब पृथ्वी सूर्य और चंद्रमा के बीच होती है।</li>\n<li>पृथ्वी का घूर्णन कर्क रेखा और मकर रेखा के स्थान निर्धारण में मदद करता है।</li>\n</ol>\n<p><strong>इनमें से कौन से कथन सही हैं?</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>ONLY 2 &amp; 4</p>",
+      "<p>ONLY 1 &amp; 3</p>",
+      "<p>1,2 &amp; 3</p>",
+      "<p>ALL OF THE ABOVE</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Statement 2:</strong> Incorrect. A shooting star is not a star; it is a <strong>meteor</strong> burning up in Earth's atmosphere.<br />(गलत। टूटता हुआ तारा वास्तव में तारा नहीं, बल्कि पृथ्वी के वायुमंडल में जलता हुआ उल्का है।)</p>\n<p><strong>Statement 4:</strong> Incorrect. The <strong>rotation</strong> of the Earth does not determine the location of the Tropic of Cancer or Tropic of Capricorn; these are fixed based on the Earth's tilt. It's Revolution not rotation.</p>\n<p></p>\n<div class=\"flex-1 overflow-hidden\">\n<div class=\"h-full\">\n<div class=\"react-scroll-to-bottom--css-ymoaz-79elbk h-full\">\n<div class=\"react-scroll-to-bottom--css-ymoaz-1n7m0yu\">\n<div class=\"flex flex-col text-sm md:pb-9\">\n<article class=\"w-full scroll-mb-[var(--thread-trailing-height,150px)] text-token-text-primary focus-visible:outline-2 focus-visible:outline-offset-[-4px]\" dir=\"auto\" data-testid=\"conversation-turn-13\" data-scroll-anchor=\"true\">\n<div class=\"m-auto text-base py-[18px] px-3 md:px-4 w-full md:px-5 lg:px-4 xl:px-5\">\n<div class=\"mx-auto flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]\">\n<div class=\"group/conversation-turn relative flex w-full min-w-0 flex-col agent-turn\">\n<div class=\"flex-col gap-1 md:gap-3\">\n<div class=\"flex max-w-full flex-col flex-grow\">\n<div class=\"min-h-8 text-message flex w-full flex-col items-end gap-2 whitespace-normal break-words [.text-message+&amp;]:mt-5\" data-message-author-role=\"assistant\" data-message-id=\"fdad9304-4a72-43d3-b165-971e9ddd55be\" data-message-model-slug=\"gpt-4o\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[3px]\">\n<div class=\"markdown prose w-full break-words dark:prose-invert light\">\n<h3><strong>Earth's Motions and Eclipses - Summary&nbsp;</strong></h3>\n<h4><strong>Earth's Motion (पृथ्वी की गति):</strong></h4>\n<ol>\n<li>\n<p><strong>Rotation (घूर्णन):</strong></p>\n<ul>\n<li>The Earth spins around its axis, tilted by <strong>23.5&deg;</strong>.</li>\n<li>Direction: <strong>Anti-clockwise</strong> (West to East).</li>\n<li>Duration: <strong>24 hours</strong> (creates day and night).</li>\n<li>Effects:\n<ul>\n<li><strong>Diurnal cycle</strong> (day-night, temperature, humidity changes).</li>\n<li>Influences <strong>wind movements</strong> and causes <strong>tides</strong>.<br />(पृथ्वी अपनी धुरी पर 23.5&deg; के झुकाव के साथ घूमती है।</li>\n</ul>\n</li>\n<li>दिशा: <strong>पश्चिम से पूर्व (वामावर्त)</strong>।</li>\n<li>समय: <strong>24 घंटे</strong> (दिन और रात बनते हैं)।</li>\n<li>प्रभाव:\n<ul>\n<li><strong>दिवाचक्र</strong> (दिन-रात, तापमान, आर्द्रता में बदलाव)।</li>\n<li><strong>हवा की गति</strong> और <strong>ज्वार</strong> पर प्रभाव डालता है।)</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>Revolution (परिक्रमण):</strong></p>\n<ul>\n<li>The Earth orbits the Sun in a fixed path.</li>\n<li>Direction: <strong>Anti-clockwise</strong>.</li>\n<li>Duration: <strong>365 days</strong> (causes seasons).</li>\n<li>Speed: <strong>30 km/s</strong>.</li>\n<li>Helps locate <strong>Tropic of Cancer and Tropic of Capricorn</strong>.<br />(पृथ्वी सूर्य की परिक्रमा एक निश्चित पथ पर करती है।</li>\n<li>दिशा: <strong>वामावर्त</strong>।</li>\n<li>समय: <strong>365 दिन</strong> (ऋतुओं का निर्माण)।</li>\n<li>गति: <strong>30 किमी/सेकंड</strong>।</li>\n<li>कर्क और मकर रेखा का स्थान निर्धारण करती है।)</li>\n</ul>\n</li>\n</ol>\n<hr />\n<h4><strong>Shooting Star (टूटता हुआ तारा):</strong></h4>\n<ul>\n<li>Not a star; it&rsquo;s a <strong>meteor</strong> burning in the Earth&rsquo;s atmosphere.<br />(यह तारा नहीं, बल्कि पृथ्वी के वायुमंडल में जलता हुआ <strong>उल्का</strong> है।)</li>\n</ul>\n<hr />\n<h4><strong>Lunar Eclipse (चंद्र ग्रहण):</strong></h4>\n<ul>\n<li>Occurs when Earth is between the Sun and the Moon.</li>\n<li><strong>Types:</strong>\n<ul>\n<li><strong>Partial Eclipse:</strong> Part of the Moon is covered.</li>\n<li><strong>Total Eclipse:</strong> Earth casts a full shadow on the Moon.</li>\n</ul>\n</li>\n<li>Visible during a <strong>full moon</strong> (up to 3 times/year).</li>\n<li>Safe to observe with naked eyes.<br />(जब पृथ्वी सूर्य और चंद्रमा के बीच आती है।</li>\n<li><strong>प्रकार:</strong>\n<ul>\n<li><strong>आंशिक ग्रहण:</strong> चंद्रमा का कुछ हिस्सा छाया में।</li>\n<li><strong>पूर्ण ग्रहण:</strong> पृथ्वी की पूरी छाया चंद्रमा पर।</li>\n</ul>\n</li>\n<li><strong>पूर्णिमा</strong> की रात में होता है।</li>\n<li>इसे नंगी आंखों से देखा जा सकता है।)</li>\n</ul>\n<hr />\n<h4><strong>Solar Eclipse (सूर्य ग्रहण):</strong></h4>\n<ul>\n<li>Occurs when the Moon is between the Earth and the Sun.</li>\n<li><strong>Types:</strong>\n<ul>\n<li><strong>Annular:</strong> The Moon covers the Sun entirely.</li>\n<li><strong>Total:</strong> The Moon casts its darkest shadow on Earth.</li>\n<li><strong>Partial:</strong> The Sun is partially covered.</li>\n<li><strong>Hybrid:</strong> A mix of total and annular.</li>\n</ul>\n</li>\n<li><strong>Warning:</strong> Do not look directly at the Sun during a solar eclipse.<br />(जब चंद्रमा पृथ्वी और सूर्य के बीच आता है।</li>\n<li><strong>प्रकार:</strong>\n<ul>\n<li><strong>वलयाकार:</strong> चंद्रमा सूर्य को पूरी तरह ढकता है।</li>\n<li><strong>पूर्ण:</strong> सबसे गहरी छाया पृथ्वी पर।</li>\n<li><strong>आंशिक:</strong> सूर्य का कुछ हिस्सा ढका होता है।</li>\n<li><strong>संकर:</strong> पूर्ण और वलयाकार का मिश्रण।</li>\n</ul>\n</li>\n<li><strong>सावधानी:</strong> सूर्य ग्रहण के दौरान सीधे सूर्य को न देखें।)</li>\n</ul>\n<p><strong>Key Point (मुख्य बिंदु):</strong> Lunar eclipses are safe to observe; solar eclipses are not.<br />(चंद्र ग्रहण देखना सुरक्षित है; सूर्य ग्रहण नहीं।)</p>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</article>\n</div>\n</div>\n</div>\n</div>\n</div>\n<div class=\"md:pt-0 dark:border-white/20 md:border-transparent md:dark:border-transparent w-full\">\n<div class=\"m-auto text-base px-3 md:px-4 w-full md:px-5 lg:px-4 xl:px-5\">\n<div class=\"mx-auto flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]\"><form class=\"w-full\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"radix-:r43:\" data-state=\"closed\">\n<div class=\"relative flex h-full max-w-full flex-1 flex-col\">\n<div class=\"group relative flex w-full items-center\">\n<div class=\"flex w-full cursor-text flex-col rounded-3xl px-2.5 py-1 transition-colors contain-inline-size bg-[#f4f4f4] dark:bg-token-main-surface-secondary\" id=\"composer-background\">\n<div class=\"flex min-h-[44px] items-center px-2\">\n<div class=\"max-w-full flex-1\">\n<div class=\"_prosemirror-parent_15ceg_1 text-token-text-primary max-h-[25dvh] max-h-52 overflow-auto default-browser\">\n<div class=\"ProseMirror\" id=\"prompt-textarea\"><img src=\"https://cms-cdn.classplus.co/parserImages/8f1c9898-3c9a-4d76-945b-62bfe92541c3.jpg\" alt=\"\" width=\"498\" height=\"234\" /></div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</div>\n</form></div>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>Identify the statement which is NOT correct:</strong><br /><strong>निम्नलिखित में से कौन सा कथन सही नहीं है?</strong></p>\n<ol>\n<li>\n<p>Mercury is the nearest planet to the Sun.<br /><strong>(बुध सूर्य के सबसे निकट का ग्रह है।)</strong></p>\n</li>\n<li>\n<p>Venus and Uranus rotate on their axes from east to west.<br /><strong>(शुक्र और अरुण अपनी धुरी पर पूर्व से पश्चिम की ओर घूमते हैं।)</strong></p>\n</li>\n<li>\n<p>Mercury is the smallest planet and has no satellite of its own.<br /><strong>(बुध सबसे छोटा ग्रह है और इसका कोई उपग्रह नहीं है।)</strong></p>\n</li>\n<li>\n<p>The aurora radiation belts are giant swaths of magnetically trapped highly energetic charged particles that surround Earth.<br /><strong>(ऑरोरा विकिरण पट्टियां चुंबकीय रूप से फंसे हुए अत्यधिक ऊर्जावान आवेशित कणों के विशाल क्षेत्र हैं जो पृथ्वी को घेरे हुए हैं।)</strong></p>\n</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>1</p>",
+      "<p>2</p>",
+      "<p>4</p>",
+      "<p>3</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>The <strong>aurora</strong> is a natural light display caused by charged particles in Earth's atmosphere, whereas <strong>radiation belts</strong> (Van Allen Belts) surround Earth and are not linked directly to auroras.<br /><strong>(ऑरोरा वायुमंडल में आवेशित कणों के कारण उत्पन्न प्रकाश प्रदर्शनी है, जबकि विकिरण पट्टियां (वैन एलेन पट्टियां) पृथ्वी को घेरे हुए हैं और ऑरोरा से सीधे संबंधित नहीं हैं।)</strong></p>\n<p></p>\n<ol>\n<li>\n<p><strong>Mercury (बुध):</strong></p>\n<ul>\n<li>Closest planet to the Sun and the smallest in the solar system.</li>\n<li>No natural satellites.</li>\n</ul>\n</li>\n<li>\n<p><strong>Venus (शुक्र):</strong></p>\n<ul>\n<li>Similar in size and mass to Earth, often called its \"sister planet.\"</li>\n<li>Hottest planet due to its dense atmosphere of carbon dioxide.</li>\n<li>Rotates east to west (retrograde rotation).</li>\n</ul>\n</li>\n<li>\n<p><strong>Earth (पृथ्वी):</strong></p>\n<ul>\n<li>Fifth largest planet and the only one with liquid water on the surface.</li>\n<li>Largest of the rocky planets.</li>\n</ul>\n</li>\n<li>\n<p><strong>Mars (मंगल):</strong></p>\n<ul>\n<li>Half the size of Earth, with features like mountains, valleys, and polar ice caps.</li>\n<li>Known as the \"Red Planet\" due to iron oxide (rust) on its surface.</li>\n</ul>\n</li>\n<li>\n<p><strong>Jupiter (बृहस्पति):</strong></p>\n<ul>\n<li>Largest planet; diameter approximately 69,911 km.</li>\n<li>Has faint rings and many moons, including the four large Galilean moons.</li>\n<li>Rotates rapidly, completing one rotation in about 10 hours.</li>\n</ul>\n</li>\n<li>\n<p><strong>Saturn (शनि):</strong></p>\n<ul>\n<li>Famous for its bright, icy rings.</li>\n<li>Second-largest planet, primarily made of hydrogen and helium.</li>\n</ul>\n</li>\n<li>\n<p><strong>Uranus (अरुण):</strong></p>\n<ul>\n<li>Rotates on its side and has faint, dark rings.</li>\n<li>Third-largest planet, discovered in 1781 by William Herschel.</li>\n</ul>\n</li>\n<li>\n<p><strong>Neptune (वरुण):</strong></p>\n<ul>\n<li>Farthest planet from the Sun, with faint rings made of dust and small rocks.</li>\n<li>Similar in composition to Uranus, with methane giving it a bluish color.</li>\n</ul>\n</li>\n</ol>\n<hr />\n<h3><strong>Additional Facts (अतिरिक्त तथ्य):</strong></h3>\n<ul>\n<li>\n<p><strong>Planets in Order from Sun (सूर्य से ग्रहों का क्रम):</strong><br />Mercury &rarr; Venus &rarr; Earth &rarr; Mars &rarr; Jupiter &rarr; Saturn &rarr; Uranus &rarr; Neptune.</p>\n</li>\n<li>\n<p><strong>Largest to Smallest by Radius (त्रिज्या के अनुसार):</strong><br />Jupiter &gt; Saturn &gt; Uranus &gt; Neptune &gt; Earth &gt; Venus &gt; Mars &gt; Mercury.</p>\n</li>\n<li>\n<p><strong>Key Mnemonic (मूल सूत्र):</strong><br /><strong>M</strong>y <strong>V</strong>ery <strong>E</strong>ager <strong>M</strong>other <strong>J</strong>ust <strong>S</strong>erved <strong>U</strong>s <strong>N</strong>achos.</p>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>Which of the following statements is/are correct?</strong><br />a) The point on the surface nearest to the focus of the earthquake is called the epicenter.<br />b) Silica and alumina (SIAL) are primarily associated with the oceanic crust.<br />c) Metamorphic rock is formed from heat and pressure applied to existing rocks, causing a physical or chemical change.<br />d) India is divided into 5 earthquake zones (seismic zones).</p>\n<p><strong>निम्नलिखित में से कौन सा/से कथन सही हैं?</strong><br />a) भूकंप के उत्पत्ति बिंदु के सबसे नजदीक सतह पर स्थित बिंदु को एपिसेंटर कहा जाता है।<br />b) सिलिका और ऐल्यूमिना (SIAL) मुख्य रूप से महासागरीय क्रस्ट से जुड़ी होती हैं।<br />c) रूपांतरित शैल (Metamorphic rock) वे शैलें होती हैं जो मौजूदा शैल पर गर्मी और दबाव लागू होने से बनती हैं, जिससे शारीरिक या रासायनिक परिवर्तन होता है।<br />d) भारत को 5 भूकंपीय क्षेत्रों (सिस्मिक जोन) में बांटा गया है।</p>",
+    "comp": "",
+    "options": [
+      "<p>only 2,3 &amp; 4</p>",
+      "<p>only 1, &amp; 3</p>",
+      "<p>3 &amp; 4</p>",
+      "<p>ALL OF THE ABOVE</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p><strong>Solution&nbsp;</strong></p>\n<ol>\n<li>\n<p><strong>Seismic Zones in India:</strong></p>\n<ul>\n<li>India is divided into four seismic zones (II, III, IV, and V) based on historical seismic activity.</li>\n<li><strong>Zone V</strong> is the most seismically active, and <strong>Zone II</strong> is the least active.</li>\n<li><strong>54%</strong> of India's land area is prone to earthquakes.</li>\n<li>The Indian plate is moving into Asia at approximately <strong>47 mm/year</strong>, contributing to frequent and severe earthquakes.</li>\n<li><strong>IS 1893 (Part 1) 2002</strong>: The earthquake-resistant design code of India divides the country into four seismic zones.</li>\n<li><strong>Epicenter</strong>: The point on the Earth's surface nearest to the earthquake focus is the epicenter.</li>\n<li><strong>Focus (Hypocenter)</strong>: The point beneath the Earth's surface where the earthquake originates.</li>\n</ul>\n</li>\n<li>\n<p><strong>Types of Rocks:</strong></p>\n<ul>\n<li><strong>Igneous Rock</strong>: Formed from the cooling and solidification of magma or lava.</li>\n<li><strong>Sedimentary Rock</strong>: Formed from the accumulation of compressed sediments, minerals, and organic particles.</li>\n<li><strong>Metamorphic Rock</strong>: Formed by heat and pressure applied to existing rocks, causing physical or chemical changes.</li>\n</ul>\n</li>\n<li>\n<p><strong>Composition of Earth&rsquo;s Crust:</strong></p>\n<ul>\n<li><strong>SIAL</strong> (Silica and Alumina) are primarily associated with the continental crust.</li>\n<li><strong>SIMA</strong> (Silica and Magnesium) are primarily associated with the oceanic crust.</li>\n<li><strong>NIFE</strong> (Nickel and Iron) are primarily found in the Earth's core.</li>\n</ul>\n</li>\n</ol>\n<ol>\n<li>\n<p><strong>भारत के भूकंपीय क्षेत्र:</strong></p>\n<ul>\n<li>भारत को ऐतिहासिक भूकंपीय गतिविधि के आधार पर चार भूकंपीय क्षेत्रों में विभाजित किया गया है (II, III, IV, और V)।</li>\n<li><strong>क्षेत्र V</strong> सबसे भूकंपीय रूप से सक्रिय है, और <strong>क्षेत्र II</strong> सबसे कम सक्रिय है।</li>\n<li>भारत का <strong>54%</strong> क्षेत्र भूकंप के लिए संवेदनशील है।</li>\n<li>भारतीय प्लेट लगभग <strong>47 मिमी/वर्ष</strong> की दर से एशिया की ओर बढ़ रही है, जिससे भूकंप की उच्च आवृत्ति और गंभीरता है।</li>\n<li><strong>IS 1893 (भाग 1) 2002</strong>: भारत का भूकंपीय-प्रतिरोधी डिजाइन कोड देश को चार भूकंपीय क्षेत्रों में विभाजित करता है।</li>\n<li><strong>एपिसेंटर</strong>: पृथ्वी की सतह पर वह बिंदु जो भूकंप के फोकस के सबसे नजदीक होता है।</li>\n<li><strong>फोकस (हाइपोसेंटर)</strong>: वह बिंदु जो पृथ्वी की सतह के नीचे होता है और जहां भूकंप का उद्गम होता है।</li>\n</ul>\n</li>\n<li>\n<p><strong>शैल के प्रकार:</strong></p>\n<ul>\n<li><strong>आग्नेय शैल</strong>: यह शैल मैग्मा या लावा के ठंडा होने और ठोस होने से बनती है।</li>\n<li><strong>संचय शैल</strong>: यह संकुचित अवसादों, खनिजों और जैविक कणों के जमा होने से बनती है।</li>\n<li><strong>रूपांतरित शैल</strong>: यह मौजूदा शैल पर गर्मी और दबाव लागू होने से बनती है, जिससे शारीरिक या रासायनिक परिवर्तन होता है।</li>\n</ul>\n</li>\n<li>\n<p><strong>पृथ्वी की क्रस्ट की संरचना:</strong></p>\n<ul>\n<li><strong>SIAL</strong> (सिलिका और ऐल्यूमिना) मुख्य रूप से महाद्वीपीय क्रस्ट से जुड़ी होती हैं।</li>\n<li><strong>SIMA</strong> (सिलिका और मैग्नीशियम) मुख्य रूप से महासागरीय क्रस्ट से जुड़ी होती हैं।</li>\n<li><strong>NIFE</strong> (निकेल और आयरन) मुख्य रूप से पृथ्वी के कोर में पाई जाती हैं।</li>\n</ul>\n</li>\n</ol>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Which of the following statements is incorrect?</p>\n<ol>\n<li>The most abundant metal in the Earth's crust is Aluminium.</li>\n<li>Temperature increases towards the center from the Earth's surface.</li>\n<li>The average thickness of the continental crust of Earth is 30 km.</li>\n<li>The Earth's lithosphere is divided into 6 major and 7 minor plates.</li>\n</ol>\n<p>निम्नलिखित में से कौन सा कथन गलत है?</p>\n<ol>\n<li>पृथ्वी की क्रस्ट में सबसे प्रचुर धातु ऐल्यूमिनियम है।</li>\n<li>पृथ्वी की सतह से केंद्र की ओर तापमान बढ़ता है।</li>\n<li>पृथ्वी की महाद्वीपीय क्रस्ट की औसत मोटाई 30 किमी है।</li>\n<li>पृथ्वी की लिथोस्फीयर को 6 प्रमुख और 7 छोटे प्लेटों में विभाजित किया गया है।</li>\n</ol>",
+    "comp": "",
+    "options": [
+      "<p>4</p>",
+      "<p>3</p>",
+      "<p>2</p>",
+      "<p>1</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<ol>\n<li><strong>The theory of plate tectonics</strong> suggests that the Earth's lithosphere is divided into 7 major and 8 minor plates.</li>\n<li><strong>The theory of plate tectonics</strong> is an update to Alfred Wegener's <strong>continental drift theory</strong>, proposed in 1912.</li>\n<li>Plate tectonics explains various features and movements on the Earth&rsquo;s surface.</li>\n<li>In plate tectonics, the Earth&rsquo;s outer layer, the lithosphere, is broken into large rocky plates.</li>\n<li>Plate tectonics explains many geological events, including <strong>volcanoes</strong>, <strong>earthquakes</strong>, and <strong>mountain formation</strong>, which result from Earth&rsquo;s subterranean movements.</li>\n<li>The <strong>lithosphere</strong> consists of the crust and upper mantle of the Earth and is about 100 km thick.</li>\n</ol>\n<p><strong>Major Plates:</strong></p>\n<ol>\n<li>African</li>\n<li>Antarctic</li>\n<li>Eurasian</li>\n<li>North American</li>\n<li>South American</li>\n<li>Indo-Australian</li>\n<li>Pacific</li>\n</ol>\n<p><strong>Minor Plates:</strong></p>\n<ul>\n<li>Arabian</li>\n<li>Caribbean</li>\n<li>Nazca</li>\n<li>Scotia</li>\n</ul>\n<p><strong>Elements in Earth's Crust:</strong></p>\n<ul>\n<li><strong>Oxygen:</strong> 46.6%</li>\n<li><strong>Silicon:</strong> 27.7%</li>\n<li><strong>Aluminium:</strong> 8.1%</li>\n<li><strong>Iron:</strong> 5.0%</li>\n<li><strong>Calcium:</strong> 3.6%</li>\n<li><strong>Sodium:</strong> 2.8%</li>\n<li><strong>Potassium:</strong> 2.6%</li>\n<li><strong>Magnesium:</strong> 2.1%</li>\n<li><strong>Others:</strong> 1.5%</li>\n</ul>\n<p><strong>Earth's Layers:</strong></p>\n<ol>\n<li>\n<p><strong>Crust</strong></p>\n<ul>\n<li>The Earth's outermost layer, it is the thinnest layer.</li>\n<li>35 km thick on continental masses and 5 km thick on ocean floors.</li>\n<li>The continental crust is made of silica and alumina (called sial), while the oceanic crust consists of silica and magnesium (called sima).</li>\n</ul>\n</li>\n<li>\n<p><strong>Mantle</strong></p>\n<ul>\n<li>Located just beneath the crust, it extends to 2900 km.</li>\n<li>The mantle is semi-liquid and constitutes 84% of Earth's volume.</li>\n</ul>\n</li>\n<li>\n<p><strong>Core</strong></p>\n<ul>\n<li>The innermost layer of Earth with a radius of 3500 km.</li>\n<li>Made up of nickel and iron (NiFe).</li>\n<li>The core has extremely high temperature and pressure and makes up 15% of Earth's volume.</li>\n</ul>\n</li>\n</ol>\n<p><strong>Role in Earthquakes:</strong></p>\n<ul>\n<li>The <strong>crust</strong> is directly involved in tectonic movements, causing earthquakes when plates grind or collide, releasing energy as seismic waves.</li>\n<li>The <strong>mantle</strong> helps in plate movement but doesn't directly cause earthquakes.</li>\n<li>The <strong>inner core</strong> is solid and doesn't play a role in tectonic movements.</li>\n<li>The <strong>outer core</strong> is liquid but also doesn't contribute to earthquake occurrence.</li>\n</ul>\n<p></p>\n<ol>\n<li>** प्लेट टेक्टोनिक्स सिद्धांत** के अनुसार, पृथ्वी की लिथोस्फीयर को 7 प्रमुख और 8 द्वितीयक प्लेटों में विभाजित किया गया है।</li>\n<li>** प्लेट टेक्टोनिक्स सिद्धांत** अल्फ्रेड वेगनर के <strong>महाद्वीपीय प्रवाह सिद्धांत</strong> का आधुनिक अपडेट है, जिसे 1912 में प्रस्तावित किया गया था।</li>\n<li>प्लेट टेक्टोनिक्स पृथ्वी की सतह पर विभिन्न विशेषताओं और गति को समझाता है।</li>\n<li>प्लेट टेक्टोनिक्स में, पृथ्वी की बाहरी परत लिथोस्फीयर बड़ी चट्टानी प्लेटों में विभाजित होती है।</li>\n<li>प्लेट टेक्टोनिक्स पृथ्वी की भूमिगत हलचलों के कारण होने वाली कई घटनाओं जैसे <strong>ज्वालामुखी</strong>, <strong>भूकंप</strong> और <strong>पर्वत निर्माण</strong> को समझाता है।</li>\n<li><strong>लिथोस्फीयर</strong> पृथ्वी की क्रस्ट और ऊपरी मेंटल से बनी होती है और इसकी मोटाई लगभग 100 किमी होती है।</li>\n</ol>\n<p><strong>प्रमुख प्लेटें:</strong></p>\n<ol>\n<li>अफ्रीकी</li>\n<li>अंटार्कटिक</li>\n<li>यूरेशियाई</li>\n<li>उत्तर अमेरिकी</li>\n<li>दक्षिण अमेरिकी</li>\n<li>इंडिया-ऑस्ट्रेलियाई</li>\n<li>पैसिफिक</li>\n</ol>\n<p><strong>कुछ द्वितीयक प्लेटें:</strong></p>\n<ul>\n<li>अरबी</li>\n<li>कैरेबियन</li>\n<li>नाज़का</li>\n<li>स्कोटिया</li>\n</ul>\n<p><strong>पृथ्वी की क्रस्ट के तत्व:</strong></p>\n<ul>\n<li><strong>ऑक्सीजन:</strong> 46.6%</li>\n<li><strong>सिलिकॉन:</strong> 27.7%</li>\n<li><strong>एल्यूमिनियम:</strong> 8.1%</li>\n<li><strong>लोहा:</strong> 5.0%</li>\n<li><strong>कैल्शियम:</strong> 3.6%</li>\n<li><strong>सोडियम:</strong> 2.8%</li>\n<li><strong>पोटेशियम:</strong> 2.6%</li>\n<li><strong>मैग्नीशियम:</strong> 2.1%</li>\n<li><strong>अन्य:</strong> 1.5%</li>\n</ul>\n<p><strong>पृथ्वी की परतें:</strong></p>\n<ol>\n<li>\n<p><strong>क्रस्ट</strong></p>\n<ul>\n<li>पृथ्वी की बाहरी परत, यह सभी परतों में सबसे पतली है।</li>\n<li>महाद्वीपीय भागों में 35 किमी और महासागरीय तल में 5 किमी मोटी।</li>\n<li>महाद्वीपीय क्रस्ट मुख्य रूप से सिलिका और ऐल्यूमिनियम (सियाल) से बनी होती है, जबकि महासागरीय क्रस्ट सिलिका और मैग्नीशियम (सिमा) से बनी होती है।</li>\n</ul>\n</li>\n<li>\n<p><strong>मेंटल</strong></p>\n<ul>\n<li>क्रस्ट के ठीक नीचे, यह 2900 किमी तक फैला हुआ है।</li>\n<li>मेंटल अर्ध-तरल है और पृथ्वी के आयतन का 84% बनाता है।</li>\n</ul>\n</li>\n<li>\n<p><strong>कोर</strong></p>\n<ul>\n<li>पृथ्वी की सबसे भीतरी परत, जिसका त्रिज्या लगभग 3500 किमी है।</li>\n<li>यह मुख्य रूप से निकेल और लोहा (NiFe) से बना है।</li>\n<li>कोर में अत्यधिक तापमान और दबाव होता है और यह पृथ्वी के आयतन का 15% बनाता है।</li>\n</ul>\n</li>\n</ol>\n<p><strong>भूकंपों में भूमिका:</strong></p>\n<ul>\n<li><strong>क्रस्ट</strong> सीधे प्लेटों की गति से जुड़ी होती है और जब ये प्लेटें एक-दूसरे से रगड़ती या टकराती हैं, तो ऊर्जा को भूकंपी लहरों के रूप में छोड़ती हैं, जो भूकंप का कारण बनती है।</li>\n<li><strong>मेंटल</strong> प्लेटों की गति में मदद करता है लेकिन यह भूकंपों का कारण नहीं है।</li>\n<li><strong>आंतरिक कोर</strong> ठोस है और टेक्टोनिक हलचलों में भूमिका नहीं निभाता।</li>\n<li><strong>बाह्य कोर</strong> तरल है, लेकिन यह भी भूकंपों के होने में योगदान नहीं करता।</li>\n</ul>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements:</p>\n<p></p>\n<p>&nbsp;1. The major and top source of oxygen in the atmosphere is photosynthesis by oceanic plants.</p>\n<p>&nbsp;2. Maximum amount of gas found in the air is oxygen.</p>\n<p>&nbsp;3. The ozone layer shields the surface of Earth from gamma rays coming from the Sun.</p>\n<p>&nbsp;4. The mesosphere is located above the stratosphere.</p>\n<p></p>\n<p>Which of the above statements is/are incorrect?</p>\n<p></p>\n<p>निम्नलिखित कथनों पर विचार करें:</p>\n<p></p>\n<p>&nbsp;1. वायुमंडल में ऑक्सीजन का प्रमुख और शीर्ष स्रोत महासागरीय पौधों द्वारा प्रकाश संश्लेषण है।</p>\n<p>&nbsp;2. वायु में सबसे अधिक मात्रा में पाई जाने वाली गैस ऑक्सीजन है।</p>\n<p>&nbsp;3. ओजोन परत सूर्य से आने वाली गामा किरणों से पृथ्वी की सतह की रक्षा करती है।</p>\n<p>&nbsp;4. मध्यमंडल, समतापमंडल के ऊपर स्थित होता है।</p>\n<p></p>\n<p>इनमें से कौन-सा/से कथन गलत है?</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 2 &amp; 3</p>",
+      "<p>Only 3 &amp; 4</p>",
+      "<p>Only 2</p>",
+      "<p>None of the above</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Ozone Layer and Atmospheric Composition</p>\n<p></p>\n<p><strong>&nbsp;1. Ozone Layer:</strong></p>\n<p>&nbsp;&bull; The ozone layer is found in the stratosphere (the second layer of the atmosphere).</p>\n<p>&nbsp;&bull; Ozone is a molecule made up of three oxygen atoms (O₃).</p>\n<p>&nbsp;&bull; It plays a crucial role in absorbing harmful ultraviolet (UV) rays from the Sun.</p>\n<p></p>\n<p><strong>&nbsp;2. Atmosphere Composition and Structure:</strong></p>\n<p></p>\n<p>The atmosphere is a mixture of gases and water vapor surrounding the Earth. It is divided into five layers based on height:</p>\n<p>&nbsp;&bull; Troposphere (7&ndash;16 km):</p>\n<p>&nbsp;&bull; Air is thin here, and communication is feasible.</p>\n<p>&nbsp;&bull; Stratosphere (17&ndash;50 km):</p>\n<p>&nbsp;&bull; Contains the ozone layer that protects us from UV rays.</p>\n<p>&nbsp;&bull; Mesosphere (51&ndash;80 km):</p>\n<p>&nbsp;&bull; Hot gases exist here; meteors burn up in this layer.</p>\n<p>&nbsp;&bull; Thermosphere (81&ndash;500 km):</p>\n<p>&nbsp;&bull; The temperature reaches 45000&deg;F but feels cold due to the absence of molecules, making heat transfer negligible.</p>\n<p>&nbsp;&bull; The International Space Station (ISS) orbits in this layer.</p>\n<p>&nbsp;&bull; Exosphere (1000&ndash;10000 km):</p>\n<p>&nbsp;&bull; The outermost layer; satellites are found here.</p>\n<p></p>\n<p>&nbsp;<strong>3. Atmospheric Gas Composition:</strong></p>\n<p></p>\n<p>Gas Formula Percent Volume</p>\n<p>Nitrogen N₂ 78.08%</p>\n<p>Oxygen O₂ 20.95%</p>\n<p>Water Vapor H₂O 0% to 4%</p>\n<p>Argon Ar 0.93%</p>\n<p>Carbon Dioxide CO₂ 0.036%</p>\n<p>Neon Ne 0.0018%</p>\n<p>Helium He 0.0005%</p>\n<p>Methane CH₄ 0.00017%</p>\n<p>Hydrogen H₂ 0.00005%</p>\n<p>Nitrous Oxide N₂O 0.0003%</p>\n<p>Ozone O₃ 0.000004%</p>\n<p></p>\n<p><span style=\"text-decoration: underline;\"><strong>ओजोन परत और वायुमंडलीय संरचना</strong></span></p>\n<p></p>\n<p><strong>&nbsp;1. ओजोन परत:</strong></p>\n<p>&nbsp;&bull; ओजोन परत समतापमंडल (Stratosphere) में पाई जाती है (वायुमंडल की दूसरी परत)।</p>\n<p>&nbsp;&bull; ओजोन तीन ऑक्सीजन परमाणुओं से बना अणु है, जिसे O₃ कहा जाता है।</p>\n<p>&nbsp;&bull; यह सूर्य से आने वाली हानिकारक अल्ट्रावायलेट (UV) किरणों को अवशोषित करने में महत्वपूर्ण भूमिका निभाती है।</p>\n<p></p>\n<p><strong>&nbsp;2. वायुमंडल की संरचना:</strong></p>\n<p>वायुमंडल पृथ्वी को घेरने वाली गैसों और जल वाष्प का मिश्रण है। इसे ऊंचाई के आधार पर पांच भागों में बांटा गया है:</p>\n<p>&nbsp;&bull; क्षोभमंडल (7&ndash;16 किमी):</p>\n<p>&nbsp;&bull; यहां हवा पतली होती है और संचार संभव है।</p>\n<p>&nbsp;&bull; समतापमंडल (17&ndash;50 किमी):</p>\n<p>&nbsp;&bull; इसमें ओजोन परत होती है, जो UV किरणों से रक्षा करती है।</p>\n<p>&nbsp;&bull; मध्यमंडल (51&ndash;80 किमी):</p>\n<p>&nbsp;&bull; यहां गर्म गैसें होती हैं और उल्का-पिंड जलते हैं।</p>\n<p>&nbsp;&bull; थर्मोस्फीयर (81&ndash;500 किमी):</p>\n<p>&nbsp;&bull; यहां तापमान 45000&deg;F तक पहुंचता है लेकिन अणुओं की अनुपस्थिति के कारण ठंड महसूस होती है।</p>\n<p>&nbsp;&bull; अंतर्राष्ट्रीय अंतरिक्ष स्टेशन (ISS) इसी परत में स्थित है।</p>\n<p>&nbsp;&bull; बहिर्मंडल (1000&ndash;10000 किमी):</p>\n<p>&nbsp;&bull; यह वायुमंडल की सबसे बाहरी परत है; यहां उपग्रह स्थित होते हैं।</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements and identify the incorrect ones:</p>\n<p></p>\n<p>&nbsp;1. The layer of the atmosphere having the lowest temperature is the mesosphere.</p>\n<p>&nbsp;2. Tropopause separates the troposphere and mesosphere.</p>\n<p>&nbsp;3. The percentage increase in carbon dioxide concentration in the atmosphere from pre-industrial times is approximately 50%.</p>\n<p>&nbsp;4. Atmospheric stability is important because it determines the ability of pollutants to disperse vertically in the atmosphere.</p>\n<p></p>\n<p>निम्नलिखित कथनों पर विचार करें और गलत कथनों की पहचान करें:</p>\n<p></p>\n<p>&nbsp;1. वायुमंडल की वह परत जिसकी सबसे कम तापमान है, वह मेसोस्फीयर है।</p>\n<p>&nbsp;2. ट्रोपोपॉज ट्रोपोस्फीयर और मेसोस्फीयर को अलग करता है।</p>\n<p>&nbsp;3. पूर्व-औद्योगिक काल से वायुमंडल में कार्बन डाइऑक्साइड की सांद्रता में वृद्धि लगभग 50% है।</p>\n<p>&nbsp;4. वायुमंडलीय स्थिरता महत्वपूर्ण है क्योंकि यह वायुमंडल में प्रदूषकों को ऊर्ध्वाधर रूप से फैलने की क्षमता को निर्धारित करती है।</p>\n<p></p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 3&nbsp;</p>",
+      "<p>Only 4</p>",
+      "<p>Only 2</p>",
+      "<p>None of the above</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>The atmosphere is divided into five layers based on temperature and density variations:</p>\n<p></p>\n<p>&nbsp;1. Troposphere</p>\n<p>&nbsp;2. Stratosphere</p>\n<p>&nbsp;3. Mesosphere</p>\n<p>&nbsp;4. Thermosphere (Ionosphere)</p>\n<p>&nbsp;5. Exosphere</p>\n<p></p>\n<p><strong>Troposphere</strong></p>\n<p></p>\n<p>&nbsp;&bull; It is the lowest layer of the Earth&rsquo;s atmosphere.</p>\n<p>&nbsp;&bull; The troposphere extends from the surface of the Earth to a height of 7 to 20 km.</p>\n<p>&nbsp;&bull; All-weather phenomena occur within this layer.</p>\n<p>&nbsp;&bull; Temperature decreases at a rate of 1&deg;C for every 165 m of altitude.</p>\n<p>&nbsp;&bull; The tropopause is the boundary between the troposphere and the stratosphere</p>\n<p></p>\n<p><strong>Stratosphere</strong></p>\n<p></p>\n<p>&nbsp;&bull; This is the second layer of the atmosphere, located above the troposphere.</p>\n<p>&nbsp;&bull; It extends up to 50 km in height.</p>\n<p>&nbsp;&bull; Ideal for aviation due to stable horizontal winds and absence of storms.</p>\n<p>&nbsp;&bull; The ozone layer in this layer absorbs harmful UV radiation, protecting life on Earth.</p>\n<p>&nbsp;&bull; Stratopause separates the stratosphere and mesosphere.</p>\n<p></p>\n<p><strong>Mesosphere</strong></p>\n<p></p>\n<p>&nbsp;&bull; Found above the stratosphere, the mesosphere is the coldest atmospheric layer.</p>\n<p>&nbsp;&bull; It extends from 50 to 85 km above the Earth&rsquo;s surface, with temperatures dropping to -100&deg;C by 80 km.</p>\n<p>&nbsp;&bull; Meteors burn up in this layer.</p>\n<p>&nbsp;&bull; Mesopause separates the mesosphere and thermosphere.</p>\n<p></p>\n<p><strong>Thermosphere</strong></p>\n<p></p>\n<p>&nbsp;&bull; Located above the mesosphere, it ranges from 80 to 400 km.</p>\n<p>&nbsp;&bull; The temperature increases with altitude.</p>\n<p>&nbsp;&bull; This layer reflects radio waves and hosts auroras and satellites.</p>\n<p></p>\n<p><strong>Exosphere</strong></p>\n<p></p>\n<p>&nbsp;&bull; This is the outermost layer, extending from 400 to 10,000 km.</p>\n<p>&nbsp;&bull; Molecules and atoms escape into space in this region.</p>\n<p>&nbsp;&bull; Satellites orbit in this layer.</p>\n<p></p>\n<p><strong>Summary Table of Atmospheric Layers</strong></p>\n<p></p>\n<p>Layer Range (km) Key Features</p>\n<p>Troposphere 7-16 Airplanes fly here; weather phenomena occur.</p>\n<p>Stratosphere 17-50 Contains the ozone layer; ideal for aviation.</p>\n<p>Mesosphere 51-80 Coldest layer; meteors burn up here.</p>\n<p>Thermosphere 81-500 Hosts auroras; ISS and satellites present.</p>\n<p>Exosphere 1000-10,000 Outer space begins; satellites orbit here.</p>\n<p></p>\n<p>Solution in Hindi:</p>\n<p></p>\n<p><strong>ट्रोपोपॉज और वायुमंडल की परतें</strong></p>\n<p></p>\n<p>वायुमंडल को तापमान और घनत्व में विविधता के आधार पर पाँच परतों में विभाजित किया गया है:</p>\n<p></p>\n<p>&nbsp;1. क्षोभमंडल (Troposphere)</p>\n<p>&nbsp;2. समतापमंडल (Stratosphere)</p>\n<p>&nbsp;3. मध्यमंडल (Mesosphere)</p>\n<p>&nbsp;4. थर्मोस्फीयर (Thermosphere)</p>\n<p>&nbsp;5. बाह्यमंडल (Exosphere)</p>\n<p></p>\n<p><strong>क्षोभमंडल (Troposphere)</strong></p>\n<p></p>\n<p>&nbsp;&bull; यह पृथ्वी के वायुमंडल की सबसे निचली परत है।</p>\n<p>&nbsp;&bull; इसकी ऊँचाई पृथ्वी की सतह से 7 से 20 किमी तक होती है।</p>\n<p>&nbsp;&bull; सभी मौसम संबंधी घटनाएँ इसी परत में होती हैं।</p>\n<p>&nbsp;&bull; हर 165 मीटर की ऊँचाई पर तापमान 1&deg;C कम हो जाता है।</p>\n<p>&nbsp;&bull; ट्रोपोपॉज क्षोभमंडल और समतापमंडल को अलग करता है।</p>\n<p></p>\n<p><strong>समतापमंडल (Stratosphere)</strong></p>\n<p></p>\n<p>&nbsp;&bull; यह क्षोभमंडल के ऊपर स्थित दूसरी परत है।</p>\n<p>&nbsp;&bull; इसकी ऊँचाई 50 किमी तक होती है।</p>\n<p>&nbsp;&bull; यहाँ स्थिर क्षैतिज हवाओं और तूफानों के अभाव के कारण यह उड़ानों के लिए उपयुक्त है।</p>\n<p>&nbsp;&bull; इस परत में ओजोन परत पाई जाती है, जो हानिकारक यूवी किरणों को अवशोषित करती है।</p>\n<p>&nbsp;&bull; समताप-विस्थलन (Stratopause) समतापमंडल और मध्यमंडल को अलग करता है।</p>\n<p></p>\n<p><strong>मध्यमंडल (Mesosphere)</strong></p>\n<p></p>\n<p>&nbsp;&bull; समतापमंडल के ऊपर स्थित यह परत वायुमंडल की सबसे ठंडी परत है।</p>\n<p>&nbsp;&bull; यह पृथ्वी की सतह से 50 से 85 किमी तक फैली होती है।</p>\n<p>&nbsp;&bull; 80 किमी तक तापमान -100&deg;C तक गिर जाता है।</p>\n<p>&nbsp;&bull; उल्कापिंड (meteors) इस परत में जलकर नष्ट हो जाते हैं।</p>\n<p>&nbsp;&bull; मध्य-विस्थलन (Mesopause) मध्यमंडल और थर्मोस्फीयर को अलग करता है।</p>\n<p></p>\n<p><strong>थर्मोस्फीयर (Thermosphere)</strong></p>\n<p></p>\n<p>&nbsp;&bull; यह मध्यमंडल के ऊपर स्थित है और इसकी ऊँचाई 80 से 400 किमी तक होती है।</p>\n<p>&nbsp;&bull; ऊँचाई के साथ तापमान बढ़ता है।</p>\n<p>&nbsp;&bull; इस परत में ऑरोरा और उपग्रह (satellites) पाए जाते हैं।</p>\n<p></p>\n<p><strong>बाह्यमंडल (Exosphere)</strong></p>\n<p></p>\n<p>&nbsp;&bull; यह वायुमंडल की सबसे बाहरी परत है, जो 400 से 10,000 किमी तक फैली होती है।</p>\n<p>&nbsp;&bull; यहाँ अणु और परमाणु अंतरिक्ष में चले जाते हैं।</p>\n<p>&nbsp;&bull; उपग्रह इसी परत में कक्षा में घूमते हैं।</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements and identify the incorrect ones:</p>\n<p></p>\n<p>&nbsp;1. Phyllite represents a degree of metamorphism between slate and schist.</p>\n<p>&nbsp;2. Rocks formed out of the solidification of magma and lava are known as Secondary rocks.</p>\n<p>&nbsp;3. Sandstone is an example of sedimentary rock.</p>\n<p>&nbsp;4. Rocks formed due to alteration of the original structure due to heat and excessive pressure are called metamorphic rocks.</p>\n<p></p>\n<p>निम्नलिखित कथनों पर विचार करें और गलत कथनों की पहचान करें:</p>\n<p></p>\n<p>&nbsp;1. फिलाइट, स्लेट और शिस्ट के बीच का एक रूपांतरणीय स्तर प्रदर्शित करता है।</p>\n<p>&nbsp;2. मैग्मा और लावा के ठोसification के कारण बनने वाली चट्टानों को द्वितीयक चट्टानें (Secondary rocks) कहा जाता है।</p>\n<p>&nbsp;3. बलुआ पत्थर (Sandstone) एक अवसादी चट्टान (Sedimentary rock) का उदाहरण है।</p>\n<p>&nbsp;4. गर्मी और अत्यधिक दबाव के कारण मूल संरचना में परिवर्तन से बनने वाली चट्टानों को रूपांतरित चट्टानें (Metamorphic rocks) कहा जाता है।</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 2&nbsp;</p>",
+      "<p>Only 1&nbsp;</p>",
+      "<p>1 &amp; 3&nbsp;</p>",
+      "<p>Only 4</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<div class=\"flex max-w-full flex-col flex-grow\">\n<div class=\"min-h-8 text-message flex w-full flex-col items-end gap-2 whitespace-normal break-words [.text-message+&amp;]:mt-5\" data-message-author-role=\"assistant\" data-message-id=\"64509b26-8fe7-47a2-81ce-2615784d65a5\" data-message-model-slug=\"gpt-4o\">\n<div class=\"flex w-full flex-col gap-1 empty:hidden first:pt-[3px]\">\n<div class=\"markdown prose w-full break-words dark:prose-invert light\">\n<h4><strong>Types of Rocks and Their Formation</strong></h4>\n<ol>\n<li>\n<p><strong>Primary Rocks</strong>:</p>\n<ul>\n<li>Rocks formed out of the solidification of magma and lava are known as <strong>Primary Rocks</strong>.</li>\n<li><strong>Igneous rocks</strong> are the most basic type of rocks.</li>\n</ul>\n</li>\n<li>\n<p><strong>Igneous Rocks</strong>:</p>\n<ul>\n<li>Formed when <strong>magma</strong> (molten rock from Earth's mantle) cools and solidifies.</li>\n<li>Types:\n<ul>\n<li><strong>Plutonic Rocks (Intrusive)</strong>:\n<ul>\n<li>Formed when magma cools beneath the surface (e.g., Granite).</li>\n<li>Creates intrusions such as dykes and sills.</li>\n</ul>\n</li>\n<li><strong>Volcanic Rocks (Extrusive)</strong>:\n<ul>\n<li>Formed when magma reaches the surface during a volcanic eruption (e.g., Basalt, Rhyolite).</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>Sedimentary Rocks</strong>:</p>\n<ul>\n<li>Formed by the consolidation of sediments of pre-existing rocks through mechanical, chemical, or organic processes.</li>\n<li>Types:\n<ul>\n<li><strong>Clastic</strong>: Formed from mechanical weathering debris (e.g., Sandstone, Shale).</li>\n<li><strong>Chemical</strong>: Formed by precipitation of dissolved materials (e.g., Limestone, Rock Salt).</li>\n<li><strong>Organic</strong>: Formed from plant/animal debris (e.g., Chalk, Coal).</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>Metamorphic Rocks</strong>:</p>\n<ul>\n<li>Formed under heat and pressure from pre-existing rocks.</li>\n<li>Types:\n<ul>\n<li><strong>Foliated</strong>: Layered appearance (e.g., Slate, Schist).</li>\n<li><strong>Non-foliated</strong>: Uniform texture (e.g., Marble, Quartzite).</li>\n</ul>\n</li>\n</ul>\n</li>\n</ol>\n<h4><strong>Key Concepts</strong></h4>\n<ul>\n<li>A rock is a naturally occurring solid mass of one or more minerals or mineraloid matter.</li>\n<li>The Earth's crust is composed of rocks, categorized by their minerals, chemical composition, and formation process.</li>\n<li><strong>Rock Cycle</strong>: The geologic transition among the three main types: igneous, sedimentary, and metamorphic.</li>\n</ul>\n<hr />\n<h3>&nbsp;</h3>\n<h4><strong>चट्टानों के प्रकार और उनका निर्माण</strong></h4>\n<ol>\n<li>\n<p><strong>प्राथमिक चट्टानें</strong>:</p>\n<ul>\n<li><strong>मैग्मा और लावा</strong> के ठोस बनने से बनी चट्टानें <strong>प्राथमिक चट्टानें</strong> कहलाती हैं।</li>\n<li><strong>आग्नेय चट्टानें</strong> चट्टानों का सबसे मूलभूत प्रकार हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>आग्नेय चट्टानें</strong>:</p>\n<ul>\n<li><strong>मैग्मा</strong> (पृथ्वी के मेंटल से निकली हुई पिघली हुई चट्टान) के ठंडा और कठोर होने पर बनती हैं।</li>\n<li>प्रकार:\n<ul>\n<li><strong>प्लूटोनिक चट्टानें (अंतःस्रावी)</strong>:\n<ul>\n<li>जब मैग्मा सतह के नीचे ठंडी हो जाती है (उदा., ग्रेनाइट)।</li>\n<li>डाइक और सिल्ल जैसे अंतःस्रव का निर्माण करती है।</li>\n</ul>\n</li>\n<li><strong>ज्वालामुखीय चट्टानें (बहिर्स्रावी)</strong>:\n<ul>\n<li>जब मैग्मा ज्वालामुखीय विस्फोट के दौरान सतह पर पहुंचती है (उदा., बेसाल्ट, रायोलाइट)।</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>अवसादी चट्टानें</strong>:</p>\n<ul>\n<li>पूर्व-विद्यमान चट्टानों के अवसादों के यांत्रिक, रासायनिक या जैविक प्रक्रियाओं द्वारा संघनन से बनती हैं।</li>\n<li>प्रकार:\n<ul>\n<li><strong>क्लास्टिक</strong>: यांत्रिक अपक्षय मलबे से बनी (उदा., बलुआ पत्थर, शेल)।</li>\n<li><strong>रासायनिक</strong>: घुले हुए पदार्थों के अवक्षेपण से बनी (उदा., चूना पत्थर, शैल खारा)।</li>\n<li><strong>जैविक</strong>: पौधों/जानवरों के मलबे से बनी (उदा., चॉक, कोयला)।</li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>परिवर्तित चट्टानें</strong>:</p>\n<ul>\n<li>पहले से मौजूद चट्टानों के गर्मी और दबाव से बनने वाली चट्टानें।</li>\n<li>प्रकार:\n<ul>\n<li><strong>परतदार (फोलिएटेड)</strong>: परतों वाली बनावट (उदा., स्लेट, शिस्ट)।</li>\n<li><strong>अपरतदार (नॉन-फोलिएटेड)</strong>: समान बनावट (उदा., संगमरमर, क्वार्ट्जाइट)।</li>\n</ul>\n</li>\n</ul>\n</li>\n</ol>\n<h4><strong>मुख्य अवधारणाएं</strong></h4>\n<ul>\n<li>चट्टान एक या एक से अधिक खनिजों या खनिज जैसे पदार्थों का प्राकृतिक रूप से ठोस द्रव्यमान है।</li>\n<li>पृथ्वी की पपड़ी चट्टानों से बनी होती है, जिन्हें उनके खनिज, रासायनिक संरचना और निर्माण प्रक्रिया के आधार पर वर्गीकृत किया जाता है।</li>\n<li><strong>चट्टान चक्र</strong>: तीन मुख्य प्रकारों (आग्नेय, अवसादी, परिवर्तित) के बीच भूवैज्ञानिक संक्रमण।</li>\n</ul>\n</div>\n</div>\n</div>\n</div>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements:</p>\n<p></p>\n<p>&nbsp;1. Java Trench is the deepest point of the Atlantic Ocean.</p>\n<p>&nbsp;2. Charles Darwin&rsquo;s Subsidence Theory is widely accepted for explaining coral reef formation.</p>\n<p>&nbsp;3. The North Atlantic Drift is primarily responsible for warm temperatures along the western coast of Europe.</p>\n<p>&nbsp;4. The ocean that forms the shape of the letter &ldquo;S&rdquo; is the Atlantic Ocean.</p>\n<p></p>\n<p>Which of the above statements is/are incorrect?</p>\n<p></p>\n<p>निम्नलिखित कथनों पर विचार करें:</p>\n<p></p>\n<p>&nbsp;1. जावा ट्रेंच अटलांटिक महासागर का सबसे गहरा बिंदु है।</p>\n<p>&nbsp;2. कोरल रीफ निर्माण को समझाने के लिए चार्ल्स डार्विन का सबसिडेंस सिद्धांत व्यापक रूप से स्वीकार किया गया है।</p>\n<p>&nbsp;3. यूरोप के पश्चिमी तट के साथ गर्म तापमान के लिए मुख्य रूप से नॉर्थ अटलांटिक ड्रिफ्ट जिम्मेदार है।</p>\n<p>&nbsp;4. जो महासागर &ldquo;S&rdquo; अक्षर के आकार का बनता है, वह अटलांटिक महासागर है।</p>\n<p></p>\n<p>इनमें से कौन-सा/से कथन गलत है/हैं?</p>",
+    "comp": "",
+    "options": [
+      "<p>1 only</p>",
+      "<p>1 and 4 only</p>",
+      "<p>2 and 3 only</p>",
+      "<p>4 only</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Statement 1&nbsp;</p>\n<p>&nbsp;1. Incorrect (गलत): Java Trench is the deepest point of the Indian Ocean, not the Atlantic Ocean. The deepest point of the Atlantic Ocean is the Puerto Rico Trench.</p>\n<p></p>\n<h4><strong>Atlantic Ocean</strong></h4>\n<ol>\n<li>Forms the shape of the letter &ldquo;S&rdquo; when observed on a world map.</li>\n<li>Connects to the Arctic Ocean via the Barents Sea, Norwegian Sea, Greenland Sea, and the Denmark Strait.</li>\n<li><strong>Puerto Rico Trench</strong> is its deepest point, approximately <strong>28,230 feet</strong> deep.</li>\n<li>The busiest ocean for commerce and trade.</li>\n</ol>\n<h4><strong>Pacific Ocean</strong></h4>\n<ol>\n<li>Largest and deepest ocean on Earth.</li>\n<li>Extends from the Arctic Ocean in the north to the Southern Ocean in the south; bounded by Asia, Australia, and the Americas.</li>\n<li><strong>Challenger Deep</strong> in the Mariana Trench is the world's deepest point, with a depth of <strong>10,902&ndash;10,929 meters</strong>.</li>\n</ol>\n<h4><strong>Mediterranean Sea</strong></h4>\n<ol>\n<li>Historically significant for trade and cultural exchange.</li>\n<li>Connected to the Atlantic Ocean by the <strong>Strait of Gibraltar</strong>, which separates Spain (Europe) and Morocco (Africa).</li>\n</ol>\n<h4><strong>Indian Ocean</strong></h4>\n<ol>\n<li>Third-largest ocean; bounded by Asia, Africa, and Australia to the north, west, and east, respectively.</li>\n<li>Southern Ocean (Antarctica) lies to the south.</li>\n<li>Regional seas: <strong>Arabian Sea, Bay of Bengal, Laccadive Sea, Somali Sea, Andaman Sea</strong>.</li>\n</ol>\n<h4><strong>North Atlantic Drift</strong></h4>\n<ol>\n<li>Part of the <strong>Thermohaline Circulation (Global Conveyor Belt)</strong>, it transports warm water from the tropics to the poles and cold water back.</li>\n<li>Moderates Europe&rsquo;s climate, enhances agricultural productivity, and supports biodiversity.</li>\n</ol>\n<h4><strong>Erosional Landforms</strong></h4>\n<ol>\n<li><strong>Grand Canyon</strong> is a prime example of a valley formed by erosion.</li>\n<li>Erosion is the geological process where soil or rock is removed and transported by natural forces like wind or water.</li>\n</ol>\n<h4><strong>Types of Valleys</strong></h4>\n<ul>\n<li><strong>V-shaped Valleys</strong>: Narrow valleys with steep sides.</li>\n<li><strong>Gorge</strong>: A narrow valley with steep sides and a river running through it.</li>\n<li><strong>Canyon</strong>: A type of gorge, wider at the top than the bottom, with steep, step-like side slopes.</li>\n</ul>\n<p><strong>Examples</strong>:</p>\n<ul>\n<li>Canyons form in horizontally bedded sedimentary rocks.</li>\n<li>Gorges form in hard rocks.</li>\n</ul>\n<p></p>\n<h4><strong>अटलांटिक महासागर</strong></h4>\n<ol>\n<li>विश्व मानचित्र पर इसे &ldquo;S&rdquo; अक्षर का आकार बनाते हुए देखा जा सकता है।</li>\n<li>यह आर्कटिक महासागर से बारेंट्स सागर, नॉर्वेजियन सागर, ग्रीनलैंड सागर और डेनमार्क जलडमरूमध्य के माध्यम से जुड़ा हुआ है।</li>\n<li>इसका सबसे गहरा बिंदु <strong>प्यूर्टो रिको ट्रेंच</strong> है, जिसकी गहराई लगभग <strong>28,230 फीट</strong> है।</li>\n<li>व्यापार और वाणिज्य के लिए सबसे व्यस्त महासागर।</li>\n</ol>\n<h4><strong>प्रशांत महासागर</strong></h4>\n<ol>\n<li>पृथ्वी का सबसे बड़ा और सबसे गहरा महासागर।</li>\n<li>उत्तर में आर्कटिक महासागर से दक्षिण में दक्षिणी महासागर तक फैला हुआ है; एशिया, ऑस्ट्रेलिया और अमेरिका से घिरा है।</li>\n<li><strong>चैलेंजर डीप</strong>, जो मैरियाना ट्रेंच में स्थित है, दुनिया का सबसे गहरा बिंदु है, जिसकी गहराई <strong>10,902&ndash;10,929 मीटर</strong> है।</li>\n</ol>\n<h4><strong>भूमध्य सागर</strong></h4>\n<ol>\n<li>ऐतिहासिक रूप से व्यापार और सांस्कृतिक आदान-प्रदान का एक महत्वपूर्ण मार्ग।</li>\n<li><strong>जिब्राल्टर जलडमरूमध्य</strong> के माध्यम से अटलांटिक महासागर से जुड़ा हुआ है, जो स्पेन (यूरोप) और मोरक्को (अफ्रीका) को अलग करता है।</li>\n</ol>\n<h4><strong>हिंद महासागर</strong></h4>\n<ol>\n<li>तीसरा सबसे बड़ा महासागर; उत्तर, पश्चिम, और पूर्व में क्रमशः एशिया, अफ्रीका, और ऑस्ट्रेलिया से घिरा हुआ।</li>\n<li>दक्षिण में दक्षिणी महासागर (अंटार्कटिका) से जुड़ा हुआ।</li>\n<li>क्षेत्रीय समुद्र: <strong>अरब सागर, बंगाल की खाड़ी, लक्षद्वीप सागर, सोमाली सागर, अंडमान सागर</strong>।</li>\n</ol>\n<h4><strong>उत्तर अटलांटिक प्रवाह</strong></h4>\n<ol>\n<li><strong>थर्मोहलाइन परिसंचरण (ग्लोबल कन्वेयर बेल्ट)</strong> का हिस्सा, जो गर्म पानी को उष्णकटिबंधीय से ध्रुवों तक और ठंडे पानी को वापस ले जाता है।</li>\n<li>यूरोप की जलवायु को नियंत्रित करता है, कृषि उत्पादकता को बढ़ाता है और जैव विविधता का समर्थन करता है।</li>\n</ol>\n<h4><strong>अपक्षयी स्थलरूप (Erosional Landforms)</strong></h4>\n<ol>\n<li><strong>ग्रैंड कैन्यन</strong> अपक्षय से बने घाटी का एक प्रमुख उदाहरण है।</li>\n<li>अपक्षय वह भूवैज्ञानिक प्रक्रिया है, जिसमें मिट्टी या चट्टान को प्राकृतिक बलों (जैसे हवा या पानी) द्वारा हटाया और ले जाया जाता है।</li>\n</ol>\n<h4><strong>घाटियों के प्रकार</strong></h4>\n<ul>\n<li><strong>V-आकार की घाटियाँ</strong>: संकरी घाटियाँ जिनकी ढलानें खड़ी होती हैं।</li>\n<li><strong>गॉर्ज</strong>: संकरी घाटियाँ, जिनमें से नदी गुजरती है।</li>\n<li><strong>कैन्यन</strong>: गॉर्ज का एक प्रकार, जो ऊपर की ओर चौड़ा और नीचे की ओर संकरा होता है, और इसकी ढलान सीढ़ीनुमा होती है।</li>\n</ul>\n<p><strong>उदाहरण</strong>:</p>\n<ul>\n<li>कैन्यन क्षैतिज रूप से परतदार अवसादी चट्टानों में बनते हैं।</li>\n<li>गॉर्ज कठोर चट्टानों में बनते हैं।</li>\n</ul>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements:</p>\n<ol>\n<li>The rhythmic rise and fall of ocean water twice in a day is called Tide.</li>\n<li>Kuroshio current is a warm current of the Pacific Ocean.</li>\n<li>Madagascar is located in the Pacific Ocean.</li>\n<li>The Agulhas Current is the western boundary current of the South Indian Ocean.</li>\n</ol>\n<p>Which statement is wrong?</p>\n<p><br />निम्नलिखित कथनों पर विचार करें:</p>\n<ol>\n<li>महासागरीय जल का दिन में दो बार लयबद्ध रूप से ऊपर उठना और गिरना ज्वार कहलाता है।</li>\n<li>कुरोशियो धारा प्रशांत महासागर की एक गर्म धारा है।</li>\n<li>मेडागास्कर प्रशांत महासागर में स्थित है।</li>\n<li>अगुलहास धारा दक्षिण भारतीय महासागर की पश्चिमी सीमा धारा है।</li>\n</ol>\n<p>कौन सा कथन गलत है?</p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1</p>",
+      "<p>Only 2</p>",
+      "<p>Only 3</p>",
+      "<p>Only 4</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<h3><strong>Indian Ocean</strong></h3>\n<ol>\n<li>\n<p><strong>Madagascar is an island country located in the Indian Ocean and is the largest African island, situated about 450 km (280 miles) east of Mozambique.</strong></p>\n<ul>\n<li><strong>मेडागास्कर भारतीय महासागर में स्थित एक द्वीप देश है और यह अफ्रीका का सबसे बड़ा द्वीप है, जो मोज़ाम्बिक के पूर्व में लगभग 450 किमी (280 मील) दूर स्थित है।</strong></li>\n</ul>\n</li>\n<li>\n<p><strong>Madagascar is the fourth-largest island in the world, isolated for about 88 million years, leading to unique flora and fauna.</strong></p>\n<ul>\n<li><strong>मेडागास्कर दुनिया का चौथा सबसे बड़ा द्वीप है, जो लगभग 88 मिलियन वर्षों से पृथक है, जिससे यहां अद्वितीय वनस्पति और जीव पाए जाते हैं।</strong></li>\n</ul>\n</li>\n<li>\n<p><strong>It has three parallel longitudinal zones:</strong></p>\n<ul>\n<li><strong>इसमें तीन समानांतर अक्षांशीय क्षेत्र हैं:</strong></li>\n<li>Central Plateau (मध्य पठार)</li>\n<li>Eastern Coastal Strip (पूर्वी तटीय पट्टी)</li>\n<li>Western Low Plateaus and Plains (पश्चिमी निम्न पठार और मैदान)</li>\n</ul>\n</li>\n</ol>\n<hr />\n<h3><strong>Ocean Currents in the Indian Ocean</strong></h3>\n<ul>\n<li>\n<p><strong>Warm Currents (गर्म धाराएँ):</strong></p>\n<ul>\n<li>North Equatorial Current (उत्तर भूमध्य रेखीय धारा)</li>\n<li>South Equatorial Current (दक्षिण भूमध्य रेखीय धारा)</li>\n<li>Mozambique Current (मोज़ाम्बिक धारा)</li>\n<li>Madagascar Current (मेडागास्कर धारा)</li>\n<li>Agulhas Current (अगुलहास धारा)</li>\n</ul>\n</li>\n<li>\n<p><strong>Cold Currents (ठंडी धाराएँ):</strong></p>\n<ul>\n<li>Somali Current (सोमाली धारा)</li>\n<li>West Australian Current (पश्चिमी ऑस्ट्रेलियाई धारा)</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3><strong>Atlantic Ocean</strong></h3>\n<ol>\n<li><strong>The Atlantic Ocean is divided into two parts by the Equatorial Counter Current:</strong>\n<ul>\n<li><strong>अटलांटिक महासागर को भूमध्य रेखीय प्रतिधारा द्वारा दो भागों में विभाजित किया गया है:</strong></li>\n<li>Northern Atlantic Ocean (उत्तरी अटलांटिक महासागर)</li>\n<li>Southern Atlantic Ocean (दक्षिणी अटलांटिक महासागर)</li>\n</ul>\n</li>\n</ol>\n<hr />\n<h3><strong>Ocean Currents in the Atlantic Ocean</strong></h3>\n<ul>\n<li>\n<p><strong>Warm Currents (गर्म धाराएँ):</strong></p>\n<ul>\n<li>North Equatorial Current (उत्तर भूमध्य रेखीय धारा)</li>\n<li>South Equatorial Current (दक्षिण भूमध्य रेखीय धारा)</li>\n<li>Equatorial Counter Current (भूमध्य रेखीय प्रतिधारा)</li>\n<li>Gulf Stream (गल्फ स्ट्रीम)</li>\n<li>Florida Current (फ्लोरिडा धारा)</li>\n<li>Brazilian Current (ब्राज़ीलियाई धारा)</li>\n</ul>\n</li>\n<li>\n<p><strong>Cold Currents (ठंडी धाराएँ):</strong></p>\n<ul>\n<li>Canaries Current (कैनरीज धारा)</li>\n<li>Labrador Current (लैब्राडोर धारा)</li>\n<li>Falkland Current (फ़ॉकलैंड धारा)</li>\n<li>Benguela Current (बेंगुएला धारा)</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3><strong>Key Points (मुख्य बिंदु)</strong></h3>\n<ol>\n<li>\n<p><strong>The Gulf Stream is one of the strongest ocean currents, originating near the Gulf of Mexico and extending into the North Atlantic Drift.</strong></p>\n<ul>\n<li><strong>गल्फ स्ट्रीम सबसे मजबूत महासागरीय धाराओं में से एक है, जो मैक्सिको की खाड़ी से शुरू होकर उत्तर अटलांटिक प्रवाह में मिलती है।</strong></li>\n</ul>\n</li>\n<li>\n<p><strong>The Labrador Current flows southeastward between West Greenland and Baffin Island and meets the Gulf Stream off the coast of Newfoundland, Canada.</strong></p>\n<ul>\n<li><strong>लैब्राडोर धारा पश्चिम ग्रीनलैंड और बैफिन द्वीप के बीच दक्षिण-पूर्व की ओर बहती है और न्यूफ़ाउंडलैंड, कनाडा के तट पर गल्फ स्ट्रीम से मिलती है।</strong></li>\n</ul>\n</li>\n<li>\n<p><strong>The Canaries Current, a cold current, flows along the western coast of the Iberian Peninsula and moves southward along the coast of North Africa.</strong></p>\n<ul>\n<li><strong>कैनरीज धारा, एक ठंडी धारा है, जो इबेरियन प्रायद्वीप के पश्चिमी तट के साथ बहती है और उत्तरी अफ्रीका के तट के साथ दक्षिण की ओर जाती है।</strong></li>\n</ul>\n</li>\n</ol>\n<hr />\n<h3><strong>Additional Information (अतिरिक्त जानकारी)</strong></h3>\n<ol>\n<li><strong>Greenland is the largest island in the world, located near North America.</strong>\n<ul>\n<li><strong>ग्रीनलैंड दुनिया का सबसे बड़ा द्वीप है, जो उत्तर अमेरिका के पास स्थित है।</strong></li>\n</ul>\n</li>\n<li><strong>Great Nicobar Island is the largest island in India and is the southernmost point of the country.</strong>\n<ul>\n<li><strong>ग्रेट निकोबार द्वीप भारत का सबसे बड़ा द्वीप है और देश का सबसे दक्षिणी बिंदु है।</strong></li>\n</ul>\n</li>\n<li><strong>A group of islands is referred to as an archipelago.</strong>\n<ul>\n<li><strong>द्वीपों के समूह को द्वीपसमूह (आर्किपेलागो) कहा जाता है।</strong></li>\n</ul>\n</li>\n</ol>\n<hr />\n<h3><strong>Pacific Ocean Currents (प्रशांत महासागर की धाराएँ)</strong></h3>\n<ul>\n<li>\n<p><strong>Warm Current (गर्म धारा):</strong></p>\n<ul>\n<li>Kuroshio Current (Japan Current): Flows from Taiwan to the Bering Strait.\n<ul>\n<li><strong>कुरोशियो धारा (जापान धारा): ताइवान से बेरिंग जलडमरूमध्य तक बहती है।</strong></li>\n</ul>\n</li>\n</ul>\n</li>\n<li>\n<p><strong>Cold Currents (ठंडी धाराएँ):</strong></p>\n<ul>\n<li>Oyashio Current: Flows southwards in the Pacific.\n<ul>\n<li><strong>ओयाशियो धारा: प्रशांत महासागर में दक्षिण की ओर बहती है।</strong></li>\n</ul>\n</li>\n<li>Humboldt Current: A cold current along the western coast of South America, formed by the West Wind Drift.\n<ul>\n<li><strong>हम्बोल्ट धारा: दक्षिण अमेरिका के पश्चिमी तट के साथ बहने वाली ठंडी धारा, जो पश्चिमी पवन प्रवाह द्वारा बनती है।</strong></li>\n</ul>\n</li>\n<li>California Current: A cold current flowing south along the western coast of North America.\n<ul>\n<li><strong>कैलिफ़ोर्निया धारा: उत्तरी अमेरिका के पश्चिमी तट के साथ दक्षिण की ओर बहने वाली ठंडी धारा।</strong></li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Which one of the following clouds is an indicative of clear and dry weather ?</p>\n<p></p>\n<p><span style=\"font-size: 14pt;\">निम्नलिखित में से कौन सा बादल साफ और शुष्क मौसम का संकेत देता है?</span></p>",
+    "comp": "",
+    "options": [
+      "<p>Altostratus&nbsp;<span style=\"font-family: var(--font-family);\">(एल्टोस्ट्रेटस)</span></p>",
+      "<p>Cirrus&nbsp;<span style=\"font-family: var(--font-family);\">(सिरस)</span></p>",
+      "<p>Nimbus&nbsp;&nbsp;<span style=\"font-family: var(--font-family);\">(निम्बस)</span></p>",
+      "<p>Nimbo-Cumulous&nbsp;<span style=\"font-family: var(--font-family);\">(निम्बो-क्यूम्यलस)</span></p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<h3><strong>1. High Clouds (ऊँचे बादल: 6,000 मीटर से ऊपर)</strong></h3>\n<ul>\n<li>\n<p><strong>Cirrus (Ci):</strong></p>\n<ul>\n<li>Thin, wispy, feathery clouds made of ice crystals. Indicate fair weather but can also signal an approaching warm front.</li>\n<li>पतले, रेशेदार, पंख जैसे बादल जो बर्फ के क्रिस्टल से बने होते हैं। ये साफ मौसम का संकेत देते हैं लेकिन कभी-कभी गर्म मोर्चे के आने का भी संकेत देते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Cirrocumulus (Cc):</strong></p>\n<ul>\n<li>Small, white patches or ripples, often arranged in rows. Sometimes called \"mackerel sky.\"</li>\n<li>छोटे, सफेद धब्बे या तरंगें, जो अक्सर पंक्तियों में होती हैं। इसे \"मैकरेल आसमान\" भी कहते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Cirrostratus (Cs):</strong></p>\n<ul>\n<li>Thin, sheet-like clouds that often cover the entire sky. Can create a halo effect around the sun or moon. Often precede precipitation.</li>\n<li>पतले, चादर जैसे बादल जो अक्सर पूरे आकाश को ढक लेते हैं। यह सूर्य या चंद्रमा के चारों ओर प्रभामंडल प्रभाव पैदा कर सकते हैं। अक्सर वर्षा से पहले दिखाई देते हैं।</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3><strong>2. Middle Clouds (मध्यम ऊँचाई के बादल: 2,000 - 6,000 मीटर)</strong></h3>\n<ul>\n<li>\n<p><strong>Altocumulus (Ac):</strong></p>\n<ul>\n<li>White or gray patches, often in layers or waves. Can indicate thunderstorms later in the day.</li>\n<li>सफेद या भूरे रंग के धब्बे, जो अक्सर परतों या तरंगों में होते हैं। दिन में बाद में तूफान का संकेत दे सकते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Altostratus (As):</strong></p>\n<ul>\n<li>Gray or bluish-gray sheets that often cover the entire sky. Sun or moon may appear watery or diffused. Usually precede precipitation.</li>\n<li>भूरे या नीले-भूरे चादर जैसे बादल, जो अक्सर पूरे आकाश को ढक लेते हैं। सूर्य या चंद्रमा धुंधले या पानी भरे दिख सकते हैं। ये आमतौर पर वर्षा से पहले बनते हैं।</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3><strong>3. Low Clouds (नीचे के बादल: 2,000 मीटर से नीचे)</strong></h3>\n<ul>\n<li>\n<p><strong>Stratus (St):</strong></p>\n<ul>\n<li>Gray, uniform sheets that often cover the entire sky like fog. Can produce light drizzle or snow.</li>\n<li>भूरे, एकसमान चादर जैसे बादल जो अक्सर पूरे आकाश को धुंध की तरह ढक लेते हैं। हल्की बूंदाबांदी या बर्फ गिरा सकते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Stratocumulus (Sc):</strong></p>\n<ul>\n<li>Gray or whitish patches, often in rounded masses or rolls. Can produce light precipitation.</li>\n<li>भूरे या सफेद धब्बे, जो अक्सर गोलाकार या रोल जैसी आकृतियों में होते हैं। हल्की वर्षा कर सकते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Nimbostratus (Ns):</strong></p>\n<ul>\n<li>Dark, gray, thick layers that obscure the sun. Produce continuous rain or snow.</li>\n<li>गहरे, भूरे, मोटे बादल जो सूर्य को ढक लेते हैं। निरंतर वर्षा या बर्फ गिराते हैं।</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3><strong>4. Vertical Development Clouds (ऊर्ध्वाधर विकास वाले बादल)</strong></h3>\n<ul>\n<li>\n<p><strong>Cumulus (Cu):</strong></p>\n<ul>\n<li>Dense, puffy clouds with flat bases and well-defined edges. Often associated with fair weather.</li>\n<li>घने, फूले हुए बादल जिनकी तल सपाट होती है और किनारे स्पष्ट होते हैं। अक्सर साफ मौसम से जुड़े होते हैं।</li>\n</ul>\n</li>\n<li>\n<p><strong>Cumulonimbus (Cb):</strong></p>\n<ul>\n<li>Towering, dark clouds with anvil-shaped tops. Produce thunderstorms, heavy rain, hail, and sometimes tornadoes.</li>\n<li>ऊंचे, गहरे बादल जिनकी शीर्ष भाग गदा के आकार का होता है। ये आंधी, भारी वर्षा, ओले और कभी-कभी बवंडर उत्पन्न करते हैं<br /><br /><img src=\"https://cms-cdn.classplus.co/parserImages/98fa21b7-54d2-47ef-a388-02119bca9202.png\" alt=\"\" width=\"416\" height=\"264\" /></li>\n</ul>\n</li>\n</ul>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>How many of the following pairs are correctly matched according to the map?</strong><br /><strong>नक्शे के अनुसार निम्नलिखित युग्मों में से कितने सही से मेल खाते हैं?</strong></p>\n<table>\n<thead>\n<tr>\n<th><strong>S.No.</strong></th>\n<th><strong>Mountain Range (पर्वत श्रृंखला)</strong></th>\n<th><strong>Continent (महाद्वीप)</strong></th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1.</td>\n<td>Andes (एंडीज)</td>\n<td>South America (दक्षिण अमेरिका)</td>\n</tr>\n<tr>\n<td>2.</td>\n<td>Himalaya (हिमालय)</td>\n<td>Asia (एशिया)</td>\n</tr>\n<tr>\n<td>3.</td>\n<td>Atlas (एटलस)</td>\n<td>Africa (अफ्रीका)</td>\n</tr>\n<tr>\n<td>4.</td>\n<td>Rocky Mountains (रॉकी पर्वत)</td>\n<td>Europe (यूरोप)</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Select the correct answer using the code given below:</strong><br /><strong>नीचे दिए गए कूट का उपयोग करके सही उत्तर का चयन करें:</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>1, 2 and 3</p>",
+      "<p>1, 2 and 4</p>",
+      "<p>&nbsp;2, 3 and 4&nbsp;</p>",
+      "<p>1 and&nbsp; 4&nbsp;</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>&bull; The Andes mountain range is located in South America. Hence, Pair 1 is correctly matched.<br />&bull; एंडीज पर्वत श्रृंखला दक्षिण अमेरिका में स्थित है। इसलिए, युग्म 1 सही मेल खाता है।</p>\n<p>&bull; The Himalayas are located in Asia. Hence, Pair 2 is correctly matched.<br />&bull; हिमालय एशिया में स्थित हैं। इसलिए, युग्म 2 सही मेल खाता है।</p>\n<p>&bull; The Atlas Mountains are located in Africa. Hence, Pair 3 is correctly matched.<br />&bull; एटलस पर्वत अफ्रीका में स्थित हैं। इसलिए, युग्म 3 सही मेल खाता है।</p>\n<p></p>\n<p>&bull; The Rocky Mountains are located in North America, not Europe. Hence, Pair 4 is incorrectly matched.<br />&bull; रॉकी पर्वत उत्तर अमेरिका में स्थित हैं, न कि यूरोप में। इसलिए, युग्म 4 गलत मेल खाता है।</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Consider the following statements:</p>\n<p></p>\n<p>&nbsp;1. Oder-Neisse Line exists between Germany and Poland.</p>\n<p>&nbsp;2. The largest river island in the world is Aggati Island.</p>\n<p>&nbsp;3. Gibraltar Strait divides Europe from Africa.</p>\n<p>&nbsp;4. The Grand Canyon is located in the US.</p>\n<p></p>\n<p>Which one of the above statements is incorrect?</p>\n<p>नीचे दिए गए कथनों पर विचार करें:</p>\n<p></p>\n<p>&nbsp;1. ओडर-नीस रेखा जर्मनी और पोलैंड के बीच स्थित है।</p>\n<p>&nbsp;2. विश्व का सबसे बड़ा नदी द्वीप अगत्ती द्वीप है।</p>\n<p>&nbsp;3. जिब्राल्टर जलडमरूमध्य यूरोप को अफ्रीका से विभाजित करता है।</p>\n<p>&nbsp;4. ग्रैंड कैन्यन अमेरिका में स्थित है।</p>\n<p></p>\n<p>इनमें से कौन सा कथन गलत है?</p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>Only 1</p>",
+      "<p>Only&nbsp; 2</p>",
+      "<p>Only 3</p>",
+      "<p>Only 4</p>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Statement 2: Incorrect. The largest river island in the world is Majuli Island, located on the Brahmaputra River in India, not Aggati Island.</p>\n<p>दुनिया का सबसे बड़ा नदी द्वीप माजुली द्वीप है, जो भारत में ब्रह्मपुत्र नदी पर स्थित है, न कि अगत्ती द्वीप।</p>\n<p></p>\n<p></p>\n<p></p>\n<ol>\n<li><strong>Gibraltar Strait:</strong></li>\n</ol>\n<ul>\n<li>Connects the Atlantic Ocean to the Mediterranean Sea.</li>\n<li>Separates Spain (Europe) from Morocco (Africa).</li>\n</ul>\n<p><strong>Correct Answer: Option 3</strong></p>\n<p>2. Sunda Strait:</p>\n<p>&nbsp;&bull; Connects the Indian Ocean with Eastern Asia.</p>\n<p>&nbsp;&bull; Located between Java and Sumatra (Indonesia).</p>\n<p>&nbsp;3. Taiwan Strait:</p>\n<p>&nbsp;&bull; Separates Taiwan from continental Asia.</p>\n<p>&nbsp;&bull; Connects the South China Sea with the East China Sea.</p>\n<p>&nbsp;&bull; Narrowest part: 130 km.</p>\n<p></p>\n<p><strong>Boundary Lines</strong></p>\n<p></p>\n<p>Boundary Line Countries</p>\n<p>Durand Line Pakistan and Afghanistan</p>\n<p>MacMohan Line India and China</p>\n<p>Maginot Line France and Germany</p>\n<p>38th Parallel Line North and South Korea</p>\n<p>Oder Neisse Line Germany and Poland</p>\n<p>Radcliffe Line India and Pakistan</p>\n<p></p>\n<p><strong>Polar and Other Regions</strong></p>\n<p></p>\n<p>&nbsp;&bull; Eskimos: Indigenous people in Tundra regions (Eastern Siberia, Alaska, Canada, Greenland).</p>\n<p>&nbsp;&bull; Polar Region: Arctic (North Pole) and Antarctic (South Pole), with extreme frigid climates.</p>\n<p></p>\n<p><strong>Other Regions:</strong></p>\n<p></p>\n<p>&nbsp;1. Arid Region (Deserts):</p>\n<p>&nbsp;&bull; Low rainfall, high temperatures, scarce biodiversity.</p>\n<p>&nbsp;2. Savanna Grasslands:</p>\n<p>&nbsp;&bull; Called Campos in Brazil.</p>\n<p>&nbsp;&bull; Found in Paraguay, Uruguay, Argentina, and Brazil.</p>\n<p>&nbsp;&bull; Subtropical humid climate, diverse plant species.</p>\n<p>&nbsp;3. Tropical Rainforests:</p>\n<p>&nbsp;&bull; Found in Western Ghats, Assam, Tamil Nadu, Andaman &amp; Nicobar Islands.</p>\n<p>&nbsp;&bull; Receive &gt;200 cm rainfall yearly.</p>\n<p></p>\n<p><strong>स्ट्रेट्स (जलडमरूमध्य)</strong></p>\n<p></p>\n<p>&nbsp;1. जिब्राल्टर का जलडमरूमध्य:</p>\n<p>&nbsp;&bull; अटलांटिक महासागर को भूमध्य सागर से जोड़ता है।</p>\n<p>&nbsp;&bull; स्पेन (यूरोप) और मोरक्को (अफ्रीका) को अलग करता है।</p>\n<p>&nbsp;&bull; सही उत्तर: विकल्प 3।</p>\n<p>&nbsp;2. सुंडा स्ट्रेट:</p>\n<p>&nbsp;&bull; इंडियन ओशन और पूर्वी एशिया को जोड़ता है।</p>\n<p>&nbsp;&bull; जावा और सुमात्रा द्वीपों के बीच।</p>\n<p>&nbsp;3. ताइवान स्ट्रेट:</p>\n<p>&nbsp;&bull; ताइवान और एशिया महाद्वीप को अलग करता है।</p>\n<p>&nbsp;&bull; दक्षिण चीन सागर को पूर्वी चीन सागर से जोड़ता है।</p>\n<p>&nbsp;&bull; सबसे संकरा हिस्सा: 130 किमी।</p>\n<p></p>\n<p>सीमाएं</p>\n<p></p>\n<p>सीमा रेखा देश</p>\n<p>डूरंड रेखा पाकिस्तान और अफगानिस्तान</p>\n<p>मैकमोहन रेखा भारत और चीन</p>\n<p>मैजिनॉट रेखा फ्रांस और जर्मनी</p>\n<p>38वीं समानांतर रेखा उत्तर और दक्षिण कोरिया</p>\n<p>ओडर-नाइस रेखा जर्मनी और पोलैंड</p>\n<p>रैडक्लिफ रेखा भारत और पाकिस्तान</p>\n<p></p>\n<p><strong>ध्रुवीय और अन्य क्षे</strong>त्र</p>\n<p></p>\n<p>&nbsp;&bull; एस्किमो: टुंड्रा क्षेत्र (पूर्वी साइबेरिया, अलास्का, कनाडा, ग्रीनलैंड) में निवास।</p>\n<p>&nbsp;&bull; ध्रुवीय क्षेत्र: आर्कटिक (उत्तर ध्रुव) और अंटार्कटिक (दक्षिण ध्रुव), ठंडे जलवायु के लिए प्रसिद्ध।</p>\n<p></p>\n<p>अन्य क्षेत्र:</p>\n<p></p>\n<p>&nbsp;1. शुष्क क्षेत्र (रेगिस्तान):</p>\n<p>&nbsp;&bull; कम वर्षा, उच्च तापमान, कम जैव विविधता।</p>\n<p>&nbsp;2. सवाना घासभूमि:</p>\n<p>&nbsp;&bull; ब्राजील में कैंपोस कहलाती है।</p>\n<p>&nbsp;&bull; पराग्वे, उरुग्वे, अर्जेंटीना और ब्राजील में स्थित।</p>\n<p>&nbsp;&bull; उपोष्णकट</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Which of the following rivers does not belong to Asia?</p>\n<p></p>\n<p>किसी भी निम्नलिखित नदियों में से कौन एशिया से संबंधित नहीं है?</p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>Yang-tze</p>\n<p>यांग-त्से</p>",
+      "<p>Amur</p>\n<p>अमूर</p>",
+      "<p>Hwang-ho</p>\n<p>हुआंग-हो</p>",
+      "<p>Limpopo</p>\n<p>लिमपोपो</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>The Limpopo River rises in central southern Africa and flows eastward to the Indian Ocean. The name &ldquo;Limpopo&rdquo; is a modified version of the original Sepedi term diphororo t&scaron;a meetse, which means &ldquo;gushing strong waterfalls.&rdquo;</p>\n<p></p>\n<p>िमपोपो नदी दक्षिणी अफ्रीका के केंद्रीय भाग में उत्पन्न होती है और पूर्व की ओर भारतीय महासागर में बहती है। &ldquo;लिमपोपो&rdquo; नाम सेपेडी भाषा के मूल शब्द diphororo t&scaron;a meetse का संशोधित रूप है, जिसका अर्थ है &ldquo;बहती हुई मजबूत जलप्रपात&rdquo;।</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>Which of the following is an example of a coniferous forest?</strong><br /><strong>निम्नलिखित में से कौन सा एक शंकुधारी वन का उदाहरण है?</strong></p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p><strong>Amazon rainforest (अमेज़न वर्षावन)</strong></p>",
+      "<p><strong>Sahara desert (सहारा मरुस्थल)</strong></p>",
+      "<p><strong>Taiga forest (टाइगा वन)</strong></p>",
+      "<p><strong>Great Barrier Reef (ग्रेट बैरियर रीफ)</strong></p>"
+    ],
+    "correct_option_id": 2,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p>Match List - I and List - II and select the correct answer from the code given below:</p>\n<p></p>\n<table style=\"border-collapse: collapse; width: 48.7402%; height: 107px;\" border=\"1\">\n<tbody>\n<tr>\n<td style=\"width: 50%;\">List-I</td>\n<td style=\"width: 50%;\">List-II</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">(A) Bushmen</td>\n<td style=\"width: 50%;\">1. India</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">\n<p>(B)Pygmy</p>\n</td>\n<td style=\"width: 50%;\">\n<p>2. Alaska</p>\n</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">\n<p>(C) Eskimo</p>\n</td>\n<td style=\"width: 50%;\">\n<p>3. Zaire</p>\n</td>\n</tr>\n<tr>\n<td style=\"width: 50%;\">\n<p>(D) Gond</p>\n</td>\n<td style=\"width: 50%;\">\n<p>4. Namibia</p>\n</td>\n</tr>\n</tbody>\n</table>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>A - 3, B - 4, C - 2, D - 1</p>",
+      "<p>A - 3, B - 4, C - 1, D - 2</p>",
+      "<p>A - 4, B - 3, C - 1, D - 2</p>",
+      "<p>A - 4, B - 3, C - 2, D - 1</p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>With reference to the Western Disturbances, consider the following statements:</strong><br /><strong>पश्चिमी विक्षोभों के संदर्भ में, निम्नलिखित कथनों पर विचार करें:</strong></p>\n<ol>\n<li>\n<p><strong>These are low-pressure storms that originate from subtropical high-pressure regions.</strong><br /><strong>ये निम्न दबाव के तूफान होते हैं जो उपोष्णकटिबंधीय उच्च दबाव क्षेत्रों से उत्पन्न होते हैं।</strong></p>\n</li>\n<li>\n<p><strong>Jet streams blowing south of the Himalayas bring in western disturbances in India.</strong><br /><strong>हिमालय के दक्षिण में बहने वाली जेट स्ट्रीम्स भारत में पश्चिमी विक्षोभ लाती हैं।</strong></p>\n</li>\n<li>\n<p><strong>They are beneficial for the wheat and apple crops in the country.</strong><br /><strong>ये देश में गेहूं और सेब की फसलों के लिए लाभकारी होते हैं।</strong></p>\n</li>\n</ol>\n<p><strong>Which of the statements given above is/are correct?</strong><br /><strong>उपरोक्त में से कौन सा/से कथन सही हैं?</strong></p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p><strong>1 only</strong></p>",
+      "<p><strong>1 and 2 only&nbsp;</strong></p>",
+      "<p><strong>3 only&nbsp;</strong></p>",
+      "<p><strong>1, 2 and 3&nbsp;</strong></p>"
+    ],
+    "correct_option_id": 3,
+    "solution": " ",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><strong>Which of the following sequence of Heat zones is/are correctly placed?</strong><br /><strong>निम्नलिखित में से कौन सा ताप क्षेत्र का अनुक्रम सही ढंग से रखा गया है?</strong></p>\n<p>A) Torrid zone, South temperate zone and Frigid zone.<br />B) Torrid zone, North temperate zone and Frigid zone.<br />C) South temperate zone, torrid zone and Frigid zone.</p>\n<p></p>\n<p>A) उष्णकटिबंधीय क्षेत्र, दक्षिण उष्णकटिबंधीय क्षेत्र और सर्द क्षेत्र।<br />B) उष्णकटिबंधीय क्षेत्र, उत्तर उष्णकटिबंधीय क्षेत्र और सर्द क्षेत्र।<br />C) दक्षिण उष्णकटिबंधीय क्षेत्र, उष्णकटिबंधीय क्षेत्र और सर्द क्षेत्र।</p>\n<p><strong>Select the correct answer given below.</strong><br /><strong>नीचे दिए गए सही उत्तर का चयन करें।</strong></p>",
+    "comp": "",
+    "options": [
+      "<p>A and B</p>",
+      "<p>B and C&nbsp;</p>",
+      "<p>A &amp; C</p>",
+      "<p>Only A</p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><span style=\"font-size: 12pt;\">🌍🔸 HEAT ZONES 🔸🌍</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\">✔️ TORRID &ndash; 🌞 The hottest zone, located between the Tropic of Cancer and the Tropic of Capricorn. Receives direct sunlight throughout the year.</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\">✔️ TEMPERATE &ndash; 🌤 Lies between the Tropic of Cancer and the Arctic Circle in the Northern Hemisphere, and between the Tropic of Capricorn and the Antarctic Circle in the Southern Hemisphere. Known for moderate temperatures.</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\">✔️ FRIGID &ndash; ❄️ The coldest zones, located beyond the Arctic Circle and the Antarctic Circle. Known for very low temperatures and polar climates.</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\">🌐🔸 IMPORTANT LATITUDES 🔸🌐</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\">➿ LONGEST LATITUDE ➖ EQUATOR &ndash; The 0&deg; latitude that divides the Earth into the Northern and Southern Hemispheres.</span></p>\n<p></p>\n<p><span style=\"font-size: 12pt;\"><img src=\"https://cms-cdn.classplus.co/parserImages/808e4052-a410-4bea-aaae-fdf2d88dfb8e.png\" alt=\"\" width=\"256\" height=\"281\" /></span></p>\n<h2><span style=\"font-size: 12pt;\">Coastal and Nearshore Zones (PYQs Based notes)&nbsp;</span></h2>\n<p></p>\n<hr />\n<p></p>\n<h3><span style=\"font-size: 12pt;\"><strong>1. Tidal Zone (Intertidal Zone)</strong>&nbsp;</span></h3>\n<p></p>\n<p><span style=\"font-size: 12pt;\">This is the region of the shore that is alternately <strong>exposed to air</strong> during low tide and <strong>submerged by seawater</strong> during high tide. It exists precisely between the high-tide and low-tide limits. Organisms living here must be adapted to frequent and extreme changes in moisture, temperature, and salinity.</span></p>\n<hr />\n<p></p>\n<h3><span style=\"font-size: 12pt;\"><strong>2. Shoreline</strong>&nbsp;</span></h3>\n<p></p>\n<p><span style=\"font-size: 12pt;\">The <strong>immediate line of contact</strong> between the sea and the land. Its position is constantly shifting minute-by-minute with the movement of waves and the longer-term fluctuation of the tides.</span></p>\n<hr />\n<p></p>\n<h3><span style=\"font-size: 12pt;\"><strong>3. Foreshore</strong>&nbsp;</span></h3>\n<p></p>\n<p><span style=\"font-size: 12pt;\">This term refers to the part of the beach that is <strong>wet and affected by wave action</strong> during normal tidal changes. It is the visible surface area of the beach that is typically exposed at low tide and covered at high tide. It is generally synonymous with the tidal zone itself.</span></p>\n<hr />\n<p></p>\n<h3><span style=\"font-size: 12pt;\"><strong>4. Near-shore Zone</strong>&nbsp;</span></h3>\n<p></p>\n<p><span style=\"font-size: 12pt;\">This area extends seaward from the low-tide shoreline to the region where the depth of the water causes <strong>waves to begin breaking</strong> (the surf zone). Though always submerged, the sea floor here is heavily influenced by the energy of waves.</span></p>\n<hr />\n<p></p>\n<h3><span style=\"font-size: 12pt;\"><strong>5. Backshore</strong>&nbsp;</span></h3>\n<p></p>\n<p><span style=\"font-size: 12pt;\">The part of the beach that lies <strong>above the maximum high-tide level</strong>. It remains dry under normal conditions and is only affected by the ocean during <strong>severe storms</strong> or exceptionally high tidal events. Coastal dunes or sand ridges (berms) are common features of this zone.</span></p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<div class=\"space-ad\">\n<div class=\"ibcAdContainer\"></div>\n</div>\n<p style=\"outline: none; box-sizing: border-box; margin: 0px 0px 2rem; padding: 0px; line-height: 1.7; color: #000000; font-family: __Roboto_Flex_b8e8b1, __Roboto_Flex_Fallback_b8e8b1; font-size: 16px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 300; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><strong>&nbsp;<span style=\"color: #333333; font-family: var(--font-family);\">The Grand Canyon, a natural wonder carved by the Colorado River, is located in which US state?</span></strong></p>\n<p>ग्रैंड कैन्यन, जो कोलोराडो नदी द्वारा खुदी एक प्राकृतिक आश्चर्य है, किस यूएस राज्य में स्थित है?</p>\n<p></p>",
+    "comp": "",
+    "options": [
+      "<p>Arizona&nbsp;&nbsp;<span style=\"font-family: var(--font-family);\">एरिजोना</span></p>",
+      "<p>California&nbsp; &nbsp;<span style=\"font-family: var(--font-family);\">कैलिफ़ोर्निया</span></p>",
+      "<p>Colorado&nbsp; &nbsp;<span style=\"font-family: var(--font-family);\">कोलोराडो</span></p>",
+      "<p>Nevada&nbsp; &nbsp;&nbsp;<span style=\"font-family: var(--font-family);\">नेवादा</span></p>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><span style=\"outline: none; margin: 0px; padding: 0px; color: #000000; font-family: __Roboto_Flex_b8e8b1, __Roboto_Flex_Fallback_b8e8b1;\">The UNESCO World Heritage states:&nbsp;</span><em style=\"outline: none; margin: 0px; padding: 0px; color: #000000; font-family: __Roboto_Flex_b8e8b1, __Roboto_Flex_Fallback_b8e8b1;\">&ldquo;Carved out by the Colorado River, the Grand Canyon (nearly 1,500 m deep) is the most spectacular gorge in the world. Located in the state of Arizona, it cuts across the Grand Canyon National Park.&rdquo;</em><span style=\"outline: none; margin: 0px; padding: 0px; color: #000000; font-family: __Roboto_Flex_b8e8b1, __Roboto_Flex_Fallback_b8e8b1;\">&nbsp;</span></p>\n<p></p>\n<p></p>\n<p>यूनेस्को विश्व धरोहर states: \"कोलोराडो नदी द्वारा खुदी हुई, ग्रैंड कैन्यन (जो लगभग 1,500 मीटर गहरा है) दुनिया की सबसे अद्भुत घाटी है। यह एरिजोना राज्य में स्थित है और ग्रैंड कैन्यन राष्ट्रीय उद्यान से होकर गुजरता है।\"</p>",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  },
+  {
+    "question": "<p><span style=\"font-size: 14pt;\">Maginot Line exists between which country ?&nbsp;</span></p>\n<p><span style=\"font-size: 14pt;\">मैजिनोट रेखा किस देश के बीच स्थित है?</span></p>",
+    "comp": "",
+    "options": [
+      "<p>Namibia &amp; Angola</p>",
+      "<p>USA &amp; Canada</p>",
+      "<p>France &amp; Germany&nbsp;</p>",
+      "<p>Germany &amp; Poland</p>"
+    ],
+    "correct_option_id": 2,
+    "solution": "",
+    "marks": 2.0,
+    "section": "WORLD GEOGRAPHY 360 TEST"
+  }
+];
+        const sectionsData = null;
+        const marksPerQ = 2.0;
+        const negMarks = 0.5;
+        const totalDuration = 30;
+        
+        class CBTExam {
+            constructor() {
+                this.questions = questions;
+                this.sections = sectionsData;
+                this.currentQuestion = 0;
+                this.answers = new Array(this.questions.length).fill(null);
+                this.markedForReview = new Array(this.questions.length).fill(false);
+                this.timeSpent = new Array(this.questions.length).fill(0);
+                this.isEnglish = true;
+                this.isSubmitted = false;
+                this.startTime = null;
+                this.lastQuestionTime = null;
+                this.mainTimer = null;
+                this.sectionTimer = null;
+                this.currentSection = this.sections ? 0 : null;
+                this.totalTimeLeft = totalDuration * 60;
+                
+                this.initElements();
+                this.setupWelcomeScreen();
+                this.setupBeforeUnload();
+            }
+            
+            initElements() {
+                this.els = {
+                    welcomeScreen: document.getElementById('welcomeScreen'),
+                    examContainer: document.getElementById('examContainer'),
+                    mainTimer: document.getElementById('mainTimer'),
+                    sectionBadge: document.getElementById('sectionBadge'),
+                    sectionName: document.getElementById('sectionName'),
+                    sectionTimer: document.getElementById('sectionTimer'),
+                    questionNum: document.getElementById('questionNum'),
+                    questionMarks: document.getElementById('questionMarks'),
+                    questionText: document.getElementById('questionText'),
+                    comprehension: document.getElementById('comprehension'),
+                    comprehensionText: document.getElementById('comprehensionText'),
+                    optionsList: document.getElementById('optionsList'),
+                    solutionBox: document.getElementById('solutionBox'),
+                    solutionStats: document.getElementById('solutionStats'),
+                    solutionText: document.getElementById('solutionText'),
+                    progressText: document.getElementById('progressText'),
+                    answeredCount: document.getElementById('answeredCount'),
+                    desktopNav: document.getElementById('desktopNav'),
+                    mobileNav: document.getElementById('mobileNav'),
+                    mobileNavGrid: document.getElementById('mobileNavGrid'),
+                    resultModal: document.getElementById('resultModal'),
+                    resultScore: document.getElementById('resultScore'),
+                    correctCount: document.getElementById('correctCount'),
+                    incorrectCount: document.getElementById('incorrectCount'),
+                    unattemptedCount: document.getElementById('unattemptedCount'),
+                    timeTaken: document.getElementById('timeTaken'),
+                    sectionResults: document.getElementById('sectionResults'),
+                    sectionResultsBody: document.getElementById('sectionResultsBody')
+                };
+            }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    this.els.welcomeScreen.classList.add('hidden');
+                    this.els.examContainer.classList.add('active');
+                    setTimeout(() => this.startExam(), 100);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.isSubmitted) {
+                        e.preventDefault();
+                        e.returnValue = 'Your test is in progress. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            startExam() {
+                this.startTime = Date.now();
+                this.lastQuestionTime = this.startTime;
+                this.createNavigator();
+                this.startMainTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                }
+                this.loadQuestion(0);
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('engBtn').onclick = () => this.setLanguage(true);
+                document.getElementById('hinBtn').onclick = () => this.setLanguage(false);
+                document.getElementById('prevBtn').onclick = () => this.navigate(-1);
+                document.getElementById('nextBtn').onclick = () => this.navigate(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('submitBtn').onclick = () => this.confirmSubmit();
+                document.getElementById('submitBtnDesktop').onclick = () => this.confirmSubmit();
+                document.getElementById('navigatorBtn').onclick = () => this.openMobileNav();
+                document.getElementById('closeNav').onclick = () => this.closeMobileNav();
+                document.getElementById('closeResult').onclick = () => this.closeResultModal();
+                document.getElementById('reviewAnswers').onclick = () => this.reviewAnswers();
+            }
+            
+            createNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    container.innerHTML = '';
+                    this.questions.forEach((_, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'nav-question';
+                        btn.textContent = i + 1;
+                        btn.onclick = () => this.goToQuestion(i);
+                        container.appendChild(btn);
+                    });
+                });
+            }
+            
+            extractText(html, isEng) {
+                if (!html) return '';
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                const langSpans = temp.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                    }
+                });
+                
+                return temp.innerHTML;
+            }
+            
+            getQuestionMarks(qIdx) {
+                if (!this.sections) return marksPerQ;
+                
+                for (const section of this.sections) {
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                if (qIdx >= subsec.start && qIdx <= subsec.end) {
+                                    return subsec.marks_per_q;
+                                }
+                            }
+                        }
+                        return marksPerQ;
+                    }
+                }
+                return marksPerQ;
+            }
+            
+            loadQuestion(idx) {
+                if (this.currentQuestion !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                    this.lastQuestionTime = now;
+                }
+                
+                this.currentQuestion = idx;
+                const q = this.questions[idx];
+                const qMarks = this.getQuestionMarks(idx);
+                
+                this.els.questionNum.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.els.questionMarks.textContent = `Marks: ${qMarks}`;
+                this.els.progressText.textContent = `Question ${idx + 1} of ${this.questions.length}`;
+                this.updateAnsweredCount();
+                this.updateNavigator();
+                this.updateNavigationButtons();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.comprehension.style.display = 'block';
+                    this.els.comprehensionText.innerHTML = this.extractText(q.comp, this.isEnglish);
+                } else {
+                    this.els.comprehension.style.display = 'none';
+                }
+                
+                this.els.questionText.innerHTML = this.extractText(q.question, this.isEnglish);
+                this.loadOptions(q, idx);
+                
+                if (this.isSubmitted && q.solution) {
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const mins = Math.floor(timeSpent / 60);
+                    const secs = timeSpent % 60;
+                    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    
+                    this.els.solutionStats.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    this.els.solutionText.innerHTML = this.extractText(q.solution, this.isEnglish);
+                    this.els.solutionBox.classList.add('show');
+                } else {
+                    this.els.solutionBox.classList.remove('show');
+                }
+            }
+            
+            loadOptions(q, qIdx) {
+                this.els.optionsList.innerHTML = '';
+                const userAnswer = this.answers[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                if (!q.options || !Array.isArray(q.options)) return;
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let className = 'option';
+                    
+                    if (this.isSubmitted) className += ' submitted';
+                    if (userAnswer === i) className += ' selected';
+                    
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            className += ' correct';
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            className += ' wrong';
+                        }
+                    }
+                    
+                    div.className = className;
+                    
+                    let indicator = '';
+                    if (this.isSubmitted && correctAnswer !== undefined) {
+                        if (i === correctAnswer) {
+                            indicator = '✓';
+                        } else if (userAnswer === i) {
+                            indicator = '✗';
+                        }
+                    } else if (userAnswer === i) {
+                        indicator = '✓';
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="option-indicator">${indicator}</div>
+                        <div class="option-text">${this.extractText(opt, this.isEnglish)}</div>
+                    `;
+                    
+                    if (!this.isSubmitted) {
+                        div.onclick = () => this.selectOption(i, qIdx);
+                    }
+                    
+                    this.els.optionsList.appendChild(div);
+                });
+            }
+            
+            selectOption(optIdx, qIdx) {
+                if (this.isSubmitted) return;
+                this.answers[qIdx] = this.answers[qIdx] === optIdx ? null : optIdx;
+                this.loadOptions(this.questions[qIdx], qIdx);
+                this.updateAnsweredCount();
+                this.updateNavigator();
+            }
+            
+            toggleReview() {
+                if (this.isSubmitted) return;
+                this.markedForReview[this.currentQuestion] = !this.markedForReview[this.currentQuestion];
+                this.updateNavigator();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = document.getElementById('reviewBtn');
+                if (this.markedForReview[this.currentQuestion]) {
+                    btn.classList.add('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Marked';
+                } else {
+                    btn.classList.remove('marked');
+                    btn.innerHTML = '<i class="fas fa-flag"></i> Mark for Review';
+                }
+            }
+            
+            navigate(dir) {
+                const newIdx = this.currentQuestion + dir;
+                
+                if (this.isSubmitted) {
+                    if (newIdx >= 0 && newIdx < this.questions.length) {
+                        this.loadQuestion(newIdx);
+                    }
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                if (newIdx >= 0 && newIdx < this.questions.length) {
+                    this.loadQuestion(newIdx);
+                }
+            }
+            
+            goToQuestion(idx) {
+                if (this.isSubmitted) {
+                    this.loadQuestion(idx);
+                    this.closeMobileNav();
+                    return;
+                }
+                
+                if (this.sections) {
+                    const currentSection = this.sections[this.currentSection];
+                    if (idx < currentSection.start || idx > currentSection.end) {
+                        return;
+                    }
+                }
+                
+                this.loadQuestion(idx);
+                this.closeMobileNav();
+            }
+            
+            updateNavigator() {
+                [this.els.desktopNav, this.els.mobileNavGrid].forEach(container => {
+                    const btns = container.querySelectorAll('.nav-question');
+                    btns.forEach((btn, i) => {
+                        btn.className = 'nav-question';
+                        
+                        if (i === this.currentQuestion) {
+                            btn.classList.add('current');
+                        } else if (this.isSubmitted) {
+                            if (this.answers[i] !== null && this.questions[i].correct_option_id !== undefined) {
+                                if (this.answers[i] === this.questions[i].correct_option_id) {
+                                    btn.classList.add('answered');
+                                } else {
+                                    btn.classList.add('wrong');
+                                }
+                            }
+                        } else {
+                            if (this.markedForReview[i]) {
+                                btn.classList.add('review');
+                            } else if (this.answers[i] !== null) {
+                                btn.classList.add('answered');
+                            }
+                            
+                            if (this.sections) {
+                                const currentSection = this.sections[this.currentSection];
+                                if (i < currentSection.start || i > currentSection.end) {
+                                    btn.classList.add('disabled');
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const reviewBtn = document.getElementById('reviewBtn');
+                
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.currentQuestion === this.questions.length - 1;
+                
+                if (this.isSubmitted) {
+                    reviewBtn.style.display = 'none';
+                } else {
+                    reviewBtn.style.display = 'inline-flex';
+                }
+                
+                if (this.sections && !this.isSubmitted) {
+                    const currentSection = this.sections[this.currentSection];
+                    prevBtn.disabled = prevBtn.disabled || (this.currentQuestion === currentSection.start);
+                    nextBtn.disabled = nextBtn.disabled || (this.currentQuestion === currentSection.end);
+                }
+            }
+            
+            updateAnsweredCount() {
+                const count = this.answers.filter(a => a !== null).length;
+                this.els.answeredCount.textContent = count;
+            }
+            
+            setLanguage(isEng) {
+                this.isEnglish = isEng;
+                document.getElementById('engBtn').classList.toggle('active', isEng);
+                document.getElementById('hinBtn').classList.toggle('active', !isEng);
+                this.loadQuestion(this.currentQuestion);
+            }
+            
+            startMainTimer() {
+                this.mainTimer = setInterval(() => {
+                    this.totalTimeLeft--;
+                    if (this.totalTimeLeft <= 0) {
+                        clearInterval(this.mainTimer);
+                        this.submitTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.totalTimeLeft / 60);
+                    const secs = this.totalTimeLeft % 60;
+                    this.els.mainTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer;
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    const mins = Math.floor(section.time_left / 60);
+                    const secs = section.time_left % 60;
+                    this.els.sectionTimer.textContent = ` | ${mins}:${secs.toString().padStart(2, '0')}`;
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitSection();
+                    }
+                }, 1000);
+            }
+            
+            updateSectionInfo() {
+                if (!this.sections) return;
+                const section = this.sections[this.currentSection];
+                this.els.sectionName.textContent = section.name;
+                this.els.sectionBadge.style.display = 'block';
+            }
+            
+            submitSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionInfo();
+                    this.loadQuestion(this.sections[nextSectionIdx].start);
+                } else {
+                    this.submitTest();
+                }
+                
+                this.updateNavigator();
+            }
+            
+            confirmSubmit() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.answers.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions in this section. Submit anyway?`
+                        : 'Submit this section?';
+                    
+                    if (confirm(msg)) this.submitSection();
+                } else {
+                    const unanswered = this.answers.filter(a => a === null).length;
+                    let msg = unanswered > 0 
+                        ? `You have ${unanswered} unanswered questions. Submit test?`
+                        : 'Submit test?';
+                    
+                    if (confirm(msg)) this.submitTest();
+                }
+            }
+            
+            submitTest() {
+                if (this.isSubmitted) return;
+                
+                const now = Date.now();
+                this.timeSpent[this.currentQuestion] += (now - this.lastQuestionTime) / 1000;
+                
+                this.isSubmitted = true;
+                clearInterval(this.mainTimer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('submitBtnDesktop').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                
+                if (this.sections) {
+                    this.els.sectionBadge.style.display = 'none';
+                }
+                
+                const results = this.calculateResults();
+                this.showResults(results);
+                this.loadQuestion(this.currentQuestion);
+                this.updateNavigator();
+            }
+            
+            calculateResults() {
+                const timeTaken = Math.round((Date.now() - this.startTime) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                const sectionResults = [];
+                
+                if (this.sections) {
+                    for (const section of this.sections) {
+                        let secCorrect = 0, secIncorrect = 0, secUnattempted = 0, secScore = 0;
+                        const subsecResults = [];
+                        
+                        if (section.subsections) {
+                            for (const subsec of section.subsections) {
+                                let subCorrect = 0, subIncorrect = 0, subUnattempted = 0, subScore = 0;
+                                
+                                for (let i = subsec.start; i <= subsec.end; i++) {
+                                    const userAns = this.answers[i];
+                                    const correctAns = this.questions[i].correct_option_id;
+                                    
+                                    if (userAns === null) {
+                                        subUnattempted++;
+                                    } else if (correctAns !== undefined && userAns === correctAns) {
+                                        subCorrect++;
+                                        subScore += subsec.marks_per_q;
+                                    } else {
+                                        subIncorrect++;
+                                        subScore -= negMarks;
+                                    }
+                                }
+                                
+                                subsecResults.push({
+                                    name: subsec.name,
+                                    attempted: subCorrect + subIncorrect,
+                                    correct: subCorrect,
+                                    incorrect: subIncorrect,
+                                    unattempted: subUnattempted,
+                                    score: Math.max(0, subScore)
+                                });
+                                
+                                secCorrect += subCorrect;
+                                secIncorrect += subIncorrect;
+                                secUnattempted += subUnattempted;
+                                secScore += subScore;
+                            }
+                        } else {
+                            for (let i = section.start; i <= section.end; i++) {
+                                const userAns = this.answers[i];
+                                const correctAns = this.questions[i].correct_option_id;
+                                
+                                if (userAns === null) {
+                                    secUnattempted++;
+                                } else if (correctAns !== undefined && userAns === correctAns) {
+                                    secCorrect++;
+                                    secScore += marksPerQ;
+                                } else {
+                                    secIncorrect++;
+                                    secScore -= negMarks;
+                                }
+                            }
+                        }
+                        
+                        sectionResults.push({
+                            name: section.name,
+                            attempted: secCorrect + secIncorrect,
+                            correct: secCorrect,
+                            incorrect: secIncorrect,
+                            unattempted: secUnattempted,
+                            score: Math.max(0, secScore),
+                            subsections: subsecResults.length > 0 ? subsecResults : null
+                        });
+                        
+                        correct += secCorrect;
+                        incorrect += secIncorrect;
+                        unattempted += secUnattempted;
+                        score += secScore;
+                    }
+                } else {
+                    this.questions.forEach((q, i) => {
+                        const userAns = this.answers[i];
+                        const correctAns = q.correct_option_id;
+                        
+                        if (userAns === null) {
+                            unattempted++;
+                        } else if (correctAns !== undefined && userAns === correctAns) {
+                            correct++;
+                            score += marksPerQ;
+                        } else {
+                            incorrect++;
+                            score -= negMarks;
+                        }
+                    });
+                }
+                
+                return {
+                    score: Math.max(0, score),
+                    correct,
+                    incorrect,
+                    unattempted,
+                    timeTaken,
+                    sectionResults: sectionResults.length > 0 ? sectionResults : null
+                };
+            }
+            
+            showResults(results) {
+                this.els.resultScore.textContent = `${results.score.toFixed(2)}/${this.questions.length * marksPerQ}`;
+                this.els.correctCount.textContent = results.correct;
+                this.els.incorrectCount.textContent = results.incorrect;
+                this.els.unattemptedCount.textContent = results.unattempted;
+                this.els.timeTaken.textContent = results.timeTaken;
+                
+                if (results.sectionResults) {
+                    this.els.sectionResults.style.display = 'block';
+                    this.els.sectionResultsBody.innerHTML = '';
+                    
+                    results.sectionResults.forEach(section => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${section.name}</strong></td>
+                            <td>${section.attempted}</td>
+                            <td>${section.correct}</td>
+                            <td>${section.incorrect}</td>
+                            <td><strong>${section.score.toFixed(2)}</strong></td>
+                        `;
+                        this.els.sectionResultsBody.appendChild(row);
+                        
+                        if (section.subsections) {
+                            section.subsections.forEach(subsec => {
+                                const subRow = document.createElement('tr');
+                                subRow.className = 'subsection-row';
+                                subRow.innerHTML = `
+                                    <td>${subsec.name}</td>
+                                    <td>${subsec.attempted}</td>
+                                    <td>${subsec.correct}</td>
+                                    <td>${subsec.incorrect}</td>
+                                    <td>${subsec.score.toFixed(2)}</td>
+                                `;
+                                this.els.sectionResultsBody.appendChild(subRow);
+                            });
+                        }
+                    });
+                } else {
+                    this.els.sectionResults.style.display = 'none';
+                }
+                
+                this.els.resultModal.classList.add('show');
+            }
+            
+            closeResultModal() {
+                this.els.resultModal.classList.remove('show');
+            }
+            
+            reviewAnswers() {
+                this.closeResultModal();
+                this.loadQuestion(0);
+            }
+            
+            openMobileNav() {
+                this.els.mobileNav.classList.add('open');
+            }
+            
+            closeMobileNav() {
+                this.els.mobileNav.classList.remove('open');
+            }
+        }
+        
+        // Initialize the exam
+        document.addEventListener('DOMContentLoaded', () => {
+            new CBTExam();
+        });
+    </script>
+</body>
+</html>

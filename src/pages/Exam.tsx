@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useExamStore } from '@/stores/examStore';
 import { parseMock } from '@/services/mockParser';
 import { isRevisionPath, revisionScope, buildRevisionExam } from '@/services/smartRevision';
+import { isBookmarkMockPath, buildBookmarkMockExam } from '@/services/bookmarkMock';
 import { decodeExamParam } from '@/lib/examLink';
 import { ExamHeader } from '@/components/exam/ExamHeader';
 import { SectionTabs } from '@/components/exam/SectionTabs';
 import { QuestionCard } from '@/components/exam/QuestionCard';
-import { QuestionPalette, PaletteLegend } from '@/components/exam/QuestionPalette';
+import { QuestionPalette, PaletteLegend, ReviewLegend } from '@/components/exam/QuestionPalette';
 import { ExamControls } from '@/components/exam/ExamControls';
 import { WelcomeScreen } from '@/components/exam/WelcomeScreen';
 import { ResultModal } from '@/components/exam/ResultModal';
@@ -17,10 +18,12 @@ import { InstructionsModal } from '@/components/exam/InstructionsModal';
 import { FullscreenExitOverlay } from '@/components/exam/FullscreenExitOverlay';
 import { FocusLostOverlay } from '@/components/exam/FocusLostOverlay';
 import { Modal, Button } from '@/components/ui';
-import { Loader2, AlertTriangle, Send } from 'lucide-react';
+import { Loader2, AlertTriangle, Send, ArrowRightCircle } from 'lucide-react';
 
 export default function Exam() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isReviewModeRequested = searchParams.get('mode') === 'review' || searchParams.get('review') === '1';
   const { encoded } = useParams<{ encoded: string }>();
   // atob throws on malformed base64 — guard here so a hand-typed URL shows
   // the error card instead of crashing the whole page render.
@@ -33,10 +36,14 @@ export default function Exam() {
     }
   }, [encoded]);
 
+  const meta = useExamStore((s) => s.meta);
+  const currentSectionIdx = useExamStore((s) => s.currentSectionIdx);
   const phase = useExamStore((s) => s.phase);
   const loadExam = useExamStore((s) => s.loadExam);
+  const reviewAttempt = useExamStore((s) => s.reviewAttempt);
   const tick = useExamStore((s) => s.tick);
   const submit = useExamStore((s) => s.submit);
+  const submitCurrentSection = useExamStore((s) => s.submitCurrentSection);
   const flushProgress = useExamStore((s) => s.flushProgress);
   const reset = useExamStore((s) => s.reset);
   const next = useExamStore((s) => s.next);
@@ -50,6 +57,7 @@ export default function Exam() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sectionConfirmOpen, setSectionConfirmOpen] = useState(false);
   const [exitConfirmOpen, setExitConfirmOpen] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
   const [instOpen, setInstOpen] = useState(false);
@@ -68,6 +76,13 @@ export default function Exam() {
       navigate('/');
     }
   };
+
+  /* Listen for Android hardware back button during exam */
+  useEffect(() => {
+    const onExamBack = () => handleExit();
+    window.addEventListener('aether:exam-back-pressed', onExamBack);
+    return () => window.removeEventListener('aether:exam-back-pressed', onExamBack);
+  }, [phase]);
 
   /* Scroll the question pane to top on question change (a11y + UX) */
   const currentIdx = useExamStore((s) => s.currentIdx);
@@ -96,10 +111,11 @@ export default function Exam() {
         reset();
       };
     }
-    // Smart Revision paths are synthetic — the exam is assembled from the
-    // wrong-question pool in attempt history instead of a mock file.
+    // Synthetic paths: Smart Revision (wrong questions) or Bookmark Mock (saved questions)
     const loader = isRevisionPath(path)
       ? buildRevisionExam(revisionScope(path))
+      : isBookmarkMockPath(path)
+      ? buildBookmarkMockExam(path)
       : parseMock(path);
     loader
       .then(({ meta, questions }) => {
@@ -117,6 +133,16 @@ export default function Exam() {
       reset();
     };
   }, [path, loadExam, reset]);
+
+  const attemptQuery = searchParams.get('attempt');
+
+  /* If URL requested review mode directly (e.g. from Dashboard / History), open review mode */
+  useEffect(() => {
+    if (isReviewModeRequested && phase === 'welcome' && meta && !loading) {
+      const targetAttemptNum = attemptQuery ? Number(attemptQuery) : undefined;
+      reviewAttempt(targetAttemptNum);
+    }
+  }, [isReviewModeRequested, attemptQuery, phase, meta, loading, reviewAttempt]);
 
   /* Timer loop */
   useEffect(() => {
@@ -271,11 +297,9 @@ export default function Exam() {
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
       else if (/^[1-6]$/.test(e.key)) {
         const optIdx = parseInt(e.key, 10) - 1;
-        const { currentIdx, questions, selectOption, optionOrder, optionsShuffled } = useExamStore.getState();
+        const { currentIdx, questions, selectOption } = useExamStore.getState();
         if (questions[currentIdx]?.options[optIdx] === undefined) return;
-        // Number keys follow the DISPLAYED order — map through the shuffle.
-        const origIdx = optionsShuffled ? (optionOrder[currentIdx]?.[optIdx] ?? optIdx) : optIdx;
-        selectOption(currentIdx, origIdx);
+        selectOption(currentIdx, optIdx);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -311,43 +335,62 @@ export default function Exam() {
   /* Always render the TCS skin on this page */
   return (
     <div
-      className={`h-screen flex flex-col overflow-hidden bg-tcs-ink ${phase === 'active' ? 'select-none' : ''}`}
+      className="h-[100dvh] flex flex-col overflow-hidden bg-tcs-ink"
       data-exam-skin="tcs"
+      style={{ overscrollBehavior: 'contain' } as any}
     >
-      <ExamHeader onShowInstructions={() => setInstOpen(true)} onExit={handleExit} />
+      <ExamHeader
+        onShowInstructions={() => setInstOpen(true)}
+        onShowScorecard={() => setResultOpen(true)}
+        onExit={handleExit}
+      />
       {phase !== 'welcome' && <SectionTabs />}
 
       {phase === 'welcome' && <WelcomeScreen />}
 
       {(phase === 'active' || phase === 'submitted') && (
         <div className="flex flex-1 min-h-0 bg-tcs-ink-2">
-          {/* Question pane */}
-          <main ref={mainRef} className="relative flex-1 min-w-0 flex flex-col overflow-y-auto">
+          {/* Question pane — explicitly scrollable with momentum on iOS/Android */}
+          <main
+            ref={mainRef}
+            className="relative flex-1 min-w-0 flex flex-col overflow-y-auto overscroll-contain"
+            style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' } as any}
+          >
             <div className="flex-1 px-0 sm:px-2 py-3 sm:py-4">
               <QuestionCard />
             </div>
 
             {/* TCS action bar — sticky at the bottom of the question pane */}
-            <div className="sticky bottom-0 z-raised border-t border-tcs-border bg-tcs-action-bg px-3 sm:px-4 py-2.5 mt-auto">
-              {phase === 'active' && <ExamControls onSubmit={() => setConfirmOpen(true)} />}
+            <div
+              className="sticky bottom-0 z-raised border-t border-tcs-border bg-tcs-action-bg px-3 sm:px-4 py-2.5 mt-auto select-none"
+              style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom, 0px))' } as any}
+            >
+              {phase === 'active' && (
+                <ExamControls
+                  onSubmit={() => setConfirmOpen(true)}
+                  onSubmitSection={() => setSectionConfirmOpen(true)}
+                />
+              )}
 
               {phase === 'submitted' && (
-                <div className="flex items-center justify-between gap-3 flex-wrap text-tcs-text">
-                  <Button variant="secondary" size="md" onClick={prev}>
-                    &larr; Previous
-                  </Button>
-                  <label className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-tcs-muted cursor-pointer select-none">
+                <div className="flex items-center justify-between gap-2.5 sm:gap-3 flex-wrap text-tcs-text">
+                  <div className="flex items-center gap-2">
+                    <Button variant="secondary" size="md" onClick={prev} className="min-h-[42px] px-4 font-bold text-sm">
+                      &larr; Previous
+                    </Button>
+                    <Button variant="primary" size="md" onClick={next} className="min-h-[42px] px-5 font-bold text-sm">
+                      Next &rarr;
+                    </Button>
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-tcs-muted cursor-pointer select-none py-1.5">
                     <input
                       type="checkbox"
                       checked={reattemptMode}
                       onChange={toggleReattempt}
-                      className="w-3.5 h-3.5 accent-[var(--primary)]"
+                      className="w-4 h-4 accent-[var(--primary)] cursor-pointer"
                     />
                     Re-attempt Questions
                   </label>
-                  <Button variant="primary" size="md" onClick={next}>
-                    Next &rarr;
-                  </Button>
                 </div>
               )}
             </div>
@@ -361,9 +404,8 @@ export default function Exam() {
               <div className="text-[10px] font-bold uppercase tracking-widest text-tcs-muted mb-2">
                 {phase === 'submitted' ? 'Review Palette' : 'Question Palette'}
               </div>
-              {/* Legend only makes sense while answering — post-submit the tiles
-                  show correct/incorrect, which the legend doesn't describe. */}
               {phase === 'active' && <PaletteLegend />}
+              {phase === 'submitted' && <ReviewLegend />}
             </div>
             <div className="px-3 lg:px-4 py-4 flex-1">
               <QuestionPalette />
@@ -388,14 +430,46 @@ export default function Exam() {
         </div>
       )}
 
+      {/* Submit Section confirmation */}
+      <Modal
+        open={sectionConfirmOpen}
+        onClose={() => setSectionConfirmOpen(false)}
+        title={`Submit Section: ${meta?.sections[currentSectionIdx]?.name || 'Current Section'}?`}
+      >
+        <p className="text-sm text-tcs-text mb-2 font-bold">
+          You are about to submit the current section ({meta?.sections[currentSectionIdx]?.name}).
+        </p>
+        <p className="text-sm text-tcs-muted mb-5 leading-relaxed">
+          Once submitted, this section will be <strong>permanently locked</strong> and you will not be
+          able to return to it or change any answers during this examination. The next section will begin
+          immediately.
+        </p>
+        <div className="flex gap-2.5">
+          <Button variant="secondary" fullWidth onClick={() => setSectionConfirmOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            fullWidth
+            leftIcon={<ArrowRightCircle size={14} />}
+            onClick={() => {
+              setSectionConfirmOpen(false);
+              submitCurrentSection();
+            }}
+          >
+            Submit Section &amp; Proceed
+          </Button>
+        </div>
+      </Modal>
+
       {/* Submit confirmation */}
       <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="Submit Examination?">
         <p className="text-sm text-tcs-text mb-2">
-          <strong>You are about to submit the examination.</strong>
+          <strong>You are about to submit the entire examination.</strong>
         </p>
         <p className="text-sm text-tcs-muted mb-5 leading-relaxed">
-          Once submitted, you cannot change any answers. Make sure you have reviewed every question
-          you marked for review.
+          Once submitted, you cannot change any answers. All sections will unlock for detailed review,
+          performance breakdown, and solutions.
         </p>
         <div className="flex gap-2.5">
           <Button variant="secondary" fullWidth onClick={() => setConfirmOpen(false)}>
@@ -412,7 +486,7 @@ export default function Exam() {
               submit();
             }}
           >
-            Submit
+            Submit Exam
           </Button>
         </div>
       </Modal>

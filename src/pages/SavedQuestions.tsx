@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Bookmark, BookmarkCheck, CalendarDays, Filter, BarChart3 } from 'lucide-react';
+import { Bookmark, BookmarkCheck, CalendarDays, Filter, BarChart3, Play, Zap } from 'lucide-react';
 import { getAllSavedQuestions, onDbChange, toggleSaveQuestion } from '@/services/attemptStore';
 import { loadMockCatalog } from '@/services/mockCatalog';
 import { SafeHtml, Card, CardHeader, Button } from '@/components/ui';
 import { SearchPill } from '@/components/dashboard';
 import { AppChrome } from '@/components/layout';
+import { BookmarkMockModal } from '@/components/exam/BookmarkMockModal';
 import type { MockEntry, SavedQuestionRecord } from '@/types';
 
 type SavedDateFilter = 'all' | 'today' | '7d' | '30d';
@@ -43,6 +44,7 @@ export default function SavedQuestions() {
   const [provider, setProvider] = useState('all');
   const [subject, setSubject] = useState('all');
   const [dateSaved, setDateSaved] = useState<SavedDateFilter>('all');
+  const [mockModalOpen, setMockModalOpen] = useState(false);
 
   useEffect(() => {
     const sync = () => setSaved(getAllSavedQuestions());
@@ -119,7 +121,7 @@ export default function SavedQuestions() {
   };
 
   return (
-    <div className="min-h-screen page-surface">
+    <div className="min-h-screen page-surface pb-[calc(84px+env(safe-area-inset-bottom))] md:pb-0">
       <AppChrome
         title="Saved Questions"
         icon={<BookmarkCheck size={14} />}
@@ -144,18 +146,43 @@ export default function SavedQuestions() {
         )}
 
         <Card>
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-5">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-semibold mb-3">
-                <Bookmark size={13} /> Question bank
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-primary-soft text-primary text-[11px] sm:text-xs font-semibold mb-2 sm:mb-3">
+                <Bookmark size={12} /> Question bank
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-[-0.025em] text-text">Saved Questions</h1>
-              <p className="text-sm text-muted mt-2 max-w-2xl">
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-[-0.025em] text-text">Saved Questions</h1>
+              <p className="text-xs sm:text-sm text-muted mt-1 sm:mt-2 max-w-2xl">
                 Review every bookmarked question in one place and filter by provider, subject, and date saved.
               </p>
+
+              {saved.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 mt-3 sm:mt-5">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    leftIcon={<Play size={14} />}
+                    onClick={() => setMockModalOpen(true)}
+                    className="font-bold shadow-sm h-10 sm:h-10 text-xs sm:text-sm w-full sm:w-auto"
+                  >
+                    Take Bookmark Mock
+                  </Button>
+                  {filtered.length > 0 && filtered.length !== saved.length && (
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      leftIcon={<Zap size={14} className="text-warning-fg" />}
+                      onClick={() => setMockModalOpen(true)}
+                      className="h-10 sm:h-10 text-xs sm:text-sm w-full sm:w-auto"
+                    >
+                      Practice Filtered ({filtered.length})
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 min-w-0 lg:min-w-[26rem]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 min-w-0 lg:min-w-[26rem]">
               <Metric label="Saved" value={saved.length} />
               <Metric label="Shown" value={filtered.length} />
               <Metric label="Providers" value={providers.length} />
@@ -223,9 +250,21 @@ export default function SavedQuestions() {
               <p className="text-sm text-muted">
                 {filtered.length} of {saved.length} saved question{saved.length === 1 ? '' : 's'} shown
               </p>
-              <Button variant="secondary" size="sm" onClick={clearFilters}>
-                Clear filters
-              </Button>
+              <div className="flex items-center gap-2">
+                {filtered.length > 0 && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    leftIcon={<Play size={13} />}
+                    onClick={() => setMockModalOpen(true)}
+                  >
+                    Practice as Mock ({filtered.length})
+                  </Button>
+                )}
+                <Button variant="secondary" size="sm" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
@@ -254,6 +293,18 @@ export default function SavedQuestions() {
             ))}
           </div>
         )}
+
+        <BookmarkMockModal
+          open={mockModalOpen}
+          onClose={() => setMockModalOpen(false)}
+          allSavedCount={saved.length}
+          filteredCount={filtered.length}
+          filteredIds={filtered.map((f) => f.id)}
+          providers={providers}
+          subjects={subjects}
+          activeSubjectFilter={subject}
+          activeProviderFilter={provider}
+        />
       </div>
     </div>
   );
@@ -261,9 +312,9 @@ export default function SavedQuestions() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl bg-surface-2 px-4 py-3">
-      <div className="text-2xl font-bold text-text tabular-nums leading-none">{value}</div>
-      <div className="text-xs font-medium text-muted mt-1">{label}</div>
+    <div className="rounded-xl sm:rounded-2xl bg-surface-2 px-3 sm:px-4 py-2.5 sm:py-3">
+      <div className="text-xl sm:text-2xl font-bold text-text tabular-nums leading-none">{value}</div>
+      <div className="text-[10px] sm:text-xs font-medium text-muted mt-0.5 sm:mt-1">{label}</div>
     </div>
   );
 }

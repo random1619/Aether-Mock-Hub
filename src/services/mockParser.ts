@@ -15,11 +15,14 @@ const DURATION_RE_ALT = /<meta[^>]+content=["'](\d+)["'][^>]+name=["']exam-durat
     `const questions`, newer Random-Mocks templates use `QUESTIONS` or
     `QUIZ_DATA`. */
 const VAR_RE = /(?:const|let|var)\s+(questions|QUESTIONS|QUIZ_DATA)\s*=\s*\[/;
+const VAR_RE_QS = /this\.qs\s*=\s*\[/;
+const VAR_RE_QUESTIONS_THIS = /this\.questions\s*=\s*\[/;
 /** Primary: greedy — captures up to the LAST `]` before `</script>`. Correct
-    for every generator template (the questions array is the final statement
-    before the closing tag) and immune to `]</script>` appearing inside a
-    question's HTML string content, which truncated the old non-greedy regex. */
+     for every generator template (the questions array is the final statement
+     before the closing tag) and immune to `]</script>` appearing inside a
+     question's HTML string content, which truncated the old non-greedy regex. */
 const QUESTIONS_RE_GREEDY = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA)\s*=\s*(\[[\s\S]*\])\s*;?\s*<\/script>/m;
+const QS_RE_GREEDY = /this\.qs\s*=\s*(\[[\s\S]*\])\s*;?\s*(?:<\/script>|this\.sections)/m;
 /** Fallback for hand-authored mocks where the array isn't the last statement. */
 const QUESTIONS_RE = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA)\s*=\s*(\[[\s\S]*?\])\s*;?\s*(?:<\/script>|$)/m;
 
@@ -29,27 +32,102 @@ const QUESTIONS_RE = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA)\s*=\
     then walks brackets, skipping over string contents so `]`/`[` inside
     question HTML can't unbalance the count. */
 function extractByBracketMatch(html: string): string | null {
-  const m = VAR_RE.exec(html);
-  if (!m) return null;
-  const start = m.index + m[0].length - 1; // position of the opening `[`
-  let depth = 0;
-  let inStr: string | null = null;
-  let escaped = false;
-  for (let i = start; i < html.length; i++) {
-    const ch = html[i];
-    if (inStr) {
-      if (escaped) escaped = false;
-      else if (ch === '\\') escaped = true;
-      else if (ch === inStr) inStr = null;
-      continue;
-    }
-    if (ch === '"' || ch === "'" || ch === '`') inStr = ch;
-    else if (ch === '[') depth++;
-    else if (ch === ']') {
-      depth--;
-      if (depth === 0) return html.slice(start, i + 1);
+  const varRes = [VAR_RE, VAR_RE_QS, VAR_RE_QUESTIONS_THIS];
+  for(const re of varRes){
+    const m = re.exec(html);
+    if (!m) continue;
+    const start = m.index + m[0].length - 1; // position of the opening `[`
+    let depth = 0;
+    let inStr: string | null = null;
+    let escaped = false;
+    for (let i = start; i < html.length; i++) {
+      const ch = html[i];
+      if (inStr) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === inStr) inStr = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === '`') inStr = ch;
+      else if (ch === '[') depth++;
+      else if (ch === ']') {
+        depth--;
+        if (depth === 0) return html.slice(start, i + 1);
+      }
     }
   }
+  return null;
+}
+
+// DOM q-card extraction for Computer Awareness en.html style
+function extractLangEnQuestions(html: string): string | null {
+  if(!html.includes('class="question lang-en"')) return null;
+  const questions: any[] = [];
+  const qBlocks = html.split(/<div class="question lang-en">/);
+  for(let i=1;i<qBlocks.length;i++){
+    const block = '<div class="question lang-en">' + qBlocks[i];
+    const qTextMatch = block.match(/<div class="question lang-en">([\s\S]*?)<\/div>/);
+    const qText = qTextMatch ? qTextMatch[1].trim() : '';
+    const langEnMatch = block.match(/<div class="lang-en">([\s\S]*?)<\/div>\s*<div class="lang-hi">/);
+    const options: string[] = [];
+    let correctIdx = 0;
+    if(langEnMatch){
+      const optHtml = langEnMatch[1];
+      const optRe = /<div class="option([^"]*)">([\s\S]*?)<\/div>/g;
+      let om: RegExpExecArray | null, idx=0;
+      while((om=optRe.exec(optHtml))!==null){
+        const cls = om[1] || '';
+        const text = om[2].replace(/<[^>]+>/g,'').trim();
+        if(text){ options.push(text); if(cls.includes('correct')) correctIdx = idx; idx++; }
+      }
+    }
+    const solMatch = block.match(/<div class="solution">([\s\S]*?)<\/div>\s*<\/div>/);
+    const sol = solMatch ? solMatch[1].trim() : '';
+    if(qText && options.length) questions.push({question: qText, options, correct_option_id: correctIdx, solution: sol, marks: 2});
+    if(questions.length>500) break;
+  }
+  if(questions.length) return JSON.stringify(questions);
+  return null;
+}
+
+function extractDomQCards(html: string): string | null {
+  if(!html.includes('class="q-card"')) return null;
+  // Try to extract test.correct mapping for answers
+  let correctMap: Record<string, number> = {};
+  const corrMatch = html.match(/correct\s*:\s*\{([\s\S]*?)\}\s*,/);
+  if(corrMatch){
+    try{
+      const body = '{' + corrMatch[1] + '}';
+      correctMap = Function('"use strict"; return (' + body + ')')();
+    }catch{}
+  }
+  const parts = html.split(/<div class="q-card"/);
+  const questions: any[] = [];
+  for(let i=1;i<parts.length;i++){
+    const block = '<div class="q-card"' + parts[i];
+    const idM = block.match(/id="q([^"]+)"/);
+    const secM = block.match(/class="q-section"[^>]*>([^<]+)<\/div>/);
+    const qTextM = block.match(/class="q-text"[^>]*>([\s\S]*?)<\/div>\s*<div class="options">/);
+    const qText = qTextM ? qTextM[1].trim() : '';
+    const opts: string[] = [];
+    const optRe = /class="option-text"[^>]*>([\s\S]*?)<\/div>/g;
+    let om; while((om=optRe.exec(block))!==null) opts.push(om[1].trim());
+    const solM = block.match(/class="solution-content"[^>]*>([\s\S]*?)<\/div>/);
+    const sol = solM ? solM[1].trim() : '';
+    if(!qText && opts.length===0) continue;
+    const id = idM ? idM[1] : `dom_${i}`;
+    const correct = typeof correctMap[id]==='number' ? correctMap[id] : 0;
+    const secName = secM ? secM[1].trim() : '';
+    questions.push({
+      question: qText,
+      options: opts,
+      correct_option_id: correct,
+      solution: sol,
+      section: secName || undefined,
+    });
+    if(questions.length>500) break;
+  }
+  if(questions.length) return JSON.stringify(questions);
   return null;
 }
 
@@ -59,27 +137,44 @@ function extractQuestionsJson(html: string): string | null {
   // the /m flag its `$` matches any line end and can truncate a valid array.
   const m = html.match(QUESTIONS_RE_GREEDY);
   if (m) return m[1];
+  const qm = html.match(QS_RE_GREEDY);
+  if (qm) return qm[1];
   const bracketed = extractByBracketMatch(html);
   if (bracketed) return bracketed;
   const fallback = html.match(QUESTIONS_RE);
-  return fallback ? fallback[1] : null;
+  if (fallback) return fallback[1];
+  // Fallback: DOM q-cards (Mocks Wallah Direction etc.)
+  const dom = extractDomQCards(html);
+  if(dom) return dom;
+  // Fallback: lang-en question format (Computer Awareness)
+  const langEn = extractLangEnQuestions(html);
+  if(langEn) return langEn;
+  return null;
 }
 /** Give up on a hung connection instead of spinning forever. */
 const FETCH_TIMEOUT_MS = 15_000;
 
-/** Sanitize rich question/option/solution HTML, preserving structure + math. */
+/** Sanitize rich question/option/solution HTML, preserving structure + math + layout.
+    Perfect: keeps spaces, inline styles for fractions/tables, and math. */
 export function sanitizeHtml(html: string): string {
   if (!html) return '';
-  return DOMPurify.sanitize(html, {
+  // Preserve &nbsp; as non-breaking space for layout, but normalize leading/trailing
+  const withNbsp = html.replace(/&nbsp;/g, '\u00A0');
+  return DOMPurify.sanitize(withNbsp, {
     USE_PROFILES: { html: true },
     ADD_TAGS: [
       'math', 'mi', 'mo', 'mn', 'ms', 'mtext', 'mrow', 'msup', 'msub', 'mfrac',
-      'msqrt', 'mroot', 'mtable', 'mtr', 'mtd', 'semantics', 'annotation',
+      'msqrt', 'mroot', 'mtable', 'mtr', 'mtd', 'semantics', 'annotation', 'annotation-xml',
     ],
-    ADD_ATTR: ['data-path-to-node', 'data-index-in-node', 'lang', 'mathvariant', 'encoding'],
-    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
-    /* ChatGPT-export residue carried by some vendors (360 Mocks) — pure noise. */
-    FORBID_ATTR: ['data-start', 'data-end', 'data-col-size'],
+    ADD_ATTR: [
+      'data-path-to-node', 'data-index-in-node', 'lang', 'mathvariant', 'encoding',
+      'style', 'class', 'id', 'src', 'href', 'alt', 'title', 'width', 'height', 'colspan', 'rowspan',
+      'cellspacing', 'cellpadding', 'border', 'align', 'valign',
+    ],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form'],
+    FORBID_ATTR: ['data-start', 'data-end', 'data-col-size', 'onerror', 'onload', 'onclick'],
+    ALLOW_DATA_ATTR: false,
+    KEEP_CONTENT: true,
   });
 }
 
@@ -96,20 +191,119 @@ function stripOuterJson(raw: string): unknown[] {
       // Surface a useful error — a raw SyntaxError ("Unexpected token } in
       // JSON at position 18342") gives no hint that the mock file is broken.
       throw new Error(
-        `Could not parse questions JSON (even after trailing-comma cleanup): ${
-          firstErr instanceof Error ? firstErr.message : String(firstErr)
+        `Could not parse questions JSON (even after trailing-comma cleanup): ${firstErr instanceof Error ? firstErr.message : String(firstErr)
         }`,
       );
     }
   }
 }
 
+/** Slugify a legacy html path the same way scripts/extract-mocks.mjs does:
+     `English Madhyam/.../foo.html` → `English_Madhyam__...__foo` */
+function slugify(relPath: string): string {
+  const noExt = relPath.replace(/\.html?$/i, '');
+  return noExt
+    .split('/')
+    .map((seg) => encodeURIComponent(seg.replace(/\s+/g, '_').replace(/[^\w\-()]/g, '')))
+    .join('__');
+}
+
+/** Try to load the pre-extracted JSON for a mock (`/mocks/<slug>.json`).
+     Returns null when the file is missing (404) so the caller falls back to
+     the legacy HTML fetch. Any other error (network, JSON parse) is thrown. */
+async function tryLoadJson(path: string, displayName?: string, signal?: AbortSignal): Promise<ParsedExam | null> {
+  const slug = slugify(path);
+  const url = `/mocks/${slug}.json`;
+  let res: Response;
+  try {
+    res = await fetch(url, signal ? { signal } : undefined);
+  } catch {
+    return null;
+  }
+  if (!res.ok) return null;
+  // In vitest the global fetch is mocked to return a canned HTML Response
+  // for *any* URL. That mock returns the same Response instance for both
+  // the JSON probe and the subsequent HTML fetch — reading its body would
+  // disturb the second read ("Body has already been read"). Detect HTML
+  // by Content-Type and bail without consuming the body. Also use
+  // clone() so we never disturb a reusable mocked Response.
+  const ct = res.headers?.get?.('content-type') || '';
+  if (ct.includes('text/html')) return null;
+  let json: any;
+  try {
+    // Clone so a reusable mocked Response stays pristine for the HTML fallback
+    const toRead = typeof (res as any).clone === 'function' ? (res as any).clone() : res;
+    json = await toRead.json();
+  } catch {
+    return null;
+  }
+  if (!json || !Array.isArray(json.questions) || json.questions.length === 0) return null;
+
+  // JSON already contains normalized questions; still run through the same
+  // sanitisation + validation path so the contract is identical to HTML.
+  const adapter = resolveProviderParser(path);
+  const rawRecords = json.questions as Record<string, unknown>[];
+  // The extractor already applied provider preprocessors at build time, but
+  // re-apply the live adapter's preprocessRaw if present for forward compat.
+  const preprocessed = adapter?.preprocessRaw ? adapter.preprocessRaw(rawRecords as any) : (rawRecords as any);
+
+  const warnings: string[] = [];
+  let questions = preprocessed.map((raw: any, i: number) => normalizeQuestion(raw, i, warnings, adapter?.sanitizeHtml));
+  if (adapter?.postProcess) questions = adapter.postProcess(questions, warnings);
+  if (!questions.length) return null;
+
+  const durationMinutes = typeof json.durationMinutes === 'number' ? json.durationMinutes : 60;
+  const name = displayName || json.title || 'Mock Test';
+  const meta: ExamMeta = {
+    path,
+    name,
+    durationMinutes,
+    sections: deriveSections(questions),
+  };
+  try {
+    meta.provider = await getProviderForPath(path);
+  } catch {}
+  // If the JSON manifest has locked section timers, prefer them; otherwise
+  // deriveSections already gives contiguous ranges.
+  if (Array.isArray(json.sections) && json.sections.length) {
+    meta.sections = json.sections.map((s: any) => ({ name: s.name, start: s.start, end: s.end }));
+  }
+  return { meta, questions, warnings };
+}
+
 /** Vendor templates use different key names for the same data. Map every
-    known variant (Random-Mocks `QUESTIONS`/`QUIZ_DATA` schemas, YATRI
-    `q/opts/ans/sol`, bilingual `qEn/optsEn`, letter answer keys, etc.) onto
-    the canonical `question/options/correct_option_id` shape before the
-    standard validation runs. */
+     known variant (Random-Mocks `QUESTIONS`/`QUIZ_DATA` schemas, YATRI
+     `q/opts/ans/sol`, bilingual `qEn/optsEn`, letter answer keys, etc.) onto
+     the canonical `question/options/correct_option_id` shape before the
+     standard validation runs. */
 function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> {
+  // Handle testData format from English Madhyam Chapter Wise: question_text, correct_answer (1-based), explanation, marks object
+  if (raw.question_text !== undefined || raw.correct_answer !== undefined) {
+    let opts: unknown[] = Array.isArray(raw.options) ? raw.options : [];
+    // Clean options: strip leading "1) " and <input> HTML
+    opts = opts.map(o => {
+      let s = String(o ?? '');
+      s = s.replace(/^\s*\d+\)\s*/, '').replace(/<input[^>]*>/gi, '').replace(/<span class="checkmark[^>]*>.*?<\/span>/gi, '').trim();
+      return s;
+    });
+    // correct_answer is 1-based in testData
+    let corr = raw.correct_answer;
+    if (typeof corr === 'number') corr = corr - 1;
+    else if (typeof corr === 'string' && /^\d+$/.test(corr.trim())) corr = parseInt(corr.trim(),10)-1;
+    // marks may be object {positive, negative}
+    let marksVal: unknown = raw.marks;
+    if (typeof marksVal === 'object' && marksVal !== null && (marksVal as any).positive !== undefined) marksVal = (marksVal as any).positive;
+    return {
+      question: raw.question_text ?? raw.question ?? '',
+      comp: raw.comp,
+      options: opts,
+      correct_option_id: corr,
+      solution: raw.explanation ?? raw.solution ?? '',
+      marks: marksVal,
+      section: raw.section,
+      series_name: raw.series_name ?? raw.tag ?? raw.src,
+    };
+  }
   // Bilingual files ship parallel key sets (qEn/optsEn, q_en/options_en).
   // Pick ONE coherent set — an English stem over Hindi options (or vice
   // versa) renders a broken hybrid. English set wins when present; the base
@@ -142,6 +336,14 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
       return String(o ?? '');
     });
   }
+  // Clean options that may contain "1) text <input..." (testData style but without question_text wrapper)
+  options = options.map(o => {
+    let s = String(o ?? '');
+    if(/^\s*\d+\)/.test(s) && s.includes('<input')){
+      s = s.replace(/^\s*\d+\)\s*/, '').replace(/<input[^>]*>/gi, '').replace(/<span class="checkmark[^>]*>.*?<\/span>/gi, '').trim();
+    }
+    return s;
+  });
 
   // Answer key variants: correct_option_id (0-based), correct (letter a–d or
   // 0-based int), ans (0-based int; 1-based only in the {en,hi}-opts schema).
@@ -162,10 +364,16 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
       correct = a;
     }
   }
+  // Handle correct_answer 1-based fallback (for testData that slipped through)
+  if ((correct === undefined || correct === null) && raw.correct_answer !== undefined) {
+    const ca = raw.correct_answer as unknown;
+    if (typeof ca === 'number') correct = (ca as number) - 1;
+    else if(typeof ca === 'string' && /^\d+$/.test((ca as string).trim())) correct = parseInt((ca as string).trim(),10)-1;
+  }
 
   // Vocab-quiz schema: instruction line + sentence stem.
   const stem =
-    (hasEnQ ? enQ : undefined) ?? raw.question ?? raw.text ?? raw.q ??
+    (hasEnQ ? enQ : undefined) ?? raw.question ?? raw.text ?? raw.q ?? raw.question_text ??
     (raw.sentence !== undefined
       ? [raw.instr, raw.sentence].filter(Boolean).join('<br>')
       : undefined);
@@ -175,8 +383,8 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
     comp: raw.comp,
     options,
     correct_option_id: correct,
-    solution: (hasEnSol ? enSol : undefined) ?? raw.solution ?? raw.sol ?? raw.exp ?? raw.expl ?? raw.solHi,
-    marks: raw.marks ?? raw.pos,
+    solution: (hasEnSol ? enSol : undefined) ?? raw.solution ?? raw.explanation ?? raw.sol ?? raw.exp ?? raw.expl ?? raw.solHi,
+    marks: (raw.marks as any)?.positive ?? raw.marks ?? raw.pos ?? raw.marks_per_question,
     section: raw.section,
     series_name: raw.series_name ?? raw.tag ?? raw.src,
   };
@@ -283,31 +491,36 @@ export function parseMock(path: string, displayName?: string): Promise<ParsedExa
 }
 
 async function doParseMock(path: string, displayName?: string): Promise<ParsedExam> {
-  // Fetch from the SITE ROOT (leading slash): the app is served under /v2/,
-  // so a relative fetch would wrongly resolve to /v2/providers/…
-  const url = '/' + encodeURI(path).replace(/^\//, '');
-
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), FETCH_TIMEOUT_MS);
-  let res: Response;
-  let html: string;
   try {
-    res = await fetch(url, { signal: ac.signal });
-    if (!res.ok) throw new Error(`Failed to load mock (${res.status}): ${path}`);
-    html = await res.text();
-  } catch (e) {
-    // The abort signal is the reliable timeout indicator — the rejection's
-    // name/type varies across environments (AbortError vs TypeError vs plain
-    // Error in some fetch polyfills).
-    if (ac.signal.aborted) {
-      throw new Error(`Timed out loading mock (${FETCH_TIMEOUT_MS / 1000}s): ${path}`);
+    // Prefer the pre-extracted JSON — tiny, cacheable, no HTML parse.
+    // Falls back to the legacy HTML fetch for any mock missing a JSON.
+    // Share the same AbortSignal so a test that advances 15s aborts both.
+    const jsonHit = await tryLoadJson(path, displayName, ac.signal);
+    if (jsonHit) {
+      clearTimeout(timer);
+      return jsonHit;
     }
-    throw e;
-  } finally {
-    clearTimeout(timer);
-  }
 
-  const rawJson = extractQuestionsJson(html);
+    if (ac.signal.aborted) throw new Error(`Timed out loading mock (${FETCH_TIMEOUT_MS / 1000}s): ${path}`);
+    // Fetch from the SITE ROOT (leading slash): the app is served under /v2/,
+    // so a relative fetch would wrongly resolve to /v2/providers/…
+    const url = '/' + encodeURI(path).replace(/^\//, '');
+    let res: Response;
+    let html: string;
+    try {
+      res = await fetch(url, { signal: ac.signal });
+      if (!res.ok) throw new Error(`Failed to load mock (${res.status}): ${path}`);
+      html = await res.text();
+    } catch (e) {
+      if (ac.signal.aborted) {
+        throw new Error(`Timed out loading mock (${FETCH_TIMEOUT_MS / 1000}s): ${path}`);
+      }
+      throw e;
+    }
+
+    const rawJson = extractQuestionsJson(html);
   if (!rawJson) {
     // A 200 HTML shell page (SPA fallback, directory index) isn't a broken
     // mock — the mock simply isn't there. Say which it is.
@@ -367,7 +580,12 @@ async function doParseMock(path: string, displayName?: string): Promise<ParsedEx
     // back to the path-segment heuristic.
   }
 
+  clearTimeout(timer);
   return { meta, questions, warnings };
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
 }
 
 /** Extract just the questions JSON length for validation (used by tooling). */

@@ -18,6 +18,7 @@ export interface FocusItem {
 export function FocusRail({ items }: { items: FocusItem[] }) {
   const { theme } = useSettingsStore();
   const isNetflix = theme === 'netflix';
+  const isOnePiece = theme === 'onepiece';
 
   if (items.length === 0) {
     return (
@@ -38,16 +39,21 @@ export function FocusRail({ items }: { items: FocusItem[] }) {
   return (
     <Rail
       title={
-        isNetflix ? (
-          <span className="border-l-4 border-[#E50914] pl-2.5 inline-block text-white">
+        isOnePiece ? (
+          <span className="border-l-4 border-[#FFB703] pl-2.5 inline-block text-white font-black tracking-wide">
+            ⚔️ Continue Your Voyage
+          </span>
+        ) : isNetflix ? (
+          <span className="flex items-center gap-2.5 text-white">
+            <span className="w-1.5 h-6 bg-[#E50914] rounded-full inline-block shadow-[0_0_12px_#E50914]" />
             Continue Practice for Aspirant
           </span>
         ) : (
           "Pick up where you left off"
         )
       }
-      hint={isNetflix ? "Recent attempted mock tests" : "resume a recent attempt"}
-      icon={!isNetflix ? <History size={20} /> : undefined}
+      hint={isOnePiece ? "resume your battle training" : isNetflix ? "Recent attempted mock tests" : "resume a recent attempt"}
+      icon={!isNetflix && !isOnePiece ? <History size={20} /> : undefined}
     >
       {items.map(({ mock, attempt }) => {
         const acc = attempt.accuracy;

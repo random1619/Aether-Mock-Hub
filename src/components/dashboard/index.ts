@@ -19,3 +19,6 @@ export { MyListRail } from './MyListRail';
 export { NotificationBell } from './NotificationBell';
 export { ProvidersNavDropdown } from './ProvidersNavDropdown';
 export { DynamicHeader } from './DynamicHeader';
+export { ActivityRings } from './ActivityRings';
+export { BadgeCard } from './BadgeCard';
+export { BadgeShelf } from './BadgeShelf';

@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocks Wallah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --light: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #dfe6e9;
+            --card-bg: #ffffff;
+            --body-bg: #f5f6fa;
+            --header-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --footer-bg: #ffffff;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --box-shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Space for fixed navigation */
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .header-brand i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .control-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .timer-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 18px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .timer-display i {
+            margin-right: 6px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            padding: 16px;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--box-shadow-sm);
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .option-item {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+            .question-text {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+
+    .question-text img,
+    .option-label img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 8px 0;
+        border-radius: 8px;
+    }
+
+    .option-label {
+        overflow: hidden;
+    }
+
+    .question-card {
+        overflow: hidden;
+    }
+        
+        .option-label {
+            display: block;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .option-input:checked + .option-label {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        
+        .option-input:checked + .option-label::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        /* When reviewing answers */
+        .review-mode .option-input:checked + .option-label.correct {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.correct::after {
+            background: var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.incorrect {
+            border-color: var(--danger);
+            background: rgba(214, 48, 49, 0.05);
+            box-shadow: 0 0 0 1px var(--danger);
+        }
+        
+        .MathJax, .mjx-chtml {
+            overflow-x: auto;
+            max-width: 100%;
+            display: inline-block;
+        }
+
+        
+        .review-mode .option-input:checked + .option-label.incorrect::after {
+            background: var(--danger);
+        }
+        
+        .review-mode .option-label.correct-answer {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-label.correct-answer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--success);
+        }
+        
+        .solution-container {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .solution-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        /* Question Navigation */
+        .question-nav {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            bottom: 80px;
+            width: 100%;
+            max-width: 320px;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: var(--transition);
+            z-index: 900;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .question-nav.show {
+            transform: translateX(0);
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .question-stats {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .stat-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .section-selector {
+            width: 100%;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 10px 16px;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            font-size: 0.9rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+        }
+        
+        .q-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .q-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .q-box.attempted {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .q-box.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .q-box.incorrect {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .q-box.current {
+            border: 2px solid var(--accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .q-box.unattempted {
+            background-color: var(--gray);
+            color: white;
+            border-color: var(--gray);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--footer-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 800;
+        }
+        
+        .nav-btn {
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            transition: var(--transition);
+            gap: 8px;
+        }
+        
+        .nav-btn i {
+            font-size: 1rem;
+        }
+        
+        .nav-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .nav-btn-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Overlay when nav is open */
+        .nav-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            background: rgba(0,0,0,0.5);
+            z-index: 800;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .nav-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Results Modal */
+        .results-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 16px;
+        }
+        
+        .results-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .results-modal.show .results-card {
+            transform: translateY(0);
+        }
+        
+        .results-header {
+            background: var(--header-bg);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .results-title {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .results-body {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .results-footer {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 992px) {
+            .question-nav {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 320px;
+            }
+            
+            .nav-overlay {
+                display: none;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+                gap: 6px;
+            }
+            
+            .q-box {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .option-label {
+                padding: 12px 14px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            .header-brand {
+                font-size: 1rem;
+            }
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .timer-display {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            
+            .nav-btn {
+                height: 44px;
+                padding: 0 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="header-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Mocks Wallah</span>
+            </a>
+            
+            <div class="header-controls">
+                <!-- Timer -->
+                <div class="timer-display">
+                    <i class="far fa-clock"></i>
+                    <span id="timer-display">10:00</span>
+                </div>
+                
+                <!-- Language toggle -->
+                <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">
+                    <span id="lang-text">En</span>
+                </button>
+                
+                <!-- Submit button -->
+                <button class="control-btn" id="submit-btn" onclick="confirmSubmit()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                
+                <!-- Questions toggle for mobile -->
+                <button class="control-btn nav-toggle-btn" id="nav-toggle" onclick="toggleNav()">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="main-content" id="main-content">
+        <div class="question-counter" id="question-counter">Question 1 of 30</div>
+        
+        <!-- Questions will be displayed here -->
+        <div id="questions-container"></div>
+    </main>
+    
+    <!-- Overlay for mobile nav -->
+    <div class="nav-overlay" id="nav-overlay" onclick="toggleNav(false)"></div>
+    
+    <!-- Question navigation sidebar -->
+    <aside class="question-nav" id="question-nav">
+        <div class="nav-header">
+            <h3 class="nav-title">Questions</h3>
+            <div class="question-stats">
+                <span class="stat-badge bg-primary" id="attempted-count">0</span>
+                <span class="stat-badge bg-gray" id="total-count">30</span>
+                <button class="control-btn d-lg-none" onclick="toggleNav(false)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Section selector -->
+        <select class="section-selector" id="section-selector" onchange="switchSection(this.value)">
+            <option value="all">All Sections</option>
+        </select>
+        
+        <!-- Question grid -->
+        <div class="question-grid" id="question-boxes"></div>
+    </aside>
+    
+    <!-- Bottom navigation for mobile -->
+    <nav class="bottom-nav d-lg-none">
+        <button class="nav-btn nav-btn-outline" onclick="prevQuestion()">
+            <i class="fas fa-chevron-left"></i>
+            <span>Previous</span>
+        </button>
+        <button class="nav-btn nav-btn-outline" onclick="nextQuestion()">
+            <span>Next</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </nav>
+    
+    <!-- Results modal -->
+    <div class="results-modal" id="results-modal">
+        <div class="results-card">
+            <div class="results-header">
+                <h3 class="results-title">Test Results</h3>
+            </div>
+            <div class="results-body">
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark))">
+                        <div class="stat-value" id="score-value">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--success), #1b9aaa)">
+                        <div class="stat-value" id="correct-value">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--danger), var(--accent))">
+                        <div class="stat-value" id="incorrect-value">0</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--gray), var(--dark))">
+                        <div class="stat-value" id="unattempted-value">0</div>
+                        <div class="stat-label">Unattempted</div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-footer">
+                <button class="nav-btn nav-btn-primary" onclick="reviewTest()">
+                    <i class="fas fa-search me-1"></i>
+                    <span>Review Test</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Questions data
+        const questions = [];
+        const sections = {};
+        let currentLang = "en";
+        let currentQuestion = 0;
+        let answers = {};
+        let submitted = false;
+        let totalTime = 10 * 60;
+        
+        // Initialize the test
+        window.onload = function() {
+            initializeTest();
+            startTimer();
+            
+            // If on desktop, show the question navigation by default
+            if (window.innerWidth >= 992) {
+                document.getElementById('question-nav').classList.add('show');
+                document.getElementById('main-content').classList.add('with-nav');
+            }
+        };
+        
+        // Initialize test data
+        function initializeTest() {
+            // Add sections and questions
+            
+            sections["18"] = {
+                name: "General Awareness",
+                start: 0,
+                end: 28
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="18">General Awareness</option>`;
+            
+            sections["misc"] = {
+                name: "Miscellaneous",
+                start: 29,
+                end: 29
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="misc">Miscellaneous</option>`;
+            
+            
+                questions.push({
+                    id: "1",
+                    section: "18",
+                    question_en: "<p>1. <span style=\"font-family: Times New Roman;\">As per a list compiled by the United Nations Population Division, _____ is the world\'s fastest-growing city with a 44% increase in population between 2015 and 2020.</span></p>",
+                    question_hi: "<p>1. <span style=\"font-family: Palanquin Dark;\">संयुक्त राष्ट्र जनसंख्या प्रभाग द्वारा संकलित सूची के अनुसार, 2015 और 2020 के बीच जनसंख्या में 44% की वृद्धि के साथ दुनिया का सबसे तेजी से बढ़ने वाला शहर_________ है</span></p>",
+                    options_en: ["<p>Malappuram</p>", "<p>Surat <span style=\"font-family: Times New Roman;\"> </span></p>", 
+                                "<p>Kozhikode</p>", "<p>Jaipur</p>"],
+                    options_hi: ["<p>मलप्पुरम</p>", "<p>सूरत</p>",
+                                "<p>कोझीकोड</p>", "<p>जयपुर</p>"],
+                    solution_en: "<p>1.(a) <span style=\"font-family: Times New Roman;\">Malappuram is the world\'s fastest-growing city with a 44% increase in population between 2015 and 2020. </span><span style=\"font-family: Times New Roman;\">A general formula for calculating the population growth rate is </span><strong><span style=\"font-family: Times New Roman;\">Gr = N / t</span></strong><span style=\"font-family: Times New Roman;\">. Gr is the growth rate measured in individuals, N is the change in population, and t is the period of time.</span></p>",
+                    solution_hi: "<p>1.(a) <span style=\"font-family: Palanquin Dark;\">2015 और 2020 के बीच जनसंख्या में 44% की वृद्धि के साथ मलप्पुरम दुनिया का सबसे तेजी से बढ़ने वाला शहर है। जनसंख्या वृद्धि दर की गणना के लिए एक सामान्य सूत्र </span><strong><span style=\"font-family: Palanquin Dark;\">Gr = N / t</span></strong><span style=\"font-family: Palanquin Dark;\"> है। Gr व्यक्तियों में मापा गया विकास दर है, N जनसंख्या में परिवर्तन है, और t समय की अवधि है।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "2",
+                    section: "18",
+                    question_en: "<p>2. <span style=\"font-family: Times New Roman;\">According to the Economic Survey 2020-21, imports are expected to decline by ______ in the second half of FY21.</span></p>",
+                    question_hi: "<p>2. <span style=\"font-family: Palanquin Dark;\">आर्थिक सर्वेक्षण 2020-21 के अनुसार, FY21 की दूसरी छमाही में आयात में _________ तक गिरावट आने की उम्मीद है।</span></p>",
+                    options_en: ["<p>8.2%</p>", "<p>11.3%</p>", 
+                                "<p>6.3%</p>", "<p>5.4%</p>"],
+                    options_hi: ["<p>8.2%</p>", "<p>11.3%</p>",
+                                "<p>6.3% <span style=\"font-family: Palanquin Dark;\"> </span></p>", "<p>5.4%</p>"],
+                    solution_en: "<p>2.(b) <span style=\"font-family: Times New Roman;\">According to the Economic Survey 2020-21, imports are expected to decline by <strong>11.3%</strong> in the second half of FY21. </span><span style=\"font-family: Times New Roman;\">The Economic Survey of India is an annual document of the Ministry of Finance, Government of India.</span></p>",
+                    solution_hi: "<p>2.(b) <span style=\"font-family: Palanquin Dark;\">आर्थिक सर्वेक्षण 2020-21 के अनुसार, वित्त वर्ष 2011 की दूसरी छमाही में आयात में <strong>11.3% </strong>की गिरावट की उम्मीद है। भारतीय आर्थिक सर्वेक्षण भारत सरकार के वित्त मंत्रालय का एक वार्षिक दस्तावेज है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "3",
+                    section: "18",
+                    question_en: "<p>3. <span style=\"font-family: Times New Roman;\">Which of the following states became the first state in India to provide 100% tap water supply in rural areas in 2020?</span></p>",
+                    question_hi: "<p>3. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित में से कौन सा राज्य 2020 में ग्रामीण क्षेत्रों में 100% नल से पानी की आपूर्ति प्रदान करने वाला भारत का पहला राज्य बन गया?</span></p>",
+                    options_en: ["<p>Goa</p>", "<p>Kerala</p>", 
+                                "<p>Mizoram</p>", "<p>Sikkim</p>"],
+                    options_hi: ["<p>गोवा</p>", "<p>केरल</p>",
+                                "<p>मिजोरम</p>", "<p>सिक्किम</p>"],
+                    solution_en: "<p>3.(a) <span style=\"font-family: Times New Roman;\"><strong>Goa</strong>, Telangana, Andaman and Nicobar Islands, Puducherry, Dadra and Nagar Haveli and Daman and Diu and Haryana have provided tap water supply to 100 per cent of the households. The </span><span style=\"font-family: Times New Roman;\"><strong>Jal Jeevan Mission</strong> </span><span style=\"font-family: Times New Roman;\">of the central Government aims to provide piped water to all the rural households by </span><strong><span style=\"font-family: Times New Roman;\">2024</span></strong><span style=\"font-family: Times New Roman;\">. The Jal Jeevan Mission was launched on 15th August 2019 by Shri Narendra Modi.</span><span style=\"font-family: Times New Roman;\"> <strong>Gajendra Singh Shekhawat</strong></span><span style=\"font-family: Times New Roman;\"> is the current(May 2022) Union Jal Shakti Minister.</span></p>",
+                    solution_hi: "<p>3.(a) <span style=\"font-family: Palanquin Dark;\"><strong>गोवा</strong>, तेलंगाना, अंडमान और निकोबार द्वीप समूह, पुडुचेरी, दादरा और नगर हवेली और दमन और दीव और हरियाणा ने 100 प्रतिशत घरों में नल के पानी की आपूर्ति की है। केंद्र सरकार के </span><strong><span style=\"font-family: Palanquin Dark;\">जल जीवन मिशन</span></strong><span style=\"font-family: Palanquin Dark;\"> का लक्ष्य </span><strong><span style=\"font-family: Palanquin Dark;\">2024</span></strong><span style=\"font-family: Palanquin Dark;\"><strong> </strong>तक सभी ग्रामीण घरों में पाइप से पानी उपलब्ध कराना है। जल जीवन मिशन 15 अगस्त 2019 को श्री नरेंद्र मोदी द्वारा शुरू किया गया था। </span><span style=\"font-family: Palanquin Dark;\"><strong>गजेंद्र सिंह शेखावत</strong> </span><span style=\"font-family: Palanquin Dark;\">वर्तमान (मई 2022) केंद्रीय जल शक्ति मंत्री हैं।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "4",
+                    section: "18",
+                    question_en: "<p>4.<span style=\"font-family: Times New Roman;\"> In Union Budget 2021-22, there is a proposal to provide liquid waste management in ______ AMRUT cities under Jal Jeevan Mission (Urban).</span></p>",
+                    question_hi: "<p>4.<span style=\"font-family: Palanquin Dark;\"> केंद्रीय बजट 2021-22 में, जल जीवन मिशन (शहरी) के तहत ____ अमृत शहरों में तरल अपशिष्ट प्रबंधन प्रदान करने का प्रस्ताव है।</span></p>",
+                    options_en: ["<p>150</p>", "<p>400 <span style=\"font-family: Times New Roman;\"> </span></p>", 
+                                "<p>500</p>", "<p>350</p>"],
+                    options_hi: ["<p>150</p>", "<p>400</p>",
+                                "<p>500</p>", "<p>350</p>"],
+                    solution_en: "<p>4.(c) <span style=\"font-family: Times New Roman;\">In the Union Budget 2021-22, there is a proposal to provide liquid waste management in <strong>500 </strong>AMRUT cities under Jal Jeevan Mission (Urban). </span><span style=\"font-family: Times New Roman;\">Atal Mission for Rejuvenation and Urban Transformation (AMRUT) was launched in 2015 by Shri Narendra Modi. The AMRUT Scheme focuses on establishing an infrastructure for ensuring adequate sewage networks and water supply in the urban areas.</span></p>",
+                    solution_hi: "<p>4.(c) <span style=\"font-family: Palanquin Dark;\">केंद्रीय बजट 2021-22 में जल जीवन मिशन (शहरी) के तहत <strong>500 </strong>अमृत शहरों में तरल अपशिष्ट प्रबंधन प्रदान करने का प्रस्ताव है। कायाकल्प और शहरी परिवर्तन के लिए अटल मिशन (</span><span style=\"font-family: Palanquin Dark;\">AMRUT</span><span style=\"font-family: Palanquin Dark;\">) 2015 में श्री नरेंद्र मोदी द्वारा शुरू किया गया था। </span><span style=\"font-family: Palanquin Dark;\">AMRUT</span><span style=\"font-family: Palanquin Dark;\"> ​​योजना शहरी क्षेत्रों में पर्याप्त सीवेज नेटवर्क और पानी की आपूर्ति सुनिश्चित करने के लिए एक बुनियादी ढांचा स्थापित करने पर केंद्रित है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "5",
+                    section: "18",
+                    question_en: "<p>5.<span style=\"font-family: Times New Roman;\"> According to the Economic Survey 2020-2021, India&rsquo;s real GDP is projected to record ______ growth in the Fiscal Year 2021-22.</span></p>",
+                    question_hi: "<p>5. <span style=\"font-family: Palanquin Dark;\">आर्थिक सर्वेक्षण 2020-2021 के अनुसार, वित्तीय वर्ष 2021-22 में भारत की वास्तविक GDP _________ वृद्धि दर्ज करने का अनुमान है।</span></p>",
+                    options_en: [" <p> 10.8%</span></p>", " <p> 12.3%</span></p>", 
+                                " <p> 11.0%                        </span></p>", " <p> 13.5%</span></p>"],
+                    options_hi: [" <p> 10.8%</span></p>", "<p>12.3%</p>",
+                                " <p> 11.0% </span></p>", " <p> 13.5%</span></p>"],
+                    solution_en: "<p>5.(c) <span style=\"font-family: Times New Roman;\">According to the Economic Survey 2020-2021, India&rsquo;s real GDP is projected to record <strong>11.0 %</strong> growth in the Fiscal Year 2021-22. </span><span style=\"font-family: Times New Roman;\">A</span><span style=\"font-family: Times New Roman;\"> <strong>fiscal yea</strong></span><span style=\"font-family: Times New Roman;\"><strong>r</strong> is a one-year period that companies and governments use for financial reporting and budgeting. </span><strong><span style=\"font-family: Times New Roman;\">Gross domestic product (GDP)</span></strong><span style=\"font-family: Times New Roman;\"> is a monetary measure of the market value of all the final goods and services produced in a specific time period by countries.</span></p>",
+                    solution_hi: "<p>5.(c) <span style=\"font-family: Palanquin Dark;\">आर्थिक सर्वेक्षण 2020-2021 के अनुसार, वित्तीय वर्ष 2021-22 में भारत की वास्तविक </span><span style=\"font-family: Palanquin Dark;\">GDP </span><span style=\"font-family: Palanquin Dark;\"><strong>11.0%</strong> की वृद्धि दर्ज करने का अनुमान है। एक </span><strong><span style=\"font-family: Palanquin Dark;\">वित्तीय वर्ष</span></strong><span style=\"font-family: Palanquin Dark;\"> एक वर्ष की अवधि है, जिसका उपयोग कंपनियां और सरकार वित्तीय रिपोर्टिंग और बजट के लिए करती हैं। </span><strong><span style=\"font-family: Palanquin Dark;\">सकल घरेलू उत्पाद (</span><span style=\"font-family: Palanquin Dark;\">GDP</span><span style=\"font-family: Palanquin Dark;\">)</span></strong><span style=\"font-family: Palanquin Dark;\"> देशों द्वारा एक विशिष्ट समय अवधि में उत्पादित सभी अंतिम वस्तुओं और सेवाओं के बाजार मूल्य का एक मौद्रिक उपाय है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "6",
+                    section: "18",
+                    question_en: "<p>6. <span style=\"font-family: Times New Roman;\">In which of the following cities was the 2020 Asian Wrestling Championships held?</span></p>",
+                    question_hi: "<p>6.<span style=\"font-family: Palanquin Dark;\"> 2020 एशियाई कुश्ती चैंपियनशिप निम्नलिखित में से किस शहर में आयोजित की गई थी?</span></p>",
+                    options_en: ["<p>New Delhi</p>", "<p>Tokyo</p>", 
+                                "<p>Beijing</p>", "<p>Colombo</p>"],
+                    options_hi: ["<p>नई दिल्ली</p>", "<p>टोक्यो</p>",
+                                "<p>बीजिंग</p>", "<p>कोलंबो</p>"],
+                    solution_en: "<p>6.(a) <span style=\"font-family: Times New Roman;\"><strong>New Delhi</strong> hosted the 2020 Asian Wrestling Championships. Asian Wrestling Championships 2021- Almaty, Kazakhstan, {(Asian Wrestling Championships 2022- Ulaanbaatar, Mongolia. Indian wrestlers secured a total of 17 medals, Ravi Kumar Dahiya is the only Gold medalist(1-Gold, 5-Silver, and 11-Bronze medals)}.</span></p>",
+                    solution_hi: "<p>6.(a) <span style=\"font-family: Palanquin Dark;\"><strong>नई दिल्ली</strong> ने 2020 एशियाई कुश्ती चैंपियनशिप की मेजबानी की। एशियाई कुश्ती चैंपियनशिप 2021- अल्माटी, कजाकिस्तान, {(एशियाई कुश्ती चैंपियनशिप 2022- उलानबटार, मंगोलिया। भारतीय पहलवानों ने कुल 17 पदक हासिल किए, रवि कुमार दहिया एकमात्र स्वर्ण पदक विजेता (1-स्वर्ण, 5-रजत और 11-कांस्य पदक) हैं।)} </span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "7",
+                    section: "18",
+                    question_en: "<p>7.<span style=\"font-family: Times New Roman;\"> As per Union Budget for 2021&ndash;22, interest earned on Provident Fund contribution above ______ lakhs in a year will become taxable.</span></p>",
+                    question_hi: "<p>7. <span style=\"font-family: Palanquin Dark;\">2021-22 के केंद्रीय बजट के अनुसार, एक वर्ष में ______ लाख से अधिक भविष्य निधि योगदान पर अर्जित ब्याज कर योग्य हो जाएगा.</span></p>",
+                    options_en: [" <p>  ₹1.5</span></p>", " <p>  ₹1 </span></p>", 
+                                " <p> ₹2                                 </span></p>", "<p>₹2.5</p>"],
+                    options_hi: ["<p>₹1.5</p>", "<p>₹1</p>",
+                                "<p>₹2</p>", "<p>₹2.5</p>"],
+                    solution_en: "<p>7.(d) <span style=\"font-family: Times New Roman;\">As per Union Budget for 2021&ndash;22, interest earned on Provident Fund contributions above ₹2.5 lakhs in a year will become taxable. </span><strong><span style=\"font-family: Times New Roman;\">Provident fund</span></strong><span style=\"font-family: Times New Roman;\"> is a government-managed retirement savings scheme for employees who can contribute a part of their pension fund every month.</span></p>",
+                    solution_hi: "<p>7.(d)<span style=\"font-family: Times New Roman;\"> </span><span style=\"font-family: Palanquin Dark;\">2021-22 के केंद्रीय बजट के अनुसार, एक वर्ष में ₹2.5 लाख से अधिक भविष्य निधि योगदान पर अर्जित ब्याज कर योग्य हो जाएगा। </span><strong><span style=\"font-family: Palanquin Dark;\">भविष्य निधि</span></strong><span style=\"font-family: Palanquin Dark;\"> उन कर्मचारियों के लिए सरकार द्वारा प्रबंधित सेवानिवृत्ति बचत योजना है जो हर महीने अपने पेंशन फंड का एक हिस्सा योगदान कर सकते हैं।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "8",
+                    section: "18",
+                    question_en: "<p>8. <span style=\"font-family: Times New Roman;\">Actor ______ was conferred with the &lsquo;Lifetime Achievement\' award at the Filmfare Awards 2021.</span></p>",
+                    question_hi: "<p>8. <span style=\"font-family: Palanquin Dark;\">अभिनेता ______ को फिल्मफेयर अवार्ड्स 2021 में \'लाइफटाइम अचीवमेंट\' पुरस्कार से सम्मानित किया गया।</span></p>",
+                    options_en: ["<p>Irrfan Khan</p>", "<p>Amitabh Bachchan</p>", 
+                                "<p>Dharmendra</p>", "<p>Rishi Kapoor</p>"],
+                    options_hi: ["<p>इरफान खान</p>", "<p>अमिताभ बच्चन</p>",
+                                "<p>धर्मेंद्र</p>", "<p>ऋषि कपूर</p>"],
+                    solution_en: "<p>8.(a) <span style=\"font-family: Times New Roman;\">Actor <strong>Irrfan Khan</strong> was conferred with the &lsquo;Lifetime Achievement\' award at the Filmfare Awards 2021. He also won the best actor award for the Movie Angreji Medium. Taapsee Pannu won the best actress award.</span></p>",
+                    solution_hi: "<p>8.(a) <span style=\"font-family: Palanquin Dark;\">अभिनेता <strong>इरफान</strong> <strong>खान </strong>को फिल्मफेयर अवार्ड्स 2021 में \'लाइफटाइम अचीवमेंट\' पुरस्कार से सम्मानित किया गया। उन्होंने फिल्म अंग्रेजी मीडियम के लिए सर्वश्रेष्ठ अभिनेता का पुरस्कार भी जीता। सर्वश्रेष्ठ अभिनेत्री का पुरस्कार तापसी पन्नू को मिला।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "9",
+                    section: "18",
+                    question_en: "<p>9. <span style=\"font-family: Palanquin Dark;\">Who among the following became the first Indian to win the &lsquo;Best Actor&rsquo; award at the Norwegian National Awards ceremony held in Haugesund, Norway in 2018?</span></p>",
+                    question_hi: "<p>9. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित में से कौन 2018 में हौगेसुंड, नॉर्वे में आयोजित नॉर्वेजियन राष्ट्रीय पुरस्कार समारोह में \'सर्वश्रेष्ठ अभिनेता\' पुरस्कार जीतने वाला पहला भारतीय बन गया?</span></p>",
+                    options_en: ["<p>Ranvir Shorey</p>", "<p>Nawazuddin Siddique</p>", 
+                                "<p>Ram Kapoor</p>", "<p>Adil Hussain</p>"],
+                    options_hi: ["<p>रणवीर शोरी</p>", "<p>नवाजुद्दीन सिद्दीकी</p>",
+                                "<p>राम कपूर</p>", "<p>आदिल हुसैन</p>"],
+                    solution_en: "<p>9.(d) <span style=\"font-family: Times New Roman;\">Adil Hussain became the first Indian to win the &lsquo;Best Actor&rsquo; award at the Norwegian National Awards ceremony held in Haugesund, Norway in 2018. </span></p>",
+                    solution_hi: "<p>9.(d) <span style=\"font-family: Palanquin Dark;\">आदिल हुसैन 2018 में हॉगसुंड, नॉर्वे में आयोजित नॉर्वेजियन नेशनल अवार्ड समारोह में \'सर्वश्रेष्ठ अभिनेता\' का पुरस्कार जीतने वाले पहले भारतीय बने।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "10",
+                    section: "18",
+                    question_en: "<p>10. <span style=\"font-family: Palanquin Dark;\">As of 2021, who is the reigning Olympic Men&rsquo;s Field Hockey champion?</span></p>",
+                    question_hi: "<p>10. <span style=\"font-family: Palanquin Dark;\">2021 तक, मौजूदा ओलंपिक पुरुष फील्ड हॉकी चैंपियन कौन है?</span></p>",
+                    options_en: ["<p>Belgium</p>", "<p>Germany</p>", 
+                                "<p>Argentina</p>", "<p>Holland</p>"],
+                    options_hi: ["<p>बेल्जियम</p>", "<p>जर्मनी</p>",
+                                "<p>अर्जेंटीना</p>", "<p>हॉलैंड</p>"],
+                    solution_en: "<p>10.(c) <span style=\"font-family: Times New Roman;\">As of 2021, Argentina is the reigning Olympic Men&rsquo;s Field Hockey champion. Belgium won the Gold medal in the Tokyo Olympic 2020. Australia won the silver medal and India won Bronze medal.</span></p>",
+                    solution_hi: "<p>10.(c) <span style=\"font-family: Palanquin Dark;\">2021 तक, अर्जेंटीना मौजूदा ओलंपिक पुरुष फील्ड हॉकी चैंपियन है। टोक्यो ओलंपिक 2020 में बेल्जियम ने स्वर्ण पदक जीता। ऑस्ट्रेलिया ने रजत पदक जीता और भारत ने कांस्य पदक जीता।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "11",
+                    section: "18",
+                    question_en: "<p>11.<span style=\"font-family: Times New Roman;\"> As per Economic Survey of India 2020-21, India is expected to have a Current Account Surplus of ______ of GDP in FY21.&nbsp;</span></p>",
+                    question_hi: "<p>11. <span style=\"font-family: Palanquin Dark;\">भारत के आर्थिक सर्वेक्षण 2020-21 के अनुसार, भारत में वित्त वर्ष 2021 में सकल घरेलू उत्पाद का _________ चालू खाता अधिशेष होने की उम्मीद है।</span></p>",
+                    options_en: ["<p>1%</p>", "<p>3%</p>", 
+                                "<p>2%</p>", "<p>4%</p>"],
+                    options_hi: ["<p>1%</p>", "<p>3%</p>",
+                                "<p>2%</p>", "<p>4%</p>"],
+                    solution_en: "<p>11.(c) <span style=\"font-family: Times New Roman;\">As per Economic Survey of India 2020-21, India is expected to have a Current Account Surplus of 2 % of GDP in FY21. </span><span style=\"font-family: Times New Roman;\">Current bank accounts are opened by businessmen who have a higher number of regular transactions with the bank.</span></p>",
+                    solution_hi: "<p>11.(c) <span style=\"font-family: Palanquin Dark;\">भारत के आर्थिक सर्वेक्षण 2020-21 के अनुसार, वित्त वर्ष 2021 में भारत का चालू खाता अधिशेष सकल घरेलू उत्पाद का 2%&nbsp; </span><span style=\"font-family: Palanquin Dark;\">होने की उम्मीद है। चालू बैंक खाते उन व्यवसायियों द्वारा खोले जाते हैं जिनका बैंक के साथ नियमित लेन-देन अधिक होता है।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "12",
+                    section: "18",
+                    question_en: "<p>12.<span style=\"font-family: Palanquin Dark;\"> Who among the following table tennis players won nine Senior National Championships as of April 2021?&nbsp;</span></p>",
+                    question_hi: "<p>12.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किस टेबल टेनिस खिलाड़ी ने अप्रैल 2021 तक नौ सीनियर नेशनल चैंपियनशिप जीती हैं?</span></p>",
+                    options_en: ["<p>Soumyajit Ghosh</p>", "<p>Sujay Ghorpade</p>", 
+                                "<p>Sathiyan Gnanasekaran</p>", "<p>A Sharath Kamal</p>"],
+                    options_hi: ["<p>सौम्यजीत घोष</p>", "<p>सुजय घोरपड़े</p>",
+                                "<p>साथियान ज्ञानसेकरन</p>", "<p>ए शरथ कमल</p>"],
+                    solution_en: "<p>12.(d) <span style=\"font-family: Times New Roman;\">A Sharath Kamal won nine Senior National Championships as of April 2021. </span><span style=\"font-family: Times New Roman;\">Manika Batra, Achanta Sharath Kamal, Sutirtha Mukherjee and G Sathiyan are table tennis players.</span><span style=\"font-family: Times New Roman;\"> <strong>Bhavina Patel</strong> </span><span style=\"font-family: Times New Roman;\">won silver medal at Tokyo 2020 Paralympic.</span></p>",
+                    solution_hi: "<p>12.(d) <span style=\"font-family: Palanquin Dark;\">शरत कमल ने अप्रैल 2021 तक नौ सीनियर राष्ट्रीय चैंपियनशिप जीतीं। मनिका बत्रा, अचंता शरथ कमल, सुतीर्थ मुखर्जी और जी साथियान टेबल टेनिस खिलाड़ी हैं।</span><strong><span style=\"font-family: Palanquin Dark;\">भाविना</span><span style=\"font-family: Palanquin Dark;\"> पटेल</span></strong><span style=\"font-family: Palanquin Dark;\"> ने टोक्यो 2020 पैरालंपिक में रजत पदक जीता।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "13",
+                    section: "18",
+                    question_en: "<p>13.<span style=\"font-family: Palanquin Dark;\"> As per the press release dated September 2020 of the Government of India, what is the payment made by the Government of India at Minimum Support Price (MSP) rates in the last 6 years?</span></p>",
+                    question_hi: "<p>13.<span style=\"font-family: Palanquin Dark;\"> भारत सरकार की सितंबर 2020 की प्रेस विज्ञप्ति के अनुसार, पिछले 6 वर्षों में भारत सरकार द्वारा न्यूनतम समर्थन मूल्य (MSP) दरों पर कितना भुगतान किया गया है?</span></p>",
+                    options_en: ["<p>₹9 lakh crore</p>", "<p>₹7 lakh crore</p>", 
+                                "<p>₹5 lakh crore</p>", "<p>₹3 lakh crore</p>"],
+                    options_hi: ["<p>₹9 लाख करोड़</p>", "<p>₹7 लाख करोड़</p>",
+                                "<p>₹5 लाख करोड़</p>", "<p>₹3 लाख करोड़</p>"],
+                    solution_en: "<p>13.(b) <span style=\"font-family: Times New Roman;\">MSPs (Minimum Support Prices) are the prices at which the government procures certain crops from farmers to insure them against any sharp fall in prices. CACP (The Commission for Agricultural Costs &amp; Prices ) recommends MSPs of 23 commodities. </span></p>",
+                    solution_hi: "<p>13.(b) <span style=\"font-family: Palanquin Dark;\">MSPs (न्यूनतम समर्थन मूल्य) वे मूल्य हैं जिन पर सरकार किसानों से कुछ फसलों की खरीद करती है ताकि कीमतों में किसी भी तेज गिरावट के खिलाफ उनका बीमा किया जा सके। CACP (कृषि लागत और मूल्य आयोग) 23 वस्तुओं के MSPs की सिफारिश करता है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "14",
+                    section: "18",
+                    question_en: "<p>14.<span style=\"font-family: Palanquin Dark;\"> In October 2020, the Haryana Government launched a ______ under the Jal Jeevan Mission scheme.&nbsp;</span></p>",
+                    question_hi: "<p>14.<span style=\"font-family: Palanquin Dark;\"> अक्टूबर 2020 में, हरियाणा सरकार ने जल जीवन मिशन योजना के तहत एक ______ लॉन्च किया।</span></p>",
+                    options_en: ["<p>mobile app to test pH level in water</p>", "<p>mobile water testing laboratory</p>", 
+                                "<p>training programme to test water salinity</p>", "<p>household water testing kit</p>"],
+                    options_hi: ["<p>पानी में पीएच स्तर का परीक्षण करने के लिए मोबाइल ऐप</p>", "<p>मोबाइल जल परीक्षण प्रयोगशाला</p>",
+                                "<p>पानी की लवणता का परीक्षण करने के लिए प्रशिक्षण कार्यक्रम</p>", "<p>घरेलू जल परीक्षण किट</p>"],
+                    solution_en: "<p>14.(b) <span style=\"font-family: Times New Roman;\"><strong>Jal Jeevan Mission</strong>,</span><span style=\"font-family: Times New Roman;\"> is envisioned to provide safe and adequate drinking water through individual household tap connections by 2024 to all households in rural India. It was launched on 15 August 2019. </span><span style=\"font-family: Times New Roman;\">Shri Gajendra Singh Shekhawat is the present (May 2022) Jal Shakti Minister.</span></p>",
+                    solution_hi: "<p>14.(b) <strong><span style=\"font-family: Palanquin Dark;\">जल जीवन मिशन</span></strong><span style=\"font-family: Palanquin Dark;\"> की परिकल्पना ग्रामीण भारत के सभी घरों में 2024 तक व्यक्तिगत घरेलू नल कनेक्शन के माध्यम से सुरक्षित और पर्याप्त पेयजल उपलब्ध कराने के लिए की गई है। इसे 15 अगस्त 2019 को लॉन्च किया गया था। श्री गजेंद्र सिंह शेखावत वर्तमान (मई 2022) जल शक्ति मंत्री हैं।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "15",
+                    section: "18",
+                    question_en: "<p>15. <span style=\"font-family: Times New Roman;\">Who among the following became the first Indian woman to score 10,000 runs in international cricket across all formats in March 2021?&nbsp;</span></p>",
+                    question_hi: "<p>15.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से कौन मार्च 2021 में सभी प्रारूपों में अंतरराष्ट्रीय क्रिकेट में 10,000 रन बनाने वाली पहली भारतीय महिला बनीं?</span></p>",
+                    options_en: ["<p>Mithali Raj</p>", "<p>Jhulan Goswami</p>", 
+                                "<p>Priya Punia</p>", "<p>Taniya Bhatia</p>"],
+                    options_hi: ["<p>मिताली राज</p>", "<p>झूलन गोस्वामी</p>",
+                                "<p>प्रिया पुनिया</p>", "<p>तानिया भाटिया</p>"],
+                    solution_en: "<p>15.(a) <span style=\"font-family: Times New Roman;\">Mithali Raj became the first Indian woman to score 10,000 runs in international cricket across all formats in March 2021. Jhulan Goswami (India) - 250*(March 2022) is the highest wicket taker in Women&rsquo;s cricket.</span></p>",
+                    solution_hi: "<p>15.(a) <span style=\"font-family: Palanquin Dark;\">मिताली राज मार्च 2021 में सभी प्रारूपों में अंतरराष्ट्रीय क्रिकेट में 10,000 रन बनाने वाली पहली भारतीय महिला बनीं। झूलन गोस्वामी (भारत) - 250 * (मार्च 2022) महिला क्रिकेट में सबसे अधिक विकेट लेने वाली गेंदबाज हैं।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "16",
+                    section: "18",
+                    question_en: "<p>16. <span style=\"font-family: Times New Roman;\">In which of the following cities were the first and second test cricket matches (2021) between India and </span><span style=\"font-family: Times New Roman;\">England held</span><span style=\"font-family: Times New Roman;\">?</span></p>",
+                    question_hi: "<p>16.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किस शहर में भारत और इंग्लैंड के बीच पहला और दूसरा टेस्ट क्रिकेट मैच (2021) आयोजित किया गया था&nbsp;</span></p>",
+                    options_en: ["<p>Mumbai</p>", "<p>Pune</p>", 
+                                "<p>Chennai</p>", "<p>Ahmedabad</p>"],
+                    options_hi: ["<p>मुंबई</p>", "<p>पुणे</p>",
+                                "<p>चेन्नई</p>", "<p>अहमदाबाद</p>"],
+                    solution_en: "<p>16.(c) <span style=\"font-family: Times New Roman;\">The first and second test cricket matches (2021) between India and </span><span style=\"font-family: Times New Roman;\">England was held</span><span style=\"font-family: Times New Roman;\"> at </span><span style=\"font-family: Times New Roman;\">MA Chidambaram Stadium, Chennai. </span></p>",
+                    solution_hi: "<p>16.(c) <span style=\"font-family: Palanquin Dark;\">भारत और इंग्लैंड के बीच पहला और दूसरा टेस्ट क्रिकेट मैच (2021) चेन्नई के MA चिदंबरम स्टेडियम में आयोजित किया गया था।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "17",
+                    section: "18",
+                    question_en: "<p>17. <span style=\"font-family: Palanquin Dark;\">Who among the following was </span><span style=\"font-family: Palanquin Dark;\">honoured</span><span style=\"font-family: Palanquin Dark;\"> by the Abel Prize of 2021 in Mathematics ?</span></p>",
+                    question_hi: "<p>17.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किसे गणित में 2021 के एबेल पुरस्कार से सम्मानित किया गया था?</span></p>",
+                    options_en: ["<p>Karen Uhlenbeck</p>", "<p>Qaboos</p>", 
+                                "<p>Laszlo Lovasz</p>", "<p>Andrew Wiles</p>"],
+                    options_hi: ["<p><span style=\"font-weight: 400;\">करेन उहलेनबेकी (Karen Uhlenbeck)</span></p>", "<p><span style=\"font-weight: 400;\">कबूस&nbsp; (Qaboos)</span></p>",
+                                "<p><span style=\"font-weight: 400;\">लास्ज़लो लोवास्ज़ी (Laszlo Lovasz)</span></p>", "<p><span style=\"font-weight: 400;\">एंड्रयू विल्स (Andrew Wiles )</span></p>"],
+                    solution_en: "<p>17.(c) <span style=\"font-family: Times New Roman;\">Laszlo Lovasz was </span><span style=\"font-family: Times New Roman;\">honoured</span><span style=\"font-family: Times New Roman;\"> by the Abel Prize of 2021 in Mathematics. </span></p>",
+                    solution_hi: "<p>17.(c) <span style=\"font-family: Palanquin Dark;\">लास्ज़लो लोवास्ज़ को गणित में 2021 के एबेल पुरस्कार से सम्मानित किया गया।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "18",
+                    section: "18",
+                    question_en: "<p>18.<span style=\"font-family: Palanquin Dark;\"> As per the Economic Survey of India 2021, SENSEX and NIFTY resulted in India&rsquo;s market-cap to GDP ratio </span><span style=\"font-family: Palanquin Dark;\">crossing</span><span style=\"font-family: Palanquin Dark;\"> ______ for the first time since October 2010.</span></p>",
+                    question_hi: "<p>18.<span style=\"font-family: Palanquin Dark;\"> भारत के आर्थिक सर्वेक्षण 2021 के अनुसार, सेंसेक्स और निफ़्टी के परिणामस्वरुप&nbsp; </span><span style=\"font-family: Palanquin Dark;\">अक्टूबर 2010 के बाद पहली बार भारत का मार्किटकैप तो GDP अनुपात ______ को पार कर रहा है।</span></p>",
+                    options_en: ["<p>100%</p>", "<p>80%</p>", 
+                                "<p>50%</p>", "<p>75%</p>"],
+                    options_hi: ["<p>100%</p>", "<p>80%</p>",
+                                "<p>50%</p>", "<p>75%</p>"],
+                    solution_en: "<p>18.(a) <span style=\"font-family: Times New Roman;\">The BSE SENSEX is a free-float market-weighted stock market index of 30 well-established and financially sound companies listed on the Bombay Stock Exchange. Founded on 1st January 1986. The NIFTY 50 is a benchmark Indian stock market index that represents the weighted average of 50 of the largest Indian companies listed on the National Stock Exchange. Founded on 21st April 1997. </span></p>",
+                    solution_hi: "<p>18.(a)&nbsp;<span style=\"font-family: Palanquin Dark;\">BSE SENSEX बॉम्बे स्टॉक एक्सचेंज में सूचीबद्ध 30 अच्छी तरह से स्थापित और आर्थिक रूप से मजबूत कंपनियों का एक फ्री-फ्लोट मार्केट-वेटेड स्टॉक मार्केट इंडेक्स है।यह 1 जनवरी 1986 को स्थापित किया गया था। NIFTY 50 एक बेंचमार्क भारतीय शेयर बाजार सूचकांक है जो नेशनल स्टॉक एक्सचेंज में सूचीबद्ध 50 सबसे बड़ी भारतीय कंपनियों के भारित औसत का प्रतिनिधित्व करता है। 21 अप्रैल 1997 को स्थापित किया गया था।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "19",
+                    section: "18",
+                    question_en: "<p>19. <span style=\"font-family: Times New Roman;\">The Economic Survey of 2020-21 mentions that India&rsquo;s fiscal policy should reflect ______ sentiment of &lsquo;a mind without fear&rsquo;.</span></p>",
+                    question_hi: "<p>19. <span style=\"font-family: Palanquin Dark;\">2020-21 के आर्थिक सर्वेक्षण में उल्लेख किया गया है कि भारत की राजकोषीय नीति को \'ए माइन्ड विदआउट फियर \' की ______ भावना को प्रतिबिंबित करना चाहिए।</span></p>",
+                    options_en: ["<p>Jawaharlal Nehru&rsquo;s</p>", "<p>Gurudev Rabindranath Tagore&rsquo;s</p>", 
+                                "<p>Mahatma Gandhi&rsquo;s</p>", "<p>Shyama Prasad <span style=\"font-family: Times New Roman;\">Mukherjee&rsquo;s</span><span style=\"font-family: Times New Roman;\"> </span></p>"],
+                    options_hi: ["<p>जवाहरलाल नेहरू की</p>", "<p>गुरुदेव रवींद्रनाथ टैगोर की</p>",
+                                "<p>महात्मा गांधी की</p>", "<p>श्यामा प्रसाद मुखर्जी की</p>"],
+                    solution_en: "<p>19.(b) <span style=\"font-family: Times New Roman;\">The Economic Survey of 2020-21 mentions that India&rsquo;s fiscal policy should reflect Gurudev Rabindranath Tagore&rsquo;s sentiment of &lsquo;a mind without fear&rsquo;.</span><span style=\"font-family: Times New Roman;\"> </span><strong><span style=\"font-family: Times New Roman;\">Fiscal policy</span></strong><span style=\"font-family: Times New Roman;\"> is the use of government spending and taxation to influence the economy.</span></p>",
+                    solution_hi: "<p>19.(b) <span style=\"font-family: Palanquin Dark;\">2020-21 के आर्थिक सर्वेक्षण में उल्लेख किया गया है कि भारत की राजकोषीय नीति को गुरुदेव रवींद्रनाथ टैगोर की \'बिना किसी डर के दिमाग\' की भावना को प्रतिबिंबित करना चाहिए। </span><strong><span style=\"font-family: Palanquin Dark;\">राजकोषीय नीति</span></strong><span style=\"font-family: Palanquin Dark;\"> अर्थव्यवस्था को प्रभावित करने के लिए सरकारी खर्च और कराधान का उपयोग है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "20",
+                    section: "18",
+                    question_en: "<p>20.<span style=\"font-family: Palanquin Dark;\"> Who among the following won the 2020 JCB Prize for Literature?</span></p>",
+                    question_hi: "<p>20. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित में से किसने साहित्य के लिए 2020 का जेसीबी(JCB) पुरस्कार जीता?</span></p>",
+                    options_en: ["<p>Santhosh Echikkanam</p>", "<p>S Hareesh</p>", 
+                                "<p>KR Meera</p>", "<p>Kureepuzha Sreekumar</p>"],
+                    options_hi: ["<p><span style=\"font-weight: 400;\">संतोष इचिक्कनम (Santhosh Echikkanam)</span></p>", "<p><span style=\"font-weight: 400;\">एस हरीश (S Hareesh)</span></p>",
+                                "<p><span style=\"font-weight: 400;\">&nbsp;केआर मीरा (KR Meera)</span></p>", "<p><span style=\"font-weight: 400;\">कुरीपुझा श्रीकुमार (Kureepuzha Sreekumar )</span></p>"],
+                    solution_en: "<p>20.(b) <span style=\"font-family: Times New Roman;\">S Hareesh </span><span style=\"font-family: Times New Roman;\">\"<strong>Moustache</strong>\" </span><span style=\"font-family: Times New Roman;\">won the 2020 JCB Prize for Literature. </span><span style=\"font-family: Times New Roman;\">Malayalam writer </span><strong><span style=\"font-family: Times New Roman;\">M.</span><span style=\"font-family: Times New Roman;\"> </span><span style=\"font-family: Times New Roman;\">Mukundan</span></strong><span style=\"font-family: Times New Roman;\"> (&ldquo;Delhi : A Soliloquy&rdquo; ) wins the 2021 JCB Prize for Literature. </span></p>",
+                    solution_hi: "<p>20.(b) <span style=\"font-family: Palanquin Dark;\">एस. हरीश</span><span style=\"font-family: Palanquin Dark;\"> \"<strong>मौसताचे </strong>\"</span><span style=\"font-family: Palanquin Dark;\"> ने साहित्य के लिए 2020 </span><span style=\"font-family: Palanquin Dark;\">JCB</span><span style=\"font-family: Palanquin Dark;\"> पुरस्कार जीता। मलयालम लेखक </span><strong><span style=\"font-family: Palanquin Dark;\">एम. मुकुंदन</span></strong><span style=\"font-family: Palanquin Dark;\"> (\"दिल्ली: ए सोलिलोकी\") ने साहित्य के लिए 2021 </span><span style=\"font-family: Palanquin Dark;\">JCB</span><span style=\"font-family: Palanquin Dark;\"> पुरस्कार जीता।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "21",
+                    section: "18",
+                    question_en: "<p>21. <span style=\"font-family: Palanquin Dark;\">Which of the following states won the maximum number of medals at the Khelo India&nbsp; </span><span style=\"font-family: Palanquin Dark;\">Youth Games 2020?</span></p>",
+                    question_hi: "<p>21.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किस राज्य ने खेलो इंडिया यूथ गेम्स 2020 में सर्वाधिक पदक जीते हैं?</span></p>",
+                    options_en: ["<p>Punjab</p>", "<p>Kerala</p>", 
+                                "<p>Maharashtra</p>", "<p>Haryana</p>"],
+                    options_hi: ["<p>पंजाब</p>", "<p>केरल</p>",
+                                "<p>महाराष्ट्र</p>", "<p>हरियाणा</p>"],
+                    solution_en: "<p>21.(c) <span style=\"font-family: Times New Roman;\">Khelo India Youth Games 2020 Maximum Medals- Maharashtra {256- 78(G), 77(S), 101(B)}. It was hosted by Guwahati, Assam. </span><span style=\"font-family: Times New Roman;\">Ministry of Youth Affairs and Sports (May 2022) - Anurag Thakur.</span></p>",
+                    solution_hi: "<p>21.(c) <span style=\"font-family: Palanquin Dark;\">खेलो इंडिया यूथ गेम्स 2020 अधिकतम पदक- महाराष्ट्र {256- 78 (G), 77 (S), 101 (B)}। इसकी मेजबानी गुवाहाटी, असम ने की थी। युवा मामले और खेल मंत्रालय (मई 2022) - अनुराग ठाकुर।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "22",
+                    section: "18",
+                    question_en: "<p>22. <span style=\"font-family: Times New Roman;\">According to the Union Budget 2020-2021, the bank credit growth as of January 1, 2021, stood at ______%&nbsp;</span></p>",
+                    question_hi: "<p>22.<span style=\"font-family: Palanquin Dark;\"> केंद्रीय बजट 2020-2021 के अनुसार, 1 जनवरी तक बैंक ऋण वृद्धि 2021, ______% थी।&nbsp;</span></p>",
+                    options_en: ["<p>5.9</p>", "<p>6.7</p>", 
+                                "<p>5.2</p>", "<p>7.1</p>"],
+                    options_hi: ["<p>5.9</p>", "<p>6.7</p>",
+                                "<p>5.2</p>", "<p>7.1</p>"],
+                    solution_en: "<p>22.(b) <span style=\"font-family: Times New Roman;\">According to the Union Budget 2020-2021, the bank credit growth as of January 1, 2021, stood at 6.7 % .</span><span style=\"font-family: Times New Roman;\"> <strong>Bank credit</strong> </span><span style=\"font-family: Times New Roman;\">is usually referred to as a loan given for business requirements or personal needs to its customers, with or without a guarantee or collateral, with an expectation of earning periodic interest on the loan amount.</span></p>",
+                    solution_hi: "<p>22.(b) <span style=\"font-family: Baloo;\">केंद्रीय बजट 2020-2021 के अनुसार, 1 जनवरी, 2021 तक बैंक ऋण वृद्धि 6.7% रही। </span><strong><span style=\"font-family: Baloo;\">बैंक क्रेडिट</span></strong><span style=\"font-family: Baloo;\"> को आमतौर पर अपने ग्राहकों को व्यावसायिक आवश्यकताओं या व्यक्तिगत जरूरतों के लिए दिए गए ऋण के रूप में संदर्भित किया जाता है, जिसमें गारंटी या संपार्श्विक के साथ या बिना ऋण राशि पर आवधिक ब्याज अर्जित करने की उम्मीद होती है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "23",
+                    section: "18",
+                    question_en: "<p>23.<span style=\"font-family: Baloo;\"> As per the Economic Survey 2021, in which of the following states did the proportion&nbsp; </span><span style=\"font-family: Baloo;\">of households that had health insurance </span><span style=\"font-family: Baloo;\">decrease</span><span style=\"font-family: Baloo;\"> by 12% from 2015-16 to 2019-20?&nbsp;</span></p>",
+                    question_hi: "<p>23. <span style=\"font-family: Palanquin Dark;\">आर्थिक सर्वेक्षण 2021 के अनुसार निम्नलिखित में से किस राज्य में 2015-16 से 2019-20 तक स्वास्थ्य बीमा वाले परिवारों में 12% की कमी आई है?</span></p>",
+                    options_en: ["<p>West Bengal</p>", "<p>Assam</p>", 
+                                "<p>Bihar</p>", "<p>Sikkim</p>"],
+                    options_hi: [" <p> पश्चिम बंगाल</span></p>", "<p>असम</p>",
+                                "<p>बिहार</p>", "<p>सिक्किम</p>"],
+                    solution_en: "<p>23.(a)&nbsp;<span style=\"font-family: Times New Roman;\">As per the Economic Survey 2021, West Bengal proportion of households that had health insurance </span><span style=\"font-family: Times New Roman;\">decrease</span><span style=\"font-family: Times New Roman;\"> by 12% from 2015-16 to 2019-20. </span></p>",
+                    solution_hi: "<p>23.(a) <span style=\"font-family: Baloo;\">आर्थिक सर्वेक्षण 2021 के अनुसार, 2015-16 से 2019-20 तक पश्चिम बंगाल में स्वास्थ्य बीमा वाले परिवारों के अनुपात में 12% की कमी आई है।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "24",
+                    section: "18",
+                    question_en: "<p>24.<span style=\"font-family: Baloo;\"> Who among the following was nominated for the Saraswati Samman, 2020?</span></p>",
+                    question_hi: "<p>24.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किसे सरस्वती सम्मान, 2020 के लिए नामांकित किया गया था?</span></p>",
+                    options_en: ["<p>Manoj Das</p>", "<p>Sharankumar Limbale</p>", 
+                                "<p>Pratibha Ray</p>", "<p>Manishankar Mukherjee</p>"],
+                    options_hi: ["<p>मनोज दास</p>", "<p>शरणकुमार लिंबाले</p>",
+                                "<p>प्रतिभा राय</p>", "<p>मणिशंकर मुखर्जी</p>"],
+                    solution_en: "<p>24.(b) <span style=\"font-family: Times New Roman;\"><strong>Sharankumar Limbale</strong> </span><span style=\"font-family: Times New Roman;\">was nominated for the Saraswati Samman, 2020 for his </span><span style=\"font-family: Times New Roman;\">Marathi novel </span><span style=\"font-family: Times New Roman;\">\'<strong>Sanaatan\'</strong></span><strong><span style=\"font-family: Times New Roman;\">.</span><span style=\"font-family: Times New Roman;\"> Prof Ramdarash Mishra</span></strong><span style=\"font-family: Times New Roman;\"><strong>-</strong> Saraswati Samman, 2021, for his collection of poems</span><span style=\"font-family: Times New Roman;\"> \'<strong>Main to Yahan Hun</strong>\'.</span><span style=\"font-family: Times New Roman;\"> </span><span style=\"font-family: Times New Roman;\">Saraswati Samman. </span><span style=\"font-family: Times New Roman;\">The Saraswati Samman was instituted in 1991 by the K. K. Birla Foundation. It is given in 22 Languages. </span></p>",
+                    solution_hi: "<p>24.(b) <strong><span style=\"font-family: Baloo;\">शरणकुमार लिंबाले</span></strong><span style=\"font-family: Baloo;\"> को उनके मराठी उपन्यास \'</span><strong><span style=\"font-family: Baloo;\">सनातन</span></strong><span style=\"font-family: Baloo;\">\' के लिए सरस्वती सम्मान, 2020 के लिए नामांकित किया गया था। </span><strong><span style=\"font-family: Baloo;\">प्रो रामदरश मिश्रा</span></strong><span style=\"font-family: Baloo;\"><strong>-</strong> सरस्वती सम्मान, 2021, उनके कविता संग्रह \'</span><strong><span style=\"font-family: Baloo;\">मैं तो यहाँ हूँ</span></strong><span style=\"font-family: Baloo;\"><strong>\'</strong> के लिए सरस्वती सम्मान से सम्मानित किया गया था। सरस्वती सम्मान 1991 में के.के. बिड़ला फाउंडेशन द्वारा स्थापित किया गया था। यह 22 भाषाओं में दिया गया है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "25",
+                    section: "18",
+                    question_en: "<p>25.<span style=\"font-family: Times New Roman;\"> Who among the following won the All England Open Badminton Championship 2020 in the Men&rsquo;s Singles category?</span></p>",
+                    question_hi: "<p>25.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किसने पुरुष वर्ग एकल ऑल इंग्लैंड ओपन बैडमिंटन चैंपियनशिप 2020 जीती?</span></p>",
+                    options_en: [" <p> Viktor Axelsen  </span></p>", " <p> Kento Momota </span></p>", 
+                                " <p> Anders Antonsen</span></p>", " <p> Chou Tien-chen </span></p>"],
+                    options_hi: [" <p> विक्टर एक्सेलसेन</span></p>", " <p> केंटो मोमोटा</span></p>",
+                                " <p> एंडर्स एंटोनसेन</span></p>", " <p> चाउ टीएन-चेन</span></p>"],
+                    solution_en: "<p>25.(a) <span style=\"font-family: Times New Roman;\">Viktor Axelsen won the All England Open Badminton Championship 2020 in the Men&rsquo;s Singles category. 2021- Lee Zii Jia (Men&rsquo;s Singles), Nazomi Okhura (Women&rsquo;s Singles). 2022- </span><span style=\"font-family: Times New Roman;\"> </span><span style=\"font-family: Times New Roman;\">Viktor Axelsen (Men&rsquo;s Singles), Akane Yamaguchi (Women&rsquo;s Singles).</span></p>",
+                    solution_hi: "<p>25.(a) <span style=\"font-family: Baloo;\">विक्टर एक्सेलसन ने पुरुष एकल वर्ग में ऑल इंग्लैंड ओपन बैडमिंटन चैम्पियनशिप 2020 जीती। 2021- ली ज़ी जिया (पुरुष एकल), नाज़ोमी ओखुरा (महिला एकल)। 2022- विक्टर एक्सेलसन (पुरुष एकल), अकाने यामागुची (महिला एकल)। </span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "26",
+                    section: "18",
+                    question_en: "<p>26. <span style=\"font-family: Times New Roman;\">Who among the following created a national record in the javelin throw event at the third Indian Grand Prix meet in March 2021?</span></p>",
+                    question_hi: "<p>26.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से किसने मार्च 2021 में तीसरी भारतीय ग्रां प्री बैठक में भाला फेंक स्पर्धा में राष्ट्रीय रिकॉर्ड बनाया?</span></p>",
+                    options_en: ["<p>Vipin Kasana</p>", "<p>Devendra Jhajharia</p>", 
+                                "<p>Shivpal Singh</p>", "<p>Neeraj Chopra</p>"],
+                    options_hi: ["<p>विपिन कसाना</p>", "<p>देवेंद्र झाझरिया</p>",
+                                "<p>शिवपाल सिंह</p>", "<p>नीरज चोपड़ा</p>"],
+                    solution_en: "<p>26.(d) <span style=\"font-family: Times New Roman;\">Neeraj Chopra created a national record in the javelin throw event at the third Indian Grand Prix meet in March 2021. Neeraj Chopra won Gold medal (87.58m) in Javelin throw at Tokyo Olympic 2020. </span></p>",
+                    solution_hi: "<p>26.(d) <span style=\"font-family: Baloo;\">नीरज चोपड़ा ने मार्च 2021 में तीसरी भारतीय ग्रांड प्रिक्स मीट (Grand Prix meet) में भाला फेंक स्पर्धा में राष्ट्रीय रिकॉर्ड बनाया। नीरज चोपड़ा ने टोक्यो ओलंपिक 2020 में भाला फेंक में स्वर्ण पदक (87.58 मीटर) जीता।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "27",
+                    section: "18",
+                    question_en: "<p>27.<span style=\"font-family: Times New Roman;\"> Which of the following is a foreign bank operating in India as of 31st May 2021?</span></p>",
+                    question_hi: "<p>27.<span style=\"font-family: Palanquin Dark;\"> निम्नलिखित में से कौन 31 मई 2021 तक भारत में कार्यरत एक विदेशी बैंक है?</span></p>",
+                    options_en: [" <p> Axis Bank Ltd</span></p>", " <p> HDFC Bank Ltd</span></p>", 
+                                " <p> BNP Paribas</span></p>", " <p> ICICI Bank Ltd </span></p>"],
+                    options_hi: [" <p> एक्सिस बैंक लिमिटेड</span></p>", "<p>HDFC बैंक लिमिटेड</p>",
+                                "<p>BNP परिबास</p>", "<p>ICICI बैंक लिमिटेड</p>"],
+                    solution_en: "<p>27.(c) <span style=\"font-family: Times New Roman;\">BNP Paribas is a foreign bank operating in India as of 31st May 2021. Headquarters- Paris, France.</span></p>",
+                    solution_hi: "<p>27.(c) <span style=\"font-family: Baloo;\">BNP पारिबा 31 मई 2021 तक भारत में संचालित एक विदेशी बैंक है। मुख्यालय- पेरिस, फ्रांस।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "28",
+                    section: "18",
+                    question_en: "<p>28.<span style=\"font-family: Baloo;\"> In May 2020, the Government of India announced a special economic and comprehensive package equivalent to ______ of India&rsquo;s GDP under Atmanirbhar Bharat Abhiyan.</span></p>",
+                    question_hi: "<p>28.<span style=\"font-family: Palanquin Dark;\"> मई 2020 में, भारत सरकार ने आत्मानिर्भर भारत अभियान के तहत भारत के सकल घरेलू उत्पाद (GDP) के ______ के बराबर एक विशेष आर्थिक और व्यापक पैकेज की घोषणा की।</span></p>",
+                    options_en: ["<p>10%</p>\n", "<p>20%</p>\n", 
+                                "<p>25%</p>\n", "<p>15%</p>\n"],
+                    options_hi: ["<p>10%</p>\n", "<p>20%</p>\n",
+                                "<p>25%</p>\n", "<p>15%</p>\n"],
+                    solution_en: "<p>28.(a) <span style=\"font-family: Times New Roman;\">Atma Nirbhar Bharat Abhiyan is the mission started by the Government of India on 13th May 2020, towards making India Self-reliant.&nbsp;</span><span style=\"font-weight: 400;\">Hon\'ble Prime Minister Shri Narendra Modi on May 12th, 2020, announced the Special economic and comprehensive package of Rs. 20 lakh crore equivalent to 10% of India\'s GDP&nbsp;</span></p>",
+                    solution_hi: "<p>28.(a) <span style=\"font-family: Palanquin Dark;\">आत्म निर्भर भारत अभियान भारत को आत्मनिर्भर बनाने की दिशा में 13 मई 2020 को भारत सरकार द्वारा शुरू किया गया मिशन है। </span><span style=\"font-weight: 400;\">माननीय प्रधान मंत्री श्री नरेंद्र मोदी ने 12 मई, 2020 को 20 लाख करोड़ रुपये के विशेष आर्थिक और व्यापक पैकेज की घोषणा की।&nbsp; जो भारत की जीडीपी के 10% के बराबर</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "29",
+                    section: "18",
+                    question_en: "<p>29.<span style=\"font-family: Times New Roman;\"> Which of the following titles was held by Prince Phillip, the late husband of Queen Elizabeth II, until his death in April 2021?</span></p>",
+                    question_hi: "<p>29.<span style=\"font-family: Palanquin Dark;\"> महारानी एलिजाबेथ द्वितीय के दिवंगत पति प्रिंस फिलिप ने अप्रैल 2021 में अपनी मृत्यु तक निम्नलिखित में से कौन सी उपाधि धारण की थी?</span></p>",
+                    options_en: ["<p>Duke of Cambridge</p>", "<p>Duke of Gloucester</p>", 
+                                "<p>Duke of Windsor</p>", "<p>Duke of Edinburgh</p>"],
+                    options_hi: ["<p>ड्यूक ऑफ़ कैंब्रिज</p>", "<p>ड्यूक ऑफ़ ग्लौकेस्टर</p>",
+                                "<p>ड्यूक ऑफ़ विंडसर</p>", "<p>ड्यूक ऑफ़ एडिनबर्घ</p>"],
+                    solution_en: "<p>29.(d) <span style=\"font-family: Times New Roman;\">Duke of Edinburgh titles were held by Prince Phillip, the late husband of Queen Elizabeth II, until his death in April 2021. </span></p>",
+                    solution_hi: "<p>29.(d) <span style=\"font-family: Palanquin Dark;\">ड्यूक ऑफ एडिनबर्ग का खिताब महारानी एलिजाबेथ द्वितीय के दिवंगत पति प्रिंस फिलिप के पास अप्रैल 2021 में उनकी मृत्यु तक था।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "30",
+                    section: "misc",
+                    question_en: "<p>30. _<span style=\"font-family: Palanquin Dark;\">_____ was among 12 people chosen for the &lsquo;International Anti-Corruption Champions Award&rsquo; constituted by the United States Department of State in February 2021.</span></p>",
+                    question_hi: "<p>30. <span style=\"font-family: Palanquin Dark;\">&nbsp;______ फरवरी 2021 में यूनाइटेड स्टेट्स डिपार्टमेंट ऑफ स्टेट द्वारा गठित \'इंटरनेशनल एंटी-करप्शन चैंपियंस अवार्ड\' के लिए चुने गए 12 लोगों में से एक थी </span></p>",
+                    options_en: [" <p> Medha Patkar</span></p>", " <p> Archana Borthakur</span></p>", 
+                                " <p>  Flavia Agnes</span></p>", " <p> Anjali Bhardwaj</span></p>"],
+                    options_hi: [" <p> मेधा पाटकर</span></p>", " <p> अर्चना बोरठाकुर</span></p>",
+                                " <p> फ्लाविया एग्नेस</span></p>", " <p> अंजलि भारद्वाज</span></p>"],
+                    solution_en: "<p>30.(d) <span style=\"font-family: Times New Roman;\"><strong>Anjali Bhardwaj</strong> </span><span style=\"font-family: Times New Roman;\">was among 12 people chosen for the &lsquo;International Anti-Corruption Champions Award&rsquo; constituted by the United States Department of State in February 2021. </span><strong><span style=\"font-family: Times New Roman;\">Medha Patkar</span></strong><span style=\"font-family: Times New Roman;\"> is founder of </span><span style=\"font-family: Times New Roman;\">Narmada Bachao Andolan. </span></p>",
+                    solution_hi: "<p>30.(d) <span style=\"font-family: Palanquin Dark;\"><strong>अंजलि भारद्वाज</strong> </span><span style=\"font-family: Palanquin Dark;\">फरवरी 2021 में यूनाइटेड स्टेट्स डिपार्टमेंट ऑफ स्टेट या स्टेट डिपार्टमेंट द्वारा गठित \'इंटरनेशनल एंटी-करप्शन चैंपियंस अवार्ड\' के लिए चुने गए 12 लोगों में शामिल थीं। </span><strong><span style=\"font-family: Palanquin Dark;\">मेधा पाटकर</span></strong><span style=\"font-family: Palanquin Dark;\"> नर्मदा बचाओ आंदोलन की संस्थापक हैं।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+            
+            // Generate question boxes
+            const boxesContainer = document.getElementById('question-boxes');
+            questions.forEach((q, index) => {
+                const box = document.createElement('div');
+                box.className = 'q-box';
+                box.textContent = index + 1;
+                box.onclick = () => showQuestion(index);
+                box.id = `box-${index}`;
+                boxesContainer.appendChild(box);
+            });
+            
+            // Show first question
+            showQuestion(0);
+            updateProgress();
+        }
+        
+        // Show a specific question
+        
+        function formatContent(text) {
+            if (!text) return '';
+            return text.replace(/<img/g, '<img style="max-width:100%;height:auto;"');
+        }
+        
+        function showQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update question counter
+            document.getElementById('question-counter').textContent = `Question ${index + 1} of ${questions.length}`;
+            
+            // Update question boxes
+            document.querySelectorAll('.q-box').forEach(box => box.classList.remove('current'));
+            document.getElementById(`box-${index}`).classList.add('current');
+            
+            // Generate question HTML
+            let html = `
+                <div class="question-card">
+                    <div class="question-text">
+                        <div class="en">${formatContent(question.question_en)}</div>
+                        <div class="hi" style="display:none">${formatContent(question.question_hi)} </div>
+                    </div>
+                    <div class="options" id="options-container">`;
+            
+            // Add options
+            ['a', 'b', 'c', 'd'].forEach((opt, i) => {
+                let optionClass = '';
+                let isCorrectAnswer = opt === question.correct;
+                let isUserAnswer = answers[question.id] === opt;
+                
+                // When reviewing, add appropriate classes
+                if (submitted) {
+                    if (isCorrectAnswer) {
+                        optionClass += ' correct-answer';
+                    } else if (isUserAnswer && !isCorrectAnswer) {
+                        optionClass += ' incorrect';
+                    }
+                }
+                
+                html += `
+                    <div class="option-item">
+                        <input class="option-input" type="radio" name="q${index}" 
+                            id="opt-${index}-${opt}" value="${opt}" 
+                            ${isUserAnswer ? 'checked' : ''}
+                            onclick="selectAnswer('${question.id}', '${opt}')">
+                       <label class="option-label${optionClass}" for="opt-${index}-${opt}">
+                            <div class="en">${question.options_en[i]}</div>
+                            <div class="hi" style="display:none">${question.options_hi[i]}</div>
+                        </label>
+                    </div>`;
+            });
+            
+            // Add solution if submitted
+            if (submitted) {
+                const isCorrect = answers[question.id] === question.correct;
+                const resultText = answers[question.id] ? (isCorrect ? 'Correct!' : 'Incorrect!') : 'Not attempted';
+                
+                html += `
+                    <div class="solution-container">
+                        <div class="solution-title">${resultText}</div>
+                        <div class="solution-text">
+                            <div class="en">${question.solution_en}</div>
+                            <div class="hi" style="display:none">${question.solution_hi}</div>
+                        </div>
+                    </div>`;
+            }
+            
+            html += `</div></div>`;
+            
+            document.getElementById('questions-container').innerHTML = html;
+            
+            // Apply language settings
+            applyLanguage();
+            
+            // If in mobile view, close the menu
+            if (window.innerWidth < 992) {
+                toggleNav(false);
+            }
+            
+            // Add review mode class if submitted
+            if (submitted) {
+                document.getElementById('options-container').classList.add('review-mode');
+            }
+        }
+        
+        // Apply current language
+        function applyLanguage() {
+            document.querySelectorAll(`.${currentLang}`).forEach(el => el.style.display = 'block');
+            document.querySelectorAll(`.${currentLang === 'en' ? 'hi' : 'en'}`).forEach(el => el.style.display = 'none');
+            
+            // Update language button text
+            document.getElementById('lang-text').textContent = currentLang === 'en' ? 'Hi' : 'En';
+        }
+        
+        // Select an answer
+        function selectAnswer(qId, option) {
+            if (submitted) return;
+            
+            answers[qId] = option;
+            updateProgress();
+            
+            // Mark question as attempted in the navigation
+            const index = questions.findIndex(q => q.id === qId);
+            if (index >= 0) {
+                const box = document.getElementById(`box-${index}`);
+                box.classList.add('attempted');
+                box.classList.remove('unattempted');
+            }
+        }
+        
+        // Navigate to previous/next question
+        function prevQuestion() { 
+            if (currentQuestion > 0) showQuestion(currentQuestion - 1); 
+        }
+        
+        function nextQuestion() { 
+            if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1); 
+        }
+        
+        // Switch section
+        function switchSection(sectionId) {
+            if (sectionId === 'all') {
+                showQuestion(0);
+                return;
+            }
+            
+            const section = sections[sectionId];
+            if (section) showQuestion(section.start);
+        }
+        
+        // Toggle language
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            applyLanguage();
+        }
+        
+        // Toggle navigation sidebar
+        function toggleNav(show) {
+            const nav = document.getElementById('question-nav');
+            const overlay = document.getElementById('nav-overlay');
+            
+            if (show === undefined) {
+                show = !nav.classList.contains('show');
+            }
+            
+            if (show) {
+                nav.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Update progress
+        function updateProgress() {
+            const attempted = Object.keys(answers).length;
+            document.getElementById('attempted-count').textContent = attempted;
+        }
+        
+        // Start timer
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            let timeLeft = totalTime;
+            
+            const timerInterval = setInterval(() => {
+                if (timeLeft <= 0 || submitted) {
+                    clearInterval(timerInterval);
+                    if (!submitted) submitTest();
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+        
+        // Confirm before submitting
+        function confirmSubmit() {
+            if (submitted) return;
+            
+            const attempted = Object.keys(answers).length;
+            const remaining = questions.length - attempted;
+            
+            // Create a more modern confirmation dialog
+            const confirmHtml = `
+                <div style="text-align: center; padding: 20px;">
+                    <h4 style="margin-bottom: 16px; color: var(--dark);">Confirm Submission</h4>
+                    <p style="margin-bottom: 24px; color: var(--gray);">
+                        You have attempted ${attempted} of ${questions.length} questions.<br>
+                        ${remaining} questions are unattempted.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 12px;">
+                        <button onclick="this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; border: 1px solid var(--light-gray); background: white; border-radius: 8px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="submitTest(); this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Submit Test
+                        </button>
+                    </div>
+                </div>`;
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'results-modal show';
+            modal.innerHTML = `
+                <div class="results-card" style="max-width: 400px;">
+                    <button class="cancel-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray);" onclick="this.closest('.results-modal').remove()">
+                        ×
+                    </button>
+                    ${confirmHtml}
+                </div>`;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // Submit test
+        function submitTest() {
+            if (submitted) return;
+            
+            submitted = true;
+            
+            let score = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+            
+            questions.forEach((q, index) => {
+                const userAns = answers[q.id];
+                const box = document.getElementById(`box-${index}`);
+                
+                box.classList.remove('attempted');
+                
+                if (!userAns) {
+                    unattemptedCount++;
+                    box.classList.add('unattempted');
+                } else if (userAns === q.correct) {
+                    correctCount++;
+                    score += q.pos_marks;
+                    box.classList.add('correct');
+                } else {
+                    incorrectCount++;
+                    score -= q.neg_marks;
+                    box.classList.add('incorrect');
+                }
+            });
+            
+            // Update result values
+            document.getElementById('score-value').textContent = score.toFixed(2);
+            document.getElementById('correct-value').textContent = correctCount;
+            document.getElementById('incorrect-value').textContent = incorrectCount;
+            document.getElementById('unattempted-value').textContent = unattemptedCount;
+            
+            // Show the results modal
+            document.getElementById('results-modal').classList.add('show');
+            
+            // Disable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i>';
+            submitBtn.style.backgroundColor = 'var(--success)';
+            
+            // Refresh current question view to show solution
+            showQuestion(currentQuestion);
+        }
+        
+        // Review test
+        function reviewTest() {
+            document.getElementById('results-modal').classList.remove('show');
+            showQuestion(0);
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('results-modal')) {
+                document.getElementById('results-modal').classList.remove('show');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'ArrowRight') nextQuestion();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:16px;
+    background:#29a9eb;
+    color:#fff;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #tgBtn svg{flex-shrink:0;}
+  #topicLine{
+    margin-top:14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--accent);
+    background:var(--card);
+    display:inline-block;
+    padding:6px 18px;
+    border:1px solid var(--rule);
+    border-radius:20px;
+  }
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+    <a href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: F Words — Previous Years Synonyms</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">54</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Forsake",
+"tag": "SSC CGL 18/09/2024 (Shift-I)",
+"opts": [
+"Clutch",
+"Reveal",
+"Abandon",
+"Accelerate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Forsake' का अर्थ है <b>त्याग देना</b>। Synonym 'Abandon' (<b>त्याग देना</b>) है।</span><br>Clutch – पकड़ना, Reveal – प्रकट करना, Accelerate – तेज़ करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Fallacy",
+"tag": "SSC CGL 19/09/2024 (Shift-I)",
+"opts": [
+"Error",
+"Veracity",
+"Evidence",
+"Verify"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fallacy' का अर्थ है <b>भ्रांति/भ्रम</b>। Synonym 'Error' (<b>त्रुटि</b>) है।</span><br>Veracity – सत्यता, Evidence – प्रमाण, Verify – सत्यापित करना।"
+},
+{
+"q": "Identify the correct synonym of the word given below. FATIGUE",
+"tag": "SSC CGL 11/09/2024 (Shift-I)",
+"opts": [
+"Obese",
+"Tiredness",
+"Vigour",
+"Mission"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fatigue' का अर्थ है <b>थकान</b>। Synonym 'Tiredness' (<b>थकान</b>) है।</span><br>Obese – मोटा, Vigour – स्फूर्ति, Mission – मिशन।"
+},
+{
+"q": "Choose the word similar in meaning the one given below. Fanatical",
+"tag": "KVS PRT 24-02-2023 (Shift-I)",
+"opts": [
+"Extremist",
+"Traditional",
+"Admirer",
+"Follower"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fanatical' का अर्थ है <b>कट्टर</b>। Synonym 'Extremist' (<b>अतिवादी</b>) है।</span><br>Traditional – पारंपरिक, Admirer – प्रशंसक, Follower – अनुयायी।"
+},
+{
+"q": "Choose the word that means the same as the given word. Fabulously",
+"tag": "SSC MTS 16/05/2023 (Shift-II)",
+"opts": [
+"Nominally",
+"Fantastically",
+"Scantily",
+"Scarcely"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fabulously' का अर्थ है <b>शानदार ढंग से</b>। Synonym 'Fantastically' (<b>अद्भुत ढंग से</b>) है।</span><br>Nominally – नाममात्र, Scantily – अल्प मात्रा में, Scarcely – मुश्किल से।"
+},
+{
+"q": "Select the most appropriate word which is nearest in meaning to the underlined word. One should follow the role models in life.",
+"tag": "SSC CGL (Tier-I) 19/07/2023 (Shift-IV)",
+"opts": [
+"Emulate",
+"Cherish",
+"Admire",
+"Reward"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Follow (role model)' का अर्थ है <b>अनुसरण करना</b>। Synonym 'Emulate' (<b>अनुकरण करना</b>) है।</span><br>Cherish – संजोना, Admire – प्रशंसा करना, Reward – पुरस्कृत करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Feeble",
+"tag": "SSC CGL (Tier-I) 14/07/2023 (Shift-I) DSSSB PGT 30/11/2014",
+"opts": [
+"Unheedful",
+"Weak",
+"Strong",
+"Baneful"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Feeble' का अर्थ है <b>कमजोर</b>। Synonym 'Weak' (<b>कमजोर</b>) है।</span><br>Unheedful – असावधान, Strong – मजबूत, Baneful – हानिकारक।"
+},
+{
+"q": "Choose the word that means of same as the given word. Faddish",
+"tag": "SSC CHSL (Tier-I) 20/03/2023 (Shift-I)",
+"opts": [
+"Unpopular",
+"Phony",
+"Barge",
+"Fashionable"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Faddish' का अर्थ है <b>चलन के अनुसार</b>। Synonym 'Fashionable' (<b>फैशनेबल</b>) है।</span><br>Unpopular – अलोकप्रिय, Phony – नकली, Barge – बजरा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FINAL",
+"tag": "SSC CGL (Tier-I) 18/04/2022 Shift-I",
+"opts": [
+"Allowed",
+"Forbidden",
+"former",
+"Concluding"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Final' का अर्थ है <b>अंतिम</b>। Synonym 'Concluding' (<b>समापन करने वाला</b>) है।</span><br>Allowed – अनुमत, Forbidden – निषिद्ध, Former – पूर्व।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FLUKE",
+"tag": "SSC CGL (Tier-I) 12/04/2022 Shift-II",
+"opts": [
+"Contract",
+"Chance",
+"Policy",
+"Plan"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fluke' का अर्थ है <b>संयोग/इत्तेफाक</b>। Synonym 'Chance' (<b>संयोग</b>) है।</span><br>Contract – अनुबंध, Policy – नीति, Plan – योजना।"
+},
+{
+"q": "Choose the word that means the same as the given word. Fatigue",
+"tag": "ACIO (Tier-II) 19/02/2021 (Shift-II)",
+"opts": [
+"Fresh",
+"Tiredness",
+"Stable",
+"Clumsy"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fatigue' का अर्थ है <b>थकान</b>। Synonym 'Tiredness' (<b>थकान</b>) है।</span><br>Fresh – ताज़ा, Stable – स्थिर, Clumsy – भद्दा।"
+},
+{
+"q": "The government\\'s new policies will come into force from the next fiscal year.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I) URSC NDA & NA 20/04/2010 (Shift–II) UPSC NDA & NA 04/09/2022 (Shift - II)",
+"opts": [
+"calendar",
+"academic",
+"financial",
+"leap"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fiscal (year)' का अर्थ है <b>वित्तीय</b>। Synonym 'Financial' (<b>वित्तीय</b>) है।</span><br>Calendar – पंचांग संबंधी, Academic – शैक्षणिक, Leap – अधिवर्ष।"
+},
+{
+"q": "He was fired for negligence on duty.",
+"tag": "UPSC NDA & NA 19/04/2015 (Shift-I)",
+"opts": [
+"relieved of his job",
+"scolded",
+"rebuked",
+"attacked"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fired' का अर्थ है <b>नौकरी से निकाला गया</b>। Synonym 'Relieved of his job' (<b>नौकरी से हटाया गया</b>) है।</span><br>Scolded – डांटा गया, Rebuked – फटकारा गया, Attacked – हमला किया गया।"
+},
+{
+"q": "Please do not give any more FLIMSY pretexts for not having done the work.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I)",
+"opts": [
+"weak",
+"strong",
+"justified",
+"impulsive"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Flimsy' का अर्थ है <b>कमजोर/तुच्छ</b>। Synonym 'Weak' (<b>कमजोर</b>) है।</span><br>Strong – मजबूत, Justified – न्यायोचित, Impulsive – आवेगी।"
+},
+{
+"q": "Despite his enormous wealth, the businessman was very FRUGAL in his habits.",
+"tag": "UPSC NDA & NA 10/08/2010 (Shift-II)",
+"opts": [
+"Reckless",
+"Law-abiding",
+"Unpredictable",
+"Economical"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Frugal' का अर्थ है <b>मितव्ययी</b>। Synonym 'Economical' (<b>मितव्ययी</b>) है।</span><br>Reckless – लापरवाह, Law-abiding – कानून का पालन करने वाला, Unpredictable – अप्रत्याशित।"
+},
+{
+"q": "FACTITIOUS",
+"tag": "UPSC NDA & NA 20/04/2008 (Shift-I)",
+"opts": [
+"Humorous",
+"Truthful",
+"Artificial",
+"Causing fatigue"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Factitious' का अर्थ है <b>कृत्रिम/बनावटी</b>। Synonym 'Artificial' (<b>कृत्रिम</b>) है।</span><br>Humorous – हास्यपूर्ण, Truthful – सत्यवादी, Causing fatigue – थकान पैदा करने वाला।"
+},
+{
+"q": "FOSTER",
+"tag": "DSSSB Library Assistant Recruitment Exam (31-08-2014, Shift-I)",
+"opts": [
+"falter",
+"taste",
+"nourish",
+"separate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Foster' का अर्थ है <b>पालन-पोषण करना</b>। Synonym 'Nourish' (<b>पोषण करना</b>) है।</span><br>Falter – डगमगाना, Taste – स्वाद, Separate – अलग करना।"
+},
+{
+"q": "While seething inside, he managed to display a calm facade.",
+"tag": "DSSSB Grade-IV Exam (17-09-2017)",
+"opts": [
+"Behaviour",
+"Appearance",
+"Nature",
+"None of the above"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Facade' का अर्थ है <b>बाहरी दिखावा</b>। Synonym 'Appearance' (<b>दिखावट</b>) है।</span><br>Behaviour – व्यवहार, Nature – स्वभाव, None of the above – इनमें से कोई नहीं।"
+},
+{
+"q": "FATAL",
+"tag": "DSSSB Matron & Warder Recruitment Exam (29-06-2014)",
+"opts": [
+"deadly",
+"immortal",
+"familiar",
+"federal"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fatal' का अर्थ है <b>घातक</b>। Synonym 'Deadly' (<b>घातक</b>) है।</span><br>Immortal – अमर, Familiar – परिचित, Federal – संघीय।"
+},
+{
+"q": "Choose the word that means the same as the given word. Feud",
+"tag": "DSSSB LDC Exam 18-08-2019 Shift-I",
+"opts": [
+"Harmony",
+"Calmness",
+"Strife",
+"Peace"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Feud' का अर्थ है <b>झगड़ा/विवाद</b>। Synonym 'Strife' (<b>संघर्ष</b>) है।</span><br>Harmony – सामंजस्य, Calmness – शांति, Peace – शांति।"
+},
+{
+"q": "Uninterrupted rain had fatigued the commuters from the outskirts to the city and work suffered.",
+"tag": "CDS 2020 (Shift-I)",
+"opts": [
+"Excited",
+"Refreshed",
+"Slowed",
+"Exhausted"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Fatigued' का अर्थ है <b>थका हुआ</b>। Synonym 'Exhausted' (<b>बहुत थका हुआ</b>) है।</span><br>Excited – उत्साहित, Refreshed – तरोताज़ा, Slowed – धीमा हुआ।"
+},
+{
+"q": "Society cannot depend upon a fanatic for guidance.",
+"tag": "CDS 2015 (Shift-II)",
+"opts": [
+"optimist",
+"martyr",
+"bigot",
+"anarchist"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fanatic' का अर्थ है <b>कट्टरपंथी</b>। Synonym 'Bigot' (<b>कट्टरपंथी</b>) है।</span><br>Optimist – आशावादी, Martyr – शहीद, Anarchist – अराजकतावादी।"
+},
+{
+"q": "FORTITUDE",
+"tag": "CDS 2011 (Shift-II) UPSC NDA/NA 27/09/2015 (Shift–II)",
+"opts": [
+"Fortune",
+"Fortification",
+"Bravery",
+"Breakthrough"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fortitude' का अर्थ है <b>धैर्य/साहस</b>। Synonym 'Bravery' (<b>बहादुरी</b>) है।</span><br>Fortune – भाग्य, Fortification – किलेबंदी, Breakthrough – सफलता।"
+},
+{
+"q": "FRAGILE",
+"tag": "CDS 2011 (Shift-II)",
+"opts": [
+"Soft",
+"Smooth",
+"Flexible",
+"Easily broken"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Fragile' का अर्थ है <b>नाजुक</b>। Synonym 'Easily broken' (<b>आसानी से टूटने वाला</b>) है।</span><br>Soft – नरम, Smooth – चिकना, Flexible – लचीला।"
+},
+{
+"q": "FRAIL",
+"tag": "CDS 2011 (Shift-I)",
+"opts": [
+"Unhealthy",
+"Weak",
+"Ugly",
+"Tender"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Frail' का अर्थ है <b>कमजोर</b>। Synonym 'Weak' (<b>कमजोर</b>) है।</span><br>Unhealthy – अस्वस्थ, Ugly – बदसूरत, Tender – कोमल।"
+},
+{
+"q": "Identify the synonym for the word \\'freight\\'",
+"tag": "UPSSSC PET 16/04/2022",
+"opts": [
+"fear",
+"shipment",
+"locomotive",
+"movement"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Freight' का अर्थ है <b>माल ढुलाई</b>। Synonym 'Shipment' (<b>माल की खेप</b>) है।</span><br>Fear – डर, Locomotive – रेल इंजन, Movement – गति।"
+},
+{
+"q": "What is the synonym of the word \\'fractious\\'?",
+"tag": "High Court RO 05/01/2022",
+"opts": [
+"affable",
+"ingratiating",
+"contentious",
+"acquiescent"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fractious' का अर्थ है <b>चिड़चिड़ा/झगड़ालू</b>। Synonym 'Contentious' (<b>विवादास्पद</b>) है।</span><br>Affable – मिलनसार, Ingratiating – चापलूसी करने वाला, Acquiescent – आज्ञाकारी।"
+},
+{
+"q": "Give synonym for the following: Famous",
+"tag": "UPSSSC PET 24/08/2021 (Shift-I)",
+"opts": [
+"Awful",
+"Poor",
+"Popular",
+"Steady"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Famous' का अर्थ है <b>प्रसिद्ध</b>। Synonym 'Popular' (<b>लोकप्रिय</b>) है।</span><br>Awful – भयानक, Poor – गरीब, Steady – स्थिर।"
+},
+{
+"q": "Choose the word which is most nearly the SAME in meaning. Frugality",
+"tag": "Bihar Police Constable & Fireman Exam 25/11/2018 24 YCT",
+"opts": [
+"economy",
+"extremity",
+"foolishness",
+"enthusiasm"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Frugality' का अर्थ है <b>मितव्ययिता</b>। Synonym 'Economy' (<b>मितव्ययिता</b>) है।</span><br>Extremity – अति, Foolishness – मूर्खता, Enthusiasm – उत्साह।"
+},
+{
+"q": "Fallacy",
+"tag": "Patna (District Court) Steno Exam: 21.08.2016",
+"opts": [
+"Mistaken belief",
+"unfounded fear",
+"famous invention",
+"smart move"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fallacy' का अर्थ है <b>भ्रांति</b>। Synonym 'Mistaken belief' (<b>गलत धारणा</b>) है।</span><br>Unfounded fear – निराधार भय, Famous invention – प्रसिद्ध आविष्कार, Smart move – चतुर चाल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Forbid",
+"tag": "SSC CHSL (Tier-I) –05/08/2021 (Shift-I)",
+"opts": [
+"Close",
+"Prohibit",
+"Adieu",
+"Encourage"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Forbid' का अर्थ है <b>मना करना</b>। Synonym 'Prohibit' (<b>निषेध करना</b>) है।</span><br>Close – बंद करना, Adieu – विदाई, Encourage – प्रोत्साहित करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FICTION",
+"tag": "SSC CPO-SI – 23/11/2020 (Shift-I)",
+"opts": [
+"fantasy",
+"fact",
+"truth",
+"literature"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fiction' का अर्थ है <b>कल्पना/काल्पनिक साहित्य</b>। Synonym 'Fantasy' (<b>कल्पना</b>) है।</span><br>Fact – तथ्य, Truth – सत्य, Literature – साहित्य।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FOUNDATION",
+"tag": "SSC CPO-SI – 23/11/2020 (Shift-I)",
+"opts": [
+"base",
+"top",
+"structure",
+"building"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Foundation' का अर्थ है <b>नींव</b>। Synonym 'Base' (<b>आधार</b>) है।</span><br>Top – शीर्ष, Structure – संरचना, Building – इमारत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FLABBERGASTED",
+"tag": "SSC CPO-SI – 25/11/2020 (Shift-II)",
+"opts": [
+"astonished",
+"motivated",
+"disturbed",
+"terrified"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Flabbergasted' का अर्थ है <b>चकित</b>। Synonym 'Astonished' (<b>चकित</b>) है।</span><br>Motivated – प्रेरित, Disturbed – परेशान, Terrified – भयभीत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FASTEN",
+"tag": "SSC CPO-SI – 24/11/2020 (Shift-I)",
+"opts": [
+"halt",
+"allow",
+"affix",
+"hurry"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fasten' का अर्थ है <b>बांधना</b>। Synonym 'Affix' (<b>जोड़ना/बांधना</b>) है।</span><br>Halt – रुकना, Allow – अनुमति देना, Hurry – जल्दी करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FUSE (verb)",
+"tag": "SSC CGL (Tier-I) – 13/06/2019 (Shift-III)",
+"opts": [
+"correct",
+"unused",
+"break",
+"combine"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Fuse (verb)' का अर्थ है <b>मिलाना/जोड़ना</b>। Synonym 'Combine' (<b>संयोजित करना</b>) है।</span><br>Correct – सुधारना, Unused – अप्रयुक्त, Break – तोड़ना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FURY",
+"tag": "SSC CGL (Tier-I) – 07/06/2019 (Shift-III)",
+"opts": [
+"sorrow",
+"anger",
+"cruelty",
+"fright"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fury' का अर्थ है <b>क्रोध</b>। Synonym 'Anger' (<b>क्रोध</b>) है।</span><br>Sorrow – दुख, Cruelty – क्रूरता, Fright – भय।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FASCINATING",
+"tag": "SSC CPO-SI – 09/12/2019 (Shift-I)",
+"opts": [
+"appealing",
+"boring",
+"stupid",
+"tiring"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fascinating' का अर्थ है <b>आकर्षक</b>। Synonym 'Appealing' (<b>आकर्षक</b>) है।</span><br>Boring – उबाऊ, Stupid – मूर्खतापूर्ण, Tiring – थकाऊ।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FLOURISH",
+"tag": "SSC CPO-SI – 11/12/2019 (Shift-II)",
+"opts": [
+"Thrive",
+"Shrivel",
+"Wither",
+"Languish"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Flourish' का अर्थ है <b>फलना-फूलना</b>। Synonym 'Thrive' (<b>फलना-फूलना</b>) है।</span><br>Shrivel – सिकुड़ना, Wither – मुरझाना, Languish – क्षीण होना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FATIGUE",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-I) SSC CPO-SI – 13/12/2019 (Shift-II) SSC CPO-SI – 11/12/2019 (Shift-I)",
+"opts": [
+"liveliness",
+"weariness",
+"earnestness",
+"freshness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fatigue' का अर्थ है <b>थकान</b>। Synonym 'Weariness' (<b>थकावट</b>) है।</span><br>Liveliness – जीवंतता, Earnestness – निष्ठा, Freshness – ताज़गी।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FEIGN",
+"tag": "SSC CPO-SI – 13/12/2019 (Shift-I)",
+"opts": [
+"Foretell",
+"Pretend",
+"Hinder",
+"Instruct"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Feign' का अर्थ है <b>बहाना करना</b>। Synonym 'Pretend' (<b>दिखावा करना</b>) है।</span><br>Foretell – भविष्यवाणी करना, Hinder – बाधा डालना, Instruct – निर्देश देना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. \\'FLEETING\\'",
+"tag": "SSC CHSL (Tier-I) –09/07/2019 (Shift-III)",
+"opts": [
+"lasting",
+"ready",
+"momentary",
+"complete"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Fleeting' का अर्थ है <b>क्षणिक</b>। Synonym 'Momentary' (<b>क्षणिक</b>) है।</span><br>Lasting – स्थायी, Ready – तैयार, Complete – पूर्ण।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Fortify",
+"tag": "SSC CHSL (Tier-I) –03/07/2019 (Shift-I)",
+"opts": [
+"Secure",
+"Harm",
+"Loosen",
+"Neglect"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Fortify' का अर्थ है <b>मजबूत करना</b>। Synonym 'Secure' (<b>सुरक्षित करना</b>) है।</span><br>Harm – नुकसान पहुंचाना, Loosen – ढीला करना, Neglect – उपेक्षा करना।"
+},
+{
+"q": "Select the most appopriate synonym of the given word: Fraudulent",
+"tag": "SSC CHSL (Tier-I) 21/10/2020 (Shift-I)",
+"opts": [
+"Repellent",
+"Deceitful",
+"Prevalent",
+"Genuine"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fraudulent' का अर्थ है <b>धोखाधड़ी वाला</b>। Synonym 'Deceitful' (<b>छलपूर्ण</b>) है।</span><br>Repellent – विकर्षक, Prevalent – प्रचलित, Genuine – असली।"
+},
+{
+"q": "Select most appropriate synonym of the given word. FURTIVE",
+"tag": "SSC CHSL (Tier-I) 12/10/2020 (Shift-II)",
+"opts": [
+"Positive",
+"Secretive",
+"Adhesive",
+"Abortive"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Furtive' का अर्थ है <b>गुप्त/चोरी-छिपे</b>। Synonym 'Secretive' (<b>गुप्त</b>) है।</span><br>Positive – सकारात्मक, Adhesive – चिपकने वाला, Abortive – असफल।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FOLIAGE",
+"tag": "SSC CHSL (Tier-I) 13/10/2020 (Shift-II)",
+"opts": [
+"Greenery",
+"Firmness",
+"Urgency",
+"Foolishness"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Foliage' का अर्थ है <b>पत्तियां/हरियाली</b>। Synonym 'Greenery' (<b>हरियाली</b>) है।</span><br>Firmness – दृढ़ता, Urgency – तात्कालिकता, Foolishness – मूर्खता।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FESTIVITY",
+"tag": "SSC CHSL (Tier-I) 19/03/2020 (Shift-III)",
+"opts": [
+"Celebration",
+"Foundation",
+"Calibration",
+"Botheration"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Festivity' का अर्थ है <b>उत्सव</b>। Synonym 'Celebration' (<b>उत्सव मनाना</b>) है।</span><br>Foundation – नींव, Calibration – अंशांकन, Botheration – परेशानी।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Fickle.",
+"tag": "SSC MTS 9-10-2017 (Shift-I)",
+"opts": [
+"Cognizant",
+"Unstable",
+"Accidental",
+"Steadfast"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fickle' का अर्थ है <b>चंचल/अस्थिर</b>। Synonym 'Unstable' (<b>अस्थिर</b>) है।</span><br>Cognizant – जानकार, Accidental – आकस्मिक, Steadfast – दृढ़।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Forgive",
+"tag": "SSC MTS – 07/08/2019 (Shift-I)",
+"opts": [
+"Forget",
+"Accuse",
+"Pardon",
+"Compel"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Forgive' का अर्थ है <b>क्षमा करना</b>। Synonym 'Pardon' (<b>क्षमा करना</b>) है।</span><br>Forget – भूलना, Accuse – आरोप लगाना, Compel – बाध्य करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Former",
+"tag": "SSC MTS – 05/08/2019 (Shift-I)",
+"opts": [
+"Inferior",
+"superior",
+"Regular",
+"Previous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Former' का अर्थ है <b>पूर्व</b>। Synonym 'Previous' (<b>पूर्व</b>) है।</span><br>Inferior – निम्न, Superior – श्रेष्ठ, Regular – नियमित।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FEROCIOUS",
+"tag": "SSC MTS – 16/08/2019 (Shift-II)",
+"opts": [
+"Gentle",
+"Domesticated",
+"Tame",
+"Fierce"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Ferocious' का अर्थ है <b>क्रूर/उग्र</b>। Synonym 'Fierce' (<b>उग्र</b>) है।</span><br>Gentle – सौम्य, Domesticated – पालतू, Tame – वश में।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Fundamental",
+"tag": "SSC MTS – 13/08/2019 (Shift-I)",
+"opts": [
+"Trivial",
+"Extra",
+"secondary",
+"Basic"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Fundamental' का अर्थ है <b>मौलिक/मूलभूत</b>। Synonym 'Basic' (<b>मूलभूत</b>) है।</span><br>Trivial – तुच्छ, Extra – अतिरिक्त, Secondary – द्वितीयक।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. FRUITFUL",
+"tag": "SSC GD – 11/02/2019 (Shift-III)",
+"opts": [
+"Useless",
+"productive",
+"Barren",
+"Juicy"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Fruitful' का अर्थ है <b>फलदायक</b>। Synonym 'Productive' (<b>उत्पादक</b>) है।</span><br>Useless – बेकार, Barren – बंजर, Juicy – रसीला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Foyer",
+"tag": "SSC GD – 11/02/2019 (Shift-III)",
+"opts": [
+"Kitchen",
+"Verandah",
+"Bedroom",
+"Lobby"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Foyer' का अर्थ है <b>प्रवेश कक्ष</b>। Synonym 'Lobby' (<b>प्रवेश कक्ष</b>) है।</span><br>Kitchen – रसोई, Verandah – बरामदा, Bedroom – शयनकक्ष।"
+}
+];
+
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

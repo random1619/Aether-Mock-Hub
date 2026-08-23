@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Quiz: UN International Organizations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+    /* Soothing Slate Dark Theme - Good for eyes */
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        color: #d1d5db; /* gray-300 */
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(107, 114, 128, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .quiz-main-container {
+        background: rgba(31, 41, 55, 0.8); /* gray-800 with opacity */
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600 */
+        box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(55, 65, 81, 0.5); /* gray-700 */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+    }
+
+    .option-btn {
+        background: rgba(55, 65, 81, 0.7); /* gray-700 */
+        border: 2px solid #4b5563; /* gray-600 */
+        color: #d1d5db; /* gray-300 */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .option-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: #14b8a6; /* teal-500 */
+        background: rgba(55, 65, 81, 1); /* gray-700 solid */
+        color: #f9fafb; /* gray-50 */
+        box-shadow: 0 10px 25px -5px rgba(20, 184, 166, 0.1);
+    }
+    
+    .option-btn:active:not(:disabled) {
+        transform: translateY(0px) scale(0.98);
+    }
+
+    .correct {
+        background: rgba(16, 185, 129, 0.2) !important;
+        border-color: #10b981 !important; /* emerald-500 */
+        color: #a7f3d0 !important; /* emerald-200 */
+        animation: successPulse 0.6s ease-out;
+    }
+
+    .incorrect {
+        background: rgba(239, 68, 68, 0.2) !important;
+        border-color: #ef4444 !important; /* red-500 */
+        color: #fecaca !important; /* red-200 */
+        animation: errorShake 0.6s ease-out;
+    }
+
+    @keyframes successPulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+        50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { transform: scale(1.02); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes errorShake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    .question-container {
+        background: rgba(17, 24, 39, 0.5); /* gray-900 */
+        border: 1px solid rgba(55, 65, 81, 0.8); /* gray-700 */
+        backdrop-filter: blur(10px);
+    }
+
+    #feedback-container strong {
+        color: #f9fafb; /* gray-50 */
+    }
+
+    .text-green-400 { color: #34d399 !important; } /* emerald-400 */
+    .text-red-400 { color: #f87171 !important; } /* red-400 */
+
+    .btn-primary, .btn-secondary {
+        border: 2px solid transparent;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* teal-500 to teal-600 */
+        box-shadow: 0 8px 20px -5px rgba(20, 184, 166, 0.3);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%); /* gray-600 to gray-700 */
+        box-shadow: 0 8px 20px -5px rgba(75, 85, 99, 0.3);
+    }
+
+    .btn-primary:hover, .btn-secondary:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); /* teal-600 to teal-700 */
+        box-shadow: 0 12px 28px -5px rgba(20, 184, 166, 0.4);
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #374151 0%, #1f2937 100%); /* gray-700 to gray-800 */
+        box-shadow: 0 12px 28px -5px rgba(75, 85, 99, 0.4);
+    }
+
+    .btn-primary:active, .btn-secondary:active {
+        transform: translateY(0);
+    }
+
+    #incorrect-list-container {
+        background: rgba(17, 24, 39, 0.6); /* gray-900 */
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(55, 65, 81, 0.5); /* gray-700 */
+    }
+    
+    .score-display, .question-counter {
+        background: rgba(55, 65, 81, 0.5); /* gray-700 */
+        border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600 */
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .score-display:hover, .question-counter:hover {
+        transform: scale(1.05);
+        border-color: rgba(107, 114, 128, 0.7); /* gray-500 */
+    }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="quiz-main-container w-full max-w-2xl mx-auto p-6 md:p-8 rounded-2xl">
+        <div id="quiz-container">
+            <h1 id="quiz-title" class="text-2xl md:text-3xl font-bold text-center text-gray-100 mb-4">UN International Organizations Quiz</h1>
+            <div class="flex justify-between items-center mb-6 text-gray-400 font-medium">
+                <div id="question-counter" class="question-counter"></div>
+                <div id="score-counter" class="score-display">Score: 0</div>
+            </div>
+
+            <div class="question-container p-6 rounded-lg mb-6 min-h-[120px] flex items-center justify-center">
+                <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-center text-gray-100"></h2>
+            </div>
+
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Options will be injected here -->
+            </div>
+
+            <div id="feedback-container" class="text-center h-12 mb-4 font-semibold flex flex-col items-center justify-center"></div>
+
+            <div class="flex justify-center mt-4">
+                <button id="next-btn" class="btn-primary hidden w-full md:w-auto px-8 py-3 rounded-lg font-semibold">Next Question</button>
+            </div>
+        </div>
+        <div id="end-screen" class="hidden text-center">
+             <h2 id="end-screen-title" class="text-2xl md:text-3xl font-bold text-gray-100 mb-4">Quiz Complete!</h2>
+             <p class="text-lg text-gray-400 mb-6">Your final score is:</p>
+             <p id="final-score" class="text-5xl font-bold text-teal-400 mb-8"></p>
+             <div id="incorrect-list-container" class="mt-8 text-left max-w-lg mx-auto">
+                <!-- Incorrect questions will be listed here -->
+             </div>
+             <div id="end-screen-buttons" class="flex flex-col md:flex-row justify-center items-center gap-4 mt-8">
+                 <button id="review-incorrect-btn" class="btn-secondary hidden w-full md:w-auto px-8 py-3 rounded-lg font-semibold">Review Incorrect</button>
+                 <button id="play-again-btn" class="btn-primary w-full md:w-auto px-8 py-3 rounded-lg font-semibold">Play Again</button>
+             </div>
+        </div>
+    </div>
+
+    <script>
+    const quizData = [
+        { question: "Where is the headquarters of the United Nations Development Programme (UNDP)?", answer: "New York City, USA" },
+        { question: "Which organization, founded on June 5, 1972, is headquartered in Nairobi, Kenya?", answer: "UNEP" },
+        { question: "What is the primary mandate of the United Nations Population Fund (UNFPA)?", answer: "Ensuring every pregnancy is wanted and every birth is safe" },
+        { question: "Which UN programme focuses on promoting socially and environmentally sustainable human settlements?", answer: "UN-Habitat" },
+        { question: "The United Nations Children's Fund (UNICEF) was formed on December 11 of which year?", answer: "1946" },
+        { question: "Which organization, with its headquarters in Rome, Italy, aims to eradicate hunger and malnutrition?", answer: "World Food Programme (WFP)" },
+        { question: "The Food and Agriculture Organisation (FAO) was formed on October 16, 1945, and is headquartered in which city?", answer: "Rome, Italy" },
+        { question: "Which organization develops standards for global air transport and is based in Montreal, Canada?", answer: "ICAO" },
+        { question: "The International Fund for Agricultural Development (IFAD) is focused exclusively on what?", answer: "Rural poverty reduction" },
+        { question: "Which organization, originally formed in 1919 under the League of Nations, sets international labour standards?", answer: "ILO" },
+        { question: "The International Monetary Fund (IMF), formed in 1945, is headquartered in which city?", answer: "Washington DC, USA" },
+        { question: "Which specialized agency acts as the directing and coordinating authority on international health?", answer: "WHO" },
+        { question: "UNESCO, headquartered in Paris, France, is primarily involved in protecting cultural sites and what other field?", answer: "Education" },
+        { question: "The International Telecommunication Union (ITU), one of the oldest UN agencies, was formed in what year?", answer: "1865" },
+        { question: "Which organization, based in Vienna, Austria, promotes industrial development for poverty reduction?", answer: "UNIDO" },
+        { question: "The UNWTO is responsible for the promotion of responsible, sustainable, and universally accessible...?", answer: "Tourism" },
+        { question: "Headquartered in Bern, Switzerland, which organization serves as the primary forum for cooperation between postal sector players?", answer: "UPU" },
+        { question: "The World Intellectual Property Organization (WIPO) was formed on July 14, 1967, and is based in which city?", answer: "Geneva, Switzerland" },
+        { question: "Which financial institution, formed in July 1944, provides financing and policy advice to developing countries?", answer: "World Bank" },
+        { question: "The International Maritime Organization (IMO) creates a comprehensive regulatory framework for which industry?", answer: "Shipping" },
+        { question: "Which organization is dedicated to international cooperation on the state of the Earth's atmosphere, weather, and climate?", answer: "WMO" },
+        { question: "What is the primary objective of the Comprehensive Nuclear-Test-Ban Treaty Organization (CTBTO)?", answer: "To ban all nuclear explosions" },
+        { question: "The International Atomic Energy Agency (IAEA) serves as a forum for scientific and technical cooperation in the peaceful use of what?", answer: "Nuclear technology" },
+        { question: "Which organization, formed in 1951, works to ensure the orderly and humane management of migration?", answer: "IOM" },
+        { question: "The OPCW, headquartered in The Hague, Netherlands, works to achieve a world free of what?", answer: "Chemical weapons" },
+        { question: "Which UN framework, with its secretariat in Bonn, Germany, was created to respond to the threat of climate change?", answer: "UNFCCC" },
+        { question: "The World Trade Organisation (WTO), formed on January 1, 1995, provides a forum for governments to negotiate what?", answer: "Trade agreements" },
+        { question: "What is the main role of the International Trade Centre (ITC)?", answer: "Connecting small businesses in developing countries to international markets" },
+        { question: "The International Criminal Court (ICC), based in The Hague, has the purpose of investigating and prosecuting whom?", answer: "War criminals" },
+        { question: "Which UN entity leads the global effort to end AIDS as a public health threat?", answer: "UNAIDS" },
+        { question: "The UN Conference on Trade and Development (UNCTAD) is part of the UN Secretariat dealing with trade, investment, and what other issue?", answer: "Development" },
+        { question: "Which agency, formed on December 14, 1950, protects refugees worldwide and facilitates their return or resettlement?", answer: "UNHCR" },
+        { question: "What is the primary function of the United Nations Office for Project Services (UNOPS)?", answer: "To help partners manage projects and deliver sustainable infrastructure" },
+        { question: "The UNRWA supports the relief and human development of which group of refugees?", answer: "Palestinian refugees" },
+        { question: "Which UN entity, formed on July 2, 2010, focuses exclusively on gender equality and women's empowerment?", answer: "UN Women" }
+    ];
+
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackContainer = document.getElementById('feedback-container');
+    const nextBtn = document.getElementById('next-btn');
+    const questionCounter = document.getElementById('question-counter');
+    const scoreCounter = document.getElementById('score-counter');
+    const quizTitle = document.getElementById('quiz-title');
+
+    const quizContainer = document.getElementById('quiz-container');
+    const endScreen = document.getElementById('end-screen');
+    const endScreenTitle = document.getElementById('end-screen-title');
+    const finalScore = document.getElementById('final-score');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const reviewIncorrectBtn = document.getElementById('review-incorrect-btn');
+    const incorrectListContainer = document.getElementById('incorrect-list-container');
+
+    let questionsQueue;
+    let score;
+    let totalQuestionsInSession;
+    let incorrectAnswers = [];
+    let isReviewing = false;
+
+    function startQuiz() {
+        isReviewing = false;
+        quizTitle.textContent = "UN International Organizations Quiz";
+        const shuffledQuizData = [...quizData].sort(() => Math.random() - 0.5);
+        setupQuizSession(shuffledQuizData);
+    }
+    
+    function startIncorrectQuiz() {
+        isReviewing = true;
+        quizTitle.textContent = "Review Incorrect Questions";
+        const incorrectReviewData = [...incorrectAnswers].sort(() => Math.random() - 0.5);
+        setupQuizSession(incorrectReviewData);
+    }
+
+    function setupQuizSession(questions) {
+        questionsQueue = questions;
+        totalQuestionsInSession = questions.length;
+        score = 0;
+        
+        if (!isReviewing) {
+            incorrectAnswers = [];
+        }
+
+        quizContainer.style.display = 'block';
+        endScreen.style.display = 'none';
+        
+        setNextQuestion();
+    }
+
+    function setNextQuestion() {
+        resetState();
+        if (questionsQueue.length > 0) {
+            showQuestion(questionsQueue[0]);
+            const questionNumber = totalQuestionsInSession - questionsQueue.length + 1;
+            questionCounter.textContent = `Question ${questionNumber}/${totalQuestionsInSession}`;
+        } else {
+            showEndScreen();
+        }
+    }
+
+    function showQuestion(questionData) {
+        questionText.textContent = questionData.question;
+        
+        const correctAnswer = questionData.answer;
+        // Create a pool of all possible answers
+        const allPossibleAnswers = quizData.map(q => q.answer);
+        // Remove the correct answer to create a pool of only wrong answers
+        const wrongAnswersPool = allPossibleAnswers.filter(ans => ans !== correctAnswer);
+        // Shuffle the wrong answers and take the first 3 for options
+        const shuffledWrongAnswers = wrongAnswersPool.sort(() => Math.random() - 0.5);
+        
+        const options = [correctAnswer, ...shuffledWrongAnswers.slice(0, 3)];
+        const shuffledOptions = options.sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.dataset.answer = option;
+            button.classList.add('option-btn', 'w-full', 'p-4', 'rounded-lg', 'text-left', 'transition-all', 'flex', 'items-center');
+            button.addEventListener('click', selectAnswer);
+            
+            const numberSpan = document.createElement('span');
+            numberSpan.className = 'inline-flex items-center justify-center w-6 h-6 bg-gray-600/50 text-white rounded-full text-sm mr-4 flex-shrink-0';
+            numberSpan.textContent = index + 1;
+            button.appendChild(numberSpan);
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = option;
+            button.appendChild(textSpan);
+            
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function resetState() {
+        feedbackContainer.innerHTML = '';
+        feedbackContainer.classList.remove('text-green-400', 'text-red-400');
+        nextBtn.classList.add('hidden');
+        scoreCounter.textContent = `Score: ${score || 0}`;
+        
+        while (optionsContainer.firstChild) {
+            optionsContainer.removeChild(optionsContainer.firstChild);
+        }
+    }
+
+    function selectAnswer(e) {
+        const selectedButton = e.target.closest('button');
+        if (!selectedButton) return;
+
+        const currentQuestion = questionsQueue[0];
+        const correctAnswer = currentQuestion.answer;
+        const selectedAnswer = selectedButton.dataset.answer;
+        
+        Array.from(optionsContainer.children).forEach(button => {
+            button.disabled = true;
+            if (button.dataset.answer === correctAnswer) {
+                button.classList.add('correct');
+            }
+        });
+        
+        if (selectedAnswer === correctAnswer) {
+            score++;
+            scoreCounter.textContent = `Score: ${score}`;
+            feedbackContainer.innerHTML = `✅ Correct!`;
+            feedbackContainer.classList.add('text-green-400');
+            selectedButton.classList.add('correct');
+
+            if (isReviewing) {
+                const index = incorrectAnswers.findIndex(q => q.question === currentQuestion.question);
+                if (index > -1) {
+                    incorrectAnswers.splice(index, 1);
+                }
+            }
+        } else {
+            feedbackContainer.innerHTML = `❌ Incorrect. The correct answer is <strong>${correctAnswer}</strong>.`;
+            feedbackContainer.classList.add('text-red-400');
+            selectedButton.classList.add('incorrect');
+            if (!isReviewing && !incorrectAnswers.some(q => q.question === currentQuestion.question)) {
+                incorrectAnswers.push(currentQuestion);
+            }
+        }
+        
+        questionsQueue.shift();
+        nextBtn.classList.remove('hidden');
+    }
+
+    function showEndScreen() {
+        quizContainer.style.display = 'none';
+        endScreen.style.display = 'block';
+        
+        endScreenTitle.textContent = isReviewing ? "Review Complete!" : "Quiz Complete!";
+        finalScore.textContent = `${score}/${totalQuestionsInSession}`;
+        
+        if (incorrectAnswers.length > 0) {
+            reviewIncorrectBtn.classList.remove('hidden');
+        } else {
+            reviewIncorrectBtn.classList.add('hidden');
+        }
+        
+        incorrectListContainer.innerHTML = '';
+        if (incorrectAnswers.length > 0) {
+            const incorrectHTML = `
+                <h3 class="text-red-300 font-bold mb-3 border-b-2 border-red-500/30 pb-2">Questions to Review</h3>
+                <ul class="space-y-3 mt-4">
+                    ${incorrectAnswers.map(q => `
+                        <li class="text-sm">
+                            <strong class="text-gray-200">${q.question}</strong><br>
+                            <span class="text-teal-400">Correct Answer: ${q.answer}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+            incorrectListContainer.innerHTML = incorrectHTML;
+        } else {
+            incorrectListContainer.innerHTML = `
+                <div class="bg-teal-900/50 p-4 rounded-lg">
+                    <h3 class="text-teal-300 font-bold">🎉 ${isReviewing ? 'All reviewed questions answered correctly!' : 'Perfect Score!'}</h3>
+                    <p class="text-teal-200">${isReviewing ? 'Great job on the review.' : 'You got all questions correct!'}</p>
+                </div>
+            `;
+        }
+    }
+
+    nextBtn.addEventListener('click', setNextQuestion);
+    playAgainBtn.addEventListener('click', startQuiz);
+    reviewIncorrectBtn.addEventListener('click', startIncorrectQuiz);
+
+    document.addEventListener('DOMContentLoaded', startQuiz);
+    </script>
+</body>
+</html>

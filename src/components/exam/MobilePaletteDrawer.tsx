@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutGrid, Send, X } from 'lucide-react';
 import { useExamStore } from '@/stores/examStore';
 import { Button } from '@/components/ui';
 import { QuestionPalette, PaletteLegend } from './QuestionPalette';
+import { registerBackHandler } from '@/services/nativeMobile';
 
 /**
  * Mobile question palette: a floating action button opens a slide-up drawer.
@@ -16,22 +17,32 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
   const currentIdx = useExamStore((s) => s.currentIdx);
   const total = useExamStore((s) => s.questions.length);
 
+  useEffect(() => {
+    if (!open) return;
+    return registerBackHandler(() => {
+      setOpen(false);
+      return true;
+    });
+  }, [open]);
+
   return (
     <>
-      {/* Floating trigger */}
+      {/* Floating trigger — sits comfortably above the 2-tier bottom action controls */}
       <button
         onClick={() => setOpen(true)}
         aria-label={`Open question palette, on question ${currentIdx + 1} of ${total}`}
-        className="md:hidden fixed bottom-20 right-5 z-overlay inline-flex items-center gap-2 px-4 py-3 rounded-full bg-primary text-white font-bold text-sm shadow-[var(--shadow-glow)] hover:bg-primary-hover active:scale-95 transition-all"
+        className="md:hidden fixed right-3.5 z-overlay inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white font-extrabold text-xs shadow-lg hover:bg-primary-hover active:scale-90 transition-all select-none border border-white/20"
+        style={{ bottom: 'calc(8.25rem + env(safe-area-inset-bottom, 0px))' } as any}
       >
-        <LayoutGrid size={18} />
-        {currentIdx + 1}/{total}
+        <LayoutGrid size={15} />
+        <span>{currentIdx + 1}/{total}</span>
       </button>
 
       <AnimatePresence>
         {open && (
           <motion.div
             className="md:hidden fixed inset-0 z-modal"
+            style={{ zIndex: 1000 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -45,11 +56,21 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
               role="dialog"
               aria-modal="true"
               aria-label="Question palette"
-              className="absolute bottom-0 left-0 right-0 bg-surface border-t border-border rounded-t-2xl shadow-xl max-h-[72vh] overflow-y-auto"
+              className="absolute bottom-0 left-0 right-0 bg-surface border-t border-border rounded-t-2xl shadow-xl max-h-[75vh] overflow-y-auto will-change-transform"
+              style={{
+                touchAction: 'pan-y',
+                paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+              } as any}
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 36, mass: 0.9 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.22}
+              onDragEnd={(_, info) => {
+                if (info.velocity.y > 480 || info.offset.y > 120) setOpen(false);
+              }}
             >
               <div className="sticky top-0 flex items-center justify-between px-5 py-4 bg-surface border-b border-border">
                 <h3 className="text-sm font-bold text-text">
@@ -58,7 +79,7 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Close palette"
-                  className="w-8 h-8 grid place-items-center rounded-md text-muted hover:text-text hover:bg-surface-2 transition-colors"
+                  className="w-8 h-8 grid place-items-center rounded-md text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer"
                 >
                   <X size={18} />
                 </button>

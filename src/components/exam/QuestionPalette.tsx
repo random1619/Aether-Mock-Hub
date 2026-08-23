@@ -205,3 +205,46 @@ export function PaletteLegend() {
     </div>
   );
 }
+
+/** Review Legend — concise correctness chips for post-exam review. */
+export function ReviewLegend() {
+  const questions = useExamStore((s) => s.questions);
+  const answers = useExamStore((s) =>
+    s.phase === 'submitted' && !s.reattemptMode ? s.submittedAnswers ?? s.answers : s.answers,
+  );
+  const result = useExamStore((s) => s.result);
+
+  let correct = 0;
+  let incorrect = 0;
+  let unattempted = 0;
+
+  if (result) {
+    correct = result.correct;
+    incorrect = result.incorrect;
+    unattempted = result.unattempted;
+  } else {
+    questions.forEach((q, i) => {
+      const ans = answers[i];
+      if (ans === undefined) unattempted++;
+      else if (ans === q.correct_option_id) correct++;
+      else incorrect++;
+    });
+  }
+
+  return (
+    <div className="grid grid-cols-3 gap-1.5 text-[11px]">
+      <div className="flex items-center gap-1.5 bg-answered/15 border border-answered/30 px-2 py-1 rounded-md">
+        <span className="w-2 h-2 rounded-full bg-answered shrink-0" />
+        <span className="font-bold text-answered">{correct} Correct</span>
+      </div>
+      <div className="flex items-center gap-1.5 bg-notanswered/15 border border-notanswered/30 px-2 py-1 rounded-md">
+        <span className="w-2 h-2 rounded-full bg-notanswered shrink-0" />
+        <span className="font-bold text-notanswered">{incorrect} Wrong</span>
+      </div>
+      <div className="flex items-center gap-1.5 bg-surface-2 border border-border px-2 py-1 rounded-md">
+        <span className="w-2 h-2 rounded-full bg-muted shrink-0" />
+        <span className="font-medium text-muted">{unattempted} Skipped</span>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:16px;
+    background:#29a9eb;
+    color:#fff;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #tgBtn svg{flex-shrink:0;}
+  #topicLine{
+    margin-top:14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--accent);
+    background:var(--card);
+    display:inline-block;
+    padding:6px 18px;
+    border:1px solid var(--rule);
+    border-radius:20px;
+  }
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+    <a href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: G Words — Previous Years Synonyms</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">24</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Select the most appropriate synonym of the given word. Garnish",
+"tag": "SSC CGL 19/09/2024 (Shift-I)",
+"opts": [
+"Dwindle",
+"Tarnish",
+"Blemish",
+"Decorate"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Garnish' का अर्थ है <b>सजाना</b>। Synonym 'Decorate' (<b>सजाना</b>) है।</span><br>Dwindle – घटना, Tarnish – धूमिल करना, Blemish – दाग/धब्बा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Glorify",
+"tag": "SSC CGL (Tier-I) 25/07/2023 (Shift-IV)",
+"opts": [
+"Strengthen",
+"Stupefy",
+"Simplify",
+"Praise"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Glorify' का अर्थ है <b>महिमामंडित करना</b>। Synonym 'Praise' (<b>प्रशंसा करना</b>) है।</span><br>Strengthen – मजबूत करना, Stupefy – स्तब्ध करना, Simplify – सरल बनाना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Gloomy",
+"tag": "SSC MTS-07/07/2022 Shift-II",
+"opts": [
+"Deperssing",
+"Comfortable",
+"Bright",
+"Intrepid"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Gloomy' का अर्थ है <b>उदास/निराशाजनक</b>। Synonym 'Depressing' (<b>निराशाजनक</b>) है।</span><br>Comfortable – आरामदायक, Bright – उज्ज्वल, Intrepid – निडर।"
+},
+{
+"q": "Select the most appropriates synonym of the underlined word. Medicines should be ordered by the generic name, not by the proprietary or trade",
+"tag": "SSC MTS-08/07/2022 Shift-I SSC CGL (Tier-I) –13/08/2021 (Shift-I) CDS 2020 (Shift–I)",
+"opts": [
+"Exclusive",
+"General",
+"Individual",
+"Specific"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Generic' का अर्थ है <b>सामान्य/जेनेरिक</b>। Synonym 'General' (<b>सामान्य</b>) है।</span><br>Exclusive – विशिष्ट, Individual – व्यक्तिगत, Specific – विशेष।"
+},
+{
+"q": "He was known for his gentle disposition.",
+"tag": "UPSC NDA & NA 19/04/2020",
+"opts": [
+"harmful",
+"amiable",
+"cunning",
+"adjusting"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Gentle' का अर्थ है <b>सौम्य</b>। Synonym 'Amiable' (<b>मिलनसार</b>) है।</span><br>Harmful – हानिकारक, Cunning – चालाक, Adjusting – समायोजित करने वाला।"
+},
+{
+"q": "Suddenly, the sky was darkened by a gigantic bird.",
+"tag": "UPSC NDA & NA 21/04/2019 (Shift-I)",
+"opts": [
+"winged",
+"small",
+"tiny",
+"enormous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Gigantic' का अर्थ है <b>विशाल</b>। Synonym 'Enormous' (<b>विशाल</b>) है।</span><br>Winged – पंखों वाला, Small – छोटा, Tiny – बहुत छोटा।"
+},
+{
+"q": "The university has constituted a grievance redressal committee to look into the matter.",
+"tag": "UPSC NDA & NA 21/04/2019 (Shift-I)",
+"opts": [
+"depression",
+"complaint",
+"abrasion",
+"gratefulness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Grievance' का अर्थ है <b>शिकायत</b>। Synonym 'Complaint' (<b>शिकायत</b>) है।</span><br>Depression – अवसाद, Abrasion – खरोंच, Gratefulness – कृतज्ञता।"
+},
+{
+"q": "A local court granted bail to the criminal on Thursday.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I)",
+"opts": [
+"confessed",
+"donated",
+"allowed",
+"yielded"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Granted (bail)' का अर्थ है <b>दी/मंजूर की</b>। Synonym 'Allowed' (<b>अनुमति दी</b>) है।</span><br>Confessed – स्वीकार किया, Donated – दान किया, Yielded – आत्मसमर्पण किया।"
+},
+{
+"q": "Many of his acquaintances avoid him because he is so garrulous.",
+"tag": "UPSC NDA & NA 27/09/2015 (Shift-II)",
+"opts": [
+"unreasonable",
+"talkative",
+"quarrelsome",
+"proud"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Garrulous' का अर्थ है <b>बातूनी</b>। Synonym 'Talkative' (<b>बातूनी</b>) है।</span><br>Unreasonable – अनुचित, Quarrelsome – झगड़ालू, Proud – घमंडी।"
+},
+{
+"q": "GAIETY",
+"tag": "UPSC NDA & NA 17/08/2008 (Shift-II)",
+"opts": [
+"Dexterity",
+"Wonder",
+"Colourfulness",
+"Jollity"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Gaiety' का अर्थ है <b>प्रफुल्लता/उल्लास</b>। Synonym 'Jollity' (<b>आनंद/उल्लास</b>) है।</span><br>Dexterity – निपुणता, Wonder – आश्चर्य, Colourfulness – रंगीनता।"
+},
+{
+"q": "GLUTTONY",
+"tag": "DSSSB Stenographer Grade-III Exam (11-06-2017)",
+"opts": [
+"Greed",
+"Giant",
+"Enormous",
+"Stomach"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Gluttony' का अर्थ है <b>पेटूपन</b>। Synonym 'Greed' (<b>लालच</b>) है।</span><br>Giant – विशाल, Enormous – बहुत बड़ा, Stomach – पेट।"
+},
+{
+"q": "One must not eat anything with grubby hands.",
+"tag": "DSSSB LDC Exam 30-08-2015",
+"opts": [
+"unprepared",
+"silly",
+"rough",
+"dirty"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Grubby' का अर्थ है <b>गंदा</b>। Synonym 'Dirty' (<b>गंदा</b>) है।</span><br>Unprepared – अतैयार, Silly – मूर्खतापूर्ण, Rough – खुरदरा।"
+},
+{
+"q": "Select the word that is similar in meaning (SYNONYM) to the word given below gourmand",
+"tag": "DSSSB PRT 26/03/2022 (Shift-II)",
+"opts": [
+"quotidian",
+"connoisseur",
+"propagate",
+"temperance"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Gourmand' का अर्थ है <b>खाने का शौकीन</b>। Synonym 'Connoisseur' (<b>पारखी</b>) है।</span><br>Quotidian – रोज़मर्रा का, Propagate – प्रचार करना, Temperance – संयम।"
+},
+{
+"q": "GIVE UP",
+"tag": "CDS 2012 (Shift-II)",
+"opts": [
+"Abandon",
+"Present",
+"Lift",
+"Scatter"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Give Up' का अर्थ है <b>हार मान लेना</b>। Synonym 'Abandon' (<b>त्याग देना</b>) है।</span><br>Present – प्रस्तुत करना, Lift – उठाना, Scatter – बिखेरना।"
+},
+{
+"q": "GHASTLY",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Painful",
+"Exciting",
+"Dreadful",
+"Unforgettable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Ghastly' का अर्थ है <b>भयानक</b>। Synonym 'Dreadful' (<b>भयंकर</b>) है।</span><br>Painful – दर्दनाक, Exciting – रोमांचक, Unforgettable – अविस्मरणीय।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Gradient",
+"tag": "UPSC NDA & NA 17/08/2008 (Shift-II) ACIO (Tier-II) 18/02/2021 (Shift-III)",
+"opts": [
+"Learn",
+"Flag",
+"Ramp",
+"Manifest"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Gradient' का अर्थ है <b>ढलान</b>। Synonym 'Ramp' (<b>ढलान</b>) है।</span><br>Learn – सीखना, Flag – झंडा, Manifest – स्पष्ट प्रकट करना।"
+},
+{
+"q": "Garrulous",
+"tag": "Patna (District Court) Steno Exam: 21.08.2016",
+"opts": [
+"Friendly",
+"Talkative",
+"Important",
+"Grumpy"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Garrulous' का अर्थ है <b>बातूनी</b>। Synonym 'Talkative' (<b>बातूनी</b>) है।</span><br>Friendly – मित्रवत, Important – महत्वपूर्ण, Grumpy – चिड़चिड़ा।"
+},
+{
+"q": "Genuine",
+"tag": "",
+"opts": [
+"Old",
+"Fake",
+"Real",
+"Dangerous"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Genuine' का अर्थ है <b>असली</b>। Synonym 'Real' (<b>वास्तविक</b>) है।</span><br>Old – पुराना, Fake – नकली, Dangerous – खतरनाक।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Guzzle",
+"tag": "SSC CGL (Phase-II) 17/02/2018",
+"opts": [
+"Sip",
+"Imbibe",
+"Starve",
+"Release"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Guzzle' का अर्थ है <b>गटागट पीना/खाना</b>। Synonym 'Imbibe' (<b>पीना</b>) है।</span><br>Sip – चुस्की लेना, Starve – भूखा रहना, Release – छोड़ना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. GRADUAL",
+"tag": "SSC CPO-SI 25/11/2020 (Shift-II)",
+"opts": [
+"abrupt",
+"uneven",
+"continuous",
+"hasty"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Gradual' का अर्थ है <b>क्रमिक/धीरे-धीरे</b>। Synonym 'Continuous' (<b>निरंतर</b>) है।</span><br>Abrupt – अचानक, Uneven – असमान, Hasty – जल्दबाज़ी वाला।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. GAUDY",
+"tag": "SSC CPO-SI – 24/11/2020 (Shift-I)",
+"opts": [
+"proper",
+"simple",
+"flashy",
+"plain"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Gaudy' का अर्थ है <b>भड़कीला</b>। Synonym 'Flashy' (<b>भड़कीला</b>) है।</span><br>Proper – उचित, Simple – सादा, Plain – सादा।"
+},
+{
+"q": "Select the synonym of the given word. GARRULOUS",
+"tag": "SSC CGL (Tier-I) – 04/06/2019 (Shift-II)",
+"opts": [
+"Talkative",
+"Concise",
+"Throaty",
+"Guttural"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Garrulous' का अर्थ है <b>बातूनी</b>। Synonym 'Talkative' (<b>बातूनी</b>) है।</span><br>Concise – संक्षिप्त, Throaty – गले से निकली आवाज़, Guttural – कर्कश।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. GLUM",
+"tag": "SSC CHSL (Tier-I) 19/10/2020 (Shift-III)",
+"opts": [
+"Afraid",
+"Dismal",
+"Bright",
+"Nervous"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Glum' का अर्थ है <b>उदास</b>। Synonym 'Dismal' (<b>निराशाजनक</b>) है।</span><br>Afraid – डरा हुआ, Bright – उज्ज्वल, Nervous – घबराया हुआ।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. GUILE",
+"tag": "SSC CHSL (Tier-I) 12/10/2020 (Shift-I)",
+"opts": [
+"Intuition",
+"Surfeit",
+"Deceit",
+"Sincerity"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Guile' का अर्थ है <b>छल-कपट</b>। Synonym 'Deceit' (<b>छल</b>) है।</span><br>Intuition – अंतर्ज्ञान, Surfeit – अधिकता, Sincerity – ईमानदारी।"
+}
+];
+
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

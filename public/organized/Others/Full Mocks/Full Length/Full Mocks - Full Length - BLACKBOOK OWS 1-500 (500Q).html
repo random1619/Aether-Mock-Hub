@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>YATRI Mock Hub — BLACKBOOK OWS (1-500)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f1e3;
+    --paper-2:#f1e8d4;
+    --ink:#2b2420;
+    --muted:#8a7f6e;
+    --line:#e3d6ba;
+    --accent:#8a5a2b;
+    --accent-dark:#6e4620;
+    --accent-light:#f0e2c8;
+    --green:#2f7d4f;
+    --green-bg:#e3f2e6;
+    --red:#b3402c;
+    --red-bg:#fbe6e1;
+    --tan:#c8b892;
+    --tan-bg:#efe6cf;
+    --card-shadow: 0 2px 10px rgba(60,45,20,0.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    min-height:-webkit-fill-available;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;}
+  .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+  button{font-family:inherit; cursor:pointer;}
+
+  /* ===== Header (Start screen only) ===== */
+  #app-header{
+    text-align:center;
+    padding:28px 16px 8px;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  #app-header h1{
+    font-size:34px;
+    font-weight:700;
+    margin:0 0 16px;
+    color:var(--ink);
+  }
+  .telegram-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#229ED9;
+    color:#fff;
+    border:none;
+    padding:10px 22px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:14px;
+    text-decoration:none;
+    box-shadow:0 3px 10px rgba(34,158,217,0.35);
+  }
+  .telegram-btn:hover{background:#1c8bc2;}
+  .topic-pill{
+    display:inline-block;
+    margin-top:18px;
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    border:1px solid var(--line);
+    padding:8px 18px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+  }
+
+  /* ===== Start Screen ===== */
+  #home-screen{
+    max-width:480px;
+    margin:0 auto;
+    padding:20px 20px 60px;
+    text-align:center;
+  }
+  #home-screen h2{
+    font-size:24px;
+    margin:10px 0 28px;
+    color:var(--ink);
+  }
+  .info-boxes{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    margin-bottom:34px;
+  }
+  .info-box{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 22px;
+    min-width:130px;
+    box-shadow:var(--card-shadow);
+  }
+  .info-box .num{
+    font-family:'Fraunces',serif;
+    font-size:28px;
+    font-weight:700;
+    color:var(--accent);
+  }
+  .info-box .lbl{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:14px 38px;
+    border-radius:999px;
+    font-size:16px;
+    font-weight:700;
+    box-shadow:0 4px 14px rgba(138,90,43,0.35);
+  }
+  .btn-primary:hover{background:var(--accent-dark);}
+
+  /* ===== Top bar (Test + Review) ===== */
+  .top-bar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--paper-2);
+    border-bottom:1px solid var(--line);
+    padding:10px 14px;
+    gap:8px;
+  }
+  .brand-tag{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--accent-dark);
+    white-space:nowrap;
+  }
+  .status-tag{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .center-info{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:13px;
+    color:var(--muted);
+    flex:1;
+  }
+  .timer{
+    font-weight:700;
+    font-size:15px;
+    color:var(--red);
+    font-variant-numeric:tabular-nums;
+  }
+  .timer.safe{color:var(--green);}
+  .palette-btn{
+    background:#fff;
+    border:1px solid var(--line);
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+
+  /* ===== Palette dropdown ===== */
+  .palette-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(43,36,32,0.35);
+    z-index:30;
+  }
+  .palette-overlay.active{display:block;}
+  .palette-panel{
+    position:absolute;
+    top:56px;
+    right:10px;
+    left:10px;
+    max-width:420px;
+    margin-left:auto;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    padding:16px;
+    max-height:70vh;
+    overflow-y:auto;
+  }
+  .palette-legend{
+    display:flex;
+    gap:14px;
+    font-size:12px;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+    color:var(--muted);
+  }
+  .legend-dot{
+    display:inline-block;
+    width:10px;height:10px;
+    border-radius:50%;
+    margin-right:4px;
+    vertical-align:middle;
+  }
+  .palette-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:8px;
+  }
+  .palette-num{
+    border:none;
+    border-radius:8px;
+    padding:8px 0;
+    font-size:13px;
+    font-weight:600;
+    color:#fff;
+    background:var(--tan);
+  }
+  .palette-num.answered{background:var(--green);}
+  .palette-num.unanswered{background:var(--red);}
+  .palette-num.notvisited{background:var(--tan); color:var(--ink);}
+  .palette-num.current{outline:2px solid var(--ink); outline-offset:2px;}
+
+  /* ===== Question card ===== */
+  #test-body, #review-body{
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 16px 130px;
+  }
+  .q-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px 18px;
+    box-shadow:var(--card-shadow);
+    position:relative;
+  }
+  .source-pill{
+    position:absolute;
+    top:16px;
+    right:16px;
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    font-size:11px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:999px;
+    letter-spacing:0.5px;
+  }
+  .q-of{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .marks-note{
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .marks-note .plus{color:var(--green); font-weight:700;}
+  .marks-note .minus{color:var(--red); font-weight:700;}
+  .q-text{
+    font-size:17px;
+    line-height:1.5;
+    margin:0 0 18px;
+    color:var(--ink);
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    background:var(--paper);
+    font-size:15px;
+    line-height:1.4;
+  }
+  .option:hover{border-color:var(--accent);}
+  .option.selected{
+    border-color:var(--accent);
+    background:var(--accent-light);
+  }
+  .opt-letter{
+    font-weight:700;
+    color:var(--accent-dark);
+    min-width:20px;
+  }
+  .option.selected .opt-letter{color:var(--accent-dark);}
+
+  /* review states */
+  .option.correct-opt{
+    border-color:var(--green);
+    background:var(--green-bg);
+  }
+  .option.wrong-opt{
+    border-color:var(--red);
+    background:var(--red-bg);
+  }
+  .opt-mark{margin-left:auto; font-weight:700;}
+  .opt-mark.ok{color:var(--green);}
+  .opt-mark.no{color:var(--red);}
+
+  .answer-summary{
+    margin-top:16px;
+    font-size:13px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .answer-summary b{color:var(--ink);}
+  .explanation-box{
+    margin-top:16px;
+    background:var(--paper-2);
+    border-left:3px solid var(--accent);
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    line-height:1.6;
+  }
+  .explanation-box .title{
+    font-weight:700;
+    color:var(--accent-dark);
+    margin-bottom:6px;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+
+  /* ===== Bottom nav ===== */
+  .bottom-fixed{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:var(--paper-2);
+    border-top:1px solid var(--line);
+    padding:10px 12px;
+    z-index:15;
+  }
+  .nav-row{
+    display:flex;
+    flex-wrap:nowrap;
+    gap:6px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .nav-row button{
+    flex:1;
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    padding:10px 4px;
+    border-radius:10px;
+    font-size:12.5px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .nav-row button:disabled{opacity:0.4;}
+  .submit-row{
+    max-width:640px;
+    margin:8px auto 0;
+  }
+  .submit-row button{
+    width:100%;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:700;
+  }
+  .clear-row button{
+    width:100%;
+    background:#fff;
+    color:var(--ink);
+    border:1.5px solid var(--line);
+    padding:12px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:700;
+  }
+
+  /* ===== Result screen ===== */
+  #result-screen{
+    max-width:480px;
+    margin:0 auto;
+    padding:40px 20px 60px;
+    text-align:center;
+  }
+  #result-screen h2{font-size:24px; margin-bottom:24px;}
+  .result-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .result-box{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 10px;
+    box-shadow:var(--card-shadow);
+  }
+  .result-box .num{
+    font-family:'Fraunces',serif;
+    font-size:24px;
+    font-weight:700;
+  }
+  .result-box .lbl{
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-top:4px;
+  }
+  .result-box.correct .num{color:var(--green);}
+  .result-box.wrong .num{color:var(--red);}
+  .score-box{
+    background:var(--accent);
+    color:#fff;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:26px;
+  }
+  .score-box .score-num{
+    font-family:'Fraunces',serif;
+    font-size:40px;
+    font-weight:700;
+  }
+  .score-box .score-lbl{
+    font-size:12px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    opacity:0.9;
+    margin-top:4px;
+  }
+  .result-actions{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .btn-review{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:16px;
+    border-radius:14px;
+    font-size:16px;
+    font-weight:700;
+    box-shadow:0 4px 14px rgba(138,90,43,0.35);
+  }
+  .btn-retake{
+    background:#fff;
+    color:var(--ink);
+    border:1.5px solid var(--line);
+    padding:14px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:600;
+  }
+
+  /* ===== Modal ===== */
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(43,36,32,0.45);
+    z-index:50;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-box{
+    background:#fff;
+    border-radius:16px;
+    padding:24px 22px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
+  }
+  .modal-box h3{margin:0 0 10px; font-size:19px;}
+  .modal-box p{font-size:14px; color:var(--muted); margin:0 0 20px; line-height:1.5;}
+  .modal-box p b{color:var(--red);}
+  .modal-actions{display:flex; gap:10px;}
+  .modal-actions button{flex:1; padding:12px; border-radius:10px; font-weight:700; font-size:14px; border:none;}
+  .modal-yes{background:var(--accent); color:#fff;}
+  .modal-cancel{background:var(--paper-2); color:var(--ink); border:1.5px solid var(--line) !important;}
+
+  @media (max-width:380px){
+    #app-header h1{font-size:28px;}
+    .nav-row button{font-size:11px; padding:10px 2px;}
+    .result-grid{gap:8px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER (Start screen only) ===== -->
+<div id="app-header">
+  <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+  <h1>YATRI Mock Hub</h1>
+  <a class="telegram-btn" href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.2c.3-1.1-.5-1.7-1.4-1.3L2.4 10.3c-1.1.4-1.1 1.1-.2 1.4l4.7 1.5 1.8 5.6c.2.6.5.8.9.8.4 0 .6-.2.9-.5l2.1-2 4.4 3.2c.8.5 1.4.2 1.6-.8L21.9 4.2zM8 13.9l9.3-6.9c.5-.3.9-.1.6.3l-8 8.1"/></svg>
+    Join Telegram
+  </a>
+  <div><span class="topic-pill">Topic: BLACKBOOK OWS (1-500)</span></div>
+</div>
+
+<!-- ===== START SCREEN ===== -->
+<div id="home-screen" class="screen active">
+  <h2>BLACKBOOK OWS (1-500)</h2>
+  <div class="info-boxes">
+    <div class="info-box">
+      <div class="num" id="home-total-q">0</div>
+      <div class="lbl">Total Questions</div>
+    </div>
+    <div class="info-box">
+      <div class="num" id="home-total-time">0</div>
+      <div class="lbl">Total Time</div>
+    </div>
+  </div>
+  <button class="btn-primary" id="start-btn">▶️ Start Test</button>
+</div>
+
+<!-- ===== TEST SCREEN ===== -->
+<div id="test-screen" class="screen">
+  <div class="top-bar">
+    <div class="brand-tag">YATRI</div>
+    <div class="center-info">
+      <div class="timer" id="timer-display">00:00</div>
+      <div id="progress-display">Question 1 / 1</div>
+    </div>
+    <button class="palette-btn" id="palette-btn-test">📋 Palette (<span id="palette-count-test">0</span>)</button>
+  </div>
+
+  <div id="test-body">
+    <div class="q-card">
+      <span class="source-pill" id="test-source-pill">SSC CGL/CHSL</span>
+      <div class="q-of" id="test-q-of">Question 1 of 1</div>
+      <div class="marks-note"><span class="plus">+1</span> for correct, <span class="minus">−0.25</span> for wrong</div>
+      <p class="q-text" id="test-q-text"></p>
+      <div class="options" id="test-options"></div>
+    </div>
+  </div>
+
+  <div class="bottom-fixed">
+    <div class="nav-row">
+      <button id="prev-btn">⬅️ Previous</button>
+      <button id="clear-btn">Clear Response</button>
+      <button id="next-btn">Next ➡️</button>
+    </div>
+    <div class="submit-row">
+      <button id="submit-btn">📤 Submit Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULT SCREEN ===== -->
+<div id="result-screen" class="screen">
+  <h2>Test Result</h2>
+  <div class="result-grid">
+    <div class="result-box"><div class="num" id="res-total">0</div><div class="lbl">Total Questions</div></div>
+    <div class="result-box"><div class="num" id="res-attempted">0</div><div class="lbl">Attempted</div></div>
+    <div class="result-box"><div class="num" id="res-unattempted">0</div><div class="lbl">Unattempted</div></div>
+    <div class="result-box correct"><div class="num" id="res-correct">0</div><div class="lbl">Correct</div></div>
+    <div class="result-box wrong"><div class="num" id="res-wrong">0</div><div class="lbl">Wrong</div></div>
+  </div>
+  <div class="score-box">
+    <div class="score-num" id="res-score">0</div>
+    <div class="score-lbl">Final Score</div>
+  </div>
+  <div class="result-actions">
+    <button class="btn-review" id="review-btn">🔍 Review Solutions</button>
+    <button class="btn-retake" id="retake-btn">🔁 Retake Test</button>
+  </div>
+</div>
+
+<!-- ===== REVIEW SOLUTIONS SCREEN ===== -->
+<div id="review-screen" class="screen">
+  <div class="top-bar">
+    <div class="status-tag" id="review-status-tag">Correct</div>
+    <div class="center-info">
+      <div id="review-progress-display">Question 1 / 1</div>
+    </div>
+    <button class="palette-btn" id="palette-btn-review">📋 Palette</button>
+  </div>
+
+  <div id="review-body">
+    <div class="q-card">
+      <span class="source-pill" id="review-source-pill">SSC CGL/CHSL</span>
+      <div class="q-of" id="review-q-of">Question 1 of 1</div>
+      <p class="q-text" id="review-q-text"></p>
+      <div class="options" id="review-options"></div>
+      <div class="answer-summary" id="review-answer-summary"></div>
+      <div class="explanation-box">
+        <div class="title">Explanation</div>
+        <div id="review-explanation" class="hindi"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-fixed">
+    <div class="nav-row">
+      <button id="review-prev-btn">⬅️ Previous</button>
+      <button id="review-next-btn">Next ➡️</button>
+    </div>
+    <div class="submit-row" style="margin-top:8px;">
+      <button id="back-to-result-btn" style="background:var(--ink);">📊 Back to Result</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PALETTE OVERLAY ===== -->
+<div class="palette-overlay" id="palette-overlay">
+  <div class="palette-panel">
+    <div class="palette-legend" id="palette-legend">
+      <span><span class="legend-dot" style="background:var(--green);"></span>Answered</span>
+      <span><span class="legend-dot" style="background:var(--red);"></span>Not Answered</span>
+      <span><span class="legend-dot" style="background:var(--tan);"></span>Not Visited</span>
+    </div>
+    <div class="palette-grid" id="palette-grid"></div>
+  </div>
+</div>
+
+<!-- ===== SUBMIT CONFIRM MODAL ===== -->
+<div class="modal-overlay" id="submit-modal">
+  <div class="modal-box">
+    <h3>Submit Test?</h3>
+    <p>You have <b id="modal-unattempted-count">0</b> unattempted question(s). Are you sure you want to submit?</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
+      <button class="modal-yes" id="modal-yes-btn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SETTINGS = {"totalTimeSec": 15000, "negativeMarkPerWrong": 0.25};
+const QUESTIONS = [{"id": 1, "text": "Mountain climbing", "options": ["Amateur", "Alpinism", "Ambidextrous", "Altitude"], "correctIndex": 1, "explanation": "&#x27;Alpinism&#x27; is the sport or activity of climbing high mountains."}, {"id": 2, "text": "A similarity between like features of two things, on which a comparison may be based:", "options": ["Anarchy", "Analogy", "Analysis", "Anatomy"], "correctIndex": 1, "explanation": "Analogy is a comparison between two things for explanation. Hindi: दो चीजों के बीच समानता के आधार पर तुलना।"}, {"id": 3, "text": "A person who has had one or more limbs removed:", "options": ["Athlete", "Amputee", "Amateur", "Anchor"], "correctIndex": 1, "explanation": "An amputee is a person who has lost a limb by amputation. Hindi: वह व्यक्ति जिसका कोई अंग (हाथ या पैर) काट दिया गया हो।"}, {"id": 4, "text": "Formally put an end to a system, practice, or institution", "options": ["Abate", "Abridge", "Abolish", "Abrogate"], "correctIndex": 2, "explanation": "Abolish means to officially end a law or system. (किसी प्रथा या कानून को समाप्त करना)"}, {"id": 5, "text": "Having or showing both good and bad feelings towards someone or something:", "options": ["Ambivalent", "Amorphous", "Ambidextrous", "Ambiguous"], "correctIndex": 0, "explanation": "Ambivalent means having mixed feelings. Hindi: किसी के प्रति एक ही समय में अच्छे और बुरे दोनों विचार होना।"}, {"id": 6, "text": "A word or a phrase formed by rearranging the letters of a different word:", "options": ["Acronym", "Antonym", "Anagram", "Synonym"], "correctIndex": 2, "explanation": "Anagram is formed by shuffling letters (e.g., &#x27;Silent&#x27; to &#x27;Listen&#x27;). Hindi: किसी शब्द के अक्षरों को आगे-पीछे करके बनाया गया नया शब्द।"}, {"id": 7, "text": "A place where animals are slaughtered for consumption as food", "options": ["Abbot", "Abode", "Abattoir", "Abbey"], "correctIndex": 2, "explanation": "Abattoir is a place where animals are killed for meat. (कसाईखाना)"}, {"id": 8, "text": "The superior of a monastery", "options": ["Aborigine", "Accomplice", "Abbot", "Absolver"], "correctIndex": 2, "explanation": "Abbot is the head of an abbey or monastery. (मठ का प्रधान)"}, {"id": 9, "text": "To increase the speed", "options": ["Accolade", "Accord", "Accelerate", "Acoustic"], "correctIndex": 2, "explanation": "Accelerate means to move faster or gain speed. (गति बढ़ाना)"}, {"id": 10, "text": "The school or college in which one has been educated", "options": ["Ambience", "Alimony", "Alma Mater", "Almanac"], "correctIndex": 2, "explanation": "&#x27;Alma Mater&#x27; refers to the school, college, or university that one formerly attended."}, {"id": 11, "text": "To reduce to a shorter form intended to stand for the whole", "options": ["Abridgement", "Abbreviation", "Abdication", "Abstraction"], "correctIndex": 1, "explanation": "Abbreviation is a shortened form of a word or phrase. (शब्दों का संक्षिप्त रूप)"}, {"id": 12, "text": "An animal that can live both on land and in water:", "options": ["Reptiles", "Aquatic", "Mammals", "Amphibians"], "correctIndex": 3, "explanation": "Amphibians are cold-blooded animals like frogs. Hindi: वे जीव जो जल और थल दोनों पर रह सकते हैं (उभयचर)।"}, {"id": 13, "text": "Giving cause for legal action", "options": ["Adulterate", "Actionable", "Acquit", "Adolescence"], "correctIndex": 1, "explanation": "Actionable refers to something that gives reason for a lawsuit. / Actionable वह है जिस पर कानूनी कार्रवाई की जा सके।"}, {"id": 14, "text": "Very attractive and easy to feel love for", "options": ["Actionable", "Adorable", "Acrophobia", "Aggressive"], "correctIndex": 1, "explanation": "Adorable means inspiring great affection or delight. / Adorable का अर्थ बहुत प्यारा और आकर्षक होता है।"}, {"id": 15, "text": "To make something bad or unsatisfactory (like a situation) better:", "options": ["Ameliorate", "Alleviate", "Adulterate", "Aggravate"], "correctIndex": 0, "explanation": "Ameliorate means to improve a bad situation. Hindi: किसी खराब स्थिति को बेहतर बनाना (सुधारना)।"}, {"id": 16, "text": "Words that begin with the same letter, syllable or sound // Repetition of an initial sound in two or more words of a line", "options": ["Ambience", "Ambidextrous", "Alliteration", "Altimeter"], "correctIndex": 2, "explanation": "&#x27;Alliteration&#x27; is the occurrence of the same letter or sound at the beginning of adjacent or closely connected words."}, {"id": 17, "text": "The money paid to former wife, husband or partner when the marriage is ended", "options": ["Alimony", "Altar", "Ambiguous", "Allegory"], "correctIndex": 0, "explanation": "&#x27;Alimony&#x27; is the legal obligation to provide financial support to a spouse after separation. &#x27;Altar&#x27; is a table for offerings, &#x27;Allegory&#x27; is a symbolic story, and &#x27;Ambiguous&#x27; means having double meaning."}, {"id": 18, "text": "Deviation from the right course", "options": ["Abrogation", "Aberration", "Abjection", "Abhorrence"], "correctIndex": 1, "explanation": "Aberration means a departure from what is normal or expected. (असामान्यता या पथ-विचलन)"}, {"id": 19, "text": "An extremely beautiful young man", "options": ["Agnostic", "Acumen", "Adonis", "Agenda"], "correctIndex": 2, "explanation": "Adonis is used to describe a young man of great physical beauty. / Adonis का उपयोग बहुत सुंदर युवक के लिए किया जाता है।"}, {"id": 20, "text": "To walk or move at a slow, relaxed pace, or to walk aimlessly:", "options": ["Scamper", "Sprint", "Amble", "Strut"], "correctIndex": 2, "explanation": "Amble means to walk in a slow, relaxed way. Hindi: धीरे-धीरे या बिना किसी खास उद्देश्य के टहलना।"}, {"id": 21, "text": "A detailed examination of something complex:", "options": ["Abstract", "Algorithm", "Anatomy", "Analysis"], "correctIndex": 3, "explanation": "Analysis is the process of breaking a complex topic into smaller parts to understand it. Hindi: किसी जटिल चीज़ का विस्तृत परीक्षण या विश्लेषण।"}, {"id": 22, "text": "A person who is friendly and good-natured:", "options": ["Antagonistic", "Amiable", "Amicable", "Amorphous"], "correctIndex": 2, "explanation": "Amicable refers to being friendly and peaceable. Hindi: मैत्रीपूर्ण और मिलनसार स्वभाव वाला व्यक्ति।"}, {"id": 23, "text": "A person belonging to a foreign country / different from what you are used to / A fictional being from another world", "options": ["Ambassador", "Altruist", "Alien", "Alumnus"], "correctIndex": 2, "explanation": "&#x27;Alien&#x27; refers to someone from a foreign country or a different world. &#x27;Alumnus&#x27; is a former student, &#x27;Altruist&#x27; is a charitable person, and &#x27;Ambassador&#x27; is a diplomatic representative."}, {"id": 24, "text": "One who has the qualities of both shyness and openness at the same time:", "options": ["Introvert", "Extrovert", "Altruist", "Ambivert"], "correctIndex": 3, "explanation": "An ambivert is a person whose personality has a balance of extrovert and introvert features. Hindi: वह व्यक्ति जिसमें अंतर्मुखी और बहिर्मुखी दोनों गुण हों।"}, {"id": 25, "text": "The scientific study of sound", "options": ["Acerbic", "Accord", "Acoustics", "Accolade"], "correctIndex": 2, "explanation": "Acoustics is the branch of physics concerned with the properties of sound. (ध्वनि विज्ञान)"}, {"id": 26, "text": "A partial or total loss of memory:", "options": ["Amnesia", "Aphasia", "Insomnia", "Anaesthesia"], "correctIndex": 0, "explanation": "Amnesia is a medical condition where one loses memory. Hindi: याददाश्त का पूरी तरह या आंशिक रूप से चला जाना।"}, {"id": 27, "text": "A person who supports or speaks in favour of something", "options": ["Addict", "Adonis", "Agnostic", "Advocate"], "correctIndex": 3, "explanation": "An Advocate is a person who supports a cause. / Advocate वह व्यक्ति है जो किसी पक्ष का समर्थन करता है।"}, {"id": 28, "text": "One who is not sure about God&#x27;s existence", "options": ["Advocate", "Adonis", "Addict", "Agnostic"], "correctIndex": 3, "explanation": "An Agnostic is unsure if God exists. / Agnostic वह है जो ईश्वर के अस्तित्व पर संदेह करता है।"}, {"id": 29, "text": "Able to use the left hand and right hand equally well", "options": ["Ambiguous", "Amateur", "Ambience", "Ambidextrous"], "correctIndex": 3, "explanation": "&#x27;Ambidextrous&#x27; refers to a person who is able to use the right and left hands with equal ease."}, {"id": 30, "text": "A feeling of strong dislike or hostility:", "options": ["Amity", "Anomaly", "Animosity", "Amnesty"], "correctIndex": 2, "explanation": "Animosity is a strong feeling of anger or lack of friendship. Hindi: गहरी दुश्मनी या शत्रुता की भावना।"}, {"id": 31, "text": "To do something // to behave in a particular way // to perform a part in a play/film/function", "options": ["Act", "Advocate", "Adhere", "Aerial"], "correctIndex": 0, "explanation": "To Act means to perform a function or a role. / Act का अर्थ कार्य करना या अभिनय करना होता है।"}, {"id": 32, "text": "Capable of being understood in either of two or more possible senses, and therefore not definite", "options": ["Alliteration", "Altar", "Ambiguous", "Allegory"], "correctIndex": 2, "explanation": "&#x27;Ambiguous&#x27; means open to more than one interpretation; not having one obvious meaning."}, {"id": 33, "text": "To shorten a piece of writing without losing the sense", "options": ["Abbreviate", "Abridge", "Abrogate", "Abate"], "correctIndex": 1, "explanation": "Abridge means to shorten a book or text while maintaining the core meaning. (संक्षिप्त करना)"}, {"id": 34, "text": "Acting or done in a friendly and peaceable manner:", "options": ["Amicably", "Abruptly", "Aggressively", "Hostilely"], "correctIndex": 0, "explanation": "Amicably is the adverb form of amicable. Hindi: दोस्ताना और शांतिपूर्ण तरीके से।"}, {"id": 35, "text": "Formal forgiveness of a person&#x27;s sins", "options": ["Abnegation", "Absolution", "Abrogation", "Ablution"], "correctIndex": 1, "explanation": "Absolution is a formal release from guilt or sin. (पाप-मुक्ति या क्षमादान)"}, {"id": 36, "text": "The act of washing oneself", "options": ["Ablution", "Abnegation", "Abruption", "Absolution"], "correctIndex": 0, "explanation": "Ablution is the act of washing or cleansing, often for religious purposes. (शुद्धि स्नान या धार्मिक स्नान)"}, {"id": 37, "text": "A short, interesting or amusing story about a real person or an event:", "options": ["Anthology", "Anecdote", "Allegory", "Antidote"], "correctIndex": 1, "explanation": "An anecdote is a short account of a real incident. Hindi: किसी व्यक्ति या घटना के बारे में एक छोटा और रोचक किस्सा।"}, {"id": 38, "text": "A person who is physically dependent on a substance/harmful drugs", "options": ["Advocate", "Addict", "Aerial", "Adonis"], "correctIndex": 1, "explanation": "An Addict is someone enslaved to a habit or drug. / Addict वह व्यक्ति है जिसे किसी चीज़ की बुरी लत हो।"}, {"id": 39, "text": "An official pardon or the formal act of liberating someone (especially for political offenses):", "options": ["Amnesty", "Absolution", "Alimony", "Acquittal"], "correctIndex": 0, "explanation": "Amnesty is a general pardon granted by a government. Hindi: राजनैतिक अपराधियों को दी जाने वाली औपचारिक माफी (राजक्षमा)।"}, {"id": 40, "text": "A blank book for keeping a collection of photographs, stamps or pictures", "options": ["Agenda", "Album", "Aesthetic", "Aggrandize"], "correctIndex": 1, "explanation": "An Album is a book for collections. / Album वह किताब है जिसमें चित्र या टिकट रखे जाते हैं।"}, {"id": 41, "text": "A publication containing astronomical or meteorological annual calendar that contains important dates and time", "options": ["Almanac", "Altimeter", "Altar", "Alpinism"], "correctIndex": 0, "explanation": "&#x27;Almanac&#x27; is an annual publication listing a set of events forthcoming in the next year (weather, sunrises, etc.)."}, {"id": 42, "text": "Not following any moral rules and not caring about right or wrong:", "options": ["Mortal", "Immoral", "Amoral", "Ethical"], "correctIndex": 2, "explanation": "Amoral means lacking a moral sense; unconcerned with the rightness or wrongness of something. Hindi: नैतिक नियमों की परवाह न करने वाला (नीतिहीन)।"}, {"id": 43, "text": "The branch of science concerned with the bodily structure of humans and animals:", "options": ["Astrology", "Anatomy", "Anthropology", "Archaeology"], "correctIndex": 1, "explanation": "Anatomy studies the physical structure of living organisms. Hindi: शरीर रचना विज्ञान।"}, {"id": 44, "text": "Sharp, bitter, or harsh in temper, language, etc.", "options": ["Absurd", "Acoustic", "Acerbic", "Abrupt"], "correctIndex": 2, "explanation": "Acerbic refers to a sharp or biting way of speaking or acting. (कड़वा, तीखा या सख्त)"}, {"id": 45, "text": "Concerned with beauty or the appreciation of beauty", "options": ["Adorable", "Acrophobia", "Aggrandize", "Aesthetic"], "correctIndex": 3, "explanation": "Aesthetic refers to the appreciation of beauty. / Aesthetic का संबंध सुंदरता और कला की समझ से है।"}, {"id": 46, "text": "To decide and state officially in court that somebody is not guilty of a crime", "options": ["Acquit", "Acumen", "Acrobat", "Acronym"], "correctIndex": 0, "explanation": "Acquit means to formally declare someone is not guilty. / Acquit का अर्थ है किसी को निर्दोष घोषित करना।"}, {"id": 47, "text": "Someone who is readily reacting to suggestions and willing to be guided or controlled:", "options": ["Adaptable", "Obstinate", "Amenable", "Arrogant"], "correctIndex": 2, "explanation": "Amenable means willing to follow advice or suggestions. Hindi: सुझावों को मानने वाला या आसानी से वश में आने वाला।"}, {"id": 48, "text": "A list of items to be discussed at a meeting", "options": ["Acrobat", "Agnostic", "Agenda", "Album"], "correctIndex": 2, "explanation": "An Agenda is a schedule of matters to be dealt with. / Agenda वह सूची है जिस पर बैठक में चर्चा होनी है।"}, {"id": 49, "text": "The ability to make good judgments and take quick decisions // Sharpness and accuracy of judgement", "options": ["Adorable", "Addict", "Acumen", "Acrobat"], "correctIndex": 2, "explanation": "Acumen is keen insight or shrewdness. / Acumen का अर्थ कुशाग्र बुद्धि या सही परख होना है।"}, {"id": 50, "text": "A person who helps another to commit a crime or to do something morally wrong", "options": ["Aborigine", "Accord", "Accomplice", "Accountant"], "correctIndex": 2, "explanation": "Accomplice is a partner in crime. (अपराध में साथ देने वाला सहभागी)"}, {"id": 51, "text": "To give up one&#x27;s authority or throne", "options": ["Abdicate", "Abolish", "Abnegate", "Abdication"], "correctIndex": 0, "explanation": "Abdicate means to formally give up a high office or throne. (स्वेच्छा से पद या सिंहासन त्यागना)"}, {"id": 52, "text": "Fear of riding in a car", "options": ["Ambiguous", "Amaxophobia", "Ambience", "Alliteration"], "correctIndex": 1, "explanation": "&#x27;Amaxophobia&#x27; is the persistent and intense fear of being a passenger in a car or other moving vehicle."}, {"id": 53, "text": "An entertainer who performs difficult physical feats", "options": ["Adonis", "Agenda", "Acrobat", "Agnostic"], "correctIndex": 2, "explanation": "An Acrobat is a performer of gymnastic feats. / Acrobat वह कलाकार है जो कठिन शारीरिक करतब दिखाता है।"}, {"id": 54, "text": "Growing/existing/living in air", "options": ["Alchemy", "Aerial", "Agony", "Acronym"], "correctIndex": 1, "explanation": "Aerial means occurring in or existing in the air. / Aerial का अर्थ हवाई या हवा में रहने वाला है।"}, {"id": 55, "text": "Belonging to the very distant past:", "options": ["Ancient", "Modern", "Archive", "Annual"], "correctIndex": 0, "explanation": "Ancient means something from a very long time ago. Hindi: बहुत पुराने समय या प्राचीन काल का।"}, {"id": 56, "text": "A person who believes that laws and governments are not necessary:", "options": ["Autocrat", "Aristocrat", "Anarchist", "Atheist"], "correctIndex": 2, "explanation": "An anarchist wants to bring a state of lawlessness. Hindi: वह जो शासन या सरकार को न माने (अराजकतावादी)।"}, {"id": 57, "text": "Extreme mental or physical suffering", "options": ["Alchemy", "Agony", "Aerial", "Acronym"], "correctIndex": 1, "explanation": "Agony is the state of being in great pain. / Agony का अर्थ अत्यधिक पीड़ा या कष्ट होता है।"}, {"id": 58, "text": "The height above sea level", "options": ["Ambience", "Alluvium", "Alpinism", "Altitude"], "correctIndex": 3, "explanation": "&#x27;Altitude&#x27; is the vertical distance of an object or point in relation to sea level or ground level."}, {"id": 59, "text": "Act of giving up (renouncing) the throne", "options": ["Abrogation", "Aberration", "Abdication", "Ablution"], "correctIndex": 2, "explanation": "Abdication is the formal act of renouncing the throne. (पद त्याग या राजत्याग)"}, {"id": 60, "text": "Believe in and follow the practices of", "options": ["Aesthetic", "Aggrandize", "Acronym", "Adhere"], "correctIndex": 3, "explanation": "To Adhere means to follow or stick to a belief or rule. / Adhere का अर्थ किसी नियम या विश्वास का पालन करना है।"}, {"id": 61, "text": "A person or behavior that is like a weak old woman:", "options": ["Agile", "Amoral", "Anile", "Antique"], "correctIndex": 2, "explanation": "Anile refers to someone showing the physical or mental decline associated with old women. Hindi: एक कमजोर बूढ़ी महिला की तरह।"}, {"id": 62, "text": "Make impure by adding inferior substances", "options": ["Activate", "Acquit", "Adulterate", "Aggrandize"], "correctIndex": 2, "explanation": "To Adulterate is to make something impure. / Adulterate का अर्थ किसी चीज़ में मिलावट करना है।"}, {"id": 63, "text": "A situation in a country or organization in which there is no government, order, or control:", "options": ["Aristocracy", "Monarchy", "Autocracy", "Anarchy"], "correctIndex": 3, "explanation": "Anarchy is a state of disorder due to absence of authority. Hindi: देश में सरकार या कानून व्यवस्था का न होना (अराजकता)।"}, {"id": 64, "text": "Someone who makes charitable donations intended to the welfare of other people", "options": ["Amateur", "Ambassador", "Alumnus", "Altruist"], "correctIndex": 3, "explanation": "&#x27;Altruist&#x27; is a person unselfishly concerned for or devoted to the welfare of others."}, {"id": 65, "text": "Always ready to attack or quarrel // One who is hostile and violent", "options": ["Acumen", "Adventurous", "Aggressive", "Adhere"], "correctIndex": 2, "explanation": "Aggressive describes someone ready to fight. / Aggressive का अर्थ आक्रामक या झगड़ालू होता है।"}, {"id": 66, "text": "Instrument that measures the altitude of the land surface", "options": ["Altar", "Almanac", "Altimeter", "Altitude"], "correctIndex": 2, "explanation": "&#x27;Altimeter&#x27; is an instrument used in aircraft to measure its altitude above a fixed level."}, {"id": 67, "text": "A shortened version of a larger work", "options": ["Abbreviation", "Abrogation", "Abridgement", "Absolution"], "correctIndex": 2, "explanation": "Abridgement is the result of shortening a piece of writing. (संक्षेपण या सारांश)"}, {"id": 68, "text": "The original inhabitants/natives of a country", "options": ["Aborigines", "Acoustics", "Accolades", "Aboriginal"], "correctIndex": 0, "explanation": "Aborigines are the people who have lived in a country from the beginning. (किसी देश के मूल निवासी)"}, {"id": 69, "text": "Study of chemistry in a medieval fashion", "options": ["Acrophobia", "Agnostic", "Alchemy", "Acumen"], "correctIndex": 2, "explanation": "Alchemy was the medieval forerunner of chemistry. / Alchemy प्राचीन या मध्यकालीन रसायन विद्या है।"}, {"id": 70, "text": "A medical specialist who administers drugs for relieving pain during surgery:", "options": ["Apothecary", "Anthropologist", "Archaeologist", "Anesthetist"], "correctIndex": 3, "explanation": "An anesthetist is a doctor who gives anesthesia to patients. Hindi: वह डॉक्टर जो ऑपरेशन के दौरान दर्द कम करने के लिए बेहोशी की दवा देता है।"}, {"id": 71, "text": "A table or flat surface where offerings are made to a deity", "options": ["Allegory", "Alien", "Altar", "Alimony"], "correctIndex": 2, "explanation": "&#x27;Altar&#x27; is a holy table in a church or temple where religious ceremonies take place."}, {"id": 72, "text": "Fear of pain", "options": ["Aristocracy", "Algophobia", "Altar", "Abattoir"], "correctIndex": 1, "explanation": "Algophobia is the extreme or irrational fear of experiencing pain. / Algophobia शारीरिक दर्द महसूस होने का एक असामान्य या अत्यधिक डर है।"}, {"id": 73, "text": "A person who presents a radio or television programme:", "options": ["Actor", "Author", "Auditor", "Anchor"], "correctIndex": 3, "explanation": "An anchor is the host of a broadcast show. Hindi: रेडियो या टीवी कार्यक्रम का संचालन करने वाला।"}, {"id": 74, "text": "A story, play, picture, etc. in which each character/event is a symbol representing an idea/a quality", "options": ["Alluvium", "Alpinism", "Allegory", "Alliteration"], "correctIndex": 2, "explanation": "&#x27;Allegory&#x27; uses symbols to convey a deeper moral or political meaning. &#x27;Alliteration&#x27; is the repetition of sounds, &#x27;Alpinism&#x27; is mountain climbing, and &#x27;Alluvium&#x27; is soil deposited by water."}, {"id": 75, "text": "An abbreviation formed from the initial letters of other words and pronounced as a word", "options": ["Activate", "Aesthetic", "Alchemy", "Acronym"], "correctIndex": 3, "explanation": "An Acronym is a pronounceable word like NASA. / Acronym वह शब्द है जो शब्दों के पहले अक्षरों से बनता है।"}, {"id": 76, "text": "Fear of great heights", "options": ["Addict", "Acrophobia", "Agony", "Aggressive"], "correctIndex": 1, "explanation": "Acrophobia is the clinical fear of heights. / Acrophobia का अर्थ ऊँचाई से लगने वाला डर है।"}, {"id": 77, "text": "Be harmonious or consistent with", "options": ["Acoustic", "Accord", "Accolade", "Acerbic"], "correctIndex": 1, "explanation": "Accord means to be in agreement or harmony with something. (सहमति या सामंजस्य)"}, {"id": 78, "text": "Any award, honour or laudatory notice", "options": ["Accomplice", "Acoustic", "Accolade", "Accord"], "correctIndex": 2, "explanation": "Accolade is an award or privilege granted as a special honour. (सम्मान या पुरस्कार)"}, {"id": 79, "text": "A former student of a school, college or university", "options": ["Alien", "Alumnus", "Ambassador", "Amateur"], "correctIndex": 1, "explanation": "&#x27;Alumnus&#x27; refers to a graduate or former student of a particular school, college, or university."}, {"id": 80, "text": "Make a machine active or operative", "options": ["Acumen", "Activate", "Agnostic", "Aggrandize"], "correctIndex": 1, "explanation": "To Activate means to trigger or start a process. / Activate का अर्थ किसी चीज़ को सक्रिय या चालू करना है।"}, {"id": 81, "text": "A departure from what is normal, common, or expected:", "options": ["Analogy", "Anarchy", "Anatomy", "Anomaly"], "correctIndex": 3, "explanation": "Anomaly is something that deviates from the standard or normal rule. Hindi: सामान्य नियम या स्थिति से भटकाव या विसंगति।"}, {"id": 82, "text": "Become less intense or widespread", "options": ["Abjure", "Abrogate", "Abate", "Abnegate"], "correctIndex": 2, "explanation": "Abate refers to something becoming less intense or severe. (तीव्रता में कमी आना या शांत होना)"}, {"id": 83, "text": "The date on which an event happened in some previous year:", "options": ["Antiquity", "Annuity", "Anniversary", "Anthology"], "correctIndex": 2, "explanation": "Anniversary is a date that is remembered because a special event happened on it. Hindi: वह तारीख जिस पर पिछले किसी वर्ष में कोई घटना घटी थी (वर्षगांठ)।"}, {"id": 84, "text": "A fixed sum of money paid to someone each year, typically for the rest of their life:", "options": ["Allowance", "Alimony", "Amortization", "Annuity"], "correctIndex": 3, "explanation": "Annuity is a fixed amount of money paid at regular intervals. Hindi: सालाना दी जाने वाली एक निश्चित राशि (वार्षिकी)।"}, {"id": 85, "text": "Wildly unreasonable, illogical or ridiculous", "options": ["Acerbic", "Abject", "Abrupt", "Absurd"], "correctIndex": 3, "explanation": "Absurd means something that is completely illogical or senseless. (बेहूदा या बेतुका)"}, {"id": 86, "text": "One who plays for pleasure rather than as a profession // A person who is neither well experienced nor professional", "options": ["Alpinism", "Amateur", "Altruist", "Ambidextrous"], "correctIndex": 1, "explanation": "&#x27;Amateur&#x27; is a person who engages in a pursuit, especially a sport, on an unpaid rather than a professional basis."}, {"id": 87, "text": "A person whose profession is to keep accounts", "options": ["Accountant", "Accolade", "Abbot", "Accomplice"], "correctIndex": 0, "explanation": "An accountant manages financial records and books. (मुनीम या लेखाकार)"}, {"id": 88, "text": "Something written or done by a person whose name is not known or made public:", "options": ["Ambidextrous", "Amorphous", "Ambiguous", "Anonymous"], "correctIndex": 3, "explanation": "Anonymous means having an unknown or unacknowledged name/author. Hindi: जिसका नाम ज्ञात न हो (गुमनाम)।"}, {"id": 89, "text": "A substance for killing algae", "options": ["Amateur", "Altruist", "Algaecide", "Amnesty"], "correctIndex": 2, "explanation": "Algaecide is a chemical used to kill and prevent the growth of algae. / Algaecide एक ऐसा रसायन है जिसका उपयोग शैवाल (algae) को मारने और उनकी वृद्धि को रोकने के लिए किया जाता है।"}, {"id": 90, "text": "The character and atmosphere of a place", "options": ["Alimony", "Altitude", "Almanac", "Ambience"], "correctIndex": 3, "explanation": "&#x27;Ambience&#x27; is the character and atmosphere of a place (the mood or feeling of a specific environment)."}, {"id": 91, "text": "Soil deposited by flowing water", "options": ["Amateur", "Alluvium", "Alumnus", "Altitude"], "correctIndex": 1, "explanation": "&#x27;Alluvium&#x27; is a deposit of clay, silt, and sand left by flowing floodwater in a river valley or delta."}, {"id": 92, "text": "A diplomatic representative in another country", "options": ["Ambassador", "Alien", "Alumnus", "Altruist"], "correctIndex": 0, "explanation": "&#x27;Ambassador&#x27; is an accredited diplomat sent by a country as its official representative to a foreign country."}, {"id": 93, "text": "To refuse or deny oneself", "options": ["Abjure", "Abrogate", "Abnegate", "Abscond"], "correctIndex": 2, "explanation": "Abnegate means to renounce or reject something desired. (त्यागना या अस्वीकार करना)"}, {"id": 94, "text": "Willing to take risks and try new ideas", "options": ["Aesthetic", "Agenda", "Acrobat", "Adventurous"], "correctIndex": 3, "explanation": "An Adventurous person seeks out new and risky experiences. / Adventurous वह है जो जोखिम उठाने के लिए तैयार रहे।"}, {"id": 95, "text": "To go away suddenly and secretly in order to escape from somewhere", "options": ["Absolve", "Abate", "Abject", "Abscond"], "correctIndex": 3, "explanation": "Abscond means to leave secretly, typically to avoid detection or arrest. (फरार हो जाना)"}, {"id": 96, "text": "To increase the importance, position or wealth", "options": ["Aggrandize", "Adulterate", "Activate", "Actionable"], "correctIndex": 0, "explanation": "To Aggrandize is to increase one&#x27;s power or status. / Aggrandize का अर्थ शक्ति या पद बढ़ाना है।"}, {"id": 97, "text": "To destroy something completely so that nothing remains:", "options": ["Annihilate", "Ameliorate", "Affiliate", "Alleviate"], "correctIndex": 0, "explanation": "Annihilate means to wipe out or destroy utterly. Hindi: पूरी तरह से नष्ट कर देना या मिटा देना।"}, {"id": 98, "text": "Existing in a land from the earliest times or before the arrival of colonists", "options": ["Aborigines", "Accountant", "Aboriginal", "Accomplice"], "correctIndex": 2, "explanation": "Aboriginal means relating to the original inhabitants of a place. (आदिम या मूल निवासी से संबंधित)"}, {"id": 99, "text": "Cancel or do away with (a law or agreement)", "options": ["Abolish", "Abdicate", "Abnegate", "Abrogate"], "correctIndex": 3, "explanation": "Abrogate means to repeal or do away with a formal agreement or law. (कानून या समझौते को रद्द करना)"}, {"id": 100, "text": "The period between the beginning of puberty and adulthood", "options": ["Acrobat", "Adolescence", "Agony", "Alchemy"], "correctIndex": 1, "explanation": "Adolescence is the transitional stage from childhood to adulthood. / Adolescence किशोरावस्था को कहते हैं।"}, {"id": 101, "text": "A self-governing country or region is known as having:", "options": ["Anarchy", "Ambiguity", "Autonomy", "Autocracy"], "correctIndex": 2, "explanation": "Autonomy (न.) का अर्थ है स्वशासन या स्वायत्तता।"}, {"id": 102, "text": "A building where an audience sits to watch a performance or hear a lecture:", "options": ["Autocracy", "Auditorium", "Atonement", "Asylum"], "correctIndex": 1, "explanation": "Auditorium (न.) का अर्थ है सभागार या प्रेक्षागृह जहाँ दर्शक बैठते हैं।"}, {"id": 103, "text": "A military structure where arms and ammunition and other military equipment are stored", "options": ["Archive", "Arson", "Arsenal", "Arena"], "correctIndex": 2, "explanation": "&#x27;Arsenal&#x27; is a place where weapons and military equipment are stored or made. (शस्त्रागार)"}, {"id": 104, "text": "A place that provides refuge or a hospital where people who are mentally ill are cared for:", "options": ["Atonement", "Autocracy", "Auditorium", "Asylum"], "correctIndex": 3, "explanation": "Asylum (न.) का अर्थ है शरणस्थल या मानसिक चिकित्सालय।"}, {"id": 105, "text": "The outer protective layer of a tree trunk:", "options": ["Battery", "Bark", "Barrel", "Bale"], "correctIndex": 1, "explanation": "Bark (न.) का अर्थ है पेड़ की छाल।"}, {"id": 106, "text": "A poem that tells a story and has a regular rhythm and rhyme scheme:", "options": ["Ballad", "Bandying", "Behemoth", "Banter"], "correctIndex": 0, "explanation": "Ballad (न.) का अर्थ है गाथा-गीत या लोक-गीत जो कहानी सुनाता है।"}, {"id": 107, "text": "A place given to soldiers to live in:", "options": ["Barracks", "Bakery", "Basement", "Barrel"], "correctIndex": 0, "explanation": "Barracks (न.) का अर्थ है सैनिकों के रहने का स्थान (छावनी)।"}, {"id": 108, "text": "A medicine to nullify the effect of poison or another medicine", "options": ["Antonym", "Antithesis", "Antidote", "Antipathy"], "correctIndex": 2, "explanation": "&#x27;Antidote&#x27; is a medicine taken or given to counteract a particular poison."}, {"id": 109, "text": "Something that is made or done in the traditional or original way, or something that is genuine:", "options": ["Audible", "Assertive", "Articulate", "Authentic"], "correctIndex": 3, "explanation": "Authentic (वि.) का अर्थ है विश्वसनीय, असली या प्रामाणिक।"}, {"id": 110, "text": "Fear of fire", "options": ["Aquaphobia", "Amnesia", "Amaxophobia", "Arsonphobia"], "correctIndex": 3, "explanation": "&#x27;Arsonphobia&#x27; (also known as Pyrophobia) is the irrational fear of fire. (आग से डर)"}, {"id": 111, "text": "Nations that do not trust each other or look upon each other with suspicion are said to look:", "options": ["Assertive", "Askance", "Authentic", "Articulate"], "correctIndex": 1, "explanation": "Askance (वि.) का अर्थ है संदेह की दृष्टि से देखना (with suspicion/distrust)."}, {"id": 112, "text": "A large bundle bound for storage or transport:", "options": ["Barrel", "Bale", "Bark", "Battery"], "correctIndex": 1, "explanation": "Bale (न.) का अर्थ है गांठ (जैसे कपास या घास की बड़ी पोटली)।"}, {"id": 113, "text": "A large body of water with many islands", "options": ["Archipelago", "Aquatic", "Arena", "Archive"], "correctIndex": 0, "explanation": "&#x27;Archipelago&#x27; is a group or chain of islands clustered together in a sea or ocean. (द्वीपसमूह)"}, {"id": 114, "text": "One who makes an official examination of accounts or financial records:", "options": ["Astrologer", "Artist", "Astronaut", "Auditor"], "correctIndex": 3, "explanation": "Auditor (न.) वह व्यक्ति है जो खातों की जाँच करता है (लेखा परीक्षक)।"}, {"id": 115, "text": "Jokes and funny remarks exchanged amongst friends:", "options": ["Bellow", "Ballad", "Banter", "Balderdash"], "correctIndex": 2, "explanation": "Banter (न.) का अर्थ है मित्रों के बीच होने वाला मज़ाक या हंसी-ठिठोली।"}, {"id": 116, "text": "To revel in and make the most of something pleasing (like sunlight):", "options": ["Bandy", "Bask", "Bellow", "Banter"], "correctIndex": 1, "explanation": "Bask (वि.) का अर्थ है आनंद लेना या धूप सेंकना।"}, {"id": 117, "text": "The ability to communicate effectively and express oneself clearly in writing and speaking is known as:", "options": ["Autocracy", "Astronomy", "Atonement", "Articulation"], "correctIndex": 3, "explanation": "Articulation (न.) का अर्थ है स्पष्ट उच्चारण या अभिव्यक्ति की शक्ति।"}, {"id": 118, "text": "An official inspection of a company&#x27;s or individual&#x27;s accounts:", "options": ["Atonement", "Autocracy", "Audit", "Asylum"], "correctIndex": 2, "explanation": "Audit (न.) का अर्थ है खातों की आधिकारिक जाँच या लेखा परीक्षा।"}, {"id": 119, "text": "A person engaged in or trained for spaceflight:", "options": ["Artist", "Assailant", "Astronaut", "Astrologer"], "correctIndex": 2, "explanation": "Astronaut (न.) का अर्थ है अंतरिक्ष यात्री।"}, {"id": 120, "text": "To agree to a request, an idea, or a suggestion:", "options": ["Audit", "Ascribe", "Assent", "Assertive"], "correctIndex": 2, "explanation": "Assent (वि.) का अर्थ है किसी सुझाव या प्रस्ताव पर सहमति देना।"}, {"id": 121, "text": "An official examination of a dead body by a doctor to discover the cause of death:", "options": ["Antidote", "Abstract", "Autopsy", "Analysis"], "correctIndex": 2, "explanation": "Autopsy (न.) का अर्थ है शव-परीक्षा (Post-mortem)।"}, {"id": 122, "text": "A government by the nobles / government by person of highest social order", "options": ["Anarchy", "Archive", "Arsenal", "Aristocracy"], "correctIndex": 3, "explanation": "&#x27;Aristocracy&#x27; is a form of government in which power is held by the nobility or highest social class. (शिष्टजन/कुलीनतंत्र)"}, {"id": 123, "text": "A rule or principle that most people believe to be true:", "options": ["Alimony", "Axiom", "Alias", "Agenda"], "correctIndex": 1, "explanation": "Axiom (न.) का अर्थ है स्वयं सिद्ध सत्य या सूक्ति।"}, {"id": 124, "text": "Senseless talk or writing is often referred to as:", "options": ["Ballad", "Banter", "Bandying", "Balderdash"], "correctIndex": 3, "explanation": "Balderdash (न.) का अर्थ है बकवास या अर्थहीन बात।"}, {"id": 125, "text": "Being afraid of water or being near water", "options": ["Aquatic", "Aquarium", "Arsonphobia", "Aquaphobia"], "correctIndex": 3, "explanation": "&#x27;Aquaphobia&#x27; is an abnormal and persistent fear of water. (पानी से डर)"}, {"id": 126, "text": "A mass of snow, ice, and rocks falling rapidly down a mountainside:", "options": ["Blizzard", "Avalanche", "Aqueduct", "Archipelago"], "correctIndex": 1, "explanation": "Avalanche (न.) का अर्थ है हिमस्खलन।"}, {"id": 127, "text": "Using an idea, term, or name frequently in casual talk:", "options": ["Basking", "Bellowing", "Barking", "Bandying"], "correctIndex": 3, "explanation": "Bandying (वि.) का अर्थ है किसी शब्द या विचार का बार-बार या लापरवाही से प्रयोग करना।"}, {"id": 128, "text": "A place where bees are kept", "options": ["Anthropologist", "Apiary", "Anthology", "Antiquarian"], "correctIndex": 1, "explanation": "&#x27;Apiary&#x27; is a place where bees are kept; a collection of beehives."}, {"id": 129, "text": "A person who renounces a religious or political belief or principle", "options": ["Apprentice", "Appertain", "Apostle", "Apostate"], "correctIndex": 3, "explanation": "&#x27;Apostate&#x27; is a person who has abandoned their religious or political beliefs. (धर्मत्यागी)"}, {"id": 130, "text": "A policy that segregates people on the basis of race // Policy of racial discrimination", "options": ["Apartheid", "Apartment", "Aphasia", "Apathy"], "correctIndex": 0, "explanation": "&#x27;Apartheid&#x27; was a policy or system of segregation or discrimination on grounds of race."}, {"id": 131, "text": "A collection of poems, stories, etc. that have been written by different people and published together in a book", "options": ["Antithesis", "Anthropology", "Antiquarian", "Anthology"], "correctIndex": 3, "explanation": "&#x27;Anthology&#x27; is a published collection of poems or other pieces of writing."}, {"id": 132, "text": "Words which are opposite in meaning", "options": ["Antithesis", "Antonym", "Anorexia", "Anthology"], "correctIndex": 1, "explanation": "&#x27;Antonym&#x27; is a word opposite in meaning to another (e.g. bad and good)."}, {"id": 133, "text": "A pioneer of a reform movement", "options": ["Arbitrator", "Aristocracy", "Archaeologist", "Apostle"], "correctIndex": 3, "explanation": "&#x27;Apostle&#x27; refers to a vigorous and pioneering advocate or leader of a reform movement. (सुधार आंदोलन का अगुआ/प्रेरित)"}, {"id": 134, "text": "A wooden drum in which beer or oil is stored:", "options": ["Battery", "Behemoth", "Bale", "Barrel"], "correctIndex": 3, "explanation": "Barrel (न.) का अर्थ है पीपा या लकड़ी का बड़ा ढोल।"}, {"id": 135, "text": "The place where public, government or historical records are kept", "options": ["Arena", "Arsenal", "Archive", "Aristocracy"], "correctIndex": 2, "explanation": "&#x27;Archive&#x27; is a collection of historical documents or records providing information about a place, institution, or group of people. (अभिलेखागार)"}, {"id": 136, "text": "Something of monstrous size or power:", "options": ["Bachelor", "Bellicose", "Behemoth", "Banal"], "correctIndex": 2, "explanation": "Behemoth (न.) का अर्थ है विशालकाय जीव या अत्यंत शक्तिशाली वस्तु।"}, {"id": 137, "text": "Obsessive desire to lose weight by refusing to eat", "options": ["Aphasia", "Apathy", "Anorexia", "Anthology"], "correctIndex": 2, "explanation": "&#x27;Anorexia&#x27; is an eating disorder characterized by an abnormally low body weight and an intense fear of gaining weight."}, {"id": 138, "text": "A person who is severe or very strict in his manner and lifestyle:", "options": ["Austere", "Audible", "Authentic", "Articulate"], "correctIndex": 0, "explanation": "Austere (वि.) का अर्थ है कठोर, सादा या संयमी जीवन जीने वाला।"}, {"id": 139, "text": "One who tells the future by studying the positions of the stars:", "options": ["Astronaut", "Astronomer", "Astrologer", "Auditor"], "correctIndex": 2, "explanation": "Astrologer (न.) वह है जो सितारों को देखकर भविष्य बताता है (ज्योतिषी)।"}, {"id": 140, "text": "Be appropriate or applicable", "options": ["Apprentice", "Archive", "Appreciate", "Appertain"], "correctIndex": 3, "explanation": "&#x27;Appertain&#x27; means to be appropriate or applicable to something. (संबद्ध होना/लागू होना)"}, {"id": 141, "text": "An instrument used for measuring atmospheric pressure:", "options": ["Battery", "Binoculars", "Barometer", "Behemoth"], "correctIndex": 2, "explanation": "Barometer (न.) वायुदाबमापी यंत्र है।"}, {"id": 142, "text": "To rise in value", "options": ["Appertain", "Appreciate", "Appraisal", "Arable"], "correctIndex": 1, "explanation": "&#x27;Appreciate&#x27; means to increase in monetary value over time. (मूल्य बढ़ना)"}, {"id": 143, "text": "The feeling of not being interested in or enthusiastic", "options": ["Apathy", "Antipathy", "Aphasia", "Apathetic"], "correctIndex": 0, "explanation": "&#x27;Apathy&#x27; is the noun form representing lack of interest, enthusiasm, or concern."}, {"id": 144, "text": "The exact opposite", "options": ["Apartheid", "Antonym", "Anticipate", "Antithesis"], "correctIndex": 3, "explanation": "&#x27;Antithesis&#x27; refers to a person or thing that is the direct opposite of someone or something else."}, {"id": 145, "text": "A group of guns or missile launchers operated together at one place:", "options": ["Battery", "Barracks", "Bale", "Barrel"], "correctIndex": 0, "explanation": "Battery (न.) का अर्थ है तोपों या मिसाइल लॉन्चरों का समूह।"}, {"id": 146, "text": "The quality of being politely firm and demanding:", "options": ["Articulation", "Assertive", "Authentic", "Austere"], "correctIndex": 1, "explanation": "Assertive (वि.) का अर्थ है अपनी बात को दृढ़ता और आत्मविश्वास से कहना।"}, {"id": 147, "text": "Something that can be heard clearly:", "options": ["Articulate", "Audible", "Assertive", "Authentic"], "correctIndex": 1, "explanation": "Audible (वि.) का अर्थ है जो स्पष्ट सुनाई दे सके (श्रव्य)।"}, {"id": 148, "text": "Estimation of a thing’s worth", "options": ["Ardor", "Appraisal", "Appreciate", "Appertain"], "correctIndex": 1, "explanation": "&#x27;Appraisal&#x27; is the act of assessing or estimating something or someone&#x27;s value. (मूल्यांकन)"}, {"id": 149, "text": "The life history of a person written by himself:", "options": ["Autobiography", "Biography", "Astronomy", "Astrology"], "correctIndex": 0, "explanation": "Autobiography (न.) का अर्थ है आत्मकथा, जो व्यक्ति स्वयं लिखता है।"}, {"id": 150, "text": "A person who is chosen to settle a disagreement // A person appointed by two parties to resolve a dispute", "options": ["Apostle", "Arbitrator", "Archaeologist", "Apprentice"], "correctIndex": 1, "explanation": "&#x27;Arbitrator&#x27; is an independent person or body officially appointed to settle a dispute. (मध्यस्थ/पंच)"}, {"id": 151, "text": "Keen interest or enthusiasm for something is called:", "options": ["Anarchy", "Apathy", "Ambience", "Avidity"], "correctIndex": 3, "explanation": "Avidity (न.) का अर्थ है किसी चीज़ के प्रति तीव्र उत्साह या लालसा।"}, {"id": 152, "text": "The study of human history and prehistory through the excavation of sites", "options": ["Archaic", "Archaeology", "Arsenal", "Archive"], "correctIndex": 1, "explanation": "&#x27;Archaeology&#x27; is the scientific study of material remains (such as tools, pottery, jewelry, stone walls, and monuments) of past human life and activities. (पुरातत्व विज्ञान)"}, {"id": 153, "text": "The scientific study of celestial bodies like the sun, moon, stars, and planets:", "options": ["Astrology", "Asylum", "Articulation", "Astronomy"], "correctIndex": 3, "explanation": "Astronomy (न.) खगोल विज्ञान है, जो आकाशीय पिंडों का वैज्ञानिक अध्ययन करता है।"}, {"id": 154, "text": "A person who is fond of fighting:", "options": ["Bellow", "Bankrupt", "Bellicose", "Benefactor"], "correctIndex": 2, "explanation": "Bellicose (वि.) का अर्थ है लड़ाकू या युद्धप्रिय।"}, {"id": 155, "text": "An insatiable or extreme desire for wealth:", "options": ["Avarice", "Altruism", "Animosity", "Affluence"], "correctIndex": 0, "explanation": "Avarice (न.) का अर्थ है धन का अत्यधिक लालच (लोभ)।"}, {"id": 156, "text": "A place where bread and cakes are made and sold:", "options": ["Buffet", "Barrel", "Barracks", "Bakery"], "correctIndex": 3, "explanation": "Bakery (न.) वह स्थान है जहाँ ब्रेड और केक बनाए जाते हैं।"}, {"id": 157, "text": "One who studies/deals antique things", "options": ["Apartment", "Apiary", "Antiquarian", "Anthropologist"], "correctIndex": 2, "explanation": "&#x27;Antiquarian&#x27; is a person who studies or collects antiques or antiquities."}, {"id": 158, "text": "Strong dislike between two persons // A deep-seated feeling of aversion", "options": ["Antipathy", "Apathy", "Aphasia", "Apathetic"], "correctIndex": 0, "explanation": "&#x27;Antipathy&#x27; refers to a deep-seated feeling of dislike or aversion."}, {"id": 159, "text": "Suitable for growing crops", "options": ["Arbitrary", "Ardor", "Archaic", "Arable"], "correctIndex": 3, "explanation": "&#x27;Arable&#x27; land is land capable of being ploughed and used to grow crops. (कृषि योग्य)"}, {"id": 160, "text": "One who helps people by giving them money or other aid is called a:", "options": ["Belligerent", "Benefactor", "Benevolent", "Beneficiary"], "correctIndex": 1, "explanation": "Benefactor (न.) वह व्यक्ति है जो दूसरों की आर्थिक या अन्य सहायता करता है (धर्मोपकारी)।"}, {"id": 161, "text": "An action of making amends for a wrong or injury:", "options": ["Audit", "Ascribe", "Assent", "Atonement"], "correctIndex": 3, "explanation": "Atonement (न.) का अर्थ है प्रायश्चित या क्षतिपूर्ति करना।"}, {"id": 162, "text": "A man who remains unmarried:", "options": ["Bachelor", "Benefactor", "Brittle", "Bigot"], "correctIndex": 0, "explanation": "Bachelor (न.) का अर्थ है कुंवारा व्यक्ति।"}, {"id": 163, "text": "Animals and plants growing or living in, or near water", "options": ["Archipelago", "Aquaphobia", "Aquatic", "Arable"], "correctIndex": 2, "explanation": "&#x27;Aquatic&#x27; refers to organisms living or growing in water. (जलीय)"}, {"id": 164, "text": "To keep away from someone or something:", "options": ["Avoid", "Assist", "Attain", "Assert"], "correctIndex": 0, "explanation": "Avoid (वि.) का अर्थ है दूर रहना या टालना।"}, {"id": 165, "text": "A group, especially in the arts, regarded as being the most experimental or innovative:", "options": ["Aristocracy", "Avant-Garde", "Amateur", "Ambition"], "correctIndex": 1, "explanation": "Avant-Garde (वि./न.) का अर्थ है कला के क्षेत्र में नए प्रयोग करने वाला अग्रणी समूह।"}, {"id": 166, "text": "The act of killing birds is known as:", "options": ["Avicide", "Abduction", "Altruism", "Abortion"], "correctIndex": 0, "explanation": "Avicide (न.) का अर्थ है पक्षियों की हत्या।"}, {"id": 167, "text": "No longer in use", "options": ["Ancient", "Arable", "Archaic", "Ardor"], "correctIndex": 2, "explanation": "&#x27;Archaic&#x27; refers to something that is very old or old-fashioned and no longer in common use. (प्राचीन/अप्रचलित)"}, {"id": 168, "text": "The deep, loud sound made by a crocodile or a large animal:", "options": ["Bellow", "Banter", "Bark", "Ballad"], "correctIndex": 0, "explanation": "Bellow (वि.) का अर्थ है गरजना या जोर से चिल्लाना (जैसे मगरमच्छ की आवाज़)।"}, {"id": 169, "text": "A person who physically attacks another is called an:", "options": ["Astronaut", "Assailant", "Auditor", "Assassin"], "correctIndex": 1, "explanation": "Assailant (न.) का अर्थ है हमलावर या आक्रमणकारी।"}, {"id": 170, "text": "A person who kills somebody, especially for political reasons, is an:", "options": ["Artist", "Ascetic", "Atheist", "Assassin"], "correctIndex": 3, "explanation": "Assassin (न.) वह व्यक्ति है जो राजनीतिक कारणों से किसी की हत्या करता है।"}, {"id": 171, "text": "A ruler who has complete power over a country is called:", "options": ["Autocrat", "Altruist", "Aristocrat", "Ambivalent"], "correctIndex": 0, "explanation": "Autocrat (न.) का अर्थ है तानाशाह या एकछत्र शासक जिसके पास पूर्ण शक्ति होती है।"}, {"id": 172, "text": "A person who formally requests something, especially a job", "options": ["Arbitrator", "Arsonist", "Applicant", "Apprentice"], "correctIndex": 2, "explanation": "&#x27;Applicant&#x27; is a person who makes a formal application for something, especially a job. (आवेदक)"}, {"id": 173, "text": "To attribute a cause or characteristic to something is to:", "options": ["Audit", "Assent", "Askance", "Ascribe"], "correctIndex": 3, "explanation": "Ascribe (वि.) का अर्थ है किसी कारण या विशेषता का श्रेय देना (to attribute)."}, {"id": 174, "text": "Deliberately and maliciously set something (buildings usually) on fire", "options": ["Ardor", "Arson", "Arsonphobia", "Arsonist"], "correctIndex": 1, "explanation": "&#x27;Arson&#x27; is the criminal act of deliberately setting fire to property. (आगजनी)"}, {"id": 175, "text": "One who denies oneself ordinary bodily pleasures and lives a simple, strict life:", "options": ["Ascetic", "Assailant", "Assassin", "Atheist"], "correctIndex": 0, "explanation": "Ascetic (न.) का अर्थ है तपस्वी या आत्मसंयमी, जो शारीरिक सुखों का त्याग करता है।"}, {"id": 176, "text": "One who is good at expressing ideas or feelings clearly in words is called:", "options": ["Ambiguous", "Assertive", "Articulate", "Authentic"], "correctIndex": 2, "explanation": "Articulate का अर्थ होता है स्पष्ट रूप से बोलने में कुशल। Having the ability to speak fluently and coherently."}, {"id": 177, "text": "A system of government of a country in which one person has complete power:", "options": ["Audit", "Autocracy", "Asylum", "Articulation"], "correctIndex": 1, "explanation": "Autocracy (न.) का अर्थ है एकतंत्र या तानाशाही, जहाँ शासन की पूरी शक्ति एक ही व्यक्ति के पास होती है।"}, {"id": 178, "text": "A glass tank where fish and water plants are kept", "options": ["Aquarium", "Aquaphobia", "Aquatic", "Archipelago"], "correctIndex": 0, "explanation": "&#x27;Aquarium&#x27; is a transparent tank of water in which fish and other water creatures and plants are kept. (मछलीघर)"}, {"id": 179, "text": "Loss of speech due to medical problem", "options": ["Anorexia", "Apartment", "Aphasia", "Apiary"], "correctIndex": 2, "explanation": "&#x27;Aphasia&#x27; is a condition that robs you of the ability to communicate, often caused by a stroke or head injury."}, {"id": 180, "text": "One who doesn’t believe in the existence of God:", "options": ["Atheist", "Assassin", "Artist", "Ascetic"], "correctIndex": 0, "explanation": "Atheist (न.) वह व्यक्ति है जो ईश्वर के अस्तित्व में विश्वास नहीं करता (नास्तिक)।"}, {"id": 181, "text": "One who is unable to pay his debts:", "options": ["Benefactor", "Bachelor", "Bellicose", "Bankrupt"], "correctIndex": 3, "explanation": "Bankrupt (न./वि.) का अर्थ है दिवालिया, जो अपना कर्ज चुकाने में असमर्थ हो।"}, {"id": 182, "text": "A person who works for an expert to learn a trade", "options": ["Archaeologist", "Apostle", "Apprentice", "Applicant"], "correctIndex": 2, "explanation": "&#x27;Apprentice&#x27; is a person who is learning a trade from a skilled employer. (शिक्षु/चेला)"}, {"id": 183, "text": "The study of human race, especially of its origin, development, customs and beliefs", "options": ["Apartheid", "Anthropology", "Anthology", "Antonym"], "correctIndex": 1, "explanation": "&#x27;Anthropology&#x27; is the scientific study of humanity, concerned with human behavior, human biology, cultures, societies, and linguistics."}, {"id": 184, "text": "A set of rooms forming one residence in a building", "options": ["Anthology", "Anthropology", "Apartment", "Apiary"], "correctIndex": 2, "explanation": "&#x27;Apartment&#x27; is a suite of rooms forming one residence, typically in a building containing others."}, {"id": 185, "text": "A place where fights take place // A place or scene of activity, debate, or conflict", "options": ["Archive", "Arena", "Arsenal", "Archipelago"], "correctIndex": 1, "explanation": "&#x27;Arena&#x27; is a level area surrounded by seating, in which sports, entertainments, and other public events are held. (अखाड़ा/रंगभूमि)"}, {"id": 186, "text": "A place for keeping birds in a confined space:", "options": ["Arena", "Aquarium", "Apiary", "Aviary"], "correctIndex": 3, "explanation": "Aviary (न.) का अर्थ है पक्षीशाला, जहाँ पक्षियों को रखा जाता है।"}, {"id": 187, "text": "A criminal who illegally sets fire to property", "options": ["Arsonphobia", "Arsonist", "Arson", "Anarchist"], "correctIndex": 1, "explanation": "&#x27;Arsonist&#x27; is a person who commits the crime of arson (deliberately setting fire to property). (आगजनी करने वाला अपराधी)"}, {"id": 188, "text": "The science of foretelling events by mapping stars:", "options": ["Astronomy", "Autocracy", "Astrology", "Atonement"], "correctIndex": 2, "explanation": "Astrology (न.) वह विज्ञान या विद्या है जिसमें सितारों के माध्यम से भविष्य की भविष्यवाणी की जाती है।"}, {"id": 189, "text": "A person who has an extreme desire for wealth:", "options": ["Audible", "Avaricious", "Assertive", "Authentic"], "correctIndex": 1, "explanation": "Avaricious (वि.) का अर्थ है लालची या लोभी व्यक्ति।"}, {"id": 190, "text": "Look forward to", "options": ["Antipathy", "Apologize", "Antidote", "Anticipate"], "correctIndex": 3, "explanation": "&#x27;Anticipate&#x27; means to expect or predict a future event and prepare for it."}, {"id": 191, "text": "One who studies human antiquities", "options": ["Archaeologist", "Archaeology", "Aristocracy", "Archive"], "correctIndex": 0, "explanation": "&#x27;Archaeologist&#x27; is a person who studies human history through the excavation of sites. (पुरातात्विक)"}, {"id": 192, "text": "One who studies the evolution of mankind", "options": ["Antithesis", "Apartheid", "Antiquarian", "Anthropologist"], "correctIndex": 3, "explanation": "&#x27;Anthropologist&#x27; is an expert in or student of anthropology, the study of human societies and cultures and their development."}, {"id": 193, "text": "A man having no hair on the scalp:", "options": ["Banal", "Boorish", "Bald", "Brittle"], "correctIndex": 2, "explanation": "Bald (वि.) का अर्थ है गंजा।"}, {"id": 194, "text": "To express regret for something that one has done wrong", "options": ["Apathetic", "Anticipate", "Apologize", "Antithesis"], "correctIndex": 2, "explanation": "&#x27;Apologize&#x27; means to express regret for something one has done wrong."}, {"id": 195, "text": "Zeal; burning enthusiasm; passion", "options": ["Arson", "Arena", "Arable", "Ardor"], "correctIndex": 3, "explanation": "&#x27;Ardor&#x27; means great enthusiasm, passion, or love. (उत्साह/जोश)"}, {"id": 196, "text": "Showing or feeling no interest, enthusiasm, or concern", "options": ["Apathetic", "Apathy", "Antipathy", "Antidote"], "correctIndex": 0, "explanation": "&#x27;Apathetic&#x27; is an adjective describing someone showing or feeling no interest, enthusiasm, or concern."}, {"id": 197, "text": "Causing shock or dismay", "options": ["Appertain", "Appraisal", "Appalling", "Aquatic"], "correctIndex": 2, "explanation": "&#x27;Appalling&#x27; describes something that is very bad or shocking. (भयावह/डरावना)"}, {"id": 198, "text": "Based on chance rather than on reason or a plan", "options": ["Arbitrary", "Archaic", "Arson", "Arbitrator"], "correctIndex": 0, "explanation": "&#x27;Arbitrary&#x27; means based on random choice or personal whim, rather than any reason or system. (मनमाना/तर्कहीन)"}, {"id": 199, "text": "A person who practices one of the fine arts, such as painting or sculpture:", "options": ["Astronaut", "Auditor", "Artist", "Ascetic"], "correctIndex": 2, "explanation": "Artist (न.) वह व्यक्ति है जो ललित कलाओं (fine arts) का अभ्यास करता है।"}, {"id": 200, "text": "The state of having rejected your religious beliefs or your political party or a cause", "options": ["Arbitrary", "Apostle", "Apostate", "Apostasy"], "correctIndex": 3, "explanation": "&#x27;Apostasy&#x27; is the abandonment or renunciation of a religious or political belief. (धर्मत्याग/स्वधर्मत्याग)"}, {"id": 201, "text": "Preoccupation with the acquisition and possession of books", "options": ["Bicentennial", "Bibliophile", "Bibliomania", "Bibliography"], "correctIndex": 2, "explanation": "&#x27;Bibliomania&#x27; is an excessive fondness for acquiring and possessing books. (किताबों का पागलपन)"}, {"id": 202, "text": "A time when enemies agree to stop fighting", "options": ["Carnival", "Celibacy", "Coalition", "Ceasefire"], "correctIndex": 3, "explanation": "&#x27;Ceasefire&#x27; is a temporary suspension of fighting; a truce. (युद्धविराम)"}, {"id": 203, "text": "A sum of money added to a person’s wages as a reward for good performance", "options": ["Brokerage", "Bonus", "Budgeting", "Bullion"], "correctIndex": 1, "explanation": "&#x27;Bonus&#x27; is an extra amount of money that is added to a payment or wages as a reward. (पारितोषिक/अधिलाभांश)"}, {"id": 204, "text": "A person who enters a building illegally in order to steal", "options": ["Brigand", "Burglar", "Cacographer", "Cannibal"], "correctIndex": 1, "explanation": "&#x27;Burglar&#x27; is a person who commits theft by entering a building illegally. (सेंधमार/चोर)"}, {"id": 205, "text": "Song which is sung in a church by a group of singers", "options": ["Ceasefire", "Celibacy", "Carol", "Caw"], "correctIndex": 2, "explanation": "&#x27;Carol&#x27; is a religious folk song or popular hymn, particularly one associated with Christmas. (ईसाई भजन/क्रिसमस के गीत)"}, {"id": 206, "text": "An event causing great and sudden damage or suffering", "options": ["Cavalry", "Celibacy", "Centrifugal", "Catastrophe"], "correctIndex": 3, "explanation": "&#x27;Catastrophe&#x27; is an event causing great and usually sudden damage or suffering; a disaster. (तबाही/आपदा)"}, {"id": 207, "text": "A collection of sticks", "options": ["Bouquet", "Bundle", "Brood", "Bevy"], "correctIndex": 1, "explanation": "&#x27;Bundle&#x27; is a collection of things or quantity of material tied or wrapped up together. (गठरी/गट्ठर)"}, {"id": 208, "text": "The art of beautiful handwriting", "options": ["Cartography", "Chronology", "Cacography", "Calligraphy"], "correctIndex": 3, "explanation": "&#x27;Calligraphy&#x27; is decorative handwriting or handwritten lettering. (सुलेखन कला)"}, {"id": 209, "text": "Hole excavated by an animal as dwelling", "options": ["Byre", "Booth", "Burrow", "Cache"], "correctIndex": 2, "explanation": "&#x27;Burrow&#x27; is a hole or tunnel dug by a small animal, especially a rabbit, as a dwelling. (बिल/मांद)"}, {"id": 210, "text": "Words uttered impiously about God // The act of speaking irreverently about sacred things", "options": ["Boer", "Bleat", "Blasphemy", "Bombard"], "correctIndex": 2, "explanation": "&#x27;Blasphemy&#x27; is the action or offence of speaking sacrilegiously about God or sacred things. (ईश-निंदा)"}, {"id": 211, "text": "A narrow or busy section of road where the traffic often gets slower and stops", "options": ["Bottleneck", "Bridge", "Boulevard", "Bower"], "correctIndex": 0, "explanation": "&#x27;Bottleneck&#x27; is a situation or a place that causes delay in a process or system (like traffic). (बाधा/संकरा रास्ता)"}, {"id": 212, "text": "An avid book reader // One who reads a lot", "options": ["Bookworm", "Boomerang", "Bibliophile", "Bourgeois"], "correctIndex": 0, "explanation": "&#x27;Bookworm&#x27; is a person who enjoys reading very much and spends a lot of time doing it. (किताबी कीड़ा)"}, {"id": 213, "text": "Leather straps put around a horse’s head to control it", "options": ["Bridle", "Brittle", "Bundle", "Boomerang"], "correctIndex": 0, "explanation": "&#x27;Bridle&#x27; is the headgear used to control a horse, consisting of buckled straps. (लगाम)"}, {"id": 214, "text": "That which makes it difficult to recognize the presence or real nature of something", "options": ["Caricature", "Camouflage", "Caravan", "Cache"], "correctIndex": 1, "explanation": "&#x27;Camouflage&#x27; is the use of materials or coloration for concealment. (छलावरण/छद्मावरण)"}, {"id": 215, "text": "A person of South African Dutch descent", "options": ["Bohemian", "Bigot", "Benefactor", "Boer"], "correctIndex": 3, "explanation": "&#x27;Boer&#x27; refers to the descendants of the Dutch-speaking settlers of South Africa. (बोअर)"}, {"id": 216, "text": "Hard but easily broken // liable to break easily", "options": ["Brittle", "Boomer", "Bovine", "Bullion"], "correctIndex": 0, "explanation": "&#x27;Brittle&#x27; means hard but liable to break or shatter easily. (भंगुर/नाजुक)"}, {"id": 217, "text": "The scientific study of plants and their structure", "options": ["Biopsy", "Botany", "Biodegradable", "Biology"], "correctIndex": 1, "explanation": "&#x27;Botany&#x27; is the scientific study of the physiology, structure, genetics, and ecology of plants. (वनस्पति विज्ञान)"}, {"id": 218, "text": "A doctor who specializes in the study or treatment of heart diseases", "options": ["Cartographer", "Calligrapher", "Choreographer", "Cardiologist"], "correctIndex": 3, "explanation": "&#x27;Cardiologist&#x27; is a doctor who specializes in the study or treatment of heart diseases. (हृदय रोग विशेषज्ञ)"}, {"id": 219, "text": "Completely lifeless and unresponsive", "options": ["Chronic", "Callous", "Cardinal", "Cadaverous"], "correctIndex": 3, "explanation": "&#x27;Cadaverous&#x27; means resembling a corpse in being very pale, thin, or bony. (शव जैसा/पीला और दुबला)"}, {"id": 220, "text": "An act of breaking or failing to observe a law", "options": ["Brittle", "Bonus", "Breach", "Bridle"], "correctIndex": 2, "explanation": "&#x27;Breach&#x27; is an act of breaking or failing to observe a law, agreement, or code of conduct. (उल्लंघन/दरार)"}, {"id": 221, "text": "A shady place under trees", "options": ["Bonsai", "Bower", "Boulevard", "Bundle"], "correctIndex": 1, "explanation": "&#x27;Bower&#x27; is a pleasant shady place under trees or climbing plants in a garden or wood. (कुंज/लता-मंडप)"}, {"id": 222, "text": "A group of things that have been hidden in some place", "options": ["Caravan", "Cache", "Caricature", "Carnage"], "correctIndex": 1, "explanation": "&#x27;Cache&#x27; is a collection of items of the same type stored in a hidden or inaccessible place. (गुप्त भंडार)"}, {"id": 223, "text": "Causing great damage or suffering", "options": ["Cerebral", "Chronic", "Catastrophic", "Callous"], "correctIndex": 2, "explanation": "&#x27;Catastrophic&#x27; is the adjective form describing something involving or causing sudden great damage. (विनाशकारी)"}, {"id": 224, "text": "A local meeting of party members to select candidates, elect convention delegates, etc.", "options": ["Carnival", "Cortege", "Cabinet", "Caucus"], "correctIndex": 3, "explanation": "&#x27;Caucus&#x27; is a meeting of the members of a particular political party to select candidates or decide policy. (दल की सभा/बैठक)"}, {"id": 225, "text": "A large single detached house with single or double story", "options": ["Bungalow", "Bower", "Boutique", "Boulevard"], "correctIndex": 0, "explanation": "&#x27;Bungalow&#x27; is a low house having only one story or, in some cases, upper rooms set in the roof. (बंगला)"}, {"id": 226, "text": "Huge fire for celebration", "options": ["Bleat", "Bonfire", "Bevy", "Beverage"], "correctIndex": 1, "explanation": "&#x27;Bonfire&#x27; is a large open-air fire used as part of a celebration. (होली की तरह जलाई जाने वाली आग/धूनी)"}, {"id": 227, "text": "One who is well-versed in the knowledge of plants // The scientific study of plants", "options": ["Brite", "Boomer", "Botanist", "Brigand"], "correctIndex": 2, "explanation": "&#x27;Botanist&#x27; is an expert in or student of the scientific study of plants. (वनस्पतिशास्त्री)"}, {"id": 228, "text": "Belonging to middle class", "options": ["Bourgeois", "Brigand", "Boomer", "Brunette"], "correctIndex": 0, "explanation": "&#x27;Bourgeois&#x27; refers to the middle class, typically with reference to its perceived materialistic values. (मध्यमवर्गीय)"}, {"id": 229, "text": "A person who is a 100 years old or more", "options": ["Centurion", "Centennial", "Century", "Centenarian"], "correctIndex": 3, "explanation": "&#x27;Centenarian&#x27; is a person who is a hundred or more years old. (सौ वर्ष का व्यक्ति)"}, {"id": 230, "text": "A person who loves or collects books", "options": ["Bigot", "Bibliophile", "Bohemian", "Beneficiary"], "correctIndex": 1, "explanation": "&#x27;Bibliophile&#x27; is a person who collects or has a great love of books. (पुस्तकाप्रेमी)"}, {"id": 231, "text": "A floating container anchored to the sea bottom, used for directing ships and warning them of danger", "options": ["Buzz", "Burrow", "Buoy", "Byre"], "correctIndex": 2, "explanation": "&#x27;Buoy&#x27; is an anchored float serving as a navigation mark. (लंगर डाल कर ठहराया हुआ बोया)"}, {"id": 232, "text": "One who does not follow the usual rules of social life // An unconventional style of living", "options": ["Bizarre", "Bombastic", "Bigot", "Bohemian"], "correctIndex": 3, "explanation": "&#x27;Bohemian&#x27; is a person who has informal and unconventional social habits. (रूढ़िमुक्त/स्वेच्छाचारी)"}, {"id": 233, "text": "Love for dogs", "options": ["Cardiophilia", "Claustrophobia", "Cynophobia", "Canophilia"], "correctIndex": 3, "explanation": "&#x27;Canophilia&#x27; is the love or fondness for dogs. (कुत्तों से प्रेम)"}, {"id": 234, "text": "Carry out a task clumsily or incompetently", "options": ["Buoy", "Bureaucracy", "Burglar", "Bungle"], "correctIndex": 3, "explanation": "&#x27;Bungle&#x27; means to do something badly or without skill. (काम बिगाड़ देना/भूल करना)"}, {"id": 235, "text": "A large, deep pot used both in the oven and as a serving vessel", "options": ["Casserole", "Cauldron", "Carafe", "Chaff"], "correctIndex": 0, "explanation": "&#x27;Casserole&#x27; is a large, deep dish used both in the oven and as a serving vessel. (एक गहरा बर्तन)"}, {"id": 236, "text": "A small shop that sells fashionable clothes", "options": ["Boutique", "Bundle", "Brewery", "Bungalow"], "correctIndex": 0, "explanation": "&#x27;Boutique&#x27; is a small shop selling fashionable clothes or accessories. (बूटीक/वस्त्रालय)"}, {"id": 237, "text": "Rhythmic flow of sounds or words", "options": ["Carcass", "Caravan", "Cacophony", "Cadence"], "correctIndex": 3, "explanation": "&#x27;Cadence&#x27; is a modulation or inflection of the voice or a rhythmic flow of sounds. (ताल/स्वर का उतार-चढ़ाव)"}, {"id": 238, "text": "A broad road bordered with trees", "options": ["Bungalow", "Boulevard", "Bottleneck", "Boutique"], "correctIndex": 1, "explanation": "&#x27;Boulevard&#x27; is a wide street in a town or city, typically one lined with trees. (मुख्य मार्ग/पेड़ों वाला चौड़ा रास्ता)"}, {"id": 239, "text": "An arrangement of flowers that is usually given as a present", "options": ["Bouquet", "Bower", "Boutique", "Brood"], "correctIndex": 0, "explanation": "&#x27;Bouquet&#x27; is an attractively arranged bunch of flowers, especially one presented as a gift. (गुलदस्ता)"}, {"id": 240, "text": "A person who is intolerant towards those holding different opinions // One who has narrow and prejudiced religious views", "options": ["Beneficiary", "Bohemian", "Bigot", "Boer"], "correctIndex": 2, "explanation": "&#x27;Bigot&#x27; is a person who is obstinately or unreasonably attached to a belief or opinion. (कट्टर/धर्मांध)"}, {"id": 241, "text": "A picture of a person or a thing drawn in such a highly exaggerated manner as to cause laughter", "options": ["Caricature", "Cartoon", "Camouflage", "Canvas"], "correctIndex": 0, "explanation": "&#x27;Caricature&#x27; is a picture or description of a person in which certain characteristics are exaggerated for comic effect. (व्यंग्य-चित्र)"}, {"id": 242, "text": "Anything tending to move away from centre", "options": ["Centrifugal", "Centripetal", "Cerebral", "Chronic"], "correctIndex": 0, "explanation": "&#x27;Centrifugal&#x27; refers to a force that acts outwards on a body moving around a centre. (केंद्रप्रसारक/केन्द्रत्यागी)"}, {"id": 243, "text": "A person who gains as a result of something // A person who derives advantage from something", "options": ["Benefactor", "Beneficiary", "Bigot", "Bibliophile"], "correctIndex": 1, "explanation": "&#x27;Beneficiary&#x27; is the person who receives help or advantage from something like a will or insurance. (लाभार्थी)"}, {"id": 244, "text": "An itemized summary of estimated expenses for a given period along with proposals for financing them", "options": ["Budgeting", "Bonus", "Bullion", "Bill"], "correctIndex": 0, "explanation": "&#x27;Budgeting&#x27; is the process of creating a plan to spend your money. (बजट बनाना)"}, {"id": 245, "text": "The war resulted in ruthless killing of many people", "options": ["Carcass", "Cache", "Carnage", "Caravan"], "correctIndex": 2, "explanation": "&#x27;Carnage&#x27; is the killing of a large number of people. (नरसंहार/हत्याकांड)"}, {"id": 246, "text": "A person who eats human flesh", "options": ["Callous", "Cadaverous", "Carnivorous", "Cannibal"], "correctIndex": 3, "explanation": "&#x27;Cannibal&#x27; is a person who eats the flesh of other human beings. (नरभक्षी)"}, {"id": 247, "text": "Capable of being decomposed by biological agents, especially bacteria", "options": ["Biodegradable", "Beverage", "Biology", "Biopsy"], "correctIndex": 0, "explanation": "&#x27;Biodegradable&#x27; refers to substances capable of being decomposed by bacteria or other living organisms. (जैव-निम्नीकरणीय)"}, {"id": 248, "text": "Underground place for storing wine or other provisions", "options": ["Casino", "Cemetery", "Cabin", "Cellar"], "correctIndex": 3, "explanation": "&#x27;Cellar&#x27; is a room below ground level in a house, typically used for storing wine or coal. (तहखाना)"}, {"id": 249, "text": "A person who draws or makes maps", "options": ["Chauffeur", "Calligrapher", "Choreographer", "Cartographer"], "correctIndex": 3, "explanation": "&#x27;Cartographer&#x27; is a person who creates or produces maps. (मानचित्रकार)"}, {"id": 250, "text": "Scientific study of living organisms", "options": ["Biology", "Botany", "Biopsy", "Biodiversity"], "correctIndex": 0, "explanation": "&#x27;Biology&#x27; is the natural science that studies life and living organisms. (जीव विज्ञान)"}, {"id": 251, "text": "A thing which happens every two years", "options": ["Bimonthly", "Bicentennial", "Bizarre", "Biennial"], "correctIndex": 3, "explanation": "&#x27;Biennial&#x27; describes something that happens once every two years. (द्विवार्षिक)"}, {"id": 252, "text": "The sound of a crow", "options": ["Cluck", "Coo", "Caw", "Chirp"], "correctIndex": 2, "explanation": "&#x27;Caw&#x27; is the harsh cry of a crow or similar bird. (काँव-काँव)"}, {"id": 253, "text": "A group of girls/boys/birds etc.", "options": ["Bimonthly", "Bigot", "Bibliography", "Bevy"], "correctIndex": 3, "explanation": "&#x27;Bevy&#x27; is used to describe a large group of people or things of a particular kind. (झुंड/टोली)"}, {"id": 254, "text": "Very strange or unusual", "options": ["Bohemian", "Blasphemy", "Bombastic", "Bizarre"], "correctIndex": 3, "explanation": "&#x27;Bizarre&#x27; describes something that is very strange or unusual. (अजीब/विचित्र)"}, {"id": 255, "text": "The state of being unmarried by choice", "options": ["Centennial", "Centenarian", "Chaff", "Celibacy"], "correctIndex": 3, "explanation": "&#x27;Celibacy&#x27; is the state of abstaining from marriage and sexual relations. (ब्रह्मचर्य/अविवाहित जीवन)"}, {"id": 256, "text": "House or shelter of a gipsy // A group of people travelling together across a desert", "options": ["Carcass", "Caravan", "Cache", "Carnage"], "correctIndex": 1, "explanation": "&#x27;Caravan&#x27; is a vehicle equipped for living in, or a group of people/animals traveling together. (काफिला/कारवां)"}, {"id": 257, "text": "A man devoid of kind feeling and sympathy", "options": ["Callous", "Cardinal", "Capitalist", "Cannibal"], "correctIndex": 0, "explanation": "&#x27;Callous&#x27; means showing or having an insensitive and cruel disregard for others. (कठोर/निर्दयी)"}, {"id": 258, "text": "Animals that eat meat", "options": ["Cannibal", "Chaff", "Centenarian", "Carnivorous"], "correctIndex": 3, "explanation": "&#x27;Carnivorous&#x27; refers to animals that feed on other animals/flesh. (मांसाहारी)"}, {"id": 259, "text": "The young of an animal cared for at one time // A family of young birds", "options": ["Bevy", "Bundle", "Bonsai", "Brood"], "correctIndex": 3, "explanation": "&#x27;Brood&#x27; is a family of young animals, especially birds, produced at one hatching or birth. (पक्षियों का झोंट/एक ही बार के बच्चे)"}, {"id": 260, "text": "Harsh or discordant sound // Loud confusing disagreeable sounds", "options": ["Cacophony", "Calligraphy", "Cadence", "Canophilia"], "correctIndex": 0, "explanation": "&#x27;Cacophony&#x27; is a harsh, discordant mixture of sounds. (कोलाहल/कटु स्वर)"}, {"id": 261, "text": "Dwarf varieties of trees and shrubs grown in pots", "options": ["Bonsai", "Brewery", "Bouquet", "Boutique"], "correctIndex": 0, "explanation": "&#x27;Bonsai&#x27; is the art of growing ornamental, artificially dwarfed trees or shrubs in pots. (बौने पौधे उगाने की कला)"}, {"id": 262, "text": "Place where cows are sheltered", "options": ["Cache", "Byre", "Barn", "Burrow"], "correctIndex": 1, "explanation": "&#x27;Byre&#x27; is a dialect word for a cowshed. (गौशाला)"}, {"id": 263, "text": "Affecting or relating to cows or cattle", "options": ["Boorish", "Brittle", "Brood", "Bovine"], "correctIndex": 3, "explanation": "&#x27;Bovine&#x27; relates to or affects cattle (cows/oxen). (गो-जातीय)"}, {"id": 264, "text": "The sound made by bees", "options": ["Bleat", "Buzz", "Bellow", "Cadence"], "correctIndex": 1, "explanation": "&#x27;Buzz&#x27; is a low, continuous humming or murmuring sound, made by or similar to that made by an insect. (भिनभिनाहट)"}, {"id": 265, "text": "A person who has money especially invested in business", "options": ["Calligrapher", "Cardinal", "Capitalist", "Cacographer"], "correctIndex": 2, "explanation": "&#x27;Capitalist&#x27; is a wealthy person who uses money to invest in trade and industry for profit. (पूंजीपति)"}, {"id": 266, "text": "The removal of tissue from the body of somebody who is ill and its examination in order to find out more about the disease", "options": ["Bibliography", "Biology", "Biodegradable", "Biopsy"], "correctIndex": 3, "explanation": "&#x27;Biopsy&#x27; is an examination of tissue removed from a living body to discover the presence or cause of a disease. (जीवोति-जांच)"}, {"id": 267, "text": "Member of a band of robbers", "options": ["Brunette", "Botanist", "Brigand", "Bourgeois"], "correctIndex": 2, "explanation": "&#x27;Brigand&#x27; is a member of a gang that ambushes and robs people in forests or mountains. (डाकू/लुटेरा)"}, {"id": 268, "text": "A woman with dark brown hair", "options": ["Brunette", "Blonde", "Beauty", "Bourgeois"], "correctIndex": 0, "explanation": "&#x27;Brunette&#x27; refers to a woman or girl with dark brown hair. (सांवली/भूरे बालों वाली महिला)"}, {"id": 269, "text": "A large, deep, metal pot used for cooking over open fire", "options": ["Cauldron", "Chalice", "Canister", "Casserole"], "correctIndex": 0, "explanation": "&#x27;Cauldron&#x27; is a large metal pot with a lid and handle, used for cooking over an open fire. (कड़ाहा)"}, {"id": 270, "text": "A hunting weapon which comes back, used by Australian Aborigines", "options": ["Boomerang", "Brood", "Bridle", "Brittle"], "correctIndex": 0, "explanation": "&#x27;Boomerang&#x27; is a curved flat piece of wood that can be thrown so that it returns to the thrower. (बुमेरांग/एक हथियार जो फेंकने वाले के पास लौट आता है)"}, {"id": 271, "text": "One who is bad in spellings", "options": ["Calligrapher", "Capitalist", "Cacographer", "Cardiologist"], "correctIndex": 2, "explanation": "&#x27;Cacographer&#x27; is a person who is bad at spelling or has poor handwriting. (अशुद्ध लिखने वाला)"}, {"id": 272, "text": "A place where gambling games are played", "options": ["Cellar", "Casino", "Cemetery", "Cache"], "correctIndex": 1, "explanation": "&#x27;Casino&#x27; is a public room or building where gambling games are played. (जुआघर)"}, {"id": 273, "text": "The 100th anniversary of an event", "options": ["Centripetal", "Centenarian", "Centennial", "Centenary"], "correctIndex": 2, "explanation": "&#x27;Centennial&#x27; relates to a hundredth anniversary. (सौवीं वर्षगाँठ)"}, {"id": 274, "text": "An amusing drawing about politics/events in the news", "options": ["Cascade", "Cartoon", "Caricature", "Catalogue"], "correctIndex": 1, "explanation": "&#x27;Cartoon&#x27; is a simple drawing showing the features of its subjects in a humorously exaggerated way. (व्यंग्य-चित्र/कार्टून)"}, {"id": 275, "text": "A person who can speak only two languages", "options": ["Bimonthly", "Bicentennial", "Biennial", "Bilingual"], "correctIndex": 3, "explanation": "&#x27;Bilingual&#x27; refers to a person who is able to speak two languages fluently. (द्विभाषी)"}, {"id": 276, "text": "Soldiers who fight on horseback", "options": ["Cartographer", "Cavalry", "Cannonade", "Chauffeur"], "correctIndex": 1, "explanation": "&#x27;Cavalry&#x27; refers to the part of an army that fights on horseback. (घुड़सवार सेना)"}, {"id": 277, "text": "A meal that is usually taken late in the morning that combines a late breakfast and an early lunch", "options": ["Buffet", "Banquet", "Beverage", "Brunch"], "correctIndex": 3, "explanation": "&#x27;Brunch&#x27; is a meal eaten in the late morning that is a combination of breakfast and lunch. (देर से किया गया नाश्ता/दोपहर का भोजन)"}, {"id": 278, "text": "The young one of a cow", "options": ["Cygnet", "Cub", "Calf", "Colt"], "correctIndex": 2, "explanation": "&#x27;Calf&#x27; is the young of a cow or certain other large mammals. (बछड़ा)"}, {"id": 279, "text": "A list of the books referred to in a scholarly work", "options": ["Bibliomania", "Bibliophile", "Biography", "Bibliography"], "correctIndex": 3, "explanation": "&#x27;Bibliography&#x27; is a list of books and articles consulted by an author. (ग्रंथसूची)"}, {"id": 280, "text": "Using high-sounding words but with little meaning", "options": ["Bizarre", "Bohemian", "Blasphemy", "Bombastic"], "correctIndex": 3, "explanation": "&#x27;Bombastic&#x27; refers to language that is high-sounding but has little meaning; inflated. (शब्दों से आडंबरपूर्ण)"}, {"id": 281, "text": "The dead body of an animal", "options": ["Caricature", "Carnage", "Cadaver", "Carcass"], "correctIndex": 3, "explanation": "&#x27;Carcass&#x27; is the dead body of an animal, especially one slaughtered and used for food. (पशु का शव)"}, {"id": 282, "text": "A person who is skilled at producing beautiful handwriting", "options": ["Calligrapher", "Cartographer", "Choreographer", "Cacographer"], "correctIndex": 0, "explanation": "&#x27;Calligrapher&#x27; is a person who practices the art of beautiful handwriting. (सुलेखक)"}, {"id": 283, "text": "200th anniversary", "options": ["Bilingual", "Bicentennial", "Biennial", "Bimonthly"], "correctIndex": 1, "explanation": "&#x27;Bicentennial&#x27; is the two-hundredth anniversary of a significant event. (द्विशताब्दी)"}, {"id": 284, "text": "A fall of water from a great height", "options": ["Cascade", "Cauldron", "Chasm", "Canal"], "correctIndex": 0, "explanation": "&#x27;Cascade&#x27; is a small waterfall, typically one of several that fall in stages down a rocky slope. (झरना/जलप्रपात)"}, {"id": 285, "text": "The art or process of drawing or making maps", "options": ["Cartography", "Chronology", "Cerography", "Calligraphy"], "correctIndex": 0, "explanation": "&#x27;Cartography&#x27; is the science or practice of drawing maps. (मानचित्रकारी)"}, {"id": 286, "text": "Twice a month // Occurring every two months", "options": ["Bilingual", "Bicentennial", "Bimonthly", "Biennial"], "correctIndex": 2, "explanation": "&#x27;Bimonthly&#x27; can mean twice a month or once every two months. (द्विमासिक)"}, {"id": 287, "text": "The sound made by sheep", "options": ["Bleat", "Bombard", "Bonfire", "Boer"], "correctIndex": 0, "explanation": "&#x27;Bleat&#x27; is the characteristic wavering cry made by a sheep, goat, or calf. (मिमियाना)"}, {"id": 288, "text": "The story of a person’s life written by somebody else", "options": ["Biography", "Autobiography", "Bibliomania", "Bibliography"], "correctIndex": 0, "explanation": "&#x27;Biography&#x27; is an account of someone&#x27;s life written by someone else. (जीवनी)"}, {"id": 289, "text": "A large burial ground", "options": ["Cemetery", "Cloister", "Courtyard", "Catacomb"], "correctIndex": 0, "explanation": "&#x27;Cemetery&#x27; is a large burial ground, especially one not next to a church. (कब्रिस्तान)"}, {"id": 290, "text": "Deprived of or lacking of something", "options": ["Bizarre", "Beverage", "Bereft", "Bohemian"], "correctIndex": 2, "explanation": "&#x27;Bereft&#x27; means lacking something needed, wanted, or expected. (वंचित/विहीन)"}, {"id": 291, "text": "Any soft drink except water", "options": ["Bevy", "Bonfire", "Beverage", "Biopsy"], "correctIndex": 2, "explanation": "&#x27;Beverage&#x27; is a drink of any type (other than water). (पेय पदार्थ)"}, {"id": 292, "text": "Gold and silver before using for manufacturing ornaments", "options": ["Bullion", "Bracelet", "Bundle", "Bronze"], "correctIndex": 0, "explanation": "&#x27;Bullion&#x27; is gold or silver in bulk before coining, or valued by weight. (सोने-चांदी की ईंटें/बिस्कुट)"}, {"id": 293, "text": "To take something on loan with the intention of returning it", "options": ["Budgeting", "Bullion", "Borrow", "Breach"], "correctIndex": 2, "explanation": "&#x27;Borrow&#x27; means to take and use something that belongs to someone else with the intention of returning it. (उधार लेना)"}, {"id": 294, "text": "A factory where beer is made", "options": ["Bakery", "Brothel", "Boutique", "Brewery"], "correctIndex": 3, "explanation": "&#x27;Brewery&#x27; is a place where beer is made commercially. (शराब की भठ्ठी)"}, {"id": 295, "text": "A list or collection of books or informative graphics", "options": ["Catalogue", "Censure", "Caucus", "Chronicle"], "correctIndex": 0, "explanation": "&#x27;Catalogue&#x27; is a complete list of items, typically one in alphabetical or other systematic order. (सूचीपत्र)"}, {"id": 296, "text": "Subject (someone) to a continuous flow of questions, criticisms or information", "options": ["Bombard", "Beverage", "Bonfire", "Bombastic"], "correctIndex": 0, "explanation": "&#x27;Bombard&#x27; means to attack continuously with questions, criticisms, or information. (बौछार करना)"}, {"id": 297, "text": "A substance that speeds up a chemical reaction without being consumed by the reaction itself", "options": ["Caustic", "Catalyst", "Capsule", "Carbon"], "correctIndex": 1, "explanation": "&#x27;Catalyst&#x27; is a substance that increases the rate of a chemical reaction. (उत्प्रेरक)"}, {"id": 298, "text": "The study of the heart and its action and disease", "options": ["Chronology", "Cosmetology", "Cardiology", "Calligraphy"], "correctIndex": 2, "explanation": "&#x27;Cardiology&#x27; is the branch of medicine that deals with diseases and abnormalities of the heart. (हृदय विज्ञान)"}, {"id": 299, "text": "Something which is considered to be very important", "options": ["Chronic", "Callous", "Captious", "Cardinal"], "correctIndex": 3, "explanation": "&#x27;Cardinal&#x27; means of greatest importance; fundamental. (प्रमुख/अति महत्वपूर्ण)"}, {"id": 300, "text": "A government run by officials in a state", "options": ["Callous", "Bureaucracy", "Cacophony", "Cardinal"], "correctIndex": 1, "explanation": "&#x27;Bureaucracy&#x27; is a system of government in which most of the important decisions are taken by state officials rather than by elected representatives. (नौकरशाही)"}, {"id": 301, "text": "Failing to discharge one&#x27;s legal or moral duty:", "options": ["Defiance", "Desertion", "Dereliction", "Deterrence"], "correctIndex": 2, "explanation": "Dereliction is the shameful failure to fulfill one&#x27;s obligations or duties. (अपने कर्तव्य या जिम्मेदारी का पालन न करना &#x27;Dereliction&#x27; कहलाता है।)"}, {"id": 302, "text": "A place where a dead person&#x27;s body is burnt", "options": ["Crematorium", "Chapel", "Cemetery", "Catacomb"], "correctIndex": 0, "explanation": "&#x27;Crematorium&#x27; is a place where a dead person&#x27;s body is cremated (burned). (शमशान घाट)"}, {"id": 303, "text": "A book of names and addresses:", "options": ["Diatribe", "Dictionary", "Directory", "Dialect"], "correctIndex": 2, "explanation": "A directory is a book or list of names, addresses, or telephone numbers. (नामों और पतों की सूची वाली पुस्तक को &#x27;Directory&#x27; कहते हैं।)"}, {"id": 304, "text": "A person who is morally corrupt or wicked is described as:", "options": ["Defiant", "Delirious", "Deponent", "Depraved"], "correctIndex": 3, "explanation": "Depraved describes someone with no moral principles. (नैतिक रूप से भ्रष्ट या चरित्रहीन व्यक्ति को &#x27;Depraved&#x27; कहते हैं।)"}, {"id": 305, "text": "The scientific study of skin and its related diseases:", "options": ["Demography", "Diarchy", "Dermatology", "Cytology"], "correctIndex": 2, "explanation": "Dermatology is the branch of medicine concerned with the skin. (त्वचा के वैज्ञानिक अध्ययन को &#x27;Dermatology&#x27; कहते हैं।)"}, {"id": 306, "text": "Break or fall apart into small fragments in the process of deterioration", "options": ["Chasm", "Crumble", "Chaff", "Cascade"], "correctIndex": 1, "explanation": "&#x27;Crumble&#x27; means to break or fall apart into small fragments, especially through age or neglect. (टुकड़े-टुकड़े होना/बिखरना)"}, {"id": 307, "text": "A political leader who sways his followers by appealing to emotions and prejudices rather than rational argument:", "options": ["Democrat", "Demagogue", "Deponent", "Despot"], "correctIndex": 1, "explanation": "A demagogue uses oratory to manipulate people&#x27;s emotions for power. (वह नेता जो अपनी वक्तृत्व कला से लोगों को भड़काता है, &#x27;Demagogue&#x27; कहलाता है।)"}, {"id": 308, "text": "An omission of duty or a failure to do what is required by law is:", "options": ["Delinquency", "Deponent", "Decadence", "Defiance"], "correctIndex": 0, "explanation": "Delinquency is the failure to perform an official duty or minor crime. (कर्तव्य की उपेक्षा या चूक को &#x27;Delinquency&#x27; कहते हैं।)"}, {"id": 309, "text": "A person who gives written testimony or evidence for use in a law court is a:", "options": ["Demagogue", "Deponent", "Defendant", "Delinquent"], "correctIndex": 1, "explanation": "A deponent is a person who gives a sworn statement or deposition. (न्यायालय में लिखित गवाही देने वाला व्यक्ति &#x27;Deponent&#x27; कहलाता है।)"}, {"id": 310, "text": "One who investigates and solves crimes:", "options": ["Deponent", "Dictator", "Detective", "Deputy"], "correctIndex": 2, "explanation": "A detective is someone whose job is to discover information about crimes. (अपराधों की जांच करने और उन्हें सुलझाने वाले व्यक्ति को &#x27;Detective&#x27; कहते हैं।)"}, {"id": 311, "text": "Ceremony of crowning a king", "options": ["Conscription", "Celebration", "Coronation", "Carnival"], "correctIndex": 2, "explanation": "&#x27;Coronation&#x27; is the official ceremony of crowning a king or queen. (राज्याभिषेक)"}, {"id": 312, "text": "Turning point of danger or disease", "options": ["Crisis", "Climax", "Cascade", "Catastrophe"], "correctIndex": 0, "explanation": "&#x27;Crisis&#x27; is a time of intense difficulty, trouble, or danger, often a turning point in a disease. (संकट/नाजुक समय)"}, {"id": 313, "text": "A principle or standard by which anything is or can be judged", "options": ["Catalogue", "Consensus", "Conjecture", "Criterion"], "correctIndex": 3, "explanation": "&#x27;Criterion&#x27; is a principle or standard by which something may be judged or decided. (मापदंड/कसौटी)"}, {"id": 314, "text": "Science of the constitution of the whole universe", "options": ["Chronology", "Calligraphy", "Cosmography", "Cartography"], "correctIndex": 2, "explanation": "&#x27;Cosmography&#x27; is the science that deals with the general features of the universe, including the earth. (ब्रह्मांड-वर्णन का विज्ञान)"}, {"id": 315, "text": "Guilty of the crime", "options": ["Churlish", "Callous", "Credible", "Culpable"], "correctIndex": 3, "explanation": "&#x27;Culpable&#x27; means deserving blame or being responsible for a fault or wrong. (दोषी/अपराधी)"}, {"id": 316, "text": "Made in imitation so as to be passed off fraudulently as genuine", "options": ["Contraband", "Counterfeit", "Clandestine", "Caustic"], "correctIndex": 1, "explanation": "&#x27;Counterfeit&#x27; refers to something made in exact imitation of something valuable with the intention to deceive. (नकली/जालसाजी)"}, {"id": 317, "text": "A disturbed state of mind characterized by restlessness and illusions, often caused by illness, is:", "options": ["Demography", "Delinquency", "Deliberation", "Delirium"], "correctIndex": 3, "explanation": "Delirium is a state of mental confusion during illness. (बीमारी के कारण मानसिक भ्रम या विक्षुब्ध अवस्था &#x27;Delirium&#x27; कहलाती है।)"}, {"id": 318, "text": "To determine the nature of a disease through medical examination:", "options": ["Denature", "Depict", "Diffuse", "Diagnose"], "correctIndex": 3, "explanation": "To diagnose is to identify the nature of an illness by looking at symptoms. (निरीक्षण के द्वारा रोग की पहचान करना &#x27;Diagnose&#x27; कहलाता है।)"}, {"id": 319, "text": "The process of changing secret and coded messages into a readable form is:", "options": ["Encoding", "Decoding", "Denaturing", "Cyphering"], "correctIndex": 1, "explanation": "Decoding is the act of converting a coded message into plain text. (गुप्त संदेशों को पढ़ने योग्य भाषा में बदलने को &#x27;Decoding&#x27; कहते हैं।)"}, {"id": 320, "text": "Gradual recovery of health and strength", "options": ["Convalescence", "Criterion", "Convoy", "Coronation"], "correctIndex": 0, "explanation": "&#x27;Convalescence&#x27; is the period of gradual recovery of health and strength after illness or injury. (बीमारी के बाद धीरे-धीरे स्वास्थ्य में सुधार)"}, {"id": 321, "text": "Unable to think clearly because of mental illness:", "options": ["Depraved", "Deranged", "Disgruntled", "Delirious"], "correctIndex": 1, "explanation": "Deranged refers to someone who is mentally unbalanced or insane. (मानसिक बीमारी के कारण विक्षिप्त या पागल व्यक्ति को &#x27;Deranged&#x27; कहते हैं।)"}, {"id": 322, "text": "The process of deciding the nature of a disease by examination:", "options": ["Delirium", "Diagnosis", "Dermatology", "Deterrence"], "correctIndex": 1, "explanation": "Diagnosis is the identification of an illness or other problem. (बीमारी की पहचान करने की प्रक्रिया को &#x27;Diagnosis&#x27; कहते हैं।)"}, {"id": 323, "text": "One who sneers at the aims and beliefs of his fellow men", "options": ["Cynic", "Critic", "Churlish", "Charlatan"], "correctIndex": 0, "explanation": "&#x27;Cynic&#x27; is a person who believes that people are motivated purely by self-interest rather than acting for honorable or unselfish reasons. (दोषदर्शी/मानवद्वेषी)"}, {"id": 324, "text": "The abandonment of one&#x27;s country or a specific cause:", "options": ["Disenfranchisement", "Desertion", "Defiance", "Dereliction"], "correctIndex": 1, "explanation": "Desertion is the act of leaving a place or person without intending to return. (अपने देश या किसी उद्देश्य को बिना अनुमति छोड़ देना &#x27;Desertion&#x27; कहलाता है।)"}, {"id": 325, "text": "Giving orders in a manner that permits no refusal:", "options": ["Dictatorial", "Devious", "Disgruntled", "Diligent"], "correctIndex": 0, "explanation": "Dictatorial refers to an overbearing manner that expects total obedience. (तानाशाही पूर्ण रवैया या ऐसा आदेश जिसमें इनकार की गुंजाइश न हो, &#x27;Dictatorial&#x27; कहलाता है।)"}, {"id": 326, "text": "A funeral procession", "options": ["Caravan", "Conclave", "Cortege", "Congregation"], "correctIndex": 2, "explanation": "&#x27;Cortege&#x27; is a solemn procession, especially for a funeral. (अंतिम संस्कार के लिए निकाला गया जुलूस/शव-यात्रा)"}, {"id": 327, "text": "One who finds nothing good in anything", "options": ["Cynic", "Captious", "Churlish", "Critic"], "correctIndex": 3, "explanation": "&#x27;Critic&#x27; is a person who expresses an unfavorable opinion of something or someone. (आलोचक)"}, {"id": 328, "text": "That can be believed or trusted", "options": ["Consummate", "Credulous", "Conceivable", "Credible"], "correctIndex": 3, "explanation": "&#x27;Credible&#x27; means something that is able to be believed; convincing. (विश्वसनीय)"}, {"id": 329, "text": "The sound made by frogs", "options": ["Chirp", "Caw", "Croak", "Cluck"], "correctIndex": 2, "explanation": "&#x27;Croak&#x27; is the characteristic deep hoarse sound made by a frog or a crow. (मेंढक की आवाज़/टर्राना)"}, {"id": 330, "text": "To protect someone or something from harm or danger is to:", "options": ["Defend", "Defy", "Defame", "Depict"], "correctIndex": 0, "explanation": "To defend means to guard against attack or harm. (नुकसान या खतरे से बचाना &#x27;Defend&#x27; कहलाता है।)"}, {"id": 331, "text": "The expression of a wish that misfortune or doom befall a person", "options": ["Censure", "Condone", "Curse", "Chastise"], "correctIndex": 2, "explanation": "&#x27;Curse&#x27; is a solemn utterance intended to invoke a supernatural power to inflict harm or punishment on someone or something. (शाप देना)"}, {"id": 332, "text": "What is the term for a lion&#x27;s home or resting place?", "options": ["Stable", "Burrow", "Den", "Kennel"], "correctIndex": 2, "explanation": "A den is the wild habitat or home of a lion. (शेर के रहने के स्थान को &#x27;Den&#x27; या गुफा कहा जाता है।)"}, {"id": 333, "text": "A person who enjoys doing dangerous things in a way that others might consider stupid is a:", "options": ["Delinquent", "Deponent", "Demagogue", "Daredevil"], "correctIndex": 3, "explanation": "A daredevil is someone who takes unnecessary risks. (साहसी या दुस्साहसी व्यक्ति जो खतरनाक काम करना पसंद करता है।)"}, {"id": 334, "text": "A stanza having two lines in verse", "options": ["Climax", "Chiasmus", "Couplet", "Chorus"], "correctIndex": 2, "explanation": "&#x27;Couplet&#x27; is a pair of successive lines of verse, typically rhyming and of the same length. (दोहा/दो पंक्तियों की कविता)"}, {"id": 335, "text": "A shortage of essential elements like vitamins and minerals needed for good health is:", "options": ["Defect", "Deficiency", "Deficit", "Delinquency"], "correctIndex": 1, "explanation": "Deficiency is the lack of something required for the body. (विटामिन, खनिजों आदि की कमी को &#x27;Deficiency&#x27; कहते हैं।)"}, {"id": 336, "text": "A person without a home, a job or property:", "options": ["Dilettante", "Deserter", "Destitute", "Derelict"], "correctIndex": 3, "explanation": "A derelict is a person who has no home or job and is often in poor health. (वह व्यक्ति जिसके पास न घर हो, न नौकरी और न ही संपत्ति, &#x27;Derelict&#x27; कहलाता है।)"}, {"id": 337, "text": "Slow and careful movement, thought, or discussion is termed as:", "options": ["Deliberation", "Delirium", "Democracy", "Deliquesce"], "correctIndex": 0, "explanation": "Deliberation is careful consideration before making a decision. (सोच-समझकर किया गया विचार या धीमी गति को &#x27;Deliberation&#x27; कहते हैं।)"}, {"id": 338, "text": "A dabbler in the art and literature who lacks professional skill:", "options": ["Dilettante", "Dexterous", "Diligent", "Deputy"], "correctIndex": 0, "explanation": "A dilettante is a person who cultivates an area of interest, such as the arts, without real commitment or knowledge. (कला और साहित्य में केवल ऊपरी रुचि रखने वाला व्यक्ति &#x27;Dilettante&#x27; कहलाता है।)"}, {"id": 339, "text": "A person who is unable to hear is described as:", "options": ["Dumb", "Deaf", "Delirious", "Decapitated"], "correctIndex": 1, "explanation": "Deaf refers to the inability to hear. (वह व्यक्ति जो सुन नहीं सकता, उसे &#x27;Deaf&#x27; कहा जाता है।)"}, {"id": 340, "text": "A doctor who studies and treats various skin diseases:", "options": ["Dermatologist", "Cytologist", "Dilettante", "Demographer"], "correctIndex": 0, "explanation": "A dermatologist is a specialist doctor for skin issues. (त्वचा रोगों के विशेषज्ञ चिकित्सक को &#x27;Dermatologist&#x27; कहा जाता है।)"}, {"id": 341, "text": "To become liquid, typically during the process of decomposition, is to:", "options": ["Delirium", "Denature", "Deliquesce", "Depreciate"], "correctIndex": 2, "explanation": "Deliquesce means to dissolve or become liquid. (सड़ने के दौरान तरल बन जाने की प्रक्रिया &#x27;Deliquesce&#x27; कहलाती है।)"}, {"id": 342, "text": "The act of injuring another&#x27;s reputation by any slanderous communication is:", "options": ["Denigrate", "Deprecate", "Defamation", "Defame"], "correctIndex": 2, "explanation": "Defamation is the act of damaging someone&#x27;s good name. (किसी की प्रतिष्ठा को नुकसान पहुँचाना &#x27;Defamation&#x27; या मानहानि कहलाता है।)"}, {"id": 343, "text": "A bitter and violent verbal attack in words:", "options": ["Discus", "Dialect", "Dirge", "Diatribe"], "correctIndex": 3, "explanation": "A diatribe is a forceful and bitter verbal attack against someone or something. (शब्दों के माध्यम से किया गया तीखा और हिंसक हमला &#x27;Diatribe&#x27; कहलाता है।)"}, {"id": 344, "text": "Feeling disappointed and annoyed about something:", "options": ["Deranged", "Devious", "Disgruntled", "Diligent"], "correctIndex": 2, "explanation": "Disgruntled means angry or dissatisfied. (किसी बात से निराश और चिड़चिड़ा महसूस करने वाला व्यक्ति &#x27;Disgruntled&#x27; कहलाता है।)"}, {"id": 345, "text": "A person who takes care of cattle", "options": ["Cowherd", "Conductor", "Chauffeur", "Curator"], "correctIndex": 0, "explanation": "&#x27;Cowherd&#x27; is a person who looks after grazing cattle. (ग्वाला/गाय चराने वाला)"}, {"id": 346, "text": "A person who is highly skilful with their hands:", "options": ["Devious", "Diligent", "Dilettante", "Dexterous"], "correctIndex": 3, "explanation": "Dexterous means showing skill, especially with the hands. (हाथों के काम में निपुण या कुशल व्यक्ति को &#x27;Dexterous&#x27; कहा जाता है।)"}, {"id": 347, "text": "To spread over a wide area or between a large number of people:", "options": ["Diffuse", "Deliquesce", "Discus", "Denature"], "correctIndex": 0, "explanation": "Diffuse means spread out over a large area; not concentrated. (व्यापक रूप से फैलना या फैलाना &#x27;Diffuse&#x27; कहलाता है।)"}, {"id": 348, "text": "A young person who has a tendency to commit minor crimes is called a:", "options": ["Delinquent", "Deponent", "Daredevil", "Demagogue"], "correctIndex": 0, "explanation": "A delinquent is a young offender who commits minor crimes. (अपराध करने वाला किशोर &#x27;Delinquent&#x27; कहलाता है।)"}, {"id": 349, "text": "A strong desire to know or learn something", "options": ["Curiosity", "Compunction", "Charisma", "Chutzpah"], "correctIndex": 0, "explanation": "&#x27;Curiosity&#x27; is a strong desire to know or learn something. (जिज्ञासा/उत्सुकता)"}, {"id": 350, "text": "A particular form of a language peculiar to a specific region:", "options": ["Diatribe", "Dictionary", "Dialect", "Dirge"], "correctIndex": 2, "explanation": "A dialect is a regional variety of a language distinguished by vocabulary or grammar. (किसी विशेष क्षेत्र की विशिष्ट बोली को &#x27;Dialect&#x27; कहा जाता है।)"}, {"id": 351, "text": "A person without money, food and other things necessary for life:", "options": ["Derelict", "Disgruntled", "Depraved", "Destitute"], "correctIndex": 3, "explanation": "Destitute means lacking even the basic necessities of life. (वह व्यक्ति जो अत्यंत गरीब हो और जिसके पास जीवन की बुनियादी चीजें न हों, उसे &#x27;Destitute&#x27; कहते हैं।)"}, {"id": 352, "text": "A heavy round plate of metal thrown by an athlete:", "options": ["Discus", "Dialect", "Diarchy", "Diatribe"], "correctIndex": 0, "explanation": "A discus is a heavy thick-centered disk thrown by an athlete. (एथलीट द्वारा फेंकी जाने वाली भारी गोल प्लेट को &#x27;Discus&#x27; कहते हैं।)"}, {"id": 353, "text": "One appointed to act in place of another:", "options": ["Dictator", "Delegate", "Deputy", "Deponent"], "correctIndex": 2, "explanation": "A deputy is a person who is given the power to do something instead of another person. (वह व्यक्ति जिसे दूसरे के स्थान पर कार्य करने के लिए नियुक्त किया गया हो, &#x27;Deputy&#x27; कहलाता है।)"}, {"id": 354, "text": "A situation in which no further progress is possible, especially between two opposing parties, is a:", "options": ["Deliberation", "Defiance", "Decade", "Deadlock"], "correctIndex": 3, "explanation": "A deadlock is a state where progress is impossible. (ऐसी स्थिति जिसमें कोई प्रगति संभव न हो, जिसे &#x27;गतिरोध&#x27; या &#x27;Deadlock&#x27; कहते हैं।)"}, {"id": 355, "text": "A group of people", "options": ["Colony", "Clique", "Choir", "Crowd"], "correctIndex": 3, "explanation": "&#x27;Crowd&#x27; is a large number of people gathered together in a disorganized way. (भीड़)"}, {"id": 356, "text": "Change the appearance to deceive or to hide the identity:", "options": ["Deride", "Diffuse", "Disguise", "Diagnose"], "correctIndex": 2, "explanation": "To disguise is to give a new appearance to a person or thing to hide its true nature. (अपनी पहचान छिपाने के लिए भेष बदलना &#x27;Disguise&#x27; कहलाता है।)"}, {"id": 357, "text": "The study of secret writing and coded language or words", "options": ["Calligraphy", "Cartography", "Cryptography", "Cerography"], "correctIndex": 2, "explanation": "&#x27;Cryptography&#x27; is the art of writing or solving codes. (कूटलेखन/गुप्त लेखन का अध्ययन)"}, {"id": 358, "text": "To take away or alter the natural qualities of something (like proteins or alcohol) is to:", "options": ["Deprecate", "Depict", "Denature", "Denigrate"], "correctIndex": 2, "explanation": "Denature means to change the natural properties of a substance. (किसी वस्तु के प्राकृतिक गुणों को बदल देना &#x27;Denature&#x27; कहलाता है।)"}, {"id": 359, "text": "A style of cooking food, characteristic of a particular country or region", "options": ["Casserole", "Cocktail", "Cuisine", "Confectionery"], "correctIndex": 2, "explanation": "&#x27;Cuisine&#x27; refers to a style or method of cooking, especially as characteristic of a particular country or region. (पाक शैली/भोजन बनाने का तरीका)"}, {"id": 360, "text": "The action of discouraging an action by instilling doubt or fear of consequences:", "options": ["Defiance", "Deliberation", "Dereliction", "Deterrence"], "correctIndex": 3, "explanation": "Deterrence is meant to stop someone from doing something by showing them the bad results. (दुष्परिणामों का डर दिखाकर किसी कार्य को रोकने की क्रिया &#x27;Deterrence&#x27; कहलाती है।)"}, {"id": 361, "text": "To become less valuable or lower in price over a period of time is to:", "options": ["Deprecate", "Depreciate", "Denature", "Deliquesce"], "correctIndex": 1, "explanation": "Depreciate refers to the decrease in value of an asset over time. (समय के साथ मूल्य में कमी आने को &#x27;Depreciate&#x27; कहते हैं।)"}, {"id": 362, "text": "A ruler with total power over a country, typically obtained by force:", "options": ["Demagogue", "Dilettante", "Deputy", "Dictator"], "correctIndex": 3, "explanation": "A dictator is a ruler with total power over a country, typically one who has obtained control by force. (तानाशाह या वह शासक जिसके पास असीमित शक्तियां हों, &#x27;Dictator&#x27; कहलाता है।)"}, {"id": 363, "text": "Open refusal to obey orders or authority is known as:", "options": ["Democracy", "Defiance", "Delinquency", "Deliberation"], "correctIndex": 1, "explanation": "Defiance is the act of openly resisting authority. (आदेशों को मानने से खुला इनकार &#x27;Defiance&#x27; कहलाता है।)"}, {"id": 364, "text": "To laugh at someone or something in a cruel and mocking way:", "options": ["Deprecate", "Diagnose", "Deride", "Denigrate"], "correctIndex": 2, "explanation": "To deride means to express contempt for someone; to ridicule. (किसी का क्रूरतापूर्वक मज़ाक उड़ाना या उपहास करना &#x27;Deride&#x27; कहलाता है।)"}, {"id": 365, "text": "Showing a skilful use of underhand tactics to achieve goals:", "options": ["Dexterous", "Devious", "Diligent", "Disgraceful"], "correctIndex": 1, "explanation": "A devious person uses dishonest or indirect ways to get what they want. (अपने लक्ष्य को पाने के लिए चालाकी या कपटपूर्ण तरीकों का उपयोग करना &#x27;Devious&#x27; कहलाता है।)"}, {"id": 366, "text": "To feel and express strong disapproval of something is to:", "options": ["Denigrate", "Deprecate", "Defend", "Depreciate"], "correctIndex": 1, "explanation": "To deprecate is to express strong disapproval or protest. (किसी चीज़ के प्रति तीव्र अरुचि या विरोध व्यक्त करना &#x27;Deprecate&#x27; कहलाता है।)"}, {"id": 367, "text": "A person who readily believes others easily", "options": ["Cynical", "Churlish", "Credible", "Credulous"], "correctIndex": 3, "explanation": "&#x27;Credulous&#x27; is a person who is too ready to believe things and is therefore easily deceived. (भोला-भाला/जो आसानी से विश्वास कर ले)"}, {"id": 368, "text": "Showing great care and effort in your work or duties:", "options": ["Deranged", "Diligent", "Disgruntled", "Devious"], "correctIndex": 1, "explanation": "Diligent means showing care and conscientiousness in one&#x27;s work or duties. (अपने काम में मेहनती और सावधान रहने वाला व्यक्ति &#x27;Diligent&#x27; कहलाता है।)"}, {"id": 369, "text": "What is the term for an extreme fear of dogs?", "options": ["Cytology", "Cynosure", "Cynophobia", "Claustrophobia"], "correctIndex": 2, "explanation": "Cynophobia refers to the irrational fear of dogs. (कुत्तों के प्रति अत्यधिक भय को Cynophobia कहते हैं।)"}, {"id": 370, "text": "Irresistible craving for alcoholic drinks:", "options": ["Diarchy", "Delirium", "Dipsomania", "Dermatology"], "correctIndex": 2, "explanation": "Dipsomania is an uncontrollable craving for alcohol. (शराब पीने की तीव्र और बेकाबू लत को &#x27;Dipsomania&#x27; कहते हैं।)"}, {"id": 371, "text": "Collection of written or spoken texts", "options": ["Codicil", "Chronicle", "Corpus", "Catalogue"], "correctIndex": 2, "explanation": "&#x27;Corpus&#x27; is a collection of written or spoken texts, especially the entire works of a particular author or a body of writing on a particular subject. (किसी लेखक या विषय पर लिखित लेखों का संग्रह)"}, {"id": 372, "text": "The statistical study of population and its dynamics is known as:", "options": ["Geography", "Demography", "Cytology", "Democracy"], "correctIndex": 1, "explanation": "Demography involves studying population changes and statistics. (जनसंख्या और उसकी गतिशीलता के अध्ययन को &#x27;Demography&#x27; कहते हैं।)"}, {"id": 373, "text": "An act that makes one feel morally bad or ashamed:", "options": ["Diligent", "Disgruntled", "Devious", "Disgraceful"], "correctIndex": 3, "explanation": "Disgraceful refers to behavior that is shameful or causes loss of respect. (शर्मनाक या अपमानजनक कार्य जो सम्मान कम करे, &#x27;Disgraceful&#x27; कहलाता है।)"}, {"id": 374, "text": "A situation requiring a choice between equally undesirable alternatives:", "options": ["Disaster", "Dilemma", "Deterrence", "Diarchy"], "correctIndex": 1, "explanation": "A dilemma is a situation in which a difficult choice has to be made between two options. (ऐसी स्थिति जिसमें दो कठिन विकल्पों में से चुनाव करना हो, उसे &#x27;Dilemma&#x27; या दुविधा कहते हैं।)"}, {"id": 375, "text": "Having or forming a hard outer layer", "options": ["Coarse", "Chronic", "Callous", "Crusted"], "correctIndex": 3, "explanation": "&#x27;Crusted&#x27; means having a hard layer or coating on the surface. (पपड़ीदार/कठोर बाहरी परत वाला)"}, {"id": 376, "text": "To confirm with the help of evidence", "options": ["Condone", "Corroborate", "Coerce", "Confiscate"], "correctIndex": 1, "explanation": "&#x27;Corroborate&#x27; means to confirm or give support to a statement, theory, or finding with evidence. (साक्ष्य द्वारा पुष्टि करना)"}, {"id": 377, "text": "A dynamic campaign for political, social or religious change", "options": ["Crusade", "Ceremony", "Conclave", "Caucus"], "correctIndex": 0, "explanation": "&#x27;Crusade&#x27; is a vigorous campaign for political, social, or religious change. (धर्मयुद्ध/आंदोलन)"}, {"id": 378, "text": "The system of money used in a particular country", "options": ["Capital", "Commission", "Cash", "Currency"], "correctIndex": 3, "explanation": "&#x27;Currency&#x27; is a system of money in general use in a particular country. (मुद्रा)"}, {"id": 379, "text": "The state of being deprived of a right, especially the right to vote:", "options": ["Diarchy", "Desertion", "Dereliction", "Disenfranchisement"], "correctIndex": 3, "explanation": "Disenfranchisement means the state of being deprived of a right or privilege, especially the right to vote. (मताधिकार या नागरिक अधिकारों से वंचित होना &#x27;Disenfranchisement&#x27; कहलाता है।)"}, {"id": 380, "text": "Which term describes a secret or disguised way of writing or a code?", "options": ["Cypher", "Cryptic", "Calligraphy", "Cytology"], "correctIndex": 0, "explanation": "A cypher is a secret way of writing, often using code. (लिखने का गुप्त या कूट तरीका जिसे &#x27;Cypher&#x27; कहते हैं।)"}, {"id": 381, "text": "A person or thing that is the center of attention or admiration is known as:", "options": ["Connoisseur", "Cynophobia", "Cynosure", "Cypher"], "correctIndex": 2, "explanation": "Cynosure is someone who is the focus of everyone&#x27;s attention. (आकर्षण का केंद्र बिंदु जिसे &#x27;Cynosure&#x27; कहा जाता है।)"}, {"id": 382, "text": "A device for deciphering codes and ciphers", "options": ["Chronometer", "Cryptograph", "Compass", "Calliper"], "correctIndex": 1, "explanation": "&#x27;Cryptograph&#x27; is a device or system for writing or solving codes and ciphers. (गुप्तलेख यंत्र)"}, {"id": 383, "text": "To injure or damage the good reputation of someone is to:", "options": ["Defame", "Defend", "Delegate", "Depict"], "correctIndex": 0, "explanation": "To defame is the verbal or written action of hurting a reputation. (किसी की प्रतिष्ठा को धूमिल करने की क्रिया &#x27;Defame&#x27; कहलाती है।)"}, {"id": 384, "text": "All the arts, beliefs and social institutions etc. characteristic of a race", "options": ["Civilisation", "Convention", "Culture", "Chronology"], "correctIndex": 2, "explanation": "&#x27;Culture&#x27; includes the ideas, customs, and social behavior of a particular people or society. (संस्कृति)"}, {"id": 385, "text": "A group of vehicles travelling together, typically one accompanied by armed troops", "options": ["Cargo", "Cortege", "Convoy", "Cavalcade"], "correctIndex": 2, "explanation": "&#x27;Convoy&#x27; refers to a group of ships or vehicles traveling together, typically accompanied by armed protection. (वाहनों का रक्षक दल/काफिला)"}, {"id": 386, "text": "Signal under martial law for people to remain indoors", "options": ["Crusade", "Curfew", "Censure", "Convoy"], "correctIndex": 1, "explanation": "&#x27;Curfew&#x27; is a regulation requiring people to remain indoors between specified hours, typically at night. (कर्फ्यू/निषेधाज्ञा)"}, {"id": 387, "text": "A song sung in the past at a funeral or for a dead person:", "options": ["Dialect", "Dirge", "Discus", "Diatribe"], "correctIndex": 1, "explanation": "A dirge is a mournful song, a piece of music, or a sound. (शोकगीत जो किसी की मृत्यु पर गाया जाए, &#x27;Dirge&#x27; कहलाता है।)"}, {"id": 388, "text": "A system of government in which all the people of a country can vote to elect their representatives is:", "options": ["Diplomacy", "Demography", "Autocracy", "Democracy"], "correctIndex": 3, "explanation": "Democracy is a government of the people, by the people, and for the people. (लोकतंत्र, जहाँ जनता अपने प्रतिनिधि चुनती है, &#x27;Democracy&#x27; कहलाता है।)"}, {"id": 389, "text": "Which term refers to a period of ten years?", "options": ["Millennium", "Decagon", "Century", "Decade"], "correctIndex": 3, "explanation": "A decade is a span of ten years. (दस वर्षों की अवधि को &#x27;Decade&#x27; कहते हैं।)"}, {"id": 390, "text": "A book giving the meaning of various words:", "options": ["Directory", "Diatribe", "Dictionary", "Dialect"], "correctIndex": 2, "explanation": "A dictionary is a book that lists the words of a language and their meanings. (शब्दों के अर्थ बताने वाली पुस्तक को &#x27;Dictionary&#x27; कहते हैं।)"}, {"id": 391, "text": "Government by two rulers or authorities simultaneously:", "options": ["Diplomacy", "Diarchy", "Democracy", "Dictatorship"], "correctIndex": 1, "explanation": "Diarchy is a form of government where power is shared by two bodies. (दो शासकों या सत्ताओं द्वारा चलाया जाने वाला शासन &#x27;Diarchy&#x27; कहलाता है।)"}, {"id": 392, "text": "A place where nuns live and work", "options": ["Convent", "Cemetery", "Casino", "Conclave"], "correctIndex": 0, "explanation": "&#x27;Convent&#x27; is a place where a community of nuns live and work together. (मठ/मन्दिर जहाँ नन रहती हैं)"}, {"id": 393, "text": "A person who regards the whole world as his country", "options": ["Conservative", "Cosmopolitan", "Contemporary", "Compatriot"], "correctIndex": 1, "explanation": "&#x27;Cosmopolitan&#x27; is a person who is free from local or national prejudices and considers the whole world as their home. (सर्वदेशीय/जो पूरे विश्व को अपना घर माने)"}, {"id": 394, "text": "An act or event that has disastrous consequences:", "options": ["Deterrence", "Dilemma", "Dereliction", "Disaster"], "correctIndex": 3, "explanation": "A disaster is a sudden accident or a natural catastrophe that causes great damage. (भीषण आपदा या विनाशकारी घटना को &#x27;Disaster&#x27; कहते हैं।)"}, {"id": 395, "text": "To criticize someone or something unfairly or to disparage their reputation is to:", "options": ["Defend", "Denigrate", "Depreciate", "Delegate"], "correctIndex": 1, "explanation": "Denigrate means to attack the reputation of someone unfairly. (किसी की अनुचित तरीके से आलोचना करना &#x27;Denigrate&#x27; कहलाता है।)"}, {"id": 396, "text": "To portray or represent someone or something in words or a picture is to:", "options": ["Deprave", "Deponent", "Depict", "Denature"], "correctIndex": 2, "explanation": "To depict is to describe or show something in detail. (शब्दों या चित्रों के माध्यम से चित्रण करना &#x27;Depict&#x27; कहलाता है।)"}, {"id": 397, "text": "The branch of biology that deals with the study of cells is called:", "options": ["Calligraphy", "Cytology", "Cytoplasm", "Cynosure"], "correctIndex": 1, "explanation": "Cytology is the scientific study of cells. (कोशिकाओं के अध्ययन को &#x27;Cytology&#x27; कहा जाता है।)"}, {"id": 398, "text": "A system of religious belief; a faith", "options": ["Cult", "Creed", "Canon", "Custom"], "correctIndex": 1, "explanation": "&#x27;Creed&#x27; is a set of beliefs or aims which guide someone&#x27;s actions. (पंथ/धर्ममत)"}, {"id": 399, "text": "To give one’s authority, power, or responsibility to another person is to:", "options": ["Delegate", "Depict", "Deponent", "Demagogue"], "correctIndex": 0, "explanation": "To delegate is to entrust a task or responsibility to another. (अपना अधिकार किसी और को सौंपना &#x27;Delegate&#x27; कहलाता है।)"}, {"id": 400, "text": "A keeper or custodian of a museum or other collection", "options": ["Chauffeur", "Conductor", "Curator", "Compere"], "correctIndex": 2, "explanation": "&#x27;Curator&#x27; is a keeper or custodian of a museum or other collection. (संग्रहालय का अध्यक्ष)"}, {"id": 401, "text": "A strongbox or small chest for holding valuables", "options": ["Canister", "Capsule", "Casserole", "Coffer"], "correctIndex": 3, "explanation": "&#x27;Coffer&#x27; is a strongbox or small chest for holding valuables. (तिजोरी)"}, {"id": 402, "text": "An act of exchanging information", "options": ["Colloquy", "Communication", "Conversation", "Configuration"], "correctIndex": 1, "explanation": "&#x27;Communication&#x27; is the imparting or exchanging of information by speaking or writing. (संचार/सूचना का आदान-प्रदान)"}, {"id": 403, "text": "A disease persisting for a long time or recurring again and again", "options": ["Congenital", "Chronic", "Contemporary", "Contagious"], "correctIndex": 1, "explanation": "&#x27;Chronic&#x27; refers to an illness or condition that persists for a long time. (दीर्घकालिक/पुरानी बीमारी)"}, {"id": 404, "text": "Exercising a compelling charm which inspires devotion in others", "options": ["Charismatic", "Charisma", "Chivalrous", "Churlish"], "correctIndex": 0, "explanation": "&#x27;Charismatic&#x27; describes a person possessing great charm or influence. (प्रभावशाली/आकर्षक)"}, {"id": 405, "text": "One who sets type for books, newspapers, etc.", "options": ["Cartographer", "Calligrapher", "Compositor", "Chronicler"], "correctIndex": 2, "explanation": "&#x27;Compositor&#x27; is a person who arranges type for printing. (अक्षर-योजक/कंपोज़िटर)"}, {"id": 406, "text": "One who plans the steps and moves in a dance", "options": ["Choreographer", "Cartographer", "Compere", "Calligrapher"], "correctIndex": 0, "explanation": "&#x27;Choreographer&#x27; is a person who designs and directs the sequences of steps and movements for a dance. (नृत्य-निर्देशक)"}, {"id": 407, "text": "An extreme fear of being in a small confined place", "options": ["Chronophobia", "Canophilia", "Claustrophobia", "Cynophobia"], "correctIndex": 2, "explanation": "&#x27;Claustrophobia&#x27; is the extreme or irrational fear of confined places. (छोटे स्थानों का डर)"}, {"id": 408, "text": "A secret agreement especially in order to do something dishonest or deceive people", "options": ["Conclave", "Coalition", "Collusion", "Coincidence"], "correctIndex": 2, "explanation": "&#x27;Collusion&#x27; is a secret or illegal cooperation or conspiracy, especially in order to deceive others. (साठगांठ/मिलीजुली भगत)"}, {"id": 409, "text": "To own up to something as true", "options": ["Compliment", "Conjecture", "Confess", "Condone"], "correctIndex": 2, "explanation": "&#x27;Confess&#x27; means to admit that one has committed a crime or done something wrong. (कबूल करना)"}, {"id": 410, "text": "A gigantic statue", "options": ["Colossus", "Chronometer", "Citadel", "Caricature"], "correctIndex": 0, "explanation": "&#x27;Colossus&#x27; is a person or thing of enormous size, importance, or ability. (विशालकाय मूर्ति)"}, {"id": 411, "text": "Opposed to great or sudden change", "options": ["Cardinal", "Conservative", "Conformist", "Contemporary"], "correctIndex": 1, "explanation": "&#x27;Conservative&#x27; is a person who is averse to change and holds to traditional values. (रूढ़िवादी)"}, {"id": 412, "text": "Touching along the side or boundary", "options": ["Confluent", "Contiguous", "Congenital", "Contemporary"], "correctIndex": 1, "explanation": "&#x27;Contiguous&#x27; means sharing a common border; touching. (सटा हुआ/संलग्न)"}, {"id": 413, "text": "Living together of a man and woman without being married to each other", "options": ["Condominium", "Celibacy", "Concubinage", "Congregation"], "correctIndex": 2, "explanation": "&#x27;Concubinage&#x27; is the state of a man and a woman living together without being married. (बिना विवाह साथ रहना)"}, {"id": 414, "text": "The sound made by a hen", "options": ["Cluck", "Caw", "Coo", "Chirp"], "correctIndex": 0, "explanation": "&#x27;Cluck&#x27; is the short, low sound made by a hen. (मुर्गी की आवाज़)"}, {"id": 415, "text": "An arrangement of events or dates in the order of their occurrence", "options": ["Calligraphy", "Chronometer", "Chronology", "Chiromancy"], "correctIndex": 2, "explanation": "&#x27;Chronology&#x27; is the arrangement of events or dates in the order of their occurrence. (समय-क्रम/कालक्रम)"}, {"id": 416, "text": "Compelling attractiveness or charm that can inspire or influence others", "options": ["Charismatic", "Chutzpah", "Charisma", "Complacent"], "correctIndex": 2, "explanation": "&#x27;Charisma&#x27; is a personal quality of presence or charm that others find compelling. (प्रतिभा/आकर्षण)"}, {"id": 417, "text": "Satisfied, with no desire to change or improve", "options": ["Complacent", "Contented", "Conscientious", "Conceited"], "correctIndex": 0, "explanation": "&#x27;Complacent&#x27; means showing smug or uncritical satisfaction with oneself or one&#x27;s achievements. (आत्मसंतुष्ट)"}, {"id": 418, "text": "To make perfect or complete", "options": ["Condone", "Compliment", "Confess", "Complement"], "correctIndex": 3, "explanation": "&#x27;Complement&#x27; is a thing that contributes extra features to something else in a way that improves it. (पूरक/पूर्ण करना)"}, {"id": 419, "text": "All the customers of a business", "options": ["Clientele", "Colleague", "Colony", "Congregation"], "correctIndex": 0, "explanation": "&#x27;Clientele&#x27; refers to the customers of a shop, bar, or place of entertainment. (ग्राहकगण)"}, {"id": 420, "text": "Comfort someone at a time of grief or disappointment", "options": ["Commemorate", "Condone", "Confess", "Console"], "correctIndex": 3, "explanation": "&#x27;Console&#x27; means to comfort someone at a time of grief or disappointment. (सांत्वना देना)"}, {"id": 421, "text": "Making a loud and confused noise", "options": ["Complacent", "Chronic", "Callous", "Clamorous"], "correctIndex": 3, "explanation": "&#x27;Clamorous&#x27; means making a loud and confused noise. (शोर मचाने वाला)"}, {"id": 422, "text": "An apartment building in which each apartment is owned separately by the people living in it, but also containing shared areas", "options": ["Citadel", "Cottage", "Cabin", "Condominium"], "correctIndex": 3, "explanation": "&#x27;Condominium&#x27; is a building or complex of buildings containing a number of individually owned apartments or houses. (एक अपार्टमेंट जिसमें निजी और साझा क्षेत्र दोनों हों)"}, {"id": 423, "text": "Clues available at a scene", "options": ["Circumstantial", "Contiguous", "Contemporary", "Chronological"], "correctIndex": 0, "explanation": "&#x27;Circumstantial&#x27; refers to evidence that points to a fact without proving it directly. (परिस्थितिजन्य)"}, {"id": 424, "text": "A careful preservation and protection of wildlife is the need of the hour", "options": ["Consultation", "Consecration", "Collaboration", "Conservation"], "correctIndex": 3, "explanation": "&#x27;Conservation&#x27; is the preservation, protection, or restoration of the natural environment and wildlife. (संरक्षण)"}, {"id": 425, "text": "Capable of being imagined or grasped mentally", "options": ["Chronic", "Cardinal", "Credible", "Conceivable"], "correctIndex": 3, "explanation": "&#x27;Conceivable&#x27; means capable of being imagined or grasped mentally. (कल्पनीय/समझ में आने योग्य)"}, {"id": 426, "text": "A loud appeal or demand", "options": ["Cavalcade", "Chutzpah", "Clamour", "Clique"], "correctIndex": 2, "explanation": "&#x27;Clamour&#x27; is a loud and confused noise, especially that of people shouting vehemently. (कोलाहल/जोरदार मांग)"}, {"id": 427, "text": "Climb or move with difficulty or a lot of effort, typically using one&#x27;s hands and feet", "options": ["Chafe", "Coerce", "Clamber", "Cascade"], "correctIndex": 2, "explanation": "&#x27;Clamber&#x27; means to climb or move in an awkward and laborious way. (हाथ-पैर के बल चढ़ना)"}, {"id": 428, "text": "A room in a public building where outdoor clothes or luggage may be left", "options": ["Cloakroom", "Chapel", "Casino", "Cellar"], "correctIndex": 0, "explanation": "&#x27;Cloakroom&#x27; is a room in a public building where people can leave their coats or bags. (सामान रखने का कमरा)"}, {"id": 429, "text": "Someone who is satisfied with life is general", "options": ["Conscientious", "Contented", "Conservative", "Complacent"], "correctIndex": 1, "explanation": "&#x27;Contented&#x27; means happy and at ease. (संतुष्ट)"}, {"id": 430, "text": "A small building or room used for Christian worship in a school, prison, or large house", "options": ["Choir", "Chapel", "Citadel", "Cloakroom"], "correctIndex": 1, "explanation": "&#x27;Chapel&#x27; is a small place for Christian worship, often attached to a larger institution. (छोटा गिरजाघर)"}, {"id": 431, "text": "An arrangement of parts or elements in a particular form or figure", "options": ["Coincidence", "Configuration", "Consolation", "Collaboration"], "correctIndex": 1, "explanation": "&#x27;Configuration&#x27; is an arrangement of parts or elements in a particular form, figure, or combination. (विन्यास/आकृति)"}, {"id": 432, "text": "A factual written account of important or historical events in the order of their occurrence", "options": ["Chronicle", "Chronometer", "Catalogue", "Chronology"], "correctIndex": 0, "explanation": "&#x27;Chronicle&#x27; is a factual written account of important or historical events. (इतिहास/वृत्तांत)"}, {"id": 433, "text": "To keep a great person or event in people&#x27;s memory", "options": ["Commemorate", "Compliment", "Communicate", "Congratulate"], "correctIndex": 0, "explanation": "&#x27;Commemorate&#x27; means to recall and show respect for someone or something. (पुण्यस्मरण करना/याद करना)"}, {"id": 434, "text": "Compulsory enlistment for military service", "options": ["Coalition", "Coronation", "Commission", "Conscription"], "correctIndex": 3, "explanation": "&#x27;Conscription&#x27; is the compulsory enlistment for state service, typically into the armed forces. (अनिवार्य सैन्य भर्ती)"}, {"id": 435, "text": "Art of designing or writing on wax", "options": ["Chiromancy", "Cerography", "Choreography", "Chronology"], "correctIndex": 1, "explanation": "&#x27;Cerography&#x27; is the specific art of engraving or writing on wax. (मोम पर लेखन कला)"}, {"id": 436, "text": "A group of singers in a church", "options": ["Choir", "Cortege", "Clique", "Caucus"], "correctIndex": 0, "explanation": "&#x27;Choir&#x27; is an organized group of singers, especially one that takes part in church services. (गायक-मंडली)"}, {"id": 437, "text": "Prohibited by law or treaty from being imported or exported", "options": ["Chaff", "Clandestine", "Contraband", "Counterfeit"], "correctIndex": 2, "explanation": "&#x27;Contraband&#x27; refers to goods that have been imported or exported illegally. (वर्जित माल/तस्करी का माल)"}, {"id": 438, "text": "Mutual discourse", "options": ["Colloquy", "Conjecture", "Clamour", "Circumlocution"], "correctIndex": 0, "explanation": "&#x27;Colloquy&#x27; is a formal conversation or mutual discourse. (परस्पर बातचीत)"}, {"id": 439, "text": "Money given to agent on sales", "options": ["Commission", "Bullion", "Budgeting", "Bonus"], "correctIndex": 0, "explanation": "&#x27;Commission&#x27; is a sum of money paid to an agent in a commercial transaction. (आढ़त/कमीशन)"}, {"id": 440, "text": "Something made impure by exposure to polluting substances", "options": ["Corrupted", "Caustic", "Chronic", "Contaminated"], "correctIndex": 3, "explanation": "&#x27;Contaminated&#x27; means made impure by exposure to polluting substances. (दूषित)"}, {"id": 441, "text": "An opinion or conclusion formed on the basis of incomplete information", "options": ["Conjecture", "Chronicle", "Codicil", "Censure"], "correctIndex": 0, "explanation": "&#x27;Conjecture&#x27; is an opinion or conclusion formed on the basis of incomplete information. (अनुमान/अंदाजा)"}, {"id": 442, "text": "The base frame of a car or other wheel vehicle", "options": ["Chassis", "Casserole", "Canopy", "Capsule"], "correctIndex": 0, "explanation": "&#x27;Chassis&#x27; is the base frame of a motor vehicle or other wheeled object. (चेसिस/गाड़ी का ढांचा)"}, {"id": 443, "text": "A man who knows a lot about things like food, music and art", "options": ["Chauffeur", "Connoisseur", "Curator", "Charlatan"], "correctIndex": 1, "explanation": "&#x27;Connoisseur&#x27; is an expert judge in matters of taste. (पारखी/विशेषज्ञ)"}, {"id": 444, "text": "A company or person that makes or sells sweets or chocolate", "options": ["Confectioner", "Compositor", "Curator", "Conductor"], "correctIndex": 0, "explanation": "&#x27;Confectioner&#x27; is a person whose business is making or selling sweets and chocolates. (हलवाई)"}, {"id": 445, "text": "Having too much pride in yourself and what you do", "options": ["Complacent", "Conceited", "Charismatic", "Churlish"], "correctIndex": 1, "explanation": "&#x27;Conceited&#x27; means excessively proud of oneself; vain. (अभिमानी/घमंडी)"}, {"id": 446, "text": "A group of stars that forms a shape in the sky and has a name", "options": ["Constellation", "Cluster", "Comet", "Galaxy"], "correctIndex": 0, "explanation": "&#x27;Constellation&#x27; is a group of stars forming a recognizable pattern that is traditionally named after its apparent form. (नक्षत्र/तारा-समूह)"}, {"id": 447, "text": "Replacing something with something else", "options": ["Chronic", "Change", "Codicil", "Coerce"], "correctIndex": 1, "explanation": "&#x27;Change&#x27; is the act or instance of making or becoming different. (परिवर्तन)"}, {"id": 448, "text": "Run after in order to catch or catch up with", "options": ["Chastise", "Chase", "Churlish", "Chasm"], "correctIndex": 1, "explanation": "&#x27;Chase&#x27; means to pursue someone or something in order to catch them. (पीछा करना)"}, {"id": 449, "text": "Having a common centre, as circles or spheres", "options": ["Centripetal", "Centrifugal", "Concentric", "Centennial"], "correctIndex": 2, "explanation": "&#x27;Concentric&#x27; refers to circles or spheres which have the same centre. (सकेन्द्रित)"}, {"id": 450, "text": "Feeling inside you which tells you what is right and what is wrong", "options": ["Compunction", "Compassion", "Conscience", "Chutzpah"], "correctIndex": 2, "explanation": "&#x27;Conscience&#x27; is a person&#x27;s moral sense of right and wrong. (विवेक/अन्तःकरण)"}, {"id": 451, "text": "The situation in which a disease is spread by touching someone or something", "options": ["Chronic", "Congenital", "Cancerous", "Contagion"], "correctIndex": 3, "explanation": "&#x27;Contagion&#x27; is the communication of disease from one person to another by close contact. (छूत/संक्रमण)"}, {"id": 452, "text": "A small compartment in an aircraft for the pilot", "options": ["Chassis", "Cabin", "Cockpit", "Canopy"], "correctIndex": 2, "explanation": "&#x27;Cockpit&#x27; is the compartment for the pilot and sometimes also the crew in an aircraft. (कॉकपिट)"}, {"id": 453, "text": "Something that is related to the brain or the intellect", "options": ["Chronic", "Citadel", "Churlish", "Cerebral"], "correctIndex": 3, "explanation": "&#x27;Cerebral&#x27; relates to the brain or the use of the mind rather than feelings. (मस्तिष्क संबंधी/बौद्धिक)"}, {"id": 454, "text": "A fortress typically one on high ground above a city", "options": ["Citadel", "Cloister", "Chapel", "Condominium"], "correctIndex": 0, "explanation": "&#x27;Citadel&#x27; is a fortress, typically one on high ground above a city. (किला/गढ़)"}, {"id": 455, "text": "Extreme self-confidence or audacity", "options": ["Compunction", "Chutzpah", "Charisma", "Clamour"], "correctIndex": 1, "explanation": "&#x27;Chutzpah&#x27; is extreme self-confidence or audacity. (धृष्टता/दुस्साहस)"}, {"id": 456, "text": "To restrain or compel a person to do something by force", "options": ["Coerce", "Chastise", "Confiscate", "Condone"], "correctIndex": 0, "explanation": "&#x27;Coerce&#x27; means to persuade someone to do something by using force or threats. (मजबूर करना)"}, {"id": 457, "text": "A collection of slaves", "options": ["Cortege", "Caravan", "Coffle", "Clique"], "correctIndex": 2, "explanation": "&#x27;Coffle&#x27; is a line of animals or slaves fastened or driven together. (दासों का काफिला)"}, {"id": 458, "text": "A drink usually made from a mixture of one or more alcoholic drinks", "options": ["Carafe", "Casserole", "Cocktail", "Chalice"], "correctIndex": 2, "explanation": "&#x27;Cocktail&#x27; is an alcoholic drink consisting of a spirit or several spirits mixed with other ingredients. (मिश्रित पेय)"}, {"id": 459, "text": "A deep fissure in the earth&#x27;s surface", "options": ["Canyon", "Chasm", "Citadel", "Cascade"], "correctIndex": 1, "explanation": "&#x27;Chasm&#x27; is a deep opening or crack in the earth or a rock. (खाई/दरार)"}, {"id": 460, "text": "To officially take something away from somebody", "options": ["Coerce", "Censure", "Condone", "Confiscate"], "correctIndex": 3, "explanation": "&#x27;Confiscate&#x27; means to take or seize someone&#x27;s property with authority. (जब्त करना)"}, {"id": 461, "text": "A remarkable concurrence of events or circumstances without apparent causal connection", "options": ["Correlation", "Coincidence", "Configuration", "Collusion"], "correctIndex": 1, "explanation": "&#x27;Coincidence&#x27; is a remarkable concurrence of events or circumstances without apparent causal connection. (इत्तेफाक/संयोग)"}, {"id": 462, "text": "Belonging to the same time // A person living in the same age with another", "options": ["Chronological", "Compatriot", "Contemporary", "Colleague"], "correctIndex": 2, "explanation": "&#x27;Contemporary&#x27; refers to living or occurring at the same time"}, {"id": 463, "text": "A corporation made up of a number of different companies that operate in diversified fields", "options": ["Cartel", "Conglomerate", "Coalition", "Commission"], "correctIndex": 1, "explanation": "&#x27;Conglomerate&#x27; is a large corporation formed by the merging of separate and diverse firms. (मिश्रित कंपनी/समूह)"}, {"id": 464, "text": "Extremely skilled", "options": ["Credible", "Contemporary", "Conscientious", "Consummate"], "correctIndex": 3, "explanation": "&#x27;Consummate&#x27; means showing high degree of skill and flair; complete or perfect. (उत्कृष्ट/पूर्ण)"}, {"id": 465, "text": "The order of their occurrence", "options": ["Chronological", "Circumstantial", "Chronic", "Cardinal"], "correctIndex": 0, "explanation": "&#x27;Chronological&#x27; means starting with the earliest and following the order in which they occurred. (कालानुक्रमिक)"}, {"id": 466, "text": "A spider&#x27;s home", "options": ["Cobweb", "Cage", "Kennel", "Burrow"], "correctIndex": 0, "explanation": "&#x27;Cobweb&#x27; is a spider&#x27;s web, especially when old and covered with dust. (मकड़ी का जाला)"}, {"id": 467, "text": "People who belong to the same country", "options": ["Comrades", "Compatriots", "Colleagues", "Contemporaries"], "correctIndex": 1, "explanation": "&#x27;Compatriots&#x27; are fellow citizens or nationals of a country. (देशभाई/हमवतन)"}, {"id": 468, "text": "Place where two or more rivers meet", "options": ["Cascade", "Confluence", "Canal", "Chasm"], "correctIndex": 1, "explanation": "&#x27;Confluence&#x27; is the junction of two rivers, especially rivers of approximately equal width. (संगम)"}, {"id": 469, "text": "An assembly of worshippers // A group of people who have come together in a religious building for worship and prayer", "options": ["Caravan", "Clique", "Congregation", "Caucus"], "correctIndex": 2, "explanation": "&#x27;Congregation&#x27; is a group of people assembled for religious worship. (धर्मसभा/भक्त-मंडली)"}, {"id": 470, "text": "An instrument for measuring time accurately in spite of motion or variations in temperature, humidity, and air pressure", "options": ["Cyclostyle", "Chronometer", "Compass", "Caliper"], "correctIndex": 1, "explanation": "&#x27;Chronometer&#x27; is an instrument for measuring time with extreme accuracy. (क्रोनोमीटर/समयमापक यंत्र)"}, {"id": 471, "text": "A person employed to drive a private or hired car", "options": ["Conductor", "Chauffeur", "Cartographer", "Choreographer"], "correctIndex": 1, "explanation": "&#x27;Chauffeur&#x27; is a person employed to drive a private or luxury car. (शफर/ड्राइवर)"}, {"id": 472, "text": "A remark that expresses approval or admiration", "options": ["Compliment", "Censure", "Conjecture", "Complement"], "correctIndex": 0, "explanation": "&#x27;Compliment&#x27; is a polite expression of praise or admiration. (प्रशंसा/सम्मान)"}, {"id": 473, "text": "A group of ants", "options": ["Clique", "Colony", "Congregation", "Coincidence"], "correctIndex": 1, "explanation": "&#x27;Colony&#x27; refers to a group of certain animals or insects (like ants) living together. (बस्ती/चींटियों का समूह)"}, {"id": 474, "text": "An instruction that is added later to a will, usually to change a part of it", "options": ["Chronicle", "Codicil", "Contrast", "Catalogue"], "correctIndex": 1, "explanation": "&#x27;Codicil&#x27; is an addition or supplement that explains, modifies, or revokes a will or part of one. (वसीयतनामा का परिशिष्ट)"}, {"id": 475, "text": "An event that may/may not happen", "options": ["Coincidence", "Conjecture", "Ceremony", "Contingency"], "correctIndex": 3, "explanation": "&#x27;Contingency&#x27; is a future event or circumstance which is possible but cannot be predicted with certainty. (आकस्मिकता)"}, {"id": 476, "text": "Palm reading", "options": ["Chiromancy", "Chronology", "Calligraphy", "Cartography"], "correctIndex": 0, "explanation": "&#x27;Chiromancy&#x27; is the art or practice of telling fortunes from the lines on the palm of the hand. (हस्तरेखा विद्या)"}, {"id": 477, "text": "Rude in a mean-spirited and surly way", "options": ["Callous", "Captious", "Cynical", "Churlish"], "correctIndex": 3, "explanation": "&#x27;Churlish&#x27; means rude in a mean-spirited and surly way. (असभ्य/उजड्ड)"}, {"id": 478, "text": "A person who conforms to accepted behaviour or established practices", "options": ["Conservative", "Conformist", "Connoisseur", "Contemporary"], "correctIndex": 1, "explanation": "&#x27;Conformist&#x27; is a person who behaves in accordance with established standards. (अनुपालन करने वाला)"}, {"id": 479, "text": "To criticise someone severely", "options": ["Churlish", "Confiscate", "Condone", "Chastise"], "correctIndex": 3, "explanation": "&#x27;Chastise&#x27; means to reprimand or punish someone severely. (दंड देना/कड़ी आलोचना करना)"}, {"id": 480, "text": "A person who introduces the performers or contestants in a variety show", "options": ["Curator", "Conductor", "Choreographer", "Compere"], "correctIndex": 3, "explanation": "&#x27;Compere&#x27; is a person who introduces the performers or contestants in a variety show. (कार्यक्रम का संचालक)"}, {"id": 481, "text": "Combustibles – flammable", "options": ["Cardinal", "Conflagrant", "Caustic", "Chronic"], "correctIndex": 1, "explanation": "&#x27;Conflagrant&#x27; means burning or blazing. (ज्वलनशील)"}, {"id": 482, "text": "Easily spread from one person to another (disease) // A disease which spreads with contact", "options": ["Chronic", "Contagious", "Congenital", "Caustic"], "correctIndex": 1, "explanation": "&#x27;Contagious&#x27; refers to a disease spread by contact. (संक्रामक)"}, {"id": 483, "text": "A routine task, especially a household one", "options": ["Chutzpah", "Clamour", "Chore", "Citadel"], "correctIndex": 2, "explanation": "&#x27;Chore&#x27; is a routine task, especially a household one that is often perceived as tedious. (घर का काम)"}, {"id": 484, "text": "Imposed a restriction on", "options": ["Constrained", "Confiscated", "Coerced", "Chastised"], "correctIndex": 0, "explanation": "&#x27;Constrained&#x27; means appearing forced or overly controlled. (विवश/बाधित)"}, {"id": 485, "text": "A secret plan, made to do something (usually wrong)", "options": ["Collaboration", "Conspiracy", "Coalition", "Conclave"], "correctIndex": 1, "explanation": "&#x27;Conspiracy&#x27; is a secret plan by a group to do something unlawful or harmful. (साजिश/षड्यंत्र)"}, {"id": 486, "text": "The husks of corn or other grains separated by winnowing or threshing", "options": ["Chaff", "Casserole", "Chassis", "Capsule"], "correctIndex": 0, "explanation": "&#x27;Chaff&#x27; refers to the outer husks of grain that are separated during the threshing process. (भूसा/अनाज का छिलका)"}, {"id": 487, "text": "Forgive or pardon some wrongdoing or an offence", "options": ["Confiscate", "Condone", "Chastise", "Censure"], "correctIndex": 1, "explanation": "&#x27;Condone&#x27; means to accept or allow behavior that is considered morally wrong or offensive to continue. (नजरअंदाज करना/माफ करना)"}, {"id": 488, "text": "A person that one works with at the same place, in a profession or a business", "options": ["Compatriot", "Contemporary", "Comrade", "Colleague"], "correctIndex": 3, "explanation": "&#x27;Colleague&#x27; is a person with whom one works in a profession or business. (सहकर्मी)"}, {"id": 489, "text": "Use of force or threats to get someone to agree to something", "options": ["Collusion", "Chutzpah", "Coercion", "Clamour"], "correctIndex": 2, "explanation": "&#x27;Coercion&#x27; is the practice of persuading someone to do something by using force or threats. (जबर्दस्ती/दबाव)"}, {"id": 490, "text": "A child who is believed to have been secretly left in exchange for another", "options": ["Colleague", "Chauffeur", "Charlatan", "Changeling"], "correctIndex": 3, "explanation": "&#x27;Changeling&#x27; is a child believed to have been secretly substituted by fairies for the parents&#x27; real child. (बदला हुआ बच्चा)"}, {"id": 491, "text": "Rub a part of the body to restore warmth or sensation", "options": ["Chagrin", "Chafe", "Chasm", "Chaff"], "correctIndex": 1, "explanation": "&#x27;Chafe&#x27; means to rub a part of the body to create warmth or because of irritation. (रगड़ना/खरोंचना)"}, {"id": 492, "text": "A feeling of guilt or moral scruple that prevents or follows the doing of something bad", "options": ["Compassion", "Compunction", "Consternation", "Chagrin"], "correctIndex": 1, "explanation": "&#x27;Compunction&#x27; is a feeling of guilt or moral scruple that follows the doing of something bad. (पछतावा/आत्मग्लानि)"}, {"id": 493, "text": "One who does one’s work thoroughly and seriously", "options": ["Conservative", "Conscientious", "Complacent", "Contented"], "correctIndex": 1, "explanation": "&#x27;Conscientious&#x27; describes a person wishing to do what is right, especially to do one&#x27;s work or duty well. (ईमानदार/कर्तव्यनिष्ठ)"}, {"id": 494, "text": "A person falsely claiming to have a special knowledge or skill", "options": ["Choreographer", "Charlatan", "Connoisseur", "Chauffeur"], "correctIndex": 1, "explanation": "&#x27;Charlatan&#x27; is a person who pretends to have skills or knowledge they do not possess; a fraud. (पाखंडी/ढोंगी)"}, {"id": 495, "text": "The use of many words where only a few are necessary", "options": ["Conjecture", "Circumlocution", "Colloquy", "Circumstantial"], "correctIndex": 1, "explanation": "&#x27;Circumlocution&#x27; is the use of many words where fewer would do, especially in a deliberate attempt to be vague. (शब्दबाहुल्य/घुमावदार बात)"}, {"id": 496, "text": "Vexation for humiliation or disappointment", "options": ["Chagrin", "Charisma", "Churlish", "Chapel"], "correctIndex": 0, "explanation": "&#x27;Chagrin&#x27; is a feeling of being annoyed or disappointed because of a failure or humiliation. (चिढ़/क्षोभ)"}, {"id": 497, "text": "To have a strong feeling of sympathy with a desire to help", "options": ["Compassion", "Callous", "Compunction", "Condone"], "correctIndex": 0, "explanation": "&#x27;Compassion&#x27; is sympathetic pity and concern for the sufferings or misfortunes of others. (दया/सहानुभूति)"}, {"id": 498, "text": "State of anxiety or dismay causing mental confusion", "options": ["Compunction", "Chagrin", "Chutzpah", "Consternation"], "correctIndex": 3, "explanation": "&#x27;Consternation&#x27; is a feeling of anxiety or dismay, typically at something unexpected. (घबराहट/विस्मय)"}, {"id": 499, "text": "Land beside a sea", "options": ["Coast", "Chasm", "Cascade", "Canyon"], "correctIndex": 0, "explanation": "&#x27;Coast&#x27; is the part of the land adjoining or near the ocean or sea. (तट/किनारा)"}, {"id": 500, "text": "Pertaining to an individual from birth", "options": ["Cardinal", "Congenital", "Chronic", "Contagious"], "correctIndex": 1, "explanation": "&#x27;Congenital&#x27; refers to a disease or physical abnormality present from birth. (जन्मजात)"}];
+
+const state = {
+  current: 0,
+  answers: new Array(QUESTIONS.length).fill(null),
+  visited: new Array(QUESTIONS.length).fill(false),
+  timeLeft: SETTINGS.totalTimeSec,
+  timerHandle: null,
+  submitted: false,
+  reviewIndex: 0
+};
+
+function fmtTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return m+":"+s;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('app-header').style.display = (id === 'home-screen') ? 'block' : 'none';
+}
+
+// ---------- HOME ----------
+document.getElementById('home-total-q').textContent = QUESTIONS.length;
+document.getElementById('home-total-time').textContent = Math.round(SETTINGS.totalTimeSec/60) + ' Min';
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  showScreen('test-screen');
+  state.visited[0] = true;
+  renderTestQuestion();
+  startTimer();
+});
+
+// ---------- TIMER ----------
+function startTimer(){
+  updateTimerDisplay();
+  state.timerHandle = setInterval(() => {
+    state.timeLeft--;
+    if(state.timeLeft <= 0){
+      state.timeLeft = 0;
+      updateTimerDisplay();
+      clearInterval(state.timerHandle);
+      doSubmit();
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const el = document.getElementById('timer-display');
+  el.textContent = fmtTime(state.timeLeft);
+  el.classList.toggle('safe', state.timeLeft > SETTINGS.totalTimeSec * 0.1);
+}
+
+// ---------- TEST RENDER ----------
+function renderTestQuestion(){
+  const i = state.current;
+  const q = QUESTIONS[i];
+  document.getElementById('progress-display').textContent = `Question ${i+1} / ${QUESTIONS.length}`;
+  document.getElementById('test-q-of').textContent = `Question ${i+1} of ${QUESTIONS.length}`;
+  document.getElementById('test-q-text').innerHTML = q.text;
+
+  const optsWrap = document.getElementById('test-options');
+  optsWrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (state.answers[i] === idx ? ' selected' : '');
+    div.innerHTML = `<span class="opt-letter">${letters[idx]}.</span><span>${opt}</span>`;
+    div.addEventListener('click', () => {
+      state.answers[i] = idx;
+      renderTestQuestion();
+    });
+    optsWrap.appendChild(div);
+  });
+
+  document.getElementById('prev-btn').disabled = (i === 0);
+  updatePaletteCount();
+}
+
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if(state.current > 0){
+    state.current--;
+    state.visited[state.current] = true;
+    renderTestQuestion();
+  }
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  if(state.current < QUESTIONS.length - 1){
+    state.current++;
+    state.visited[state.current] = true;
+    renderTestQuestion();
+  }
+});
+document.getElementById('clear-btn').addEventListener('click', () => {
+  state.answers[state.current] = null;
+  renderTestQuestion();
+});
+
+// ---------- PALETTE ----------
+function updatePaletteCount(){
+  const answered = state.answers.filter(a => a !== null).length;
+  document.getElementById('palette-count-test').textContent = answered;
+}
+
+function buildPalette(mode){
+  const grid = document.getElementById('palette-grid');
+  grid.innerHTML = '';
+  const legend = document.getElementById('palette-legend');
+  if(mode === 'test'){
+    legend.innerHTML = `
+      <span><span class="legend-dot" style="background:var(--green);"></span>Answered</span>
+      <span><span class="legend-dot" style="background:var(--red);"></span>Not Answered</span>
+      <span><span class="legend-dot" style="background:var(--tan);"></span>Not Visited</span>`;
+  } else {
+    legend.innerHTML = `
+      <span><span class="legend-dot" style="background:var(--green);"></span>Correct</span>
+      <span><span class="legend-dot" style="background:var(--red);"></span>Wrong</span>
+      <span><span class="legend-dot" style="background:var(--tan);"></span>Unattempted</span>`;
+  }
+
+  QUESTIONS.forEach((q, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'palette-num';
+    btn.textContent = i+1;
+
+    if(mode === 'test'){
+      if(state.answers[i] !== null) btn.classList.add('answered');
+      else if(state.visited[i]) btn.classList.add('unanswered');
+      else btn.classList.add('notvisited');
+      if(i === state.current) btn.classList.add('current');
+      btn.addEventListener('click', () => {
+        state.current = i;
+        state.visited[i] = true;
+        renderTestQuestion();
+        closePalette();
+      });
+    } else {
+      if(state.answers[i] === null) btn.classList.add('notvisited');
+      else if(state.answers[i] === q.correctIndex) btn.classList.add('answered');
+      else btn.classList.add('unanswered');
+      if(i === state.reviewIndex) btn.classList.add('current');
+      btn.addEventListener('click', () => {
+        state.reviewIndex = i;
+        renderReviewQuestion();
+        closePalette();
+      });
+    }
+    grid.appendChild(btn);
+  });
+}
+function openPalette(mode){
+  buildPalette(mode);
+  document.getElementById('palette-overlay').classList.add('active');
+}
+function closePalette(){
+  document.getElementById('palette-overlay').classList.remove('active');
+}
+document.getElementById('palette-btn-test').addEventListener('click', () => openPalette('test'));
+document.getElementById('palette-btn-review').addEventListener('click', () => openPalette('review'));
+document.getElementById('palette-overlay').addEventListener('click', (e) => {
+  if(e.target.id === 'palette-overlay') closePalette();
+});
+
+// ---------- SUBMIT ----------
+document.getElementById('submit-btn').addEventListener('click', () => {
+  const unattempted = state.answers.filter(a => a === null).length;
+  document.getElementById('modal-unattempted-count').textContent = unattempted;
+  document.getElementById('submit-modal').classList.add('active');
+});
+document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+  document.getElementById('submit-modal').classList.remove('active');
+});
+document.getElementById('modal-yes-btn').addEventListener('click', () => {
+  document.getElementById('submit-modal').classList.remove('active');
+  doSubmit();
+});
+
+function doSubmit(){
+  if(state.submitted) return;
+  state.submitted = true;
+  clearInterval(state.timerHandle);
+
+  let correct = 0, wrong = 0, attempted = 0;
+  QUESTIONS.forEach((q, i) => {
+    if(state.answers[i] !== null){
+      attempted++;
+      if(state.answers[i] === q.correctIndex) correct++;
+      else wrong++;
+    }
+  });
+  const unattempted = QUESTIONS.length - attempted;
+  const score = (correct * 1) - (wrong * SETTINGS.negativeMarkPerWrong);
+
+  document.getElementById('res-total').textContent = QUESTIONS.length;
+  document.getElementById('res-attempted').textContent = attempted;
+  document.getElementById('res-unattempted').textContent = unattempted;
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-score').textContent = score.toFixed(2).replace(/\.00$/,'');
+
+  showScreen('result-screen');
+}
+
+// ---------- REVIEW ----------
+document.getElementById('review-btn').addEventListener('click', () => {
+  state.reviewIndex = 0;
+  showScreen('review-screen');
+  renderReviewQuestion();
+});
+document.getElementById('back-to-result-btn').addEventListener('click', () => {
+  showScreen('result-screen');
+});
+document.getElementById('retake-btn').addEventListener('click', () => {
+  location.reload();
+});
+
+function renderReviewQuestion(){
+  const i = state.reviewIndex;
+  const q = QUESTIONS[i];
+  const userAns = state.answers[i];
+  const isCorrect = userAns === q.correctIndex;
+  const isUnattempted = userAns === null;
+
+  const statusTag = document.getElementById('review-status-tag');
+  statusTag.textContent = isUnattempted ? 'Unattempted' : (isCorrect ? 'Correct' : 'Wrong');
+  statusTag.style.color = isUnattempted ? 'var(--muted)' : (isCorrect ? 'var(--green)' : 'var(--red)');
+
+  document.getElementById('review-progress-display').textContent = `Question ${i+1} / ${QUESTIONS.length}`;
+  document.getElementById('review-q-of').textContent = `Question ${i+1} of ${QUESTIONS.length}`;
+  document.getElementById('review-q-text').innerHTML = q.text;
+
+  const optsWrap = document.getElementById('review-options');
+  optsWrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    let cls = 'option';
+    let mark = '';
+    if(idx === q.correctIndex){
+      cls += ' correct-opt';
+      mark = '<span class="opt-mark ok">✓</span>';
+    } else if(idx === userAns){
+      cls += ' wrong-opt';
+      mark = '<span class="opt-mark no">✗</span>';
+    }
+    div.className = cls;
+    div.innerHTML = `<span class="opt-letter">${letters[idx]}.</span><span>${opt}</span>${mark}`;
+    optsWrap.appendChild(div);
+  });
+
+  const letterOf = idx => idx === null ? 'Not Attempted' : letters[idx] + '. ' + q.options[idx];
+  document.getElementById('review-answer-summary').innerHTML = `
+    <div><b>Your Answer:</b> ${letterOf(userAns)}</div>
+    <div><b>Correct Answer:</b> ${letterOf(q.correctIndex)}</div>
+  `;
+  document.getElementById('review-explanation').innerHTML = q.explanation || 'No explanation available.';
+
+  document.getElementById('review-prev-btn').disabled = (i === 0);
+  document.getElementById('review-next-btn').disabled = (i === QUESTIONS.length - 1);
+}
+document.getElementById('review-prev-btn').addEventListener('click', () => {
+  if(state.reviewIndex > 0){ state.reviewIndex--; renderReviewQuestion(); }
+});
+document.getElementById('review-next-btn').addEventListener('click', () => {
+  if(state.reviewIndex < QUESTIONS.length - 1){ state.reviewIndex++; renderReviewQuestion(); }
+});
+</script>
+</body>
+</html>

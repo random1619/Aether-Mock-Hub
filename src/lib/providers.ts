@@ -73,6 +73,13 @@ export const PROVIDERS: ProviderMeta[] = [
     tagline: 'Monthly current-affairs magazines and GK compendiums in PDF form for offline reading and revision.',
     tone: 'neutral',
   },
+  {
+    provider: 'Others',
+    slug: 'others',
+    title: 'Others — Organized Collection',
+    tagline: '579 newly organized mocks sorted by subject → topic — Quant, Reasoning, English, GK, and Computer, precisely classified by content.',
+    tone: 'primary',
+  },
 ];
 
 /** Lookup by catalog provider string. */

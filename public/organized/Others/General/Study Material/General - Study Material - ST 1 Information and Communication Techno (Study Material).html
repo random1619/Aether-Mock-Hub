@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ST 1: Information and Communication Technology (ICT)</title>
+
+<!-- 🔤 GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #0b0f19;
+  --card: #121829;
+  --text: #ffffff;
+  --option: #1c2338;
+  --border: #2a335a;
+  --correct: #1f7a1f;
+  --accent: #6a5cff;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #f3f4f6;
+  --text: #000000;
+  --option: #e5e7eb;
+  --border: #c7c9cc;
+  --correct: #22c55e;
+  --accent: #2563eb;
+}
+
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  background:#0b0f19;
+  color:#ffffff;
+  font-family:'Noto Sans','Noto Sans Devanagari',Arial,sans-serif;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+/* 🔗 ALL CLICKABLE LINKS */
+a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+a:hover {
+  opacity:0.85;
+}
+
+/* 🔝 TOP HEADING */
+.top-heading {
+  text-align:center;
+  font-size:30px;
+  color:#6a5cff;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+.top-heading a {
+  color:#6a5cff;
+  font-weight:600;
+}
+
+.toggle-btn {
+  cursor:pointer;
+  font-size:20px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background:#121829;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:28px;
+  position:relative;
+}
+
+/* 💧 CLICKABLE WATERMARK */
+.watermark {
+  position:absolute;
+  right:12px;
+  top:12px;
+  font-size:14px;
+  /* opacity:0.12; */
+  letter-spacing:2px;
+}
+.watermark a {
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* ===== CONTENT ===== */
+.question {
+  margin-bottom:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+.option {
+  background:#1c2338;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  border:2px solid #2a335a;
+  font-size: var(--fsize);
+}
+
+.option.correct {
+  background:#1f7a1f;
+  border-color:#2ecc71;
+}
+
+.solution {
+  margin-top:16px;
+  border-left:4px solid #2ecc71;
+  padding-left:14px;
+  font-size: var(--fsize);
+  line-height:1.6;
+}
+
+/* ===== LANGUAGE TOGGLE ===== */
+html[data-lang="en"] .lang-hi { display: none !important; }
+html[data-lang="hi"] .lang-en { display: none !important; }
+
+
+
+/* Hindi / Math visibility fix */
+.card span,
+.card p,
+.card div {
+  color: var(--text) !important;
+  background:transparent !important;
+}
+
+/* ===== PATCH: APPLY THEME VARIABLES ===== */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+.card { background: var(--card) !important; }
+.option { background: var(--option) !important; border-color: var(--border) !important; }
+.option.correct { background: var(--correct) !important; }
+a, .top-heading a, .watermark a { color: var(--accent) !important; }
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  .card {
+    background: var(--card) !important;
+    page-break-inside: auto;
+  }
+
+  .option { background: var(--option) !important; }
+  .option.correct { background: var(--correct) !important; }
+
+  @page { margin:0mm; }
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+document.documentElement.setAttribute("data-theme","dark");
+</script>
+
+<div class="container">
+
+<div class="top-bar" style="
+  display:grid;
+  grid-template-columns:auto auto auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+">
+
+  <!-- LEFT : FONT SIZE -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:14px;">Font</span>
+    <input
+      type="range"
+      min="14"
+      max="40"
+      step="1"
+      value="20"
+      id="fontSlider"
+      oninput="setFontSize(this.value)"
+    >
+    <span id="fsizeLabel" style="font-size:13px;">20px</span>
+  </div>
+
+  <!-- CENTER : LANGUAGE TOGGLE -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:14px;">
+    <span>Lang</span>
+    <button onclick="setLang('en')" id="lang-en" class="toggle-btn" style="padding:4px 6px;">EN</button>
+    <button onclick="setLang('hi')" id="lang-hi" class="toggle-btn" style="padding:4px 6px;">HI</button>
+  </div>
+
+  <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()" style="padding:4px 8px;font-size:14px;">
+  🌙
+</div>
+  </div>
+
+</div>
+
+
+  
+<div class="top-heading">
+  This Is Made By
+  <a href="https://t.me/+nq81CAMeSCg5NDI9" target="_blank">
+   ️ Wamphire Batches 🖇️
+  </a>
+</div>
+
+<!-- 📘 CLICKABLE TEST TITLE -->
+<h2 style="text-align:center;margin-bottom:22px;">
+  <a href="https://t.me/TestBookMock_Bot" target="_blank" style="color:#ffffff;">
+    ST 1: Information and Communication Technology (ICT) 🖇️
+  </a>
+</h2>
+
+<!-- ===== QUESTIONS ===== -->
+
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q1</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">The NAND function is a complement of which of the following functions?</div>
+  <div class="question lang-hi">NAND फ़ंक्शन निम्नलिखित में से किस फ़ंक्शन का पूरक है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">OR</div><div class="option correct">AND</div><div class="option">NOR</div><div class="option">XOR</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">OR</div><div class="option correct">AND</div><div class="option">NOR</div><div class="option">XOR</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><strong>A logic gate</strong> is a device that acts as a <strong>building block for digital&nbsp;circuits</strong>. They perform basic logical functions that are fundamental to digital circuits. Most electronic devices we use today will have some form of logic gates in them. For example, logic gates can be used in technologies such as smartphones, tablets, or&nbsp;within memory devices.</p> <p>In a circuit, logic gates will make decisions based on a combination of digital signals coming from its inputs. Most logic gates have two inputs and one output. Logic gates are based on&nbsp;Boolean&nbsp;algebra.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><span style=""><span style="font-weight: 700;">NAND</span>&nbsp;is an abbreviation of&nbsp;</span><span style="font-weight: 700; ">NOT</span><span style="">&nbsp;AND. </span></li> <li><span style="">The graphic symbol for the NAND gate consists of an AND symbol with a bubble on the output, denoting that a complement operation is performed on the output of the AND gate.&nbsp;</span></li> <li><span style="color: rgb(32, 33, 36); ">The NAND or&nbsp;</span><b style="color: rgb(32, 33, 36); ">&ldquo;Not</b><span style="color: rgb(32, 33, 36); ">&nbsp;AND&rdquo; function is a combination of the two separate logical functions, the AND function and the NOT function in series. </span></li> <li><span style="color: rgb(32, 33, 36); ">The logic NAND function can be expressed by the Boolean expression of, A.B.</span></li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D1.png" style="width: 179px; height: 181px;" />​</p> <p><em><strong><span style="color: rgb(32, 33, 36); ">Thus the NAND gate represents the complement of the AND operation.&nbsp;</span></strong></em></p> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><strong><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <p>There are seven basic logic gates:<strong> AND, OR, XOR, NOT, NAND, NOR, and XNOR</strong></p> <ul> <li>The&nbsp;<strong>AND gate</strong>&nbsp;is so named because, if 0 is called &quot;false&quot; and 1 is called &quot;true,&quot; the gate acts in the same way as the logical &quot;and&quot; operator.</li> </ul> <p><img alt="/WhatIs/images/and.gif (220 bytes)" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D2.png" style=" width: 106px; height: 42px;" /></p> <ul> <li><strong>The&nbsp;<em>XOR</em>&nbsp;(&nbsp;<em>exclusive-OR</em>&nbsp;)&nbsp;<em>gate</em>&nbsp;</strong>acts in the same way as the logical &quot;either/or.&quot; The output is &quot;true&quot; if either, but not both, of the inputs are &quot;true.&quot; The output is &quot;false&quot; if both inputs are &quot;false&quot; or if both inputs are &quot;true.&quot; Another way of looking at this circuit is to observe that the output is 1 if the inputs are different, but 0 if the inputs are the same.</li> </ul> <p align="center" style="margin-top: 1.5em; margin-bottom: 1.5em; line-height: 1.67em; "><img alt="" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D3.png" style="max-width: 740px; float: left; width: 112px; height: 49px;" /></p> <p>&nbsp;</p> <p>&nbsp;</p> <ul> <li><strong>The&nbsp;NOR gate&nbsp;</strong>is a combination OR gate followed by an inverter. Its output is &quot;true&quot; if both inputs are &quot;false.&quot; Otherwise, the output is &quot;false.&quot;</li> </ul> <center> <p><img alt="/WhatIs/images/nor.gif (237 bytes)" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D4.png" style="text-align: -webkit-center; float: left; width: 95px; height: 48px;" /></p> <p>&nbsp;</p> <center>&nbsp;</center> </center></div>
+    <div class="lang-hi"><p><strong>लॉजिक गेट</strong> एक ऐसा उपकरण है जो <strong>डिजिटल सर्किट के लिए बिल्डिंग ब्लॉक</strong> के रूप में कार्य करता है। वे बेसिक&nbsp; फंक्शन्स करते हैं जो डिजिटल सर्किट के लिए मौलिक हैं। आज हम जिन अधिकांश इलेक्ट्रॉनिक उपकरणों का उपयोग करते हैं, उनमें किसी न किसी रूप में लॉजिक गेट होंगे। उदाहरण के लिए, लॉजिक गेट्स का उपयोग स्मार्टफोन, टैबलेट या मेमोरी डिवाइस जैसी तकनीकों में किया जा सकता है।</p> <p>एक सर्किट में, लॉजिक गेट्स अपने इनपुट से आने वाले डिजिटल सिग्नल के संयोजन के आधार पर निर्णय लेंगे। अधिकांश लॉजिक गेट में दो इनपुट और एक आउटपुट होता है। लॉजिक गेट बूलियन अलजेब्रा पर आधारित हैं।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>NAND NOT AND</strong> का संक्षिप्त रूप है।</li> <li>NAND गेट के ग्राफिक प्रतीक में आउटपुट पर एक बबल के साथ AND सिंबल होता है, जो दर्शाता है कि AND गेट के आउटपुट पर एक पूरक ऑपरेशन किया जाता है।</li> <li>NAND या &quot;<strong>Not</strong> AND&quot; फंक्शन दो अलग-अलग लॉजिकल फंक्शन्स, AND फंक्शन और NOT फंक्शन इन सीरीज का एक संयोजन है।</li> <li>तर्क NAND फ़ंक्शन को बूलियन एक्सप्रेशन, A.B. द्वारा व्यक्त किया जा सकता है।​</li> </ul> <p><img alt="" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D1.png" style=" width: 179px; height: 181px;" />​</p> <p><em><strong>इस प्रकार NAND गेट AND ऑपरेशन के पूरक का प्रतिनिधित्व करता है।</strong></em></p> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><strong><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li>सात बेसिक लॉजिक गेट हैं: <strong>AND, OR, XOR, NOT, NAND, NOR, और XNOR</strong></li> <li><strong>AND गेट</strong> का नाम इसलिए रखा गया है, क्योंकि यदि 0 को &quot;फॉल्स&quot; कहा जाता है और 1 को &quot;ट्रू&quot; कहा जाता है, तो गेट उसी तरह से कार्य करता है जैसे लॉजिकल &quot;AND&quot; ऑपरेटर।</li> </ul> <p><img alt="/WhatIs/images/and.gif (220 bytes)" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D2.png" style="width: 106px; height: 42px;" /></p> <ul> <li><em><strong>XOR (एक्सक्लूसिव-OR) गेट</strong></em> लॉजिकल गेट &quot;ईदर/और&quot; की तरह ही कार्य करता है। आउटपुट &quot;ट्रू&quot; है, यदि दोनों में से कोई भी, लेकिन दोनों नहीं, इनपुट &quot;ट्रू&quot; हैं। आउटपुट &quot;फॉल्स&quot; है यदि दोनों इनपुट &quot;फॉल्स&quot; हैं या यदि दोनों इनपुट &quot;ट्रू&quot; हैं। इस सर्किट को देखने का एक अन्य तरीका यह देखना है कि यदि इनपुट अलग हैं तो आउटपुट 1 है, लेकिन यदि इनपुट समान हैं तो 0 है।</li> </ul> <p align="center" style="margin-top: 1.5em; margin-bottom: 1.5em; line-height: 1.67em; "><img alt="" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D3.png" style="text-align: -webkit-center; max-width: 740px; float: left; width: 112px; height: 49px;" /></p> <p>&nbsp;</p> <p>&nbsp;</p> <ul> <li><strong>NOR गेट</strong> एक संयोजन या गेट है जिसके बाद एक इन्वर्टर होता है। इसका आउटपुट &quot;ट्रू&quot; है यदि दोनों इनपुट &quot;फॉल्स&quot; हैं। अन्यथा, आउटपुट &quot;फॉल्स&quot; है।</li> </ul> <center> <p><img alt="/WhatIs/images/nor.gif (237 bytes)" src="https://storage.googleapis.com/tb-img/production/22/02/F1_Uma%20B_11-2-22_Savita_D4.png" style="float: left; width: 95px; height: 48px;" /></p> <p>&nbsp;</p> <center>&nbsp;</center> </center></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q2</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is <strong>NOT </strong>a system software?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन-सा एक सिस्टम सॉफ्टवेयर नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Operating system</div><div class="option">Compiler</div><div class="option correct">Word processor</div><div class="option">Utility software</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ऑपरेटिंग सिस्टम</div><div class="option">कम्पाइलर</div><div class="option correct">वर्ड प्रोसेसर</div><div class="option">यूटिलिटी सॉफ्टवेयर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p><span style="color: (32, 33, 36); ">Systems software are&nbsp;</span><b style="color: (32, 33, 36); ">programs that manage the resources of the computer system and simplify applications programming</b><span style="color: rgb(32, 33, 36); ">. </span></p> <p><span style="color: (32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" />&nbsp;<strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>Systems software includes&nbsp;software such as the <strong>operating system, database management systems, networking software, translators, and software utilities.</strong></span></p> <p>Systems software can be categorized under the following:</p> <ul> <li><strong>Operating system</strong>:&nbsp;Harnesses communication between hardware, system programs, and other applications.</li> <li><strong>Device driver</strong>:&nbsp;Enables device communication with the OS and other programs.</li> <li><strong>Firmware</strong>:&nbsp;Enables device control and identification. <ul> <li><span style="color: (51, 51, 51); ">Firmware is the operational software embedded within a flash, ROM, or EPROM memory chip for the OS to identify it. </span></li> <li><span style="color: (51, 51, 51); ">It directly manages and controls all activities of any single hardware.</span></li> </ul> </li> <li><strong>Translator</strong>:&nbsp;Translates high-level languages to low-level machine codes. <ul> <li><span style="color: (77, 81, 86); "><strong>A compiler</strong> is a <strong>computer program that translates computer code written in one programming language into another language. </strong></span></li> <li><span style="color: (77, 81, 86); ">The name &quot;compiler&quot; is primarily used for programs that translate source code from a high-level programming language to a lower-level language to create an executable</span></li> </ul> </li> <li><strong>software utility</strong>:&nbsp;Ensures optimum functionality of devices and applications.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>W</strong><span style="color: (32, 33, 36); "><strong>ord processor </strong>is a<strong>&nbsp;</strong></span>computer program used to write and revise documents, compose the layout of the text, and preview on a computer monitor how the printed copy will appear. For example, google docs, Microsoft word.</li> </ul> <p><em><strong>Hence word processor is&nbsp;not system software.</strong></em></p></div>
+    <div class="lang-hi"><p>सिस्टम सॉफ्टवेयर <strong>ऐसे प्रोग्राम हैं जो कंप्यूटर सिस्टम के संसाधनों का प्रबंधन करते हैं और एप्लिकेशन प्रोग्रामिंग को सरल बनाते हैं।</strong><span style="color: rgb(32, 33, 36); "> </span></p> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" />&nbsp;<strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></p> <p>सिस्टम सॉफ़्टवेयर में <strong>ऑपरेटिंग सिस्टम, डेटाबेस प्रबंधन सिस्टम, नेटवर्किंग सॉफ़्टवेयर, अनुवादक और सॉफ़्टवेयर यूटिलिटीज</strong>&nbsp;जैसे सॉफ़्टवेयर शामिल हैं।</p> <p>सिस्टम सॉफ्टवेयर को निम्नलिखित के अंतर्गत वर्गीकृत किया जा सकता है:</p> <ul> <li><strong>ऑपरेटिंग सिस्टम:</strong> हार्डवेयर, सिस्टम प्रोग्राम और अन्य एप्लिकेशन्स के बीच संचार का उपयोग करता है।</li> <li><strong>डिवाइस ड्राइवर:</strong> OS और अन्य प्रोग्राम के साथ डिवाइस संचार को सक्षम करता है।</li> <li><strong>फर्मवेयर:</strong> डिवाइस नियंत्रण और पहचान को सक्षम करता है। <ul> <li>फर्मवेयर ऑपरेटिंग सॉफ्टवेयर है जो ऑपरेटिंग सॉफ्टवेयर को पहचानने के लिए फ्लैश, ROM या EPROM मेमोरी चिप के भीतर एम्बेडेड है।</li> <li>यह किसी एक हार्डवेयर की सभी गतिविधियों का सीधे प्रबंधन और नियंत्रण करता है।</li> </ul> </li> <li><strong>ट्रांसलेटर:</strong> हाई-लेवल लैंग्वेजेस का लौ लेवल मशीन कोड में ट्रांसलेट करता है। <ul> <li><strong>एक कंपाइलर एक कंप्यूटर प्रोग्राम है जो एक प्रोग्रामिंग लैंग्वेज में लिखे गए कंप्यूटर कोड को दूसरी लैंग्वेज में ट्रांसलेट करता है।</strong></li> <li>&quot;कंपाइलर&quot; नाम मुख्य रूप से उन प्रोग्रामों के लिए उपयोग किया जाता है जो निष्पादन योग्य बनाने के लिए सोर्स कोड को हाई-लेवल प्रोग्रामिंग लैंग्वेज से लो-लेवल लैंग्वेज में ट्रांसलेट करते हैं।</li> </ul> </li> <li><strong>सॉफ्टवेयर यूटिलिटीज:</strong> उपकरणों और एप्लिकेशन्स&nbsp; की इष्टतम कार्यक्षमता सुनिश्चित करता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>वर्ड प्रोसेसर</strong> एक कंप्यूटर प्रोग्राम है जिसका उपयोग डाक्यूमेंट्स को लिखने और एडिट करने, टेक्स्ट के लेआउट की रचना करने और कंप्यूटर मॉनीटर पर प्रीव्यू करने के लिए किया जाता है कि प्रिंटेड कॉपी कैसे दिखाई देगी। उदाहरण के लिए, गूगल डॉक्स, माइक्रोसॉफ्ट वर्ड।</li> </ul> <p><em><strong>अतः&nbsp;वर्ड प्रोसेसर सिस्टम सॉफ्टवेयर नहीं है।</strong></em></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q3</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following memories allows simultaneous read and write&nbsp;operations?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन सी मेमोरी ऑपरेशन को एक साथ रीड और राइट कर सकती है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">ROM</div><div class="option correct">RAM</div><div class="option">EPROM</div><div class="option">PROM</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ROM</div><div class="option correct">RAM</div><div class="option">EPROM</div><div class="option">PROM</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong><span style="">RAM.</span></strong></u></p> <ul> <li><span style="">Memories allowing&nbsp;simultaneous read and write&nbsp;operations is&nbsp;</span><u style=""><span style="font-weight: 700;">RAM.</span></u></li> </ul> <p><u style=""><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></u></p> <ul> <li><strong>RAM(Random Access Memory)</strong>&nbsp;computer memory is available&nbsp;to the user for creating, loading, or running programs and for the temporary storage and manipulation of data, in which time of access to each item is independent of the storage sequence.</li> <li><strong>ROM(Read Only Memory)&nbsp;</strong>computer memory in which program instructions, operating procedures, or other data are permanently stored, generally on electronic chips during manufacture, and that ordinarily cannot be changed by the user.</li> <li><strong>PROM(Programmable Read-Only Memory) is&nbsp;</strong>a memory chip whose contents can be programmed by a user or manufacturer for a specific purpose.</li> <li><strong>EPROM(Electronically Programmable&nbsp;Read-Only Memory) is&nbsp;</strong>a memory chip whose contents can be erased by a mechanism using ultraviolet light and reprogrammed for other purposes.&nbsp;</li> </ul></div>
+    <div class="lang-hi"><p><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="3" data-phrase-index="0"><span>सही उत्तर <u><strong>RAM</strong></u> है।</span></span></span></p> <ul> <li><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="3" data-phrase-index="2"><span>एक साथ </span></span></span><span style="">रीड</span><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="3" data-phrase-index="2"><span> और राइट के कार्य की अनुमति देने वाली मेमोरी RAM है।</span></span></span></li> </ul> <p><u style=""><span style="font-weight: 700;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></span></u></p> <ul> <li><strong>RAM </strong><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="0"><span><strong>(रैंडम एक्सेस मेमोरी): </strong>वह कंप्यूटर मेमोरी, जो उपयोगकर्ता के लिए प्रोग्राम बनाने, लोड करने या चलाने के लिए और अस्थायी स्टोरेज और डेटा में परिवर्तन के लिए उपलब्ध होती है, जिसमें प्रत्येक आइटम तक पहुंच का समय </span></span></span><span style="">स्टोरेज&nbsp;</span><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="0"><span>अनुक्रम से स्वतंत्र है।</span></span><span class="JLqJ4b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="1"><span> </span></span></span></li> <li><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="2"><span><strong>ROM (रीड ओनली मेमोरी): </strong>वह कंप्यूटर मेमोरी जिसमें प्रोग्राम निर्देश, संचालन प्रक्रिया, या अन्य डेटा स्थायी रूप से निर्माण के दौरान इलेक्ट्रॉनिक चिप्स पर </span></span></span><span style="">स्टोरेज&nbsp;</span><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="2"><span>होते हैं, और जिसे आमतौर पर उपयोगकर्ता द्वारा बदला नहीं जा सकता है।</span></span><span class="JLqJ4b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="3"><span> </span></span></span></li> <li><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="4"><span><strong>PROM (प्रोग्रामेबल रीड ओनली मेमोरी): </strong>एक मेमोरी चिप जिसकी सामग्री को उपयोगकर्ता या निर्माता द्वारा किसी विशिष्ट उद्देश्य के लिए प्रोग्राम किया जा सकता है।</span></span></span></li> <li><span class="VIiyi" lang="hi"><span class="JLqJ4b ChMk0b" data-language-for-alternatives="hi" data-language-to-translate-into="en" data-number-of-phrases="7" data-phrase-index="6"><span><strong>EPROM (इलेक्ट्रॉनिकली प्रोग्रामेबल रीड ओनली मेमोरी):</strong> एक मेमोरी चिप जिसकी सामग्री को पराबैंगनी प्रकाश का उपयोग करके एक तंत्र द्वारा मिटाया जा सकता है और अन्य उद्देश्यों के लिए पुन: प्रोग्रामित किया जा सकता है।</span></span></span></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q4</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is an example of a spreadsheet?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौन एक स्प्रेडशीट का उदाहरण है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Microsoft Power Point</div><div class="option correct">Microsoft Excel</div><div class="option">Microsoft Outlook</div><div class="option">Microsoft Word</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">माइक्रोसॉफ्ट पावरप्वाइंट</div><div class="option correct"><span style="">माइक्रोसॉफ्ट एक्सेल</span></div><div class="option"><span style="">माइक्रोसॉफ्ट आउटलुक</span></div><div class="option"><span style="">माइक्रोसॉफ्ट वर्ड</span></div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Microsoft Excel.</strong></u></p> <ul> <li><strong>Excel</strong> is <strong>Microsoft&rsquo;s spreadsheet program</strong> that <strong>can be used to organize, format, and calculate data.</strong></li> <li>You can create formulas to aggregate large amounts of data, graph and chart data, create&nbsp;macros, and develop&nbsp;pivot tables.</li> <li>Originally a neck-and-neck competitor with&nbsp;Lotus 1-2-3, <strong>Excel is now&nbsp;the&nbsp;spreadshee</strong>t.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p><span style="display: flex;gap: 6px;align-items: center;">Other <strong>major software from the MS Office Package</strong>:-</span></p> <div> <ul> <li data-short="Word"><u><strong>Microsoft Word</strong></u> <ul> <li>Word is <strong>Microsoft&rsquo;s word processing app</strong>.</li> <li>It includes<strong> an array of features for document creation and editing, including Spell-check, a rich text editor, and page features such as justification, paragraphs, and indentation</strong>.</li> <li>You also <strong>benefit from the what-you-see-is-what-you-get (WYSIWYG) display</strong> &ndash; as the screen displays everything in the same way as the document will look when printed.​</li> </ul> </li> </ul> </div> <div> <ul> <li data-short="PowerPoint"><u><strong>Microsoft PowerPoint</strong></u> <ul> <li>Microsoft PowerPoint <strong>helps you create professional presentations.</strong></li> <li>PowerPoint was first launched in 1990, using slides to display text, graphics, and multimedia.</li> <li>Since then, it&rsquo;s added a <strong>variety of features to streamline and enhance presentations, such as transition effects, timers, and software integrations.</strong></li> </ul> </li> </ul> <p><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> </div> <div> <ul> <li data-short="OneNote"><u><strong>Microsoft OneNote</strong></u> <ul> <li>OneNote <strong>allows you to jot down your thoughts before you forget them. Then, notes can be shared with others.</strong></li> <li>Much<strong> like a digital notebook, the application automatically saves and syncs notes.</strong></li> <li>OneNote was introduced as a standard Office application in 2013,<strong> allowing even more users to be able to share their typed notes, drawings, and screengrabs with other online users.</strong></li> </ul> </li> </ul> </div> <div> <ul> <li data-short="Outlook"><u><strong>Microsoft Outlook</strong></u> <ul> <li>Mainly <strong>used as an email application, Outlook is considered a personal information manager, coordinating your calendars, task managers, contacts, notes, journals, and browsing sessions.</strong></li> <li>Outlook<strong> can be used as a stand-alone app, or it can be networked to connect multiple users to shared mailboxes and calendars under a single organization, for example.</strong></li> </ul> </li> </ul> </div> <div> <ul> <li data-short="Access"><u><strong>Microsoft Access</strong></u> <ul> <li>Access is <strong>Microsoft&rsquo;s database management system that provides a graphical user interface (GUI) and software development tools that allow for stored data or imported data from other databases.</strong></li> <li>With Access, you can<strong> use data to create forms, tables, queries, and reports.</strong></li> </ul> </li> </ul> </div></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>माइक्रोसॉफ्ट एक्सेल</strong></u> है।</p> <ul> <li><strong>एक्सेल माइक्रोसॉफ्ट का स्प्रेडशीट प्रोग्राम है जिसका उपयोग डेटा को व्यवस्थित करने, प्रारूपित करने और गणना करने के लिए किया जा सकता है।</strong></li> <li>आप बड़ी मात्रा में डेटा, ग्राफ़ और चार्ट डेटा एकत्र करने, मैक्रोज़ बनाने और पिवट टेबल विकसित करने के लिए सूत्र बना सकते हैं।</li> <li>मूल रूप से लोटस 1-2-3 के साथ एक नज़दीक प्रतियोगी, <strong>एक्सेल अब स्प्रेडशीट</strong> है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <p>अन्य&nbsp;<strong>MS ऑफिस पैकेज से प्रमुख सॉफ्टवेयर:-</strong></p> <ul> <li><u><strong>माइक्रोसॉफ्ट वर्ड</strong></u> <ul> <li>वर्ड <strong>माइक्रोसॉफ्ट का वर्ड प्रोसेसिंग ऐप</strong> है।</li> <li>इसमें <strong>दस्तावेज़ निर्माण और संपादन के लिए सुविधाओं की एक सरणी शामिल है, जिसमें वर्तनी-जांच, एक समृद्ध पाठ संपादक, और पृष्ठ सुविधाएँ जैसे औचित्य, पैराग्राफ और इंडेंटेशन</strong> शामिल हैं।</li> <li><strong>आपको जो दिखता है वही मिलता है&nbsp;(WYSIWYG) डिस्प्ले</strong> से भी लाभ होता है - क्योंकि स्क्रीन सब कुछ उसी तरह प्रदर्शित करती है जैसे दस्तावेज़ मुद्रित होने पर दिखाई देगा।</li> </ul> </li> <li><u><strong>माइक्रोसॉफ्ट पावरप्वाइंट</strong></u> <ul> <li>माइक्रोसॉफ्ट पावरप्वाइंट&nbsp;<strong>आपको पेशेवर प्रस्तुतियाँ बनाने में मदद करता है।</strong></li> <li><span style="">पावरप्वाइंट</span> को पहली बार 1990 में टेक्स्ट, ग्राफिक्स और मल्टीमीडिया प्रदर्शित करने के लिए स्लाइड्स का उपयोग करके लॉन्च किया गया था।</li> <li>तब से, इसने <strong>प्रस्तुतियों को सुव्यवस्थित करने और बढ़ाने के लिए कई प्रकार की सुविधाएँ </strong>जोड़ी हैं,<strong> जैसे संक्रमण प्रभाव, टाइमर और सॉफ़्टवेयर एकीकरण।</strong></li> </ul> </li> </ul> <div> <p><br /> <span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> </div> <div> <ul> <li><u><strong>माइक्रोसॉफ्ट वननोट</strong></u> <ul> <li>वननोट <strong>आपको अपने विचारों को भूलने से पहले उन्हें संक्षेप में लिखने देता है। फिर, नोट्स दूसरों के साथ साझा किए जा सकते हैं।</strong></li> <li><strong>डिजिटल नोटबुक की तरह, एप्लिकेशन स्वचालित रूप से नोट्स को सहेजता है और सिंक करता है।</strong></li> <li><span style="">वन</span><span style="">नोट</span> को 2013 में एक मानक ऑफिस एप्लिकेशन के रूप में पेश किया गया था, <strong>जिससे और भी अधिक उपयोगकर्ता अपने टाइप किए गए नोट्स, ड्रॉइंग और अन्य ऑनलाइन उपयोगकर्ताओं के साथ स्क्रेंग्रेब साझा करने में सक्षम हो सकें।</strong></li> </ul> </li> <li><u><strong>माइक्रोसॉफ्ट आउटलुक</strong></u> <ul> <li>मुख्य <strong>रूप से एक ईमेल एप्लिकेशन के रूप में उपयोग किया जाता है, आउटलुक को एक व्यक्तिगत सूचना प्रबंधक माना जाता है, जो आपके कैलेंडर, कार्य प्रबंधकों, संपर्कों, नोट्स, पत्रिकाओं और ब्राउज़िंग सत्रों का समन्वय करता है।</strong></li> <li>आउटलुक<strong> को एक स्टैंड-अलोन ऐप के रूप में इस्तेमाल किया जा सकता है, या इसे एक ही संगठन के तहत कई उपयोगकर्ताओं को साझा मेलबॉक्स और कैलेंडर से जोड़ने के लिए नेटवर्क किया जा सकता है, उदाहरण के लिए।</strong></li> </ul> </li> <li><u><strong>माइक्रोसॉफ्ट एक्सेस</strong></u> <ul> <li>एक्सेस <strong>माइक्रोसॉफ्ट की डेटाबेस प्रबंधन प्रणाली है जो ग्राफिकल यूजर इंटरफेस (जीयूआई) और सॉफ्टवेयर डेवलपमेंट टूल्स प्रदान करती है जो अन्य डेटाबेस से संग्रहीत डेटा या आयातित डेटा की अनुमति देती है।</strong></li> <li>एक्सेस के साथ, आप <strong>फॉर्म, टेबल, क्वेरी और रिपोर्ट बनाने के लिए डेटा का उपयोग कर</strong> सकते हैं।</li> </ul> </li> </ul> </div></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q5</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">A collection of programs that supports a&nbsp;computer&#39;s basic functions such as&nbsp;scheduling tasks and controlling&nbsp;peripherals is called _______.</div>
+  <div class="question lang-hi">प्रोग्रामों का एक संकलन जो एक कप्यूटर के मूल फंक्शन जैसे कि टास्&zwj;क शेड्यूलिंग और पेरिफेरल्स को नियंत्रित करने का समर्थन करता है, _________ कहलाता है।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">Operating System</div><div class="option">Computer Network</div><div class="option">Compiler</div><div class="option">Interpreter</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">ऑपरेटिंग सिस्टम</div><div class="option">कंप्यूटर नेटवर्क</div><div class="option">कंपाइलर</div><div class="option">इंटरप्रेटर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Operating System.</strong></u></p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>Operating System</strong></u> <ul> <li>It consists of programs, which controls, coordinate and supervise the activities of the various components of a computer system.</li> <li>Its function is to provide a link between the computer hardware and the user.</li> <li>It performs the following functions:</li> </ul> <ol> <li>IT recognises input from the keyboard, sends output to the display screen.</li> <li>It makes sure that programs running at the same time do not interfere with each other.</li> <li>It is also responsible for security, ensuring that unauthorised users do not access the system.</li> </ol> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><u><strong>Computer Network</strong></u> <ul> <li><span id="cke_bm_4738S" style="display: none;">&nbsp;</span><span id="cke_bm_4755S" style="display: none;">&nbsp;</span><span id="cke_bm_4805S" style="display: none;">&nbsp;</span>A computer network is a collection of two or more computers, which are connected together to share information and resources.</li> <li><span id="cke_bm_4898S" style="display: none;">&nbsp;</span>The computer network is broadly classified into the following:</li> </ul> </li> </ul> <ol style="margin-left: 40px;"> <li>Local <span id="cke_bm_4898E" style="display: none;">&nbsp;</span>Area Network(LAN)</li> <li>Wid<span id="cke_bm_4805E" style="display: none;">&nbsp;</span>e Area Network ( WAN)</li> <li>Metropo<span id="cke_bm_4755E" style="display: none;">&nbsp;</span><span id="cke_bm_4738E" style="display: none;">&nbsp;</span>litan Area Network( MAN)</li> </ol> <ul> <li><u><strong>Compiler</strong></u> <ul> <li>A compiler is a special program that processes statements written in a particular programming language and turns them into machine language or &quot;code&quot; that a computer&#39;s processor uses.</li> </ul> </li> <li><u><strong>Interpreter</strong></u> <ul> <li>It converts a high-level language program into machine language by converting it line-by-line.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्&zwj;तर&nbsp;</font></font><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ऑपरेटिंग सिस्टम</font></font></strong></u>&nbsp;है<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <ul> <li><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ऑपरेटिंग सिस्टम</font></font></strong></u> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इसमें प्रोग्राम होते हैं, जो कंप्यूटर सिस्टम के विभिन्न घटकों की गतिविधियों को नियंत्रित, समन्वय और पर्यवेक्षण करते हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इसका कार्य कंप्यूटर हार्डवेयर और उपयोगकर्ता के बीच एक माध्यम प्रदान करना है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह निम्नलिखित कार्य करता है:</font></font></li> </ul> <ol> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह कीबोर्ड से इनपुट को पहचानता है, डिस्प्ले स्क्रीन पर आउटपुट भेजता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह सुनिश्चित करता है कि एक ही समय पर चलने वाले प्रोग्राम एक दूसरे के साथ हस्तक्षेप न करें।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह सुरक्षा के लिए भी जिम्मेदार है, यह सुनिश्चित करते हुए कि अनधिकृत उपयोगकर्ता सिस्टम तक नहीं पहुंचते हैं।</font></font></li> </ol> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul> <li><u><strong>कंप्यूटर नेटवर्क</strong></u> <ul> <li><span id="cke_bm_4738S" style="display: none;">&nbsp;</span><span id="cke_bm_4755S" style="display: none;">&nbsp;</span><span id="cke_bm_4805S" style="display: none;">&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक कंप्यूटर नेटवर्क दो या दो से अधिक कंप्यूटरों का एक संग्रह है, जो सूचना और संसाधनों को साझा करने के लिए एक साथ जुड़े हुए हैं।</font></font></li> <li><span id="cke_bm_4898S" style="display: none;">&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कंप्यूटर नेटवर्क को मोटे तौर पर निम्नलिखित में वर्गीकृत किया गया है:</font></font></li> </ul> </li> </ul> <ol style="margin-left: 40px;"> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">लोकल </font></font><span id="cke_bm_4898E" style="display: none;">&nbsp;</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एरिया नेटवर्क (LAN)</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">वाइड एरिया नेटवर्क (WAN)</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">मेट्रोपो</font><font style="vertical-align: inherit;">लिटन एरिया नेटवर्क (MAN)</font></font><span id="cke_bm_4755E" style="display: none;">&nbsp;</span><span id="cke_bm_4738E" style="display: none;">&nbsp;</span></li> </ol> <ul> <li><u><strong>कंपाइलर</strong></u> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक कंपाइलर एक विशेष प्रोग्राम है जो एक विशेष प्रोग्रामिंग भाषा में लिखे गए बयानों को संसाधित करता है और उन्हें मशीनी भाषा या &quot;कोड&quot; में बदल देता है जिसका उपयोग कंप्यूटर का प्रोसेसर करता है।</font></font></li> </ul> </li> <li><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इंटरप्रेटर</font></font></strong></u> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक उच्च स्तरीय भाषा कार्यक्रम को </font></font>पंक्ति दर पंक्ति<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> परिवर्तित करके मशीनी भाषा में परिवर्तित करता है।</font></font></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q6</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Word processing, spreadsheet and photo - editing are examples of</div>
+  <div class="question lang-hi">वर्ड प्रोसेसिंग, स्प्रेडशीट और फोटो-एडिटिंग _________ के उदाहरण हैं।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">System Software</div><div class="option">None of these</div><div class="option">Platform Software</div><div class="option correct">Application Software</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">सिस्टम सॉफ्टवेयर</div><div class="option">इनमें से कोई नहीं</div><div class="option">प्&zwj;लैटफॉर्म सॉफ्टवेयर</div><div class="option correct">एप्लीकेशन सॉफ्टवेयर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>application software</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><u><strong>Application Software</strong></u> <ul> <li>Application Software is a type of computer program that performs a specific personal, educational, and business function.</li> <li>Each application is designed to assist end-users in accomplishing a variety of tasks, which may be related to productivity, creativity, or communication.</li> <li>Application software programs are created to facilitate a variety of functions, including managing information, constructing visuals, coordinating resources, and calculating figures.</li> <li>Example: Word Processing, Spreadsheet, Photo-Editing, Asset Management, Media Player, etc.</li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><u><strong>System Software</strong></u> <ul> <li>This refers to a collection of programs that control your computer&#39;s internal functioning or provide a platform for another type of software.</li> <li>It can refer to software like macOS or GNU/Linux, which are the operating systems that make your computer work.</li> </ul> </li> <li><u><strong>Platform Software</strong></u> <ul> <li><span style="color: (68, 68, 68); ">A&nbsp;</span><span aria-label="https://www.webopedia.com/definitions/software/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1">software</span></span><span style="color: (68, 68, 68); ">&nbsp;</span><span aria-label="https://www.webopedia.com/definitions/platform/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1">platform</span></span><span style="color: (68, 68, 68); ">&nbsp;is a framework of software that is intended and designed to work together. Software platforms are curated to allow&nbsp;</span><span aria-label="https://www.webopedia.com/definitions/application-software/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1">applications</span></span><span style="color: (68, 68, 68); ">&nbsp;to work together seamlessly, without workarounds or&nbsp;</span><span aria-label="https://www.webopedia.com/definitions/integrated/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1">integrations</span></span><span style="color: (68, 68, 68); ">.&nbsp;</span></li> <li><span style="color: (68, 68, 68); ">A software platform may support a variety of programming languages, engines, and web services.</span></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्&zwj;तर </font></font><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एप्लीकेशन सॉफ्टवेयर</font></font></strong></u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> </font></font>है<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font></p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span>&nbsp;</span></p> <ul> <li><u><strong>एप्लीकेशन सॉफ्टवेयर</strong></u> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एप्लीकेशन सॉफ्टवेयर एक प्रकार का कंप्यूटर प्रोग्राम है जो एक विशिष्ट व्यक्तिगत, शैक्षिक और व्यावसायिक कार्य करता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्रत्येक एप्लिकेशन को विभिन्न प्रकार के कार्यों को पूरा करने में अंतिम उपयोगकर्ताओं की सहायता करने के लिए डिज़ाइन किया गया है, जो उत्पादकता, रचनात्मकता या संचार से संबंधित हो सकते हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एप्लिकेशन सॉफ्टवेयर प्रोग्राम विभिन्न प्रकार के कार्यों को सुविधाजनक बनाने के लिए बनाए जाते हैं, जिसमें सूचनाओं का प्रबंधन, दृश्यों का निर्माण, संसाधनों का समन्वय और आंकड़ों की गणना करना शामिल है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">उदाहरण: वर्ड प्रोसेसिंग, स्प्रेडशीट, फोटो-एडिटिंग, एसेट मैनेजमेंट, मीडिया प्लेयर आदि।</font></font></li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span></p> <ul> <li><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सिस्टम </font></font><span style="color: (33, 37, 41);">सॉफ्टवेयर</span></strong></u> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह उन प्रोग्रामों के संग्रह को संदर्भित करता है जो आपके कंप्यूटर की आंतरिक कार्यप्रणाली को नियंत्रित करते हैं या किसी अन्य प्रकार के </font></font>सॉफ्टवेयर&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">के लिए एक मंच प्रदान करते हैं।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह macOS या GNU/Linus जैसे </font></font>सॉफ्टवेयर&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">को संदर्भित कर सकता है, जो ऑपरेटिंग सिस्टम हैं जो आपके कंप्यूटर से काम करवाते हैं।</font></font></li> </ul> </li> <li><u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्लेटफार्म सॉफ्टवेयर</font></font></strong></u> <ul> <li><span style="color: (68, 68, 68); "><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक&nbsp;</font></font></span><span aria-label="https://www.webopedia.com/definitions/software/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सॉफ्टवेयर </font></font></span></span><font style="vertical-align: inherit;"><span aria-label="https://www.webopedia.com/definitions/platform/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1"><font style="vertical-align: inherit;">प्लेटफॉर्म </font></span></span><span aria-label="https://www.webopedia.com/definitions/software/" style="background-color: (255, 255, 255); pointer-events: auto; "><span class="s1"><font style="vertical-align: inherit;">सॉफ्टवेयर</font></span></span><span style="color: (68, 68, 68); "><font style="vertical-align: inherit;"> का एक ढांचा है जो एक साथ काम करने के लिए </font></span></font>इंटेंड और डिजाइन किया गया<font style="vertical-align: inherit;"><span style="color: (68, 68, 68); "><font style="vertical-align: inherit;"> है। </font></span></font>सॉफ्टवेयर प्लेटफॉर्म को इस तरह से तैयार किया जाता है कि एप्लीकेशन&nbsp;बिना किसी वैकल्पिक समाधान या एकीकरण के, एक साथ सहजता से काम कर सकें।</li> <li><span style="color: (68, 68, 68); "><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक सॉफ्टवेयर प्लेटफॉर्म विभिन्न प्रोग्रामिंग भाषाओं, इंजनों और वेब सेवाओं का समर्थन कर सकता है।</font></font></span></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q7</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Individual users having their own desktop computers are connected to one or more centralised computers. These servers are called</div>
+  <div class="question lang-hi">व्यक्तिगत उपभोगकर्ताओं के अपने डेस्कटॉप कम्प्यूटर होते है, जो एक या अधिक केन्द्रीकृत कम्प्यूटर से जुड़े होते हैं। वे _______ सर्वर कहलाते हैं।</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">monochrome</div><div class="option">hub</div><div class="option correct">network</div><div class="option">special</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">मोनोक्रोम</div><div class="option">हब</div><div class="option correct">नेटवर्क</div><div class="option">विशेष</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>network</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong><span style="">A network server:&nbsp;</span></strong> <ul> <li><strong>User which has their own desktop computer connected to one or more centralized computers is called network server.</strong></li> <li>It is a computer system, which is used as the <strong>central repository of data and various programs that are shared by users in a network.</strong></li> <li>If you have a computer that you&#39;re no longer using due to its slow speed, you can turn it into a network server for other computers in your household.</li> <li><strong>It&#39;s better not to use a wireless connection to attach the computers to each other.</strong></li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <span style=""><u><strong>नेटवर्क</strong></u>&nbsp;</span>है।</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>नेटवर्क सर्वर:</strong> <ul> <li><strong>वह उपयोगकर्ता जिसका अपना डेस्कटॉप कंप्यूटर एक या अधिक केंद्रीकृत कंप्यूटरों से जुड़ा होता है, नेटवर्क सर्वर कहलाता है।</strong></li> <li>यह एक कंप्यूटर सिस्टम है, जिसका उपयोग <strong>डेटा के केंद्रीय भंडार और नेटवर्क में उपयोगकर्ताओं द्वारा साझा किए जाने वाले विभिन्न कार्यक्रमों के रूप में किया जाता है।</strong></li> <li>यदि आपके पास एक ऐसा कंप्यूटर है जिसका अब आप धीमी गति के कारण उपयोग नहीं कर रहे हैं, तो आप इसे अपने घर के अन्य कंप्यूटरों के लिए नेटवर्क सर्वर में बदल सकते हैं।</li> <li><strong>कंप्यूटर को एक दूसरे से जोड़ने के लिए वायरलेस कनेक्शन का उपयोग न करना बेहतर है।</strong></li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q8</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en"><p>Match the short cuts in the left column with the functions listed in the right column, w.r.t. Microsoft Word.</p> <table border="1" cellpadding="0" cellspacing="0" style="width:330px;" width="350"> <tbody> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">1. Ctrl + X</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(a) Create a New document</p> </td> </tr> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">2. Ctrl + V</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(b) Search a document</p> </td> </tr> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">3. Ctrl + N</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(c) Cut selected text to Clipboard</p> </td> </tr> <tr> <td style="width:95px;height:28px;"> <p style="margin-left:9.0pt;">4. Ctrl + F</p> </td> <td style="width:254px;height:28px;"> <p style="margin-left:9.0pt;">(d) Paste the clipboard contents</p> </td> </tr> </tbody> </table></div>
+  <div class="question lang-hi"><p>माइक्रोसॉफ्ट वर्ड के संबंध में&nbsp;दाएं कॉलम में सूचीबद्ध कार्यों के साथ बाएं कॉलम में शॉर्ट कट का मिलान कीजिए।</p> <table border="1" cellpadding="0" cellspacing="0" style="width:330px;" width="350"> <tbody> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">1. Ctrl + X</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(a) एक नया डॉक्यूमेंट&nbsp;बनाने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">2. Ctrl + V</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(b) एक डॉक्यूमेंट खोजने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width:95px;height:27px;"> <p style="margin-left:9.0pt;">3. Ctrl + N</p> </td> <td style="width:254px;height:27px;"> <p style="margin-left:9.0pt;">(c) चयनित टेक्स्ट को क्लिपबोर्ड से कट करने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width:95px;height:28px;"> <p style="margin-left:9.0pt;">4. Ctrl + F</p> </td> <td style="width:254px;height:28px;"> <p style="margin-left:9.0pt;">(d) क्लिपबोर्ड सामग्री पेस्ट करने के लिए</p> </td> </tr> </tbody> </table></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">1 - d, 2 - c, 3 - b, 4 - a</div><div class="option correct">1 - c, 2 - d, 3 - a, 4 - b</div><div class="option">1 - d, 2 - c, 3 - a, 4 - b</div><div class="option">1 - c, 2 - d, 3 - b, 4 - a</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">1 - d, 2 - c, 3 - b, 4 - a</div><div class="option correct">1 - c, 2 - d, 3 - a, 4 - b</div><div class="option">1 - d, 2 - c, 3 - a, 4 - b</div><div class="option">1 - c, 2 - d, 3 - b, 4 - a</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is an&nbsp;<strong>option (2).</strong></p> <table border="1" cellpadding="0" cellspacing="0" style="width:300px;" width="350"> <tbody> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">1. Ctrl + X</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">Cut selected text to Clipboard</p> </td> </tr> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">2. Ctrl + V</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">Paste the clipboard contents</p> </td> </tr> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">3. Ctrl + N</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">Create a New document</p> </td> </tr> <tr> <td style="width: 95px; height: 28px;"> <p style="margin-left: 9pt;">4. Ctrl + F</p> </td> <td style="width: 254px; height: 28px;"> <p style="margin-left: 9pt;">Search a document</p> </td> </tr> </tbody> </table> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span>&nbsp;</span><u><span style="font-weight: 700;">Basic computer shortcut keys:</span></u></p> <ul> <li><span style="font-weight: 700;">Ctrl + M</span>&nbsp;-&nbsp;Indent the paragraph.</li> <li style="margin: 0px; padding: 0px;"><span style="font-weight: 700;">Ctrl + B&nbsp;</span>-&nbsp;Bold highlighted selection.</li> <li><span style="font-weight: 700;">Ctrl + D</span>&nbsp;- Font options.</li> <li><span style="font-weight: 700;">Alt + F&nbsp;</span>- File menu options in the current program.</li> <li><span style="font-weight: 700;">Alt + E&nbsp;</span>- Edits options in the current program.</li> <li><span style="font-weight: 700;">F1&nbsp;</span>- Universal help (for any sort of program).</li> <li><span style="font-weight: 700;">Ctrl + A&nbsp;</span>- Selects all text.</li> <li><span style="font-weight: 700;">Ctrl + X&nbsp;</span>- Cuts the selected item.</li> <li><span style="font-weight: 700;">Ctrl + De</span>l - Cut selected item.</li> <li><span style="font-weight: 700;">Ctrl + C&nbsp;</span>- Copy the selected item.</li> <li><span style="font-weight: 700;">Ctrl + Ins&nbsp;</span>- Copy the selected item.</li> <li><span style="font-weight: 700;">Ctrl + V&nbsp;</span>- Paste the selected item.</li> <li><span style="font-weight: 700;">Shift + Ins</span>&nbsp;- Paste the selected item.</li> <li><span style="font-weight: 700;">Home</span>&nbsp;- Takes the user to the beginning of the current line.</li> <li><span style="font-weight: 700;">Ctrl + Home&nbsp;</span>- Go to the beginning of the document.</li> <li><span style="font-weight: 700;">End&nbsp;</span>-&nbsp;Go to the end of the current line.</li> <li><span style="font-weight: 700;">Ctrl + End</span>&nbsp;- Go to the end of a document.</li> <li><span style="font-weight: 700;">Shift + Home</span>&nbsp;- Highlight from the current position to the beginning of the line.</li> <li><span style="font-weight: 700;">Shift + End</span>&nbsp;- Highlight from the current position to the end of the line.</li> <li><span style="font-weight: 700;">Ctrl +&nbsp;</span>(Left arrow) - Move one word to the left at a time.</li> <li><span style="font-weight: 700;">Ctrl +</span>&nbsp;(Right arrow) - Move one word to</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<strong>विकल्प (2) </strong>है।</p> <table border="1" cellpadding="0" cellspacing="0" style="width:320px;" width="350"> <tbody> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">1. Ctrl + X</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">चयनित टेक्स्ट को क्लिपबोर्ड से&nbsp;कट करने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">2. Ctrl + V</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">क्लिपबोर्ड सामग्री चिपकाने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width: 95px; height: 27px;"> <p style="margin-left: 9pt;">3. Ctrl + N</p> </td> <td style="width: 254px; height: 27px;"> <p style="margin-left: 9pt;">एक नया डॉक्यूमेंट बनाने के लिए&nbsp;</p> </td> </tr> <tr> <td style="width: 95px; height: 28px;"> <p style="margin-left: 9pt;">4. Ctrl + F</p> </td> <td style="width: 254px; height: 28px;"> <p style="margin-left: 9pt;">एक डॉक्यूमेंट खोजने के लिए&nbsp;</p> </td> </tr> </tbody> </table> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></span><u><span style="font-weight: 700;">बुनियादी कंप्यूटर शॉर्टकट कुंजियाँ:</span></u></p> <ul> <li><strong>Ctrl + M</strong> - पैराग्राफ को इंडेंट करता है।</li> <li style="margin: 0px; padding: 0px;"><strong>Ctrl + B</strong> - चयनित टेक्स्ट को बोल्ड करता है।&nbsp;</li> <li><strong><span style="font-weight: 700;">Ctrl + D</span></strong> - फ़ॉन्ट विकल्प।</li> <li><span style="font-weight: 700;">Alt + F </span>- वर्तमान प्रोग्राम में फ़ाइल मेनू विकल्प।</li> <li><span style="font-weight: 700;">Alt + E</span> - वर्तमान प्रोग्राम में विकल्प संपादित करता है।</li> <li><span style="font-weight: 700;">F1</span> -&nbsp;सार्वभौमिक सहायता (किसी भी प्रकार के प्रोग्राम के लिए)।</li> <li><span style="font-weight: 700;">Ctrl + A</span> - सभी टेक्स्ट का चयन करता है।</li> <li><span style="font-weight: 700;">Ctrl + X</span> - चयनित आइटम को कट&nbsp;करता&nbsp;है।</li> <li><span style="font-weight: 700;">Ctrl + De</span>l - चयनित आइटम को कट&nbsp;करता&nbsp;है।</li> <li><span style="font-weight: 700;">Ctrl + C</span> - चयनित आइटम को कॉपी करता&nbsp;है।</li> <li><span style="font-weight: 700;">Ctrl + Ins</span> - चयनित आइटम को कॉपी करता&nbsp;है।</li> <li><span style="font-weight: 700;">Ctrl + V</span> - चयनित आइटम को पेस्ट करता&nbsp;है।</li> <li><span style="font-weight: 700;">Shift + Ins&nbsp;</span>- चयनित आइटम पेस्ट करता&nbsp;है।</li> <li><span style="font-weight: 700;">Home</span> - उपयोगकर्ता को वर्तमान लाइन की शुरुआत में ले जाता है।</li> <li><span style="font-weight: 700;">Ctrl + Home</span> --डॉक्यूमेंट&nbsp;के आरंभ में ले जाता है।</li> <li><span style="font-weight: 700;">End</span> - वर्तमान पंक्ति के अंत में जाएँ।</li> <li><span style="font-weight: 700;">Ctrl + End</span> - किसी डॉक्यूमेंट के अंत में &nbsp;जाएं।</li> <li><span style="font-weight: 700;">Shift + Home</span> - वर्तमान स्थिति से लाइन की शुरुआत तक हाइलाइट करें।</li> <li><span style="font-weight: 700;">Shift + End</span> - वर्तमान स्थिति से लाइन के अंत तक हाइलाइट करें।</li> <li><span style="font-weight: 700;">Ctrl +</span> (बायां तीर) - एक बार में एक शब्द को बाईं ओर ले जाएं।</li> <li><span style="font-weight: 700;">Ctrl +</span> (दायां तीर) - एक शब्द को यहां ले जाएं।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q9</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">In telecommunication, what does the &#39;G&#39; in 1G, 2G, 3G and 4G stand for:</div>
+  <div class="question lang-hi">दूरसंचार में&nbsp;1G, 2G, 3G एवं 4G में &#39;G&#39; का आशय क्या है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Gadget</div><div class="option correct">Generation</div><div class="option">Geo-stationary</div><div class="option">Geometric</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">गैजेट&nbsp;</div><div class="option correct">जनरेशन&nbsp;</div><div class="option">जियोस्टेशनरी&nbsp;&nbsp;</div><div class="option">ज्योमेट्रिक&nbsp;</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>Generation</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>&nbsp;In telecommunication,<strong>&nbsp;&#39;G&#39;</strong> in 1G, 2G, 3G, and 4G stands for&nbsp;<strong>Generation</strong>.</li> <li>1G, 2G, 3G, 4G, and 5G represent the five generations of mobile networks where &#39;<strong>G&#39;</strong> stands for <strong>&#39;Generation&#39;</strong> and the numbers 1, 2, 3, 4, and 5 represent the generation number.</li> <li><span style="color: rgb(32, 33, 36); ">Since the early 1980s, one&nbsp;sees a new <strong>generation</strong> of mobile networks almost every<strong> ten years</strong>.</span></li> </ul> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li>A major jump in&nbsp;technology was when the wireless networks went from analog to digital.</li> <li><strong>The first-generation (1G)</strong> &ndash;&nbsp;Systems are voice-oriented analog cellular and cordless telephones.</li> <li><strong>The second-generation (2G)</strong>&nbsp;&ndash; Delivered digital signal and offered up to 250Kbps speed. Supports voice, text, and data services.</li> <li><strong>The third-generation (3G)</strong> &ndash; At least 200Kbps up to 3Mbps speed.</li> <li><strong>The fourth-generation (4G)</strong> &ndash; 4G delivers up to 100Mbps for mobile access, and up to 1Gbps for wireless access.</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्&zwj;तर <u><strong>जनरेशन</strong></u> है</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>दूरसंचार में, 1G, 2G, 3G और 4G में &#39;<strong>G</strong>&#39; का अर्थ <strong>जनरेशन </strong>है।<br /> 1G, 2G, 3G, 4G, और 5G मोबाइल नेटवर्क की पांच पीढ़ियों को प्रदर्शित करते हैं जहां &#39;<strong>G</strong>&#39; का अर्थ &#39;<strong>जेनरेशन</strong>&#39; है और संख्याएँ 1, 2, 3, 4 और 5 जेनरेशन संख्या को प्रदर्शित करते हैं।</li> <li>1980 के दशक की शुरुआत से, लगभग हर <strong>दस वर्ष </strong>में एक नई <strong>पीढ़ी</strong> के मोबाइल नेटवर्क देखे जाते हैं।</li> </ul> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li>प्रौद्योगिकी में एक बड़ी छलांग तब लगी जब वायरलेस नेटवर्क एनालॉग से डिजिटल में चले गए।</li> <li><strong>पहली पीढ़ी (1G) -</strong> सिस्टम वॉयस-ओरिएंटेड एनालॉग सेल्युलर और कॉर्डलेस टेलीफोन हैं।</li> <li><strong>दूसरी पीढ़ी (2G) - </strong>डिजिटल सिग्नल दिया और 250Kbps&nbsp;तक की गति की पेशकश की। आवाज, पाठ और डेटा सेवाओं का समर्थन करता है।</li> <li><strong>तीसरी पीढ़ी (3G) - </strong>कम से कम 200Kbps 3Mbps गति तक।</li> <li><strong>चौथी पीढ़ी (4G) -</strong> 4G मोबाइल एक्सेस के लिए 100Mbps तक और वायरलेस एक्सेस के लिए 1Gbps तक प्रदान करती है।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q10</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following languages is an example of fourth generation language in computer programming?</div>
+  <div class="question lang-hi"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">निम्नलिखित में से कौन-सी लैंग्वेज कंप्यूटर प्रोग्रामिंग में चौथी पीढ़ी की लैंग्वेज का उदाहरण है?</font></font></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option correct">SQL</div><div class="option">ALGOL</div><div class="option">Pascal</div><div class="option">SNOBOL</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option correct">एसक्यूएल (<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SQL)</font></font></div><div class="option">अल्गोल (<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ALGOL)</font></font></div><div class="option"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पास्कल</font></font></div><div class="option">स्नोबोल (SNOBOL)</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>SQL</strong></u>.</p> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>Computer language is a formal language used in communication with a computer.</li> <li>In a Programming Language, a formal language is designed to communicate instructions to a machine, particularly a computer.</li> <li><strong>There are five generations of Programming languages.</strong> <ul> <li>First Generation Languages :&nbsp; <ul> <li>These are low-level languages like machine language.&nbsp;</li> </ul> </li> <li>Second Generation Languages :&nbsp; <ul> <li>These are low-level assembly languages used in kernels and hardware drives.&nbsp;</li> </ul> </li> <li>Third Generation Languages :&nbsp; <ul> <li>These are high-level languages like C, C++, Java, Visual Basic, and JavaScript.&nbsp;</li> </ul> </li> <li><strong>Fourth Generation Languages :</strong> <ul> <li>These are languages that consist of statements that are similar to statements in the human language. <ul> <li>These are used mainly in database programming and scripting.</li> <li><strong>Examples of these languages include Perl, Python, Ruby, SQL, MatLab.</strong></li> </ul> </li> <li>SQL (structured query language) is a language for specifying the organization of databases (collections of records). <ul> <li>Databases organized with SQL are called relational because SQL provides the ability to query a database for information that falls in a given relation.</li> </ul> </li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>​Fifth Generation Languages :&nbsp;</strong> <ul> <li>These are the programming languages that have visual tools to develop a program. <ul> <li>Examples of fifth-generation languages include Mercury, OPS5, and Prolog.&nbsp;</li> </ul> </li> </ul> </li> <li>The first two generations are called low-level languages.</li> <li>The next three generations are called high-level languages.&nbsp;</li> <li><strong>Pascal </strong>is a procedural programming language that supports structured programming and data structures to encourage good programming practices. <ul> <li>Pascal was originally developed in 1970 by Niklaus Wirth and is named after the famous French mathematician Blaise Pascal.</li> </ul> </li> <li><strong>ALGOL</strong> is an acronym that stands for ALGOrithmic Language. <ul> <li>It is a computer language designed specifically for calculation. <ul> <li>It was developed in the late 1950s by an international committee and was meant to be a universal computing tool.</li> </ul> </li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">सही उत्तर </font></font><u><strong><span style="">एसक्यूएल</span><span style=""> (</span><font style=" vertical-align: inherit;"><font style="vertical-align: inherit;">SQL)</font></font></strong></u><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> है।</font></font></p> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span> </span></p> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">कंप्यूटर लैंग्वेज एक औपचारिक लैंग्वेज है जिसका उपयोग कंप्यूटर के साथ संचार में किया जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">एक प्रोग्रामिंग लैंग्वेज, एक औपचारिक लैंग्वेज को एक मशीन, विशेष रूप से एक कंप्यूटर को निर्देश संप्रेषित करने के लिए बनायी गयी है।</font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">प्रोग्रामिंग लैंग्वेजओं की पांच पीढ़ियां हैं।</font></font></strong> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पहली पीढ़ी की लैंग्वेजएँ: </font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये निम्न स्तर की लैंग्वेजएँ हैं जैसे मशीनी लैंग्वेज। </font></font></li> </ul> </li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">दूसरी पीढ़ी की लैंग्वेजएँ: </font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये निम्न-स्तरीय असेंबली लैंग्वेजएँ हैं जिनका उपयोग कर्नल और हार्डवेयर ड्राइव में किया जाता है। </font></font></li> </ul> </li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">तीसरी पीढ़ी की लैंग्वेजएँ: </font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये C, C++, जावा, विजुअल बेसिक और जावास्क्रिप्ट जैसी उच्च स्तरीय लैंग्वेजएँ हैं। </font></font></li> </ul> </li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">चौथी पीढ़ी की लैंग्वेजएँ:</font></font></strong> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये ऐसी लैंग्वेजएँ हैं जिनमें ऐसे कथन होते हैं जो मानव लैंग्वेज के कथनों के समान होते हैं।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इनका उपयोग मुख्य रूप से डेटाबेस प्रोग्रामिंग और स्क्रिप्टिंग में किया जाता है।</font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इन लैंग्वेजओं के उदाहरणों में पर्ल, पायथन, रूबी, </font></font></strong><u style=""><span style="font-weight: 700;">एसक्यूएल (<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SQL)</font></font></span></u><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">, मैटलैब शामिल हैं।</font></font></strong></li> </ul> </li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><strong>स्ट्रक्चर्ड क्वेरी लैंग्वेज</strong> (</font></font><span style="">SQL</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">) डेटाबेस के संगठन (रिकॉर्ड के संग्रह) को निर्दिष्ट करने के लिए एक लैंग्वेज है।</font></font> <ul> <li><span style="color: rgb(33, 37, 41);">SQL द्वारा</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> व्यवस्थित डेटाबेस को रिलेशनल कहा जाता है क्योंकि </font></font><span style="color: rgb(33, 37, 41);">SQL </span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">किसी दिए गए रिलेशन में आने वाली जानकारी के लिए डेटाबेस को क्वेरी करने की क्षमता प्रदान करता है।</font></font></li> </ul> </li> </ul> </li> </ul> </li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span> </span></p> <ul> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पांचवीं पीढ़ी की लैंग्वेजएँ: </font></font></strong> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ये प्रोग्रामिंग लैंग्वेजएं हैं जिनमें प्रोग्राम विकसित करने के लिए वीजुअल टूल्स होते हैं।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पांचवीं पीढ़ी की लैंग्वेजओं के उदाहरणों में मरकरी, </font></font>ओपीएस5 (<font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OPS5) और प्रोलॉग शामिल हैं। </font></font></li> </ul> </li> </ul> </li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पहली दो पीढ़ियों को निम्न-स्तरीय लैंग्वेजएँ कहा जाता है।</font></font></li> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">अगली तीन पीढ़ियों को उच्च स्तरीय लैंग्वेजएँ कहा जाता है। </font></font></li> <li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पास्कल</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> एक प्रोसिजरल प्रोग्रामिंग लैंग्वेज है जो अच्छी प्रोग्रामिंग प्रथाओं को प्रोत्साहित करने के लिए </font></font>स्ट्रक्चर्ड<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> प्रोग्रामिंग और डेटा स्ट्रकचरों का उपयोग करती है।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">पास्कल को मूल रूप से 1970 में निकलॉस विर्थ द्वारा विकसित किया गया था और इसका नाम प्रसिद्ध फ्रांसीसी गणितज्ञ ब्लेज़ पास्कल के नाम पर रखा गया है।</font></font></li> </ul> </li> <li><strong><span style="">अल्गोल (</span><font style=" vertical-align: inherit;"><font style="vertical-align: inherit;">ALGOL)</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> ALGOrithmic Language</font></font><span style="color: rgb(33, 37, 41);"> का संक्षिप्त रूप है</span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">यह एक कंप्यूटर लैंग्वेज है जिसे विशेष रूप से गणना के लिए डिज़ाइन किया गया है।</font></font> <ul> <li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">इसे 1950 के दशक के अंत में एक अंतरराष्ट्रीय समिति द्वारा विकसित किया गया था और इसका उपयोग यूनिवर्सल कंप्यूटिंग टूल के रूप में किया जाना था।</font></font></li> </ul> </li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q11</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is used to create a link to a web page, a picture, an email address or a program?</div>
+  <div class="question lang-hi"><span style="color: rgb(37, 37, 37); ">वेब पेज, पिक्चर, ईमेल एड्रेस या प्रोग्राम का लिंक बनाने के लिए किसका प्रयोग किया जाता है?</span></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Clip art</div><div class="option">Smart art</div><div class="option">From Web</div><div class="option correct">Hyperlink</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">क्लिप आर्ट</div><div class="option">स्मार्ट आर्ट</div><div class="option">फ्रॉम वेब</div><div class="option correct">हाइपरलिंक</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer is <strong style=""><u style="">Hyperlink</u></strong>.</p> <p style="margin-left:36pt;">●&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A hyperlink is a <strong style="">text or an image within a file on your computer that you can click on that gives access to another document or image.</strong></p> <p style="margin-left:36pt;">●&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A hyperlink can <strong style="">be thought of as an interface that links a source to a target. Clicking the hyperlink at the source will navigate to the target</strong>. Hyperlinks can assume any of the following appearances:</p> <p style="margin-left:36pt;">➔&nbsp;&nbsp;&nbsp; Text</p> <p style="margin-left:36pt;">➔&nbsp;&nbsp;&nbsp; Images</p> <p style="margin-left:36pt;">➔&nbsp;&nbsp;&nbsp; URLs</p> <p style="margin-left:36pt;">➔&nbsp;&nbsp;&nbsp; Controls (for example, a button)</p> <p style="margin-left:36pt;"><img alt="" src="https://storage.googleapis.com/tb-img/production/21/10/5f7dca48384410a38f1fb29d_16347960205701.png" style="" /></p></div>
+    <div class="lang-hi"><p style="">सही उत्तर&nbsp;<u style=""><span style="font-weight: 700;">हाइपरलिंक</span></u>&nbsp;है।</p> <p style="">● हाइपरलिंक&nbsp;<span style="font-weight: 700;">आपके कंप्यूटर पर एक फ़ाइल के भीतर एक टेक्स्ट&nbsp;या एक इमेज&nbsp;है जिसे आप उस पर क्लिक कर सकते हैं जो किसी अन्य डॉक्यूमेंट&nbsp;या इमेज&nbsp;तक पहुंच प्रदान करता</span>&nbsp;है।</p> <p style="">● हाइपरलिंक&nbsp;<span style="font-weight: 700;">को एक इंटरफ़ेस&nbsp;के रूप में सोचा जा सकता है जो किसी स्रोत को लक्ष्य से जोड़ता है।</span>&nbsp;<span style="font-weight: 700;">स्रोत पर हाइपरलिंक क्लिक करने से लक्ष्य पर नेविगेट हो जाएगा।</span>&nbsp;हाइपरलिंक्स निम्नलिखित में से किसी एक को मान सकते हैं:</p> <p style="margin-left: 36pt;">➔&nbsp; टेक्स्ट</p> <p style="margin-left: 36pt;">➔&nbsp; इमेजेज</p> <p style="margin-left: 36pt;">➔&nbsp; &nbsp;URLs</p> <p style="margin-left: 36pt;">➔&nbsp; &nbsp;कंट्रोल्स&nbsp;(उदाहरण के लिए, एक बटन)</p> <p style="margin-left:36pt;"><img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage1938.png" style="" /></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q12</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which tool is used to insert documents including drawing, Movies, sound, or stock photography to illustrate a specific concept in MS Excel?</div>
+  <div class="question lang-hi"><div class="gtx-body" style="display: inline; margin: 5px auto; padding: 5px 0px; ">एमएस एक्सेल में किसी विशिष्ट अवधारणा को दर्शाने के लिए ड्राइंग, मूवी, साउंड या स्टॉक फोटोग्राफी सहित दस्तावेजों को सम्मिलित करने के लिए किस टूल का उपयोग किया जाता है?</div></div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Picture</div><div class="option">Screenshots</div><div class="option correct">Clip Art</div><div class="option">Smart Art</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">पिक्चर</div><div class="option">स्क्रीनशॉट्स</div><div class="option correct">क्लिप आर्ट</div><div class="option">स्मार्ट आर्ट</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p style="">The correct answer in <strong style=""><u style="">Clip Art</u></strong></p> <p style=""><strong style=""><u style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></u></strong></p> <ul style=""> <li style="">Clip art includes the <strong style="">insertion of films, pictures and sound.</strong></li> <li style="">When the button is clicked <strong style="">on Clip art the Insert Picture window will show. </strong></li> <li style=""><strong style="">Input the search criteria and click the search button. A gallery of images will show up.</strong></li> <li style="">The clip art is in illustration command beside the picture tool.<br /> <img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage1927.png" style="" /></li> </ul></div>
+    <div class="lang-hi"><p style="">सही उत्तर&nbsp;<u><strong>क्लिप आर्ट</strong></u> है</p> <p style=""><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul style=""> <li style="">क्लिप आर्ट में <strong>फिल्मों, चित्रों और ध्वनि का सम्मिलन</strong> शामिल है।</li> <li style="">जब <strong>क्लिप आर्ट पर</strong> बटन पर क्लिक किया जाता है तो <strong>इन्सर्ट पिक्चर विंडो दिखाई देगी।</strong></li> <li style=""><strong>सर्च मापदंड इनपुट करें और सर्च&nbsp;बटन पर क्लिक करें। इमेजेज&nbsp;की एक गैलरी दिखाई देगी।</strong></li> <li style="">क्लिप आर्ट चित्र उपकरण के पास&nbsp;में चित्रण कमांड में है।</li> <li style=""><br /> <img alt="" src="https://cdn.testbook.com/images/production/quesImages/quesImage1927.png" style="" /></li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q13</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Device having the largest storage capacity is:-</div>
+  <div class="question lang-hi">सबसे बड़ी स्टोरेज क्षमता वाला डिवाइस है: -</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">DVD</div><div class="option correct">Hard Disk</div><div class="option">CDROM</div><div class="option">ALU</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option"><span style="color: rgb(33, 37, 41);">DVD</span></div><div class="option correct">हार्ड डिस्क</div><div class="option">CDROM</div><div class="option">ALU</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>Computer stores data on specific memory depending on the importance of that data in processing, frequency of uses of that data, and volume of data being stored. There are two types of memory have been discussed Primary memory and secondary memory:</p> <table border="1" cellpadding="0" cellspacing="0" style="background-"> <tbody style=""> <tr style=""> <td style="width: 319px;"> <p style="text-align: center;"><span style="font-weight: 700;">Primary Memory</span></p> </td> <td style="width: 319px;"> <p style="text-align: center;"><span style="font-weight: 700;">Secondary Memory</span></p> </td> </tr> <tr style=""> <td style="width: 319px;"> <ul style=""> <li style="">Expensive and fast</li> <li style="">Situated inside a computer in the form of an integrated chip (IC),</li> <li style="">Data is stored and retrieved within a certain time regardless of the location of data in the memory,</li> <li style="">Closely connected to the processor,</li> <li style="">Examples are RAM (Random Access Memory) and ROM (Read Only Memory)</li> </ul> </td> <td style="width: 319px;"> <ul style=""> <li style="">Low cost and slow in speed</li> <li style="">Do not connect to the processor directly. Data is first transfers to the main memory and then to the processor,</li> <li style="">Use to store a large amount of information,</li> <li style=""><span style="font-weight: 700;">Examples are hard-disk, CD-ROM, DVD-ROM,&nbsp;</span>pen drive, and magnetic tape.</li> </ul> </td> </tr> </tbody> </table> <p><span style="font-weight: 700;">1) Hard- Disk:</span></p> <ul> <li>sometimes abbreviated as a&nbsp;<span style="font-weight: 700;">hard drive</span>,&nbsp;<span style="font-weight: 700;">HD</span>, or&nbsp;<span style="font-weight: 700;">HDD.</span></li> <li>It is a non-volatile data storage device.</li> <li>Consists of a rigid platter made of aluminum alloy or glass and coated with magnetic material.</li> <li>The single platter is 10-20mm thick with separate read and write heads.</li> <li><span style="font-weight: 700;">It can store up to 2 Terabyte (TB) data.</span></li> <li>It is rectangular with a length of 3 to 6 inches and the same width with a thickness of 2 to 3 inches.</li> </ul> <p><span style="font-weight: 700;">2) CD-ROM:</span></p> <ul> <li>Thin round plastic plate with one side shining that store the information.</li> <li>It is writable only once.</li> <li>It is economical.</li> <li>Used to take the backup of files.</li> <li>The files cannot be deleted accidentally or by a virus.</li> <li><span style="font-weight: 700;">It can store up to 650 Megabyte (MB) data or information.</span></li> </ul> <p><span style="font-weight: 700;">3) DVD-ROM:</span></p> <ul> <li>It is a DVD based CD.</li> <li>Digital Versatile Disc-Read Only Memory is a&nbsp;digital&nbsp;optical disc&nbsp;data storage&nbsp;format invented and developed in 1995 and released in late 1996.</li> <li>The medium can store any kind of digital data.</li> <li><span style="font-weight: 700;">It can store up to 4 Gigabyte (GB) information</span></li> </ul> <p><span style=" "><strong>4)&nbsp;</strong>A<strong>rithmetic-logic unit (</strong></span><strong><b style=" ">ALU</b><span style=" ">)</span></strong></p> <ul> <li>It is the part of a computer processor (CPU) that carries out arithmetic and logic operations on the operands in computer instruction words.</li> <li>In some processors, the&nbsp;ALU&nbsp;is divided into two units, an arithmetic unit (AU) and a logic unit (LU).</li> </ul> <p><strong>Hence, the Device having the largest storage capacity is&nbsp;Hard Disk.</strong></p></div>
+    <div class="lang-hi"><p>कंप्यूटर प्रसंस्करण में उस डाटा के महत्व, उस डेटा के उपयोग की आवृत्ति और संग्रहीत किए जा रहे डाटा की मात्रा के आधार पर विशिष्ट मेमोरी पर डाटा संग्रहीत करता है। दो प्रकार की मेमोरी पर चर्चा की गई है प्राइमरी मेमोरी और सेकेंडरी मेमोरी:</p> <table border="1" cellpadding="0" cellspacing="0" style="background-color: rgb(255, 255, 255);"> <tbody> <tr> <td style="width: 319px;"> <p style="text-align: center;"><span style="font-weight: 700;">प्राइमरी मेमोरी</span></p> </td> <td style="width: 319px;"> <p style="text-align: center;"><span style="font-weight: 700;">सेकेंडरी मेमोरी</span></p> </td> </tr> <tr> <td style="width: 319px;"> <ul> <li>महंगा और तेज</li> <li>एक एकीकृत चिप (आईसी) के रूप में एक कंप्यूटर के अंदर स्थित,</li> <li>मेमोरी में डाटा के स्थान की परवाह किए बिना डेटा को निश्चित समय के भीतर संग्रहीत और पुनर्प्राप्त किया जाता है,</li> <li>प्रोसेसर से निकटतम रूप से जुड़ा हुआ,</li> <li>उदाहरण हैं रैम (रैंडम एक्सेस मेमोरी) और रोम (रीड ओनली मेमोरी)</li> </ul> </td> <td style="width: 319px;"> <ul> <li>कम लागत और गति में धीमी</li> <li>प्रोसेसर से सीधे कनेक्ट न करें। डाटा को पहले मुख्य मेमोरी में और फिर प्रोसेसर में स्थानांतरित किया जाता है,</li> <li>बड़ी मात्रा में जानकारी संग्रहीत करने के लिए उपयोग करें,</li> <li><span style="font-weight: 700;">उदाहरण हार्ड-डिस्क, सीडी-रोम, डीवीडी-रोम</span>, पेन ड्राइव और मेग्नेटिक टेप हैं।</li> </ul> </td> </tr> </tbody> </table> <p><span style="font-weight: 700;">1. हार्ड डिस्क:</span></p> <ul> <li> <div>कभी-कभी एक <strong>हार्ड ड्राइव, HD, या HDD</strong> के रूप में संक्षिप्त किया जाता है।</div> </li> <li> <div> <div>यह एक नॉन-वोलेटाइल डेटा स्टोरेज डिवाइस है</div> </div> </li> <li>एल्यूमीनियम मिश्र धातु या कांच से बनी कठोर प्लैटर के होते हैं और चुंबकीय सामग्री के साथ लेपित होते हैं।</li> <li>सिंगल प्लैटर अलग-अलग पढ़ने और लिखने के साथ 10-20 मिमी मोटा होता है।</li> <li><span style="font-weight: 700;">यह 2 टेराबाइट (टीबी) डाटा तक संग्रहित कर सकता है।</span></li> <li>यह 3 से 6 इंच की लंबाई के साथ आयताकार है और 2 से 3 इंच की मोटाई के साथ समान चौड़ाई है।</li> </ul> <p><span style="font-weight: 700;">2. सीडी रोम (</span><span style="color: rgb(33, 37, 41); font-weight: 700;">CD-ROM)</span><span style="font-weight: 700;">:</span></p> <ul> <li>एक तरफ चमक के साथ पतली गोल प्लास्टिक की प्लेट जो जानकारी संग्रहीत करती है।</li> <li>यह केवल एक बार लिखने योग्य है।</li> <li>यह किफायती है।</li> <li>फ़ाइलों का बैकअप लेने के लिए उपयोग किया जाता है।</li> <li>फ़ाइलों को गलती से या वायरस द्वारा हटाया नहीं जा सकता।</li> <li><span style="font-weight: 700;">यह 650 मेगाबाइट (एमबी) डाटा या जानकारी तक स्टोर कर सकती है।</span></li> </ul> <p><span style="font-weight: 700;">3. डीवीडी रोम (</span><span style="color: rgb(33, 37, 41); font-weight: 700;"> DVD-ROM)</span><span style="font-weight: 700;">:</span></p> <ul> <li>यह एक डीवीडी आधारित सीडी है।</li> <li> <div>डिजिटल वर्सेटाइल डिस्क-रीड ओनली मेमोरी एक डिजिटल ऑप्टिकल डिस्क डेटा स्टोरेज प्रारूप है जिसका आविष्कार 1995 में किया गया था और इसे 1996 के अंत में जारी किया गया था</div> </li> <li><span style="font-weight: 700;">यह 4 गीगाबाइट (</span><span style="color: rgb(33, 37, 41); font-weight: 700;">GB</span><span style="font-weight: 700;">) तक की जानकारी स्टोर कर सकता है</span></li> </ul> <p><span style=" "><strong>4)</strong> </span><strong>अंकगणितीय तर्क इकाई</strong><span style=" "><strong> (</strong></span><strong><b style=" ">ALU</b><span style=" ">)</span></strong></p> <ul> <li>यह एक कंप्यूटर प्रोसेसर (<span style="color: rgb(33, 37, 41);">CPU</span>) का हिस्सा है जो कंप्यूटर अनुदेश शब्दों में ऑपरेंड पर अंकगणित और तर्क संचालन करता है।</li> <li>कुछ प्रोसेसर में, ALU को दो इकाइयों, एक अंकगणितीय इकाई (AU) और एक तर्क इकाई (LU) में विभाजित किया जाता है।</li> </ul> <p><strong>इसलिए, डिवाइस में सबसे बड़ी भंडारण क्षमता हार्ड डिस्क है।</strong></p></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q14</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">Which of the following is NOT a computer hardware?</div>
+  <div class="question lang-hi">निम्नलिखित में से कौनसा कंप्यूटर हार्डवेयर नहीं है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">Mouse</div><div class="option">Monitor</div><div class="option">Keyboard</div><div class="option correct">Antivirus</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">माउस</div><div class="option">मॉनिटर</div><div class="option">कीबोर्ड</div><div class="option correct">एंटीवायरस</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is <u><strong>Antivirus</strong></u>.</p> <ul> <li><strong>Antivirus software</strong>&nbsp;(abbreviated to AV software), also known as anti-malware, is a computer program used to prevent, detect, and remove malware.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li><strong>Antivirus software </strong>was originally developed to detect and remove computer viruses, hence the name.</li> <li>However, with the proliferation of other kinds of malware, antivirus software started to provide protection from other computer threats.&nbsp;</li> <li>So <strong>Antivirus is basically a type of Software as the correct answer is Antivirus</strong>.</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>Computer hardware</strong> includes the physical parts of a computer, such as&nbsp;a case, <strong>central processing unit (CPU), monitor, mouse, keyboard, computer data storage, graphics card, sound card, speakers and motherboard</strong>.&nbsp;</li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर <u><strong>एंटीवायरस</strong></u> है ।</p> <ul> <li><strong>एंटीवायरस सॉफ़्टवेयर</strong> (संक्षिप्त रूप में AV सॉफ़्टवेयर), जिसे एंटी-मैलवेयर के रूप में भी जाना जाता है, एक कंप्यूटर प्रोग्राम है, जिसका उपयोग मैलवेयर को रोकने, पता लगाने और हटाने के लिए किया जाता है।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/key-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Key Points</u></span></strong></span></p> <ul> <li>एंटीवायरस सॉफ़्टवेयर मूल रूप से कंप्यूटर वायरस का पता लगाने और हटाने के लिए विकसित किया गया था, इसलिए इसका नाम <span style="">एंटीवायरस रखा गया</span>।</li> <li>हालांकि, अन्य प्रकार के मैलवेयर के प्रसार के साथ, एंटीवायरस सॉफ़्टवेयर ने अन्य कंप्यूटर खतरों से सुरक्षा प्रदान करना शुरू कर दिया।</li> <li>इसलिए <u><strong>एंटीवायरस मूल रूप से एक प्रकार का सॉफ्टवेयर है इसलिए सही उत्तर एंटीवायरस है</strong></u> ।</li> </ul> <p><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></p> <ul> <li><strong>कंप्यूटर हार्डवेयर</strong> में <strong>कंप्यूटर</strong> के भौतिक भाग, जैसे कि केस, <strong>सेंट्रल प्रोसेसिंग यूनिट (सीपीयू), मॉनिटर, माउस, कीबोर्ड, कंप्यूटर डेटा स्टोरेज, ग्राफिक्स कार्ड, साउंड कार्ड, स्पीकर और मदरबोर्ड शामिल हैं</strong> ।</li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+  <div class="card">
+
+    <div class="watermark">
+      <a href="https://t.me/wamphire" target="_blank">Telegram:- @WAMPHIRE 👑</a>
+    </div>
+
+    
+<div class="card">
+  <h3>Q15</h3>
+
+  <!-- QUESTION -->
+  <div class="question lang-en">What is the input device used to scan a marked answer book of a multiple choice question paper?</div>
+  <div class="question lang-hi">एक बहुविकल्पीय प्रश्न पत्र की चिन्हित उत्तरपुस्तिका को स्कैन करने के लिए प्रयुक्त इनपुट डिवाइस को क्या कहा जाता है?</div>
+
+  <!-- OPTIONS -->
+  <div class="lang-en">
+    <div class="option">OCR</div><div class="option correct">OMR</div><div class="option">MICR</div><div class="option">Card reader</div>
+  </div>
+
+  <div class="lang-hi">
+    <div class="option">ओ सी आर (OCR)</div><div class="option correct">ओ एम आर (OMR)</div><div class="option"><span style="">एम आई सी आर (</span>MICR)</div><div class="option">कार्ड रीडर</div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <b>Solution:</b>
+    <div class="lang-en"><p>The correct answer is&nbsp;<u><strong>OMR.</strong></u></p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></strong></u></p> <ul> <li><strong>Optical mark recognition</strong> <ul> <li>It is the input device used to scan a marked answer book of a multiple choice question paper.</li> <li>An optical answer sheet or bubble sheet is a special type of form used in multiple-choice question examinations.&nbsp;</li> <li>Optical mark recognition&nbsp;is used to detect answers<span style="color: rgb(32, 33, 36); ">.</span></li> </ul> </li> </ul> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li><strong>OCR</strong> <ul> <li><strong>​</strong><b style="color: rgb(32, 33, 36); ">OCR</b><span style="color: rgb(32, 33, 36); ">&nbsp;(</span><b style="color: rgb(32, 33, 36); ">Optical Character Recognition</b><span style="color: rgb(32, 33, 36); ">) recognizes all the characters from the paper document.</span></li> <li><span style="color: rgb(32, 33, 36); ">It&nbsp;collects and stores them into an editable document.</span></li> </ul> </li> <li><strong><span style="color: rgb(32, 33, 36); ">​</span>MICR</strong> <ul> <li>​The term <strong>magnetic ink character recognition </strong>(MICR) refers to the line of numbers that appears at the bottom of a check.</li> <li>The&nbsp;MICR&nbsp;line is a group of three numbers, which are the check number, account number, and bank routing number.</li> </ul> </li> <li><strong>Card reader</strong> <ul> <li>A card reader is a data input device that reads data from a card-shaped&nbsp;storage&nbsp;medium.</li> </ul> </li> </ul></div>
+    <div class="lang-hi"><p>सही उत्तर&nbsp;<strong><span style="">ओ&nbsp;</span><span style="">एम&nbsp;</span><span style="">आर (OMR)</span></strong> है।&nbsp;</p> <p><u><strong><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/important-point-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Important Points</u></span></strong></span></strong></u></p> <ul> <li><strong>ऑप्टिकल मार्क रिकग्निशन (OMR)&nbsp;</strong> <ul> <li>यह एक बहुविकल्पीय प्रश्न पत्र की चिह्नित उत्तरपुस्तिका को स्कैन करने के लिए प्रयोग किया जाने वाला इनपुट डिवाइस है।</li> <li>एक ऑप्टिकल उत्तर पुस्तिका&nbsp;या बबल शीट एक विशेष प्रकार का फॉर्म है जिसका उपयोग बहुविकल्पीय प्रश्न परीक्षाओं में किया जाता है।</li> <li>ऑप्टिकल मार्क रिकॉग्निशन का उपयोग उत्तरों को पहचानने&nbsp;के लिए किया जाता है।</li> </ul> </li> </ul> <p>&nbsp;</p> <p><span style="color: rgb(32, 33, 36); "><span style="display: flex;gap: 6px;align-items: center;"><img height="26px" src="https://cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png" width="26px" /><strong><span style="vertical-align: middle;font-size: 21px;"><u>Additional Information</u></span></strong></span></span></p> <ul> <li><span style="font-weight: 700; ">ऑप्टिकल कैरेक्टर रिकॉग्निशन (</span><strong>OCR)</strong> <ul> <li><strong>​</strong><span style="font-weight: 700; ">ऑप्टिकल कैरेक्टर रिकॉग्निशन</span> पेपर दस्तावेज़ से सभी अक्षरों&nbsp;को पहचानता है।</li> <li>यह उन्हें एक संपादन योग्य दस्तावेज़ में इकट्ठा और संग्रहीत करता है।</li> </ul> </li> <li><strong><span style="">एम आई सी आर (MICR)&nbsp;</span></strong> <ul> <li>​<strong>मैगनेटीक&nbsp;इंक कैरेक्टर रिकग्निशन</strong>&nbsp;(MICR) शब्द एक चेक के नीचे दिखाई देने वाली संख्याओं की रेखा को संदर्भित करता है।</li> <li><span style="font-weight: 700; ">मैगनेटीक&nbsp;इंक कैरेक्टर रिकग्निशन</span> लाइन तीन नंबरों का एक समूह है, जो चेक नंबर, खाता संख्या और बैंक रूटिंग नंबर हैं।</li> </ul> </li> <li><strong>कार्ड रीडर&nbsp;</strong> <ul> <li>कार्ड रीडर एक डेटा इनपुट डिवाइस है जो कार्ड के आकार के स्टोरेज माध्यम से डेटा पढ़ता है।</li> </ul> </li> </ul></div>
+  </div>
+</div>
+
+
+  </div>
+  
+
+</div>
+
+<script>
+/* ===== THEME TOGGLE (FIXED) ===== */
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  const t = html.getAttribute("data-theme");
+
+  if (t === "dark") {
+    html.setAttribute("data-theme", "light");
+    btn.innerHTML = "☀️";
+  } else {
+    html.setAttribute("data-theme", "dark");
+    btn.innerHTML = "🌙";
+  }
+}
+</script>
+
+<script>
+/* ===== FONT SIZE SLIDER ===== */
+(function () {
+  const root = document.documentElement;
+  const slider = document.getElementById("fontSlider");
+  const label = document.getElementById("fsizeLabel");
+
+  const saved = localStorage.getItem("fsize");
+  if (saved) {
+    root.style.setProperty("--fsize", saved + "px");
+    slider.value = saved;
+    label.innerText = saved + "px";
+  }
+
+  window.setFontSize = function (val) {
+    root.style.setProperty("--fsize", val + "px");
+    label.innerText = val + "px";
+    localStorage.setItem("fsize", val);
+  };
+})();
+</script>
+
+<script>
+/* ===== LANGUAGE TOGGLE (FIXED & ISOLATED) ===== */
+(function () {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lang") || "en";
+  root.setAttribute("data-lang", saved);
+
+  const btnEn = document.getElementById("lang-en");
+  const btnHi = document.getElementById("lang-hi");
+
+  function updateBtns(lang) {
+    btnEn.style.opacity = lang === "en" ? "1" : "0.5";
+    btnHi.style.opacity = lang === "hi" ? "1" : "0.5";
+  }
+
+  window.setLang = function (lang) {
+    root.setAttribute("data-lang", lang);
+    localStorage.setItem("lang", lang);
+    updateBtns(lang);
+  };
+
+  updateBtns(saved);
+})();
+</script>
+
+</body>
+</html>

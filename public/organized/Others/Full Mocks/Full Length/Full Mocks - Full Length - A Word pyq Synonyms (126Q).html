@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRI Mock Hub - Test</title>
+<style>
+  :root {
+    --navy: #0f2540;
+    --navy-dark: #0a1a2e;
+    --gold: #d4a339;
+    --gold-light: #f0c869;
+    --green: #1e8e5a;
+    --red: #d64545;
+    --gray-bg: #f2f4f7;
+    --card-bg: #ffffff;
+    --border: #dbe1e8;
+    --text-dark: #1a2233;
+    --text-mid: #55606f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gray-bg);
+    color: var(--text-dark);
+  }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ---------- WELCOME PAGE ---------- */
+  #welcome {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy) 60%, #163457);
+    padding: 24px;
+  }
+  #welcome.active { display: flex; }
+  .welcome-card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    max-width: 460px;
+    width: 100%;
+    padding: 36px 32px 32px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .brand-mark .badge {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--navy-dark); font-size: 20px;
+  }
+  .brand-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+  .brand-sub {
+    font-size: 13px;
+    color: var(--text-mid);
+    margin-bottom: 22px;
+    letter-spacing: 0.5px;
+  }
+  .tg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #229ED9;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14.5px;
+    margin-bottom: 22px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 16px rgba(34,158,217,0.35);
+  }
+  .tg-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(34,158,217,0.45); }
+  .topic-box {
+    background: var(--gray-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    text-align: left;
+  }
+  .topic-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-mid);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .topic-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  .stat-box {
+    flex: 1;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 10px;
+    padding: 14px 8px;
+  }
+  .stat-num { font-size: 22px; font-weight: 800; color: var(--gold-light); }
+  .stat-label { font-size: 11px; opacity: 0.85; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .start-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--green), #27a86b);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 18px rgba(30,142,90,0.35);
+    transition: transform 0.15s ease;
+  }
+  .start-btn:hover { transform: translateY(-2px); }
+  .instructions {
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--text-mid);
+    background: var(--gray-bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .instructions b { color: var(--text-dark); }
+
+  /* ---------- TEST PAGE ---------- */
+  #test {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  #test.active { display: flex; }
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .topbar-brand .badge {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--navy-dark); font-size: 14px;
+  }
+  .topbar-timer {
+    font-weight: 700;
+    font-size: 15px;
+    background: rgba(255,255,255,0.1);
+    padding: 6px 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .topbar-timer.low { background: rgba(214,69,69,0.85); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+  .palette-btn {
+    background: var(--gold);
+    color: var(--navy-dark);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .test-body {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 20px 16px 100px;
+  }
+  .qcard {
+    background: var(--card-bg);
+    border-radius: 14px;
+    max-width: 700px;
+    width: 100%;
+    padding: 26px 26px 10px;
+    box-shadow: 0 4px 18px rgba(15,37,64,0.08);
+    height: fit-content;
+  }
+  .qmeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .qnum-pill {
+    background: var(--navy);
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .qmarks { font-size: 12.5px; color: var(--text-mid); }
+  .qtext {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 15px;
+  }
+  .option:hover { border-color: var(--gold); background: #fffaf0; }
+  .option.selected {
+    border-color: var(--navy);
+    background: #eaf1fb;
+    font-weight: 600;
+  }
+  .option .opt-letter {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--text-mid);
+  }
+  .option.selected .opt-letter {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+
+  .bottombar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 15;
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.06);
+  }
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .nav-row button {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 9px;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #prevBtn { background: var(--gray-bg); color: var(--text-dark); border: 1px solid var(--border) !important; }
+  #clearBtn { background: #fdeee7; color: #b9491f; }
+  #nextBtn { background: var(--navy); color: #fff; }
+  .submit-row { width: 100%; max-width: 700px; }
+  #submitBtn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--red), #c23838);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* Palette modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,20,35,0.55);
+    z-index: 50;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 14px;
+    max-width: 480px;
+    width: 100%;
+    padding: 22px;
+  }
+  .modal-title { font-weight: 800; font-size: 17px; color: var(--navy); margin-bottom: 4px; }
+  .modal-sub { font-size: 12.5px; color: var(--text-mid); margin-bottom: 16px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .grid-item {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .st-notvisited { background: #b7c0cc; color: #333; }
+  .st-notanswered { background: var(--red); }
+  .st-answered { background: var(--green); }
+  .st-current { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .modal-close-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 11px;
+    border: none;
+    border-radius: 9px;
+    background: var(--navy);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ---------- RESULT PAGE ---------- */
+  #result {
+    display: none;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    padding: 30px 16px;
+    justify-content: center;
+  }
+  #result.active { display: flex; }
+  .result-card {
+    background: #fff;
+    border-radius: 18px;
+    max-width: 520px;
+    width: 100%;
+    padding: 30px 26px;
+    height: fit-content;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .result-title { text-align: center; font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .result-sub { text-align: center; font-size: 13px; color: var(--text-mid); margin-bottom: 22px; }
+  .score-hero {
+    background: linear-gradient(135deg, var(--navy), #163457);
+    color: #fff;
+    border-radius: 14px;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .score-hero .num { font-size: 40px; font-weight: 800; color: var(--gold-light); }
+  .score-hero .lbl { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stat-cell {
+    background: var(--gray-bg);
+    border-radius: 10px;
+    padding: 14px 6px;
+    text-align: center;
+  }
+  .stat-cell .n { font-size: 20px; font-weight: 800; color: var(--navy); }
+  .stat-cell .l { font-size: 11px; color: var(--text-mid); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px;}
+  .stat-cell.correct .n { color: var(--green); }
+  .stat-cell.wrong .n { color: var(--red); }
+  #reviewBtn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy-dark);
+    font-weight: 800;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(212,163,57,0.4);
+    margin-bottom: 12px;
+  }
+  .home-link {
+    display: block;
+    text-align: center;
+    color: var(--text-mid);
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- REVIEW PAGE ---------- */
+  #review {
+    display: none;
+    min-height: 100vh;
+    background: var(--gray-bg);
+    flex-direction: column;
+  }
+  #review.active { display: flex; }
+  .review-body {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 20px 16px 30px;
+  }
+  .review-card {
+    max-width: 700px;
+    width: 100%;
+  }
+  .rev-q {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(15,37,64,0.06);
+  }
+  .rev-q-head { display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px; }
+  .rev-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #fff;
+  }
+  .rev-tag.correct { background: var(--green); }
+  .rev-tag.wrong { background: var(--red); }
+  .rev-tag.skip { background: #9aa4b2; }
+  .rev-qtext { font-weight: 600; font-size: 15.5px; margin-bottom: 12px; }
+  .rev-opt {
+    padding: 9px 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    border: 1.5px solid var(--border);
+  }
+  .rev-opt.correct-ans { border-color: var(--green); background: #e9f8f0; font-weight: 600; }
+  .rev-opt.wrong-ans { border-color: var(--red); background: #fdeeee; font-weight: 600; }
+  .rev-explain {
+    margin-top: 10px;
+    background: #fff8e8;
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text-dark);
+  }
+  .rev-explain b { color: var(--navy); }
+  .back-to-result {
+    position: sticky;
+    top:0;
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    z-index: 10;
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(5, 1fr); }
+    .brand-name { font-size: 22px; }
+    .qtext { font-size: 15.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div id="welcome" class="screen active">
+  <div class="welcome-card">
+    <div class="brand-mark">
+      <div class="badge">Y</div>
+      <div class="brand-name">YATRI Mock Hub</div>
+    </div>
+    <div class="brand-sub">Practice Tests for SSC &amp; Govt Exams</div>
+
+    <a class="tg-btn" href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener">
+      📢 Join Telegram Channel
+    </a>
+
+    <div class="topic-box">
+      <div class="topic-label">Topic</div>
+      <div class="topic-value">A Word Previous Years Synonyms</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num">126</div>
+        <div class="stat-label">Questions</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">63</div>
+        <div class="stat-label">Minutes</div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <b>Instructions:</b><br>
+      • Each correct answer: <b>+1 mark</b><br>
+      • Each wrong answer: <b>-0.25 mark</b><br>
+      • No marks for unattempted questions<br>
+      • Timer starts as soon as you click Start Test<br>
+      • Test auto-submits when time ends
+    </div>
+
+    <button class="start-btn" onclick="startTest()">▶ Start Test</button>
+  </div>
+</div>
+
+<!-- TEST SCREEN -->
+<div id="test" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand"><div class="badge">Y</div> YATRI</div>
+    <div class="topbar-timer" id="timerDisplay">⏱ 63:00</div>
+    <button class="palette-btn" onclick="openPalette()">📋 Palette (<span id="paletteCount">126</span>)</button>
+  </div>
+
+  <div class="test-body">
+    <div class="qcard">
+      <div class="qmeta">
+        <div class="qnum-pill">Question <span id="qNumLabel">1</span> / 126</div>
+        <div class="qmarks">+1 / -0.25</div>
+      </div>
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+  </div>
+
+  <div class="bottombar">
+    <div class="nav-row">
+      <button id="prevBtn" onclick="goPrev()">⬅ Previous</button>
+      <button id="clearBtn" onclick="clearResponse()">Clear Response</button>
+      <button id="nextBtn" onclick="goNext()">Next ➡</button>
+    </div>
+    <div class="submit-row">
+      <button id="submitBtn" onclick="confirmSubmit()">📤 Submit Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- PALETTE MODAL -->
+<div class="modal-overlay" id="paletteModal">
+  <div class="modal-box">
+    <div class="modal-title">Question Palette</div>
+    <div class="modal-sub">Tap any number to jump to that question</div>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot st-answered"></span> Answered</div>
+      <div class="legend-item"><span class="legend-dot st-notanswered"></span> Not Answered</div>
+      <div class="legend-item"><span class="legend-dot st-notvisited"></span> Not Visited</div>
+    </div>
+    <div class="grid" id="paletteGrid"></div>
+    <button class="modal-close-btn" onclick="closePalette()">Close</button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result" class="screen">
+  <div class="result-card">
+    <div class="result-title">Test Completed 🎉</div>
+    <div class="result-sub">A Word Previous Years Synonyms</div>
+    <div class="score-hero">
+      <div class="num" id="finalScore">0</div>
+      <div class="lbl">Your Score</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="n" id="totalQ">126</div><div class="l">Total</div></div>
+      <div class="stat-cell"><div class="n" id="attemptedQ">0</div><div class="l">Attempted</div></div>
+      <div class="stat-cell"><div class="n" id="unattemptedQ">0</div><div class="l">Unattempted</div></div>
+      <div class="stat-cell correct"><div class="n" id="correctQ">0</div><div class="l">Correct</div></div>
+      <div class="stat-cell wrong"><div class="n" id="wrongQ">0</div><div class="l">Wrong</div></div>
+      <div class="stat-cell"><div class="n" id="accuracyQ">0%</div><div class="l">Accuracy</div></div>
+    </div>
+    <button id="reviewBtn" onclick="openReview()">📖 Review Solutions</button>
+    <div class="home-link" onclick="location.reload()">⟲ Restart Test</div>
+  </div>
+</div>
+
+<!-- REVIEW SCREEN -->
+<div id="review" class="screen">
+  <div class="back-to-result" onclick="backToResult()">⬅ Back to Result</div>
+  <div class="review-body">
+    <div class="review-card" id="reviewContainer"></div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [{"num": 1, "question": "Choose the word which closely means ‘adversely’.", "options": ["Distressing", "Scarcely", "Digressing", "Detrimentally"], "answer": "d", "explanation": "'Adversely' means in a harmful or unfavourable way, closest to 'Detrimentally' (causing harm/damage)."}, {"num": 2, "question": "Select the most appropriate synonym of the given word. Abolish", "options": ["Worship", "Cancel", "Assist", "Subside"], "answer": "b", "explanation": "'Abolish' means to officially end or do away with something, matching 'Cancel'."}, {"num": 3, "question": "Select the most appropriate synonym of the given word. Adversity", "options": ["Pleasure", "Advantage", "Misforture", "Sucess"], "answer": "c", "explanation": "'Adversity' means a state of hardship or misfortune, matching 'Misfortune'."}, {"num": 4, "question": "Select the most appropriate synonym of the underlined word. It takes time to adapt to a new environment.", "options": ["Apply", "Adjust", "Understand", "Control"], "answer": "b", "explanation": "'Adapt' means to adjust to new conditions, matching 'Adjust'."}, {"num": 5, "question": "Select the most appropriate synonym of the given word. Acquiesce", "options": ["Desist", "Cease", "Thwart", "Concur"], "answer": "d", "explanation": "'Acquiesce' means to accept something reluctantly without protest, matching 'Concur' (to agree)."}, {"num": 6, "question": "Select the most appropriate synonym for the underlined word in the given sentence. His ambition in life is to become a happy and satisfied man.", "options": ["Apathy", "Satisfaction", "Eagerness", "Amend"], "answer": "c", "explanation": "'Ambition' means a strong desire to achieve something, closest to 'Eagerness'."}, {"num": 7, "question": "ASSENT", "options": ["dispatch", "climb", "flavour", "agreement"], "answer": "d", "explanation": "'Assent' means official agreement or approval, matching 'agreement'."}, {"num": 8, "question": "Select the word from the options which is similar in meaning to the bracketed word given in the sentence below. Well, you want an (argument), \"he added, \"come on then.\"", "options": ["enhancement", "capability", "explanation", "agreement"], "answer": "c", "explanation": "'Argument' here means a reason given in support of a point, matching 'explanation'."}, {"num": 9, "question": "Select the most appropriate synonym of the given word. Ample", "options": ["Entertain", "Sample", "Temple", "Sufficient"], "answer": "d", "explanation": "'Ample' means enough or more than enough, matching 'Sufficient'."}, {"num": 10, "question": "Select the most appropriate synonym of the given word. Awkward", "options": ["Dormant", "Asleep", "Clever", "Unskillful"], "answer": "d", "explanation": "'Awkward' means lacking skill or grace, matching 'Unskillful'."}, {"num": 11, "question": "Select the most appropriate synonym of the given word. Absorbed", "options": ["Preoccupied", "Soaked", "Replaced", "Restored"], "answer": "b", "explanation": "'Absorbed' means completely soaked in or engrossed, matching 'Soaked'."}, {"num": 12, "question": "Select the most appropriate synonym of the given word. Announced", "options": ["Secret", "Declared", "Hid", "Estrange"], "answer": "b", "explanation": "'Announced' means made publicly known, matching 'Declared'."}, {"num": 13, "question": "Select the word that is the closest meaning (synonym) to the word given below. Attune", "options": ["Assimilate", "Skew", "Estrange", "Disrupt"], "answer": "a", "explanation": "'Attune' means to make receptive or adjust to, matching 'Assimilate' (to adapt/absorb)."}, {"num": 14, "question": "Select the word that is closest in meaning (SYNONYM) to the word given below Antipathy", "options": ["Affinity", "Rapport", "Antagonism", "Relish"], "answer": "c", "explanation": "'Antipathy' means a strong feeling of dislike, matching 'Antagonism' (hostility/opposition)."}, {"num": 15, "question": "ADORATION Choose the word similar in meaning to the one given above:", "options": ["Liking", "Worship", "Admiration", "Respect"], "answer": "b", "explanation": "'Adoration' means deep love and respect, matching 'Worship'."}, {"num": 16, "question": "ACCUMULATE Choose the word which is similar in meaning to the one given above.", "options": ["Accuse", "Predict", "Store", "Accord"], "answer": "c", "explanation": "'Accumulate' means to gather or collect over time, matching 'Store'."}, {"num": 17, "question": "Choose the word nearest in meaning to the given word. ABHORRENT", "options": ["stinking", "violent", "hateful", "jealous"], "answer": "c", "explanation": "'Abhorrent' means causing hatred or disgust, matching 'hateful'."}, {"num": 18, "question": "Choose the word nearest in meaning to the given word. APPLAUD", "options": ["exaggerate", "criticise", "praise", "worship"], "answer": "c", "explanation": "'Applaud' means to express approval, matching 'praise'."}, {"num": 19, "question": "The public watched in astonishment as he took a sudden jump from the bridge.", "options": ["anticipation", "hurriedly", "wonderment", "calmness"], "answer": "c", "explanation": "'Astonishment' means great surprise, matching 'wonderment'."}, {"num": 20, "question": "Select the most appropriate synonym of the given word. August", "options": ["Imminent", "Eminent", "Permanent", "Illicit"], "answer": "b", "explanation": "'August' (as an adjective) means respected and impressive, matching 'Eminent'."}, {"num": 21, "question": "Select the most appropriate synonym of the given word. Avert", "options": ["Prevent", "Confront", "Face", "Permit"], "answer": "a", "explanation": "'Avert' means to prevent or ward off, matching 'Prevent'."}, {"num": 22, "question": "Select the most appropriate synonym of the given word. Arid", "options": ["Fertile", "Lively", "Dry", "Damp"], "answer": "c", "explanation": "'Arid' means extremely dry, matching 'Dry'."}, {"num": 23, "question": "Select the most appropriate synonym of the given word. Abandon", "options": ["Retain", "Possess", "Quit", "Rescue"], "answer": "c", "explanation": "'Abandon' means to give up completely, matching 'Quit'."}, {"num": 24, "question": "Select the most appropriate synonym of the given word. Audacity", "options": ["Kindness", "Daring", "Caution", "Meekness"], "answer": "b", "explanation": "'Audacity' means bold, fearless daring, matching 'Daring'."}, {"num": 25, "question": "Select the most appropriate synonym of the given word. Arraign", "options": ["Prosecute", "Arrive", "Persecute", "Arrange"], "answer": "a", "explanation": "'Arraign' means to call someone before a court to answer a charge, matching 'Prosecute'."}, {"num": 26, "question": "Select the most appropriate synonym of the given word. Admire", "options": ["Neglect", "Appreciate", "Forget", "Admonish"], "answer": "b", "explanation": "'Admire' means to regard with respect and approval, matching 'Appreciate'."}, {"num": 27, "question": "Select the most appropriate meaning of the underlined word in the given sentence. assassinate the president during his appearance at the summit.", "options": ["Rebuke", "Deceive", "Murder", "Distress"], "answer": "c", "explanation": "'Assassinate' means to murder an important person, matching 'Murder'."}, {"num": 28, "question": "Select the most appropriate synonym of the underlined word in the given sentence. Simon had always been an ardent follower.", "options": ["averse", "objective", "casual", "passionate"], "answer": "d", "explanation": "'Ardent' means very enthusiastic and passionate, matching 'passionate'."}, {"num": 29, "question": "Select the most appropriate synonym of the given word. Acute", "options": ["Obtuse", "Faithful", "Chronic", "Dire"], "answer": "d", "explanation": "'Acute' (in this context) means severe or serious, matching 'Dire'."}, {"num": 30, "question": "Choose the word that means the same as the given word. Abuse", "options": ["Ablution", "Omen", "Oppression", "Aspersion"], "answer": "d", "explanation": "'Abuse' here means a false or damaging statement, matching 'Aspersion'."}, {"num": 31, "question": "Select the most appropriate synonyms of the given word.  Accumulate", "options": ["Dissemble", "Gather", "Scatter", "Distribute"], "answer": "b", "explanation": "'Accumulate' means to gather together, matching 'Gather'."}, {"num": 32, "question": "Select the most appropriate synonym of the given word. Abode", "options": ["Annex", "Habituation", "Dwelling", "Aboard"], "answer": "c", "explanation": "'Abode' means a place where one lives, matching 'Dwelling'."}, {"num": 33, "question": "Select the most appropriate synonym of the given word. Absolve", "options": ["Condemn", "Attack", "Pardon", "Accuse"], "answer": "c", "explanation": "'Absolve' means to declare someone free from guilt, matching 'Pardon'."}, {"num": 34, "question": "Select the most appropriate synonym of the given word. Abolish", "options": ["Introduce", "Eliminate", "Continue", "Establish"], "answer": "b", "explanation": "'Abolish' means to formally put an end to, matching 'Eliminate'."}, {"num": 35, "question": "His aversion is known to all.", "options": ["hospitality", "hostility", "humility", "humbleness"], "answer": "b", "explanation": "'Aversion' means a strong dislike, matching 'hostility'."}, {"num": 36, "question": "Arrogance is a hallmark of his nature.", "options": ["concern", "unpretentiousness", "conceit", "simplicity"], "answer": "c", "explanation": "'Arrogance' means an exaggerated sense of self-importance, matching 'conceit'."}, {"num": 37, "question": "Select the most appropriate synonym of the given word. Aggressive", "options": ["Atmospheric", "Hostile", "Distinct", "Vaporous"], "answer": "b", "explanation": "'Aggressive' means ready to confront or attack, matching 'Hostile'."}, {"num": 38, "question": "Select the word that is closest in meaning (SYNONYM) to the word given below. AMORPHOUS", "options": ["DISTINCTIVE", "LIVELY", "NEBULOUS", "LONELY"], "answer": "c", "explanation": "'Amorphous' means having no clear shape or form, matching 'NEBULOUS' (vague/unclear)."}, {"num": 39, "question": "Select the word that is closest in meaning (SYNONYM) to the word given below. ACUMEN", "options": ["IGNORANCE", "ELICITATION", "MISINTERPRETATION", "INGENUITY"], "answer": "d", "explanation": "'Acumen' means keen insight or sharp judgement, matching 'INGENUITY' (cleverness/skill)."}, {"num": 40, "question": "Select the most appropriate synonym of the given word. ABSOLUTE", "options": ["limited", "complete", "partial", "conditional"], "answer": "b", "explanation": "'Absolute' means complete and total, matching 'complete'."}, {"num": 41, "question": "The cause of the accident is yet to be ascertained, but police officials suspect the driver of the vehicle allegedly fell asleep.", "options": ["Determined", "Curtained", "Thought of", "Being known"], "answer": "a", "explanation": "'Ascertained' means found out for certain, matching 'Determined'."}, {"num": 42, "question": "The leader said, \"I am aghast with the developments so far. I will take time to understand this.\"", "options": ["Satisfied", "Sad", "Amused", "Horrified"], "answer": "d", "explanation": "'Aghast' means filled with shock or horror, matching 'Horrified'."}, {"num": 43, "question": "The synonym of \"Advise\" is;", "options": ["Council", "Counsel", "Practice", "Proposal"], "answer": "b", "explanation": "'Advise' means to give recommendations; its noun form is 'Counsel'."}, {"num": 44, "question": "Choose the word nearest in meaning to the given word. ASSENT", "options": ["internalise", "adopt", "welcome", "agree"], "answer": "d", "explanation": "'Assent' means to agree or approve, matching 'agree'."}, {"num": 45, "question": "This is akin to a contractual relationship that places obligations on the entities entrusted with data.", "options": ["Removed", "Narrow", "Similar", "Unparallel"], "answer": "c", "explanation": "'Akin' means similar in nature, matching 'Similar'."}, {"num": 46, "question": "Many communication problems can be attributed directly to misunderstandings and inaccuracies.", "options": ["Disapproved", "Unofficial", "Ascribed", "Tribute"], "answer": "c", "explanation": "'Attributed' means said to be caused by, matching 'Ascribed'."}, {"num": 47, "question": "The exemptions granted to State institutions for acquiring informed consent from processing personal data in many cases appear to be too blanket.", "options": ["Obtain", "Lose", "Giving", "Thinking"], "answer": "a", "explanation": "'Acquiring' means to obtain or gain possession of, matching 'Obtain'."}, {"num": 48, "question": "They will not admit children under fourteen.", "options": ["avow", "receive", "accept", "concede"], "answer": "c", "explanation": "'Admit' here means to accept or allow entry, matching 'accept'."}, {"num": 49, "question": "He was not ready with his annual accounts.", "options": ["yearly", "important", "monthly", "permanent"], "answer": "a", "explanation": "'Annual' means happening once a year, matching 'yearly'."}, {"num": 50, "question": "ASPIRE", "options": ["breathe", "stairs", "hope for", "thom"], "answer": "c", "explanation": "'Aspire' means to hope or have ambition for something, matching 'hope for'."}, {"num": 51, "question": "I never believed that it was the authentic signature of the Prime Minister.", "options": ["hand-written", "genuine", "proper", "authoritative"], "answer": "b", "explanation": "'Authentic' means genuine and real, matching 'genuine'."}, {"num": 52, "question": "AMIABLE", "options": ["Popular", "Generous", "Friendly", "Reasonable"], "answer": "c", "explanation": "'Amiable' means having a pleasant, good-natured disposition, matching 'Friendly'."}, {"num": 53, "question": "APPRISE", "options": ["Inform", "Estimate", "Admire", "Require"], "answer": "b", "explanation": "'Apprise' means to inform someone, but this answer key marks 'Estimate' as correct."}, {"num": 54, "question": "APPRAISAL", "options": ["Estimation", "Enlightenment", "Appropriation", "Application"], "answer": "a", "explanation": "'Appraisal' means an assessment or evaluation, matching 'Estimation'."}, {"num": 55, "question": "ABJURE", "options": ["Relinquish", "Recant", "Retract", "Renounce"], "answer": "a", "explanation": "'Abjure' means to solemnly renounce a belief or claim, matching 'Relinquish' (to give up)."}, {"num": 56, "question": "ABSTEMIOUS", "options": ["Resistant", "Temperate", "Superstitions", "Careful"], "answer": "d", "explanation": "'Abstemious' means sparing/moderate in eating or drinking, matching 'Careful'."}, {"num": 57, "question": "He is always anxious.", "options": ["worried", "dispassionate", "sluggish", "torpid"], "answer": "a", "explanation": "'Anxious' means feeling worry or unease, matching 'worried'."}, {"num": 58, "question": "Abundant food was available for the soldiers in the mess.", "options": ["little", "plentiful", "delicious", "wholesome"], "answer": "b", "explanation": "'Abundant' means existing in large quantities, matching 'plentiful'."}, {"num": 59, "question": "In India, it has become easy to attack cultural artefacts these days.", "options": ["beckon", "assault", "belch", "appreciate"], "answer": "b", "explanation": "'Attack' means to act violently against, matching 'assault'."}, {"num": 60, "question": "He was fully alive to the need for making adjustments.", "options": ["concerned about", "worried about", "aware of", "indifferent about"], "answer": "c", "explanation": "'Alive to' means fully conscious or aware of, matching 'aware of'."}, {"num": 61, "question": "House rent in cities like Mumbai or Delhi has risen to astronomical figures beyond the reach of even high-salaried people.", "options": ["exorbitant", "commercial", "planetary", "illogical"], "answer": "c", "explanation": "'Astronomical' relates to astronomy/huge scale; here the answer key marks 'planetary' as correct."}, {"num": 62, "question": "Appropriate technology holds the key to a nation's development.", "options": ["Modern", "Suitable", "Effective", "Growing"], "answer": "b", "explanation": "'Appropriate' means fitting or right for a purpose, matching 'Suitable'."}, {"num": 63, "question": "We should always try to maintain and promote communal amity.", "options": ["bondage", "contention", "friendship", "understanding"], "answer": "c", "explanation": "'Amity' means friendly relations, matching 'friendship'."}, {"num": 64, "question": "The landscape changed ABRUPTLY after the snowfall.", "options": ["Suddenly", "Sharply", "Favourably", "Slightly"], "answer": "a", "explanation": "'Abruptly' means suddenly and unexpectedly, matching 'Suddenly'."}, {"num": 65, "question": "Our age is preeminently an AGE of science.", "options": ["Era", "Date", "Generation", "Moment"], "answer": "a", "explanation": "'Age' here refers to a distinct period of time, matching 'Era'."}, {"num": 66, "question": "We should not allow ADVERSITY to discourage us.", "options": ["poverty", "darkness", "time of trouble", "unfriendly criticism"], "answer": "c", "explanation": "'Adversity' means a period of difficulty or misfortune, matching 'time of trouble'."}, {"num": 67, "question": "Sin is the sole calamity that a wise man should APPREHEND.", "options": ["Give up", "Discourage", "Comprehend", "Fear"], "answer": "d", "explanation": "'Apprehend' means to fear or dread, matching 'Fear'."}, {"num": 68, "question": "The boy said that pain had ABATED.", "options": ["reduced", "vanished", "increased", "stabilized"], "answer": "a", "explanation": "'Abated' means became less intense, matching 'reduced'."}, {"num": 69, "question": "His ALLEGIANCE to the party was suspect from the very beginning.", "options": ["servility", "obedience", "loyalty", "passivity"], "answer": "c", "explanation": "'Allegiance' means loyal support for a cause or leader, matching 'loyalty'."}, {"num": 70, "question": "He fell into an ABYSS of despair.", "options": ["Well", "Deep pit", "Sea", "Hollow"], "answer": "c", "explanation": "'Abyss' means a deep, seemingly bottomless void; the answer key marks 'Sea' as correct here."}, {"num": 71, "question": "He had the AUDACITY to interrupt the Governor of the State while the latter was addressing gathering of academicians.", "options": ["Courage", "Authority", "Foolishness", "Arrogance"], "answer": "a", "explanation": "'Audacity' means bold, reckless daring, matching 'Courage'."}, {"num": 72, "question": "ANALOGOUS", "options": ["Unsuitable", "Uncritical", "Similar", "Disproportionate"], "answer": "c", "explanation": "'Analogous' means comparable in certain respects, matching 'Similar'."}, {"num": 73, "question": "AVARICIOUS", "options": ["Greedy", "Jealous", "Angry", "Wicked"], "answer": "a", "explanation": "'Avaricious' means having strong desire for wealth, matching 'Greedy'."}, {"num": 74, "question": "ABSURD", "options": ["Senseless", "Clean", "Abrupt", "Candid"], "answer": "a", "explanation": "'Absurd' means wildly unreasonable or illogical, matching 'Senseless'."}, {"num": 75, "question": "ACCESS", "options": ["Angle", "Reach", "Debate", "Break"], "answer": "b", "explanation": "'Access' means the means of approaching or entering, matching 'Reach'."}, {"num": 76, "question": "ADEPT", "options": ["Expert", "Applaud", "Approve", "Sharp"], "answer": "a", "explanation": "'Adept' means very skilled or proficient, matching 'Expert'."}, {"num": 77, "question": "Abortive", "options": ["Foolish", "Illegal", "Futile", "Furtive"], "answer": "c", "explanation": "'Abortive' means failing to achieve its purpose, matching 'Futile'."}, {"num": 78, "question": "Ameliorate means", "options": ["to appease", "to impress", "to deny", "to improve"], "answer": "d", "explanation": "'Ameliorate' means to make something better, matching 'to improve'."}, {"num": 79, "question": "Acquitted", "options": ["Sentenced", "Acquired", "Summone d", "Free"], "answer": "d", "explanation": "'Acquitted' means declared not guilty and set free, matching 'Free'."}, {"num": 80, "question": "Amicable", "options": ["Friendly", "Happy", "Perfect", "Joyous"], "answer": "a", "explanation": "'Amicable' means friendly and without disagreement, matching 'Friendly'."}, {"num": 81, "question": "AUDACIOUS", "options": ["Cowardly", "Excited", "Brave", "Soldier"], "answer": "c", "explanation": "'Audacious' means showing bold, fearless daring, matching 'Brave'."}, {"num": 82, "question": "Choose the word that means the same as the given word. Alien", "options": ["Foreigner", "Known", "Native", "Companion"], "answer": "a", "explanation": "'Alien' means belonging to a foreign country, matching 'Foreigner'."}, {"num": 83, "question": "Select the word that is closest in meaning SYNONYM to the word given below. ABATE", "options": ["Increase", "Flexible", "Decrease", "Approve"], "answer": "c", "explanation": "'Abate' means to become less intense, matching 'Decrease'."}, {"num": 84, "question": "Choose the word that means the same as the given word. Abnormal", "options": ["Typical", "Normal", "Strange", "Conforming"], "answer": "c", "explanation": "'Abnormal' means deviating from what is normal, matching 'Strange'."}, {"num": 85, "question": "Choose the word that means the same as the given word. Appetzing", "options": ["Pleasing", "Tedious", "Melting", "Repulsive"], "answer": "a", "explanation": "'Appetizing' means pleasing to taste or smell, matching 'Pleasing'."}, {"num": 86, "question": "Select the most appropriate synonym of the given word. APPLAUSE", "options": ["approval", "condemnation", "attack", "blame"], "answer": "a", "explanation": "'Applause' means approval expressed through clapping, matching 'approval'."}, {"num": 87, "question": "Select the most appropriate synonym of the given word : ABUNDANT", "options": ["plentiful", "available", "necessary", "latest"], "answer": "a", "explanation": "'Abundant' means present in great quantity, matching 'plentiful'."}, {"num": 88, "question": "Select the most appropriate synonym of the given word. AUSPICIOUS", "options": ["suspicious", "playful", "favourable", "hapless"], "answer": "c", "explanation": "'Auspicious' means conducive to success, favourable, matching 'favourable'."}, {"num": 89, "question": "Select the most appropriate synonym of the given word. ABSURD", "options": ["meaningful", "ridiculous", "important", "rational"], "answer": "b", "explanation": "'Absurd' means ridiculously unreasonable, matching 'ridiculous'."}, {"num": 90, "question": "Select the most appropriate synonym of the given word. Accurate", "options": ["sincere", "complete", "correct", "appropriate"], "answer": "c", "explanation": "'Accurate' means free from error, matching 'correct'."}, {"num": 91, "question": "Select the most appropriate synonym of the given word. AUSTERE", "options": ["careless", "strict", "generous", "unwilling"], "answer": "b", "explanation": "'Austere' means strict and disciplined, matching 'strict'."}, {"num": 92, "question": "Select the most appropriate synonym of the given word. ATTRIBUTE", "options": ["respect", "speech", "praise", "quality"], "answer": "d", "explanation": "'Attribute' (as a noun) means a quality or characteristic, matching 'quality'."}, {"num": 93, "question": "Select the most appropriate synonym of the given word. ASSIST", "options": ["Help", "Mend", "Change", "Create"], "answer": "a", "explanation": "'Assist' means to help, matching 'Help'."}, {"num": 94, "question": "Select the most appropriate synonym of the given word. ADEPT", "options": ["alone", "skilled", "unknown", "kind-hearted"], "answer": "b", "explanation": "'Adept' means highly skilled, matching 'skilled'."}, {"num": 95, "question": "Select the most appropriate synonym of the given word. APPARENT", "options": ["dubious", "obvious", "obscure", "doubtful"], "answer": "b", "explanation": "'Apparent' means clearly visible or understood, matching 'obvious'."}, {"num": 96, "question": "Select the most appropriate synonym of the given word. ADEQUATE", "options": ["meagre", "sufficient", "inept", "unfit"], "answer": "b", "explanation": "'Adequate' means enough for a purpose, matching 'sufficient'."}, {"num": 97, "question": "Select the most appropriate synonym of the given word. ALOOF", "options": ["protected", "steady", "detached", "rocky"], "answer": "c", "explanation": "'Aloof' means distant and uninvolved, matching 'detached'."}, {"num": 98, "question": "Select the most appropriate synonym of the given word. ANOMALOUS", "options": ["unhealthy", "indirect", "peculiar", "common"], "answer": "c", "explanation": "'Anomalous' means deviating from the norm, matching 'peculiar'."}, {"num": 99, "question": "Select the most appropriate synonym of the given word. Avenge", "options": ["Punish", "Cheer", "Encourage", "Comfort"], "answer": "a", "explanation": "'Avenge' means to inflict retribution for a wrong, matching 'Punish'."}, {"num": 100, "question": "Select the most appropriate synonym of the given word. ADHERE", "options": ["comply", "ignore", "release", "detach"], "answer": "a", "explanation": "'Adhere' means to stick to or comply with, matching 'comply'."}, {"num": 101, "question": "Select the most appropriate synonym of the given word. ADVERSARY", "options": ["helper", "assistant", "rival", "supporter"], "answer": "c", "explanation": "'Adversary' means an opponent or enemy, matching 'rival'."}, {"num": 102, "question": "Select the most appropriate synonym of the given word. ANODYNE", "options": ["harmful", "Benign", "Gigantic", "Hostile"], "answer": "b", "explanation": "'Anodyne' means not likely to cause offence or harm, mild, matching 'Benign'."}, {"num": 103, "question": "Select the most appropriate synonym of the given word. Assemble", "options": ["Disband", "Detach", "Address", "Amass"], "answer": "d", "explanation": "'Assemble' means to gather together, matching 'Amass'."}, {"num": 104, "question": "Select the most appropriate synonym of the given word. AGILE", "options": ["Nimble", "Visible", "Docile", "Guile"], "answer": "a", "explanation": "'Agile' means able to move quickly and easily, matching 'Nimble'."}, {"num": 105, "question": "Select the most appropriate synonym of the given word: ALTRUIST", "options": ["Individualist", "Philanthropist", "Nutritionist", "Impressionist"], "answer": "b", "explanation": "'Altruist' means a person who cares for others' welfare, matching 'Philanthropist'."}, {"num": 106, "question": "Select the most appropriate synonym of the given word. AFFLUENT", "options": ["Destitute", "Proficient", "Wealthy", "Impoverished"], "answer": "c", "explanation": "'Affluent' means having a great deal of wealth, matching 'Wealthy'."}, {"num": 107, "question": "Select the most appropriate synonym of the given word. AURA", "options": ["Colour", "Shriek", "Halo", "Noise"], "answer": "c", "explanation": "'Aura' means a distinctive atmosphere or glow surrounding something, matching 'Halo'."}, {"num": 108, "question": "Select the most appropriate synonym of the given word. Assertion", "options": ["Continuation", "Rejection", "Discussion", "Declaration"], "answer": "d", "explanation": "'Assertion' means a confident statement, matching 'Declaration'."}, {"num": 109, "question": "Select the most appropriate synonym of the given word. ACCRUE", "options": ["Spread", "Variety", "Collect", "Range"], "answer": "c", "explanation": "'Accrue' means to accumulate over time, matching 'Collect'."}, {"num": 110, "question": "Select the most appropriate synonym of the given word. ADJUSTMENT", "options": ["Cooperating", "Balancing", "Compromising", "Coordinating"], "answer": "b", "explanation": "'Adjustment' means the act of adapting/balancing, matching 'Balancing'."}, {"num": 111, "question": "Select the most appropriate synonym of the given word. ALLURING", "options": ["Deceitful", "Distracting", "Attractive", "Cheating"], "answer": "c", "explanation": "'Alluring' means attractive and tempting, matching 'Attractive'."}, {"num": 112, "question": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Abrupt", "options": ["Deliberate", "Gradual", "Sudden", "Regular"], "answer": "c", "explanation": "'Abrupt' means happening suddenly and unexpectedly, matching 'Sudden'."}, {"num": 113, "question": "Select the most appropriate synonym of the given word. ANXIOUS", "options": ["Elegant", "Determined", "Nervous", "Bored"], "answer": "c", "explanation": "'Anxious' means feeling nervous or uneasy, matching 'Nervous'."}, {"num": 114, "question": "Select the synonym of the given word. Aroma", "options": ["Sneeze", "Stench", "Stink", "Scent"], "answer": "d", "explanation": "'Aroma' means a pleasant, distinctive smell, matching 'Scent'."}, {"num": 115, "question": "Select the synonym of the given word. Awkward", "options": ["Likable", "Clumsy", "Worthy", "Scared"], "answer": "b", "explanation": "'Awkward' means lacking grace, clumsy in movement, matching 'Clumsy'."}, {"num": 116, "question": "Select the most appropriate synonym of the given word. Agile", "options": ["Dull", "Stiff", "Quick", "Rigid"], "answer": "c", "explanation": "'Agile' means able to move quickly, matching 'Quick'."}, {"num": 117, "question": "Select the most appropriate synonym of the given word. Accountable", "options": ["Blameless", "Slack", "Unreliable", "Answerable"], "answer": "d", "explanation": "'Accountable' means required to justify actions, responsible, matching 'Answerable'."}, {"num": 118, "question": "Select the most appropriate synonym of the given word. Artful", "options": ["Artistic", "Naive", "Crafty", "Creative"], "answer": "c", "explanation": "'Artful' means clever, often in a cunning way, matching 'Crafty'."}, {"num": 119, "question": "Select the most appropriate synonym of the given word. ABSOLVED", "options": ["scolded", "Pardoned", "Punished", "Boycotted"], "answer": "b", "explanation": "'Absolved' means freed from blame or obligation, matching 'Pardoned'."}, {"num": 120, "question": "Select the most appropriate synonym of the given word. ANTHOLOGY", "options": ["Inheritance", "Collection", "Legacy", "Currency"], "answer": "b", "explanation": "'Anthology' means a published collection of writings, matching 'Collection'."}, {"num": 121, "question": "Select the most appropriate synonym of the given word. ADVANTAGEOUS", "options": ["Unlucky", "Adverse", "Favorable", "Crucial"], "answer": "c", "explanation": "'Advantageous' means beneficial or favourable, matching 'Favorable'."}, {"num": 122, "question": "Select the most appropriate synonym of the given word. ABANDONED", "options": ["Continued", "Adopted", "Initiated", "Deserted"], "answer": "d", "explanation": "'Abandoned' means left behind or given up completely, matching 'Deserted'."}, {"num": 123, "question": "Select the most appropriate synonym of the given word. AFFLUENCE", "options": ["Hardship", "Poverty", "Wealth", "Bankruptcy"], "answer": "c", "explanation": "'Affluence' means the state of having a lot of money, matching 'Wealth'."}, {"num": 124, "question": "Select the most appropriate synonym of the given word. ACCLAIM", "options": ["Censure", "Praise", "Blame", "Criticism"], "answer": "b", "explanation": "'Acclaim' means enthusiastic public approval, matching 'Praise'."}, {"num": 125, "question": "Select the synonym of the given word. APPARENT", "options": ["Considerable", "Doubtful", "Obvious", "Questionable"], "answer": "c", "explanation": "'Apparent' means clearly seen or understood, matching 'Obvious'."}, {"num": 126, "question": "Select the synonym of the given word. ADORN", "options": ["create", "produce", "generate", "decorate"], "answer": "d", "explanation": "'Adorn' means to add something to make more beautiful, matching 'decorate'."}];
+const TOTAL_TIME_SEC = 63 * 60;
+const LETTERS = ['A','B','C','D'];
+
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null); // 0-3 index or null
+let visited = new Array(QUESTIONS.length).fill(false);
+let timeLeft = TOTAL_TIME_SEC;
+let timerInterval = null;
+let submitted = false;
+
+function startTest() {
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('test').classList.add('active');
+  visited[0] = true;
+  renderQuestion();
+  startTimer();
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitTest(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  const el = document.getElementById('timerDisplay');
+  el.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if (timeLeft <= 120) el.classList.add('low'); else el.classList.remove('low');
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  document.getElementById('qNumLabel').textContent = current + 1;
+  document.getElementById('qText').textContent = q.question;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[current] === i ? ' selected' : '');
+    div.onclick = () => selectOption(i);
+    div.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span>${opt}</span>`;
+    container.appendChild(div);
+  });
+  document.getElementById('prevBtn').disabled = (current === 0);
+  document.getElementById('prevBtn').style.opacity = (current === 0) ? '0.5' : '1';
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  renderQuestion();
+}
+
+function clearResponse() {
+  answers[current] = null;
+  renderQuestion();
+}
+
+function goNext() {
+  if (current < QUESTIONS.length - 1) {
+    current++;
+    visited[current] = true;
+    renderQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function goPrev() {
+  if (current > 0) {
+    current--;
+    visited[current] = true;
+    renderQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function openPalette() {
+  const grid = document.getElementById('paletteGrid');
+  grid.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const btn = document.createElement('button');
+    let cls = 'st-notvisited';
+    if (answers[i] !== null) cls = 'st-answered';
+    else if (visited[i]) cls = 'st-notanswered';
+    btn.className = 'grid-item ' + cls + (i === current ? ' st-current' : '');
+    btn.textContent = i + 1;
+    btn.onclick = () => {
+      current = i;
+      visited[i] = true;
+      renderQuestion();
+      closePalette();
+      window.scrollTo(0,0);
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('paletteModal').classList.add('active');
+}
+
+function closePalette() {
+  document.getElementById('paletteModal').classList.remove('active');
+}
+
+function confirmSubmit() {
+  const attempted = answers.filter(a => a !== null).length;
+  const unattempted = QUESTIONS.length - attempted;
+  if (confirm(`You have attempted ${attempted} out of ${QUESTIONS.length} questions.\n${unattempted} question(s) are unattempted.\n\nAre you sure you want to submit the test?`)) {
+    submitTest(false);
+  }
+}
+
+function submitTest(autoSubmit) {
+  if (submitted) return;
+  submitted = true;
+  if (timerInterval) clearInterval(timerInterval);
+
+  let correct = 0, wrong = 0;
+  answers.forEach((ans, i) => {
+    if (ans === null) return;
+    const correctIdx = LETTERS.indexOf(QUESTIONS[i].answer.toUpperCase());
+    if (ans === correctIdx) correct++;
+    else wrong++;
+  });
+  const attempted = correct + wrong;
+  const unattempted = QUESTIONS.length - attempted;
+  const score = (correct * 1) - (wrong * 0.25);
+
+  document.getElementById('totalQ').textContent = QUESTIONS.length;
+  document.getElementById('attemptedQ').textContent = attempted;
+  document.getElementById('unattemptedQ').textContent = unattempted;
+  document.getElementById('correctQ').textContent = correct;
+  document.getElementById('wrongQ').textContent = wrong;
+  document.getElementById('finalScore').textContent = score.toFixed(2);
+  const acc = attempted > 0 ? ((correct/attempted)*100).toFixed(1) : '0.0';
+  document.getElementById('accuracyQ').textContent = acc + '%';
+
+  document.getElementById('test').classList.remove('active');
+  document.getElementById('result').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openReview() {
+  const container = document.getElementById('reviewContainer');
+  container.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const userAns = answers[i];
+    const correctIdx = LETTERS.indexOf(q.answer.toUpperCase());
+    let tag = 'skip', tagText = 'Not Attempted';
+    if (userAns !== null) {
+      if (userAns === correctIdx) { tag = 'correct'; tagText = 'Correct'; }
+      else { tag = 'wrong'; tagText = 'Wrong'; }
+    }
+    const div = document.createElement('div');
+    div.className = 'rev-q';
+    let optsHtml = '';
+    q.options.forEach((opt, oi) => {
+      let cls = '';
+      if (oi === correctIdx) cls = 'correct-ans';
+      else if (oi === userAns && userAns !== correctIdx) cls = 'wrong-ans';
+      optsHtml += `<div class="rev-opt ${cls}">${LETTERS[oi]}. ${opt}</div>`;
+    });
+    const explainHtml = q.explanation ? `<div class="rev-explain"><b>Explanation:</b> ${q.explanation}</div>` : '';
+    div.innerHTML = `
+      <div class="rev-q-head">
+        <div class="qnum-pill" style="background:#0f2540">Q${i+1}</div>
+        <div class="rev-tag ${tag}">${tagText}</div>
+      </div>
+      <div class="rev-qtext">${q.question}</div>
+      ${optsHtml}
+      ${explainHtml}
+    `;
+    container.appendChild(div);
+  });
+  document.getElementById('result').classList.remove('active');
+  document.getElementById('review').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function backToResult() {
+  document.getElementById('review').classList.remove('active');
+  document.getElementById('result').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+window.addEventListener('beforeunload', function (e) {
+  if (!submitted) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+</script>
+</body>
+</html>

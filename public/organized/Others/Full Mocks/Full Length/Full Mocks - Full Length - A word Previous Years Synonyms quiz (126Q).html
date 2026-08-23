@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:16px;
+    background:#29a9eb;
+    color:#fff;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #tgBtn svg{flex-shrink:0;}
+  #topicLine{
+    margin-top:14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--accent);
+    background:var(--card);
+    display:inline-block;
+    padding:6px 18px;
+    border:1px solid var(--rule);
+    border-radius:20px;
+  }
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+    <a href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: A Words — Previous Years Synonyms</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">126</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Choose the word which closely means ‘adversely’.",
+"tag": "SSC CHSL (Tier-II) 18/11/2024",
+"opts": [
+"Distressing",
+"Scarcely",
+"Digressing",
+"Detrimentally"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Adversely' का अर्थ है <b>प्रतिकूल रूप से</b>। Synonym 'Detrimentally' (<b>हानिकारक ढंग से</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Abolish",
+"tag": "SSC CHSL (Tier-II) 18/11/2024",
+"opts": [
+"Worship",
+"Cancel",
+"Assist",
+"Subside"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Abolish' का अर्थ है <b>समाप्त करना</b>। Synonym 'Cancel' (<b>रद्द करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Adversity",
+"tag": "SSC CGL 11/09/2024 (Shift-I)",
+"opts": [
+"Pleasure",
+"Advantage",
+"Misforture",
+"Sucess"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Adversity' का अर्थ है <b>विपत्ति/आपदा</b>। Synonym 'Misfortune' (<b>दुर्भाग्य</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the underlined word. It takes time to adapt to a new environment.",
+"tag": "SSC CGL 19/09/2024 (Shift-II)",
+"opts": [
+"Apply",
+"Adjust",
+"Understand",
+"Control"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Adapt' का अर्थ है <b>अनुकूल बनाना</b>। Synonym 'Adjust' (<b>समायोजित करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Acquiesce",
+"tag": "SSC CGL 12/09/2024 (Shift-I)",
+"opts": [
+"Desist",
+"Cease",
+"Thwart",
+"Concur"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Acquiesce' का अर्थ है <b>अनिच्छा से सहमत होना</b>। Synonym 'Concur' (<b>सहमत होना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym for the underlined word in the given sentence. His ambition in life is to become a happy and satisfied man.",
+"tag": "SSC CGL 12/09/2024 (Shift-I)",
+"opts": [
+"Apathy",
+"Satisfaction",
+"Eagerness",
+"Amend"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Ambition' का अर्थ है <b>महत्वाकांक्षा</b>। Synonym 'Eagerness' (<b>उत्सुकता</b>) है।</span>"
+},
+{
+"q": "ASSENT",
+"tag": "CDS 2014 (Shift-II) KVS PRT 28/02/2023 (Shift -II)",
+"opts": [
+"dispatch",
+"climb",
+"flavour",
+"agreement"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Assent' का अर्थ है <b>स्वीकृति</b>। Synonym 'Agreement' (<b>सहमति</b>) है।</span>"
+},
+{
+"q": "Select the word from the options which is similar in meaning to the bracketed word given in the sentence below. Well, you want an (argument), \"he added, \"come on then.\"",
+"tag": "SSC MTS 12/05/2023 (Shift-III)",
+"opts": [
+"enhancement",
+"capability",
+"explanation",
+"agreement"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Argument' का अर्थ है <b>तर्क/बहस</b>। Synonym 'Explanation' (<b>व्याख्या</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Ample",
+"tag": "SSC GD 23/01/2023 (Shift-IV)",
+"opts": [
+"Entertain",
+"Sample",
+"Temple",
+"Sufficient"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Ample' का अर्थ है <b>पर्याप्त</b>। Synonym 'Sufficient' (<b>प्रचुर</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Awkward",
+"tag": "SSC GD 12/01/2023 (Shift-II)",
+"opts": [
+"Dormant",
+"Asleep",
+"Clever",
+"Unskillful"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Awkward' का अर्थ है <b>भद्दा/अनाड़ी</b>। Synonym 'Unskillful' (<b>अकुशल</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Absorbed",
+"tag": "SSC CGL (Tier-I) 21/07/2023 (Shift-II)",
+"opts": [
+"Preoccupied",
+"Soaked",
+"Replaced",
+"Restored"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Absorbed' का अर्थ है <b>तल्लीन/सोखा हुआ</b>। Synonym 'Soaked' (<b>भीगा हुआ</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Announced",
+"tag": "SSC CGL (Tier-I) 24/07/2023 (Shift-III)",
+"opts": [
+"Secret",
+"Declared",
+"Hid",
+"Estrange"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Announced' का अर्थ है <b>घोषणा की गई</b>। Synonym 'Declared' (<b>घोषित</b>) है।</span>"
+},
+{
+"q": "Select the word that is the closest meaning (synonym) to the word given below. Attune",
+"tag": "SSC CHSL (Tier-I) 17/03/2023 (Shift-III)",
+"opts": [
+"Assimilate",
+"Skew",
+"Estrange",
+"Disrupt"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Attune' का अर्थ है <b>अनुकूल करना</b>। Synonym 'Assimilate' (<b>आत्मसात करना</b>) है।</span>"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below Antipathy",
+"tag": "KVS PRT 25/02/2023 (Shift-II) KVS PRT 20/02/2023 (Shift-II)",
+"opts": [
+"Affinity",
+"Rapport",
+"Antagonism",
+"Relish"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Antipathy' का अर्थ है <b>विरोध/घृणा</b>। Synonym 'Antagonism' (<b>विरोध</b>) है।</span>"
+},
+{
+"q": "ADORATION Choose the word similar in meaning to the one given above:",
+"tag": "KVS PRT 24-02-2023 (Shift-I)",
+"opts": [
+"Liking",
+"Worship",
+"Admiration",
+"Respect"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Adoration' का अर्थ है <b>आराधना</b>। Synonym 'Worship' (<b>पूजा</b>) है।</span>"
+},
+{
+"q": "ACCUMULATE Choose the word which is similar in meaning to the one given above.",
+"tag": "KVS PRT 21-Feb-2023 (Shift-I)",
+"opts": [
+"Accuse",
+"Predict",
+"Store",
+"Accord"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Accumulate' का अर्थ है <b>संग्रह करना</b>। Synonym 'Store' (<b>एकत्र करना</b>) है।</span>"
+},
+{
+"q": "Choose the word nearest in meaning to the given word. ABHORRENT",
+"tag": "KVS PRT 26-02-2023 (Shift-I)",
+"opts": [
+"stinking",
+"violent",
+"hateful",
+"jealous"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abhorrent' का अर्थ है <b>घृणित</b>। Synonym 'Hateful' (<b>घृणा योग्य</b>) है।</span>"
+},
+{
+"q": "Choose the word nearest in meaning to the given word. APPLAUD",
+"tag": "KVS PRT 25-02-2023 (Shift-I)",
+"opts": [
+"exaggerate",
+"criticise",
+"praise",
+"worship"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Applaud' का अर्थ है <b>तारीफ करना</b>। Synonym 'Praise' (<b>प्रशंसा करना</b>) है।</span>"
+},
+{
+"q": "The public watched in astonishment as he took a sudden jump from the bridge.",
+"tag": "UPSC NDA & NA 16/04/2023 (Shift-I)",
+"opts": [
+"anticipation",
+"hurriedly",
+"wonderment",
+"calmness"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Astonishment' का अर्थ है <b>आश्चर्य</b>। Synonym 'Wonderment' (<b>विस्मय</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. August",
+"tag": "SSC MTS-14/07/2022 Shift-III",
+"opts": [
+"Imminent",
+"Eminent",
+"Permanent",
+"Illicit"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'August (adj.)' का अर्थ है <b>प्रतिष्ठित/गरिमामय</b>। Synonym 'Eminent' (<b>विख्यात</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Avert",
+"tag": "SSC CGL (Tier-I) 11/04/2022 Shift-I",
+"opts": [
+"Prevent",
+"Confront",
+"Face",
+"Permit"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Avert' का अर्थ है <b>रोक देना</b>। Synonym 'Prevent' (<b>बाधा डालना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Arid",
+"tag": "SSC CGL (Tier-I) 19/04/2022 Shift-III Synonyms 7",
+"opts": [
+"Fertile",
+"Lively",
+"Dry",
+"Damp"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Arid' का अर्थ है <b>शुष्क/बंजर</b>। Synonym 'Dry' (<b>सूखा</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Abandon",
+"tag": "SSC CGL (Tier-II) 08/08/2022 Shift-II SSC CGL (Tier-I) 19/04/2022 Shift-II",
+"opts": [
+"Retain",
+"Possess",
+"Quit",
+"Rescue"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abandon' का अर्थ है <b>त्याग करना</b>। Synonym 'Quit' (<b>छोड़ देना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Audacity",
+"tag": "SSC CGL (Tier-I) 21/04/2022 Shift-III SSC CGL (Tier-I) 25/07/2023 Shift-IV",
+"opts": [
+"Kindness",
+"Daring",
+"Caution",
+"Meekness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Audacity' का अर्थ है <b>साहस</b>। Synonym 'Daring' (<b>साहसी</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Arraign",
+"tag": "SSC CHSL 31.05.2022 Shift-III",
+"opts": [
+"Prosecute",
+"Arrive",
+"Persecute",
+"Arrange"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Arraign' का अर्थ है <b>आरोप लगाना</b>। Synonym 'Prosecute' (<b>अभियोग चलाना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Admire",
+"tag": "SSC CHSL 31.05.2022 Shift-III",
+"opts": [
+"Neglect",
+"Appreciate",
+"Forget",
+"Admonish"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Admire' का अर्थ है <b>प्रशंसा करना</b>। Synonym 'Appreciate' (<b>सराहना करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate meaning of the underlined word in the given sentence. Police fear that terrorists may try to assassinate the president during his appearance at the summit.",
+"tag": "SSC CHSL 27.05.2022 Shift-II",
+"opts": [
+"Rebuke",
+"Deceive",
+"Murder",
+"Distress"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Assassinate' का अर्थ है <b>हत्या करना</b>। Synonym 'Murder' (<b>हत्या</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the underlined word in the given sentence. Simon had always been an ardent follower.",
+"tag": "DSSSB PRT-20/03/2022 Shift-I DSSSB TGT (Math) Exam-22/09/2018 Shift-I SSC MTS-18/07/2022 Shift-I DSSSB PRT-20/03/2022 Shift DSSSBTGT (math)Exam 22/09/2018 Shift-I",
+"opts": [
+"averse",
+"objective",
+"casual",
+"passionate"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Ardent' का अर्थ है <b>उत्साही</b>। Synonym 'Passionate' (<b>जोशीला</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Acute",
+"tag": "SSC MTS-18/07/2022 Shift-I",
+"opts": [
+"Obtuse",
+"Faithful",
+"Chronic",
+"Dire"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Acute' का अर्थ है <b>तीव्र</b>। Synonym 'Dire' (<b>भयानक</b>) है।</span>"
+},
+{
+"q": "Choose the word that means the same as the given word. Abuse",
+"tag": "DSSSB PRT 23/03/2022 (Shift-III)",
+"opts": [
+"Ablution",
+"Omen",
+"Oppression",
+"Aspersion"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Abuse' का अर्थ है <b>अपशब्द/गाली</b>। Synonym 'Aspersion' (<b>कलंक/आक्षेप</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonyms of the given word. ` Accumulate",
+"tag": "ACIO (Tier-II) 18/02/2021 (Shift-III)",
+"opts": [
+"Dissemble",
+"Gather",
+"Scatter",
+"Distribute"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Accumulate' का अर्थ है <b>संग्रह करना</b>। Synonym 'Gather' (<b>इकट्ठा करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Abode",
+"tag": "SSC CHSL (Tier-I) –19/04/2021 (Shift-I)",
+"opts": [
+"Annex",
+"Habituation",
+"Dwelling",
+"Aboard"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abode' का अर्थ है <b>निवास</b>। Synonym 'Dwelling' (<b>निवास स्थान</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Absolve",
+"tag": "SSC CGL (Tier-I) –23/08/2021 (Shift-I)",
+"opts": [
+"Condemn",
+"Attack",
+"Pardon",
+"Accuse"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Absolve' का अर्थ है <b>दोषमुक्त करना</b>। Synonym 'Pardon' (<b>क्षमा करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Abolish",
+"tag": "SSC CGL (Tier-I) –18/08/2021 (Shift-I)",
+"opts": [
+"Introduce",
+"Eliminate",
+"Continue",
+"Establish"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Abolish' का अर्थ है <b>समाप्त करना</b>। Synonym 'Eliminate' (<b>खत्म करना</b>) है।</span>"
+},
+{
+"q": "His aversion is known to all.",
+"tag": "UPSC NDA & NA 05/09/2021 (Shift-II)",
+"opts": [
+"hospitality",
+"hostility",
+"humility",
+"humbleness"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Aversion' का अर्थ है <b>घृणा/विरोध</b>। Synonym 'Hostility' (<b>शत्रुता</b>) है।</span>"
+},
+{
+"q": "Arrogance is a hallmark of his nature.",
+"tag": "UPSC NDA & NA 18/04/2021 (Shift-I)",
+"opts": [
+"concern",
+"unpretentiousness",
+"conceit",
+"simplicity"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Arrogance' का अर्थ है <b>अहंकार</b>। Synonym 'Conceit' (<b>घमंड</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Aggressive",
+"tag": "ACIO (Tier-II) 18/02/2021 (Shift-I)",
+"opts": [
+"Atmospheric",
+"Hostile",
+"Distinct",
+"Vaporous"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Aggressive' का अर्थ है <b>आक्रामक</b>। Synonym 'Hostile' (<b>शत्रुतापूर्ण</b>) है।</span>"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. AMORPHOUS",
+"tag": "DSSSB Junior Assistant 21/8/2021 Shift-I DSSS B Junior Assistant 21/0/2021 (shift - I)",
+"opts": [
+"DISTINCTIVE",
+"LIVELY",
+"NEBULOUS",
+"LONELY"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Amorphous' का अर्थ है <b>अनिश्चित आकार वाला</b>। Synonym 'Nebulous' (<b>अस्पष्ट</b>) है।</span>"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. ACUMEN",
+"tag": "DSSSB Junior Assistant 21/8/2021 Shift-II DSSSB Junior Assistant 21/8/2021 (shift - I)",
+"opts": [
+"IGNORANCE",
+"ELICITATION",
+"MISINTERPRETATION",
+"INGENUITY"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Acumen' का अर्थ है <b>कुशाग्रता/सूझबूझ</b>। Synonym 'Ingenuity' (<b>चातुर्य</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ABSOLUTE",
+"tag": "SSC CHSL (Tier-I) –09/08/2021 (Shift-I)",
+"opts": [
+"limited",
+"complete",
+"partial",
+"conditional"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Absolute' का अर्थ है <b>पूर्ण</b>। Synonym 'Complete' (<b>पूर्ण</b>) है।</span>"
+},
+{
+"q": "The cause of the accident is yet to be ascertained, but police officials suspect the driver of the vehicle allegedly fell asleep.",
+"tag": "CDS 2020 (Shift-I)",
+"opts": [
+"Determined",
+"Curtained",
+"Thought of",
+"Being known"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Ascertained' का अर्थ है <b>पता लगाना/निर्धारित करना</b>। Synonym 'Determined' (<b>निर्धारित किया गया</b>) है।</span>"
+},
+{
+"q": "The leader said, \"I am aghast with the developments so far. I will take time to understand this.\"",
+"tag": "CDS 2020 (Shift-I)",
+"opts": [
+"Satisfied",
+"Sad",
+"Amused",
+"Horrified"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Aghast' का अर्थ है <b>स्तब्ध/भयभीत</b>। Synonym 'Horrified' (<b>भयभीत</b>) है।</span>"
+},
+{
+"q": "The synonym of \"Advise\" is;",
+"tag": "",
+"opts": [
+"Council",
+"Counsel",
+"Practice",
+"Proposal Rajasthan High Court Civil Judge 2018-19"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Advise' का अर्थ है <b>सलाह देना</b>। Synonym 'Counsel' (<b>परामर्श</b>) है।</span>"
+},
+{
+"q": "Choose the word nearest in meaning to the given word. ASSENT",
+"tag": "KVS PRT 28-02-2023 (Shift-II) UPSC NDA & NA 21/04/2019 (Shift-I)",
+"opts": [
+"internalise",
+"adopt",
+"welcome",
+"agree"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Assent' का अर्थ है <b>सहमत होना</b>। Synonym 'Agree' (<b>सहमत होना</b>) है।</span>"
+},
+{
+"q": "This is akin to a contractual relationship that places obligations on the entities entrusted with data.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Removed",
+"Narrow",
+"Similar",
+"Unparallel"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Akin' का अर्थ है <b>समान</b>। Synonym 'Similar' (<b>समान</b>) है।</span>"
+},
+{
+"q": "Many communication problems can be attributed directly to misunderstandings and inaccuracies.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Disapproved",
+"Unofficial",
+"Ascribed",
+"Tribute"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Attributed' का अर्थ है <b>जिम्मेदार ठहराया गया</b>। Synonym 'Ascribed' (<b>आरोपित</b>) है।</span>"
+},
+{
+"q": "The exemptions granted to State institutions for acquiring informed consent from processing personal data in many cases appear to be too blanket.",
+"tag": "CDS 2019 (Shift-II)",
+"opts": [
+"Obtain",
+"Lose",
+"Giving",
+"Thinking"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Acquiring' का अर्थ है <b>प्राप्त करना</b>। Synonym 'Obtain' (<b>प्राप्त करना</b>) है।</span>"
+},
+{
+"q": "They will not admit children under fourteen.",
+"tag": "CDS 2018 (Shift-I)",
+"opts": [
+"avow",
+"receive",
+"accept",
+"concede"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Admit' का अर्थ है <b>स्वीकार करना</b>। Synonym 'Accept' (<b>स्वीकार करना</b>) है।</span>"
+},
+{
+"q": "He was not ready with his annual accounts.",
+"tag": "CDS 2015 (Shift-II) Synonyms 8",
+"opts": [
+"yearly",
+"important",
+"monthly",
+"permanent"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Annual' का अर्थ है <b>वार्षिक</b>। Synonym 'Yearly' (<b>वार्षिक</b>) है।</span>"
+},
+{
+"q": "ASPIRE",
+"tag": "CDS 2014 (Shift-II)",
+"opts": [
+"breathe",
+"stairs",
+"hope for",
+"thom"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Aspire' का अर्थ है <b>आकांक्षा रखना</b>। Synonym 'Hope for' (<b>आशा करना</b>) है।</span>"
+},
+{
+"q": "I never believed that it was the authentic signature of the Prime Minister.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"hand-written",
+"genuine",
+"proper",
+"authoritative"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Authentic' का अर्थ है <b>असली/प्रामाणिक</b>। Synonym 'Genuine' (<b>असली</b>) है।</span>"
+},
+{
+"q": "AMIABLE",
+"tag": "CDS 2011 (Shift-II) DSSSB TGT (Hindi) 28/08/2018 (Shift -II)",
+"opts": [
+"Popular",
+"Generous",
+"Friendly",
+"Reasonable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Amiable' का अर्थ है <b>मिलनसार</b>। Synonym 'Friendly' (<b>मित्रवत</b>) है।</span>"
+},
+{
+"q": "APPRISE",
+"tag": "CDS 2011 (Shift-II)",
+"opts": [
+"Inform",
+"Estimate",
+"Admire",
+"Require"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Apprise' का अर्थ है <b>सूचित करना</b>। Synonym 'Inform' (<b>सूचित करना</b>) है।</span>"
+},
+{
+"q": "APPRAISAL",
+"tag": "CDS 2010 (Shift-I) 81 YCT",
+"opts": [
+"Estimation",
+"Enlightenment",
+"Appropriation",
+"Application"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Appraisal' का अर्थ है <b>मूल्यांकन</b>। Synonym 'Estimation' (<b>आकलन</b>) है।</span>"
+},
+{
+"q": "ABJURE",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Relinquish",
+"Recant",
+"Retract",
+"Renounce"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Abjure' का अर्थ है <b>शपथपूर्वक त्याग करना</b>। Synonym 'Relinquish' (<b>त्याग देना</b>) है।</span>"
+},
+{
+"q": "ABSTEMIOUS",
+"tag": "CDS 2010 (Shift-I)",
+"opts": [
+"Resistant",
+"Temperate",
+"Superstitions",
+"Careful"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Abstemious' का अर्थ है <b>खान-पान में संयमी</b>। Synonym 'Careful' (<b>सावधान/संयमी</b>) है।</span>"
+},
+{
+"q": "He is always anxious.",
+"tag": "UPSC NDA & NA 17/11/2019 (Shift-II)",
+"opts": [
+"worried",
+"dispassionate",
+"sluggish",
+"torpid"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Anxious' का अर्थ है <b>चिंतित</b>। Synonym 'Worried' (<b>चिंतित</b>) है।</span>"
+},
+{
+"q": "Abundant food was available for the soldiers in the mess.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I)",
+"opts": [
+"little",
+"plentiful",
+"delicious",
+"wholesome"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Abundant' का अर्थ है <b>प्रचुर</b>। Synonym 'Plentiful' (<b>भरपूर</b>) है।</span>"
+},
+{
+"q": "In India, it has become easy to attack cultural artefacts these days.",
+"tag": "UPSC NDA & NA 22/04/2018 (Shift-I) Synonyms 8",
+"opts": [
+"beckon",
+"assault",
+"belch",
+"appreciate"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Attack' का अर्थ है <b>हमला करना</b>। Synonym 'Assault' (<b>हमला</b>) है।</span>"
+},
+{
+"q": "He was fully alive to the need for making adjustments.",
+"tag": "UPSC NDA & NA 10/09/2017 (Shift-II)",
+"opts": [
+"concerned about",
+"worried about",
+"aware of",
+"indifferent about"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Alive to' का अर्थ है <b>जागरूक/सचेत</b>। Synonym 'Aware of' (<b>अवगत</b>) है।</span>"
+},
+{
+"q": "House rent in cities like Mumbai or Delhi has risen to astronomical figures beyond the reach of even high-salaried people.",
+"tag": "UPSC NDA & NA 18/09/2016 (Shift-II)",
+"opts": [
+"exorbitant",
+"commercial",
+"planetary",
+"illogical"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Astronomical' का अर्थ है <b>बहुत विशाल/अत्यधिक</b>। Synonym 'Exorbitant' (<b>अत्यधिक</b>) है।</span>"
+},
+{
+"q": "Appropriate technology holds the key to a nation\\'s development.",
+"tag": "UPSC NDA & NA 18/09/2016 (Shift-II)",
+"opts": [
+"Modern",
+"Suitable",
+"Effective",
+"Growing"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Appropriate' का अर्थ है <b>उपयुक्त</b>। Synonym 'Suitable' (<b>उपयुक्त</b>) है।</span>"
+},
+{
+"q": "We should always try to maintain and promote communal amity.",
+"tag": "UPSC NDA & NA 28/09/2014 (Shift-II)",
+"opts": [
+"bondage",
+"contention",
+"friendship",
+"understanding"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Amity' का अर्थ है <b>मित्रता</b>। Synonym 'Friendship' (<b>मित्रता</b>) है।</span>"
+},
+{
+"q": "The landscape changed ABRUPTLY after the snowfall.",
+"tag": "UPSC NDA & NA 11/08/2013 (Shift-II)",
+"opts": [
+"Suddenly",
+"Sharply",
+"Favourably",
+"Slightly"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Abruptly' का अर्थ है <b>अचानक</b>। Synonym 'Suddenly' (<b>अचानक</b>) है।</span>"
+},
+{
+"q": "Our age is preeminently an AGE of science.",
+"tag": "UPSC NDA & NA 14/04/2013 (Shift-I)",
+"opts": [
+"Era",
+"Date",
+"Generation",
+"Moment"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Age (era)' का अर्थ है <b>युग</b>। Synonym 'Era' (<b>युग</b>) है।</span>"
+},
+{
+"q": "We should not allow ADVERSITY to discourage us.",
+"tag": "UPSC NDA & NA 19/08/2012 (Shift-II)",
+"opts": [
+"poverty",
+"darkness",
+"time of trouble",
+"unfriendly criticism"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Adversity' का अर्थ है <b>विपत्ति</b>। Synonym 'Time of trouble' (<b>मुश्किल समय</b>) है।</span>"
+},
+{
+"q": "Sin is the sole calamity that a wise man should APPREHEND.",
+"tag": "UPSC NDA & NA 15/04/2012 (Shift-I)",
+"opts": [
+"Give up",
+"Discourage",
+"Comprehend",
+"Fear"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Apprehend' का अर्थ है <b>आशंका करना/डरना</b>। Synonym 'Fear' (<b>डर</b>) है।</span>"
+},
+{
+"q": "The boy said that pain had ABATED.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I)",
+"opts": [
+"reduced",
+"vanished",
+"increased",
+"stabilized"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Abated' का अर्थ है <b>कम हुआ</b>। Synonym 'Reduced' (<b>कम हुआ</b>) है।</span>"
+},
+{
+"q": "His ALLEGIANCE to the party was suspect from the very beginning.",
+"tag": "UPSC NDA & NA 17/04/2011 (Shift-I)",
+"opts": [
+"servility",
+"obedience",
+"loyalty",
+"passivity"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Allegiance' का अर्थ है <b>निष्ठा</b>। Synonym 'Loyalty' (<b>वफादारी</b>) है।</span>"
+},
+{
+"q": "He fell into an ABYSS of despair.",
+"tag": "UPSC NDA & NA 18/04/2010 (Shift-I)",
+"opts": [
+"Well",
+"Deep pit",
+"Sea",
+"Hollow"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abyss' का अर्थ है <b>अगाध गर्त/रसातल</b>। Synonym 'Sea' (<b>सागर (उत्तर कुंजी अनुसार)</b>) है।</span>"
+},
+{
+"q": "He had the AUDACITY to interrupt the Governor of the State while the latter was addressing gathering of academicians.",
+"tag": "UPSC NDA & NA 18/04/2010 (Shift-I)",
+"opts": [
+"Courage",
+"Authority",
+"Foolishness",
+"Arrogance"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Audacity' का अर्थ है <b>साहस</b>। Synonym 'Courage' (<b>साहस</b>) है।</span>"
+},
+{
+"q": "ANALOGOUS",
+"tag": "UPSC NDA & NA 30/08/2009 (Shift-II)",
+"opts": [
+"Unsuitable",
+"Uncritical",
+"Similar",
+"Disproportionate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Analogous' का अर्थ है <b>समरूप</b>। Synonym 'Similar' (<b>समान</b>) है।</span>"
+},
+{
+"q": "AVARICIOUS",
+"tag": "UPSC NDA & NA 19/04/2009 (Shift-I)",
+"opts": [
+"Greedy",
+"Jealous",
+"Angry",
+"Wicked"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Avaricious' का अर्थ है <b>लालची</b>। Synonym 'Greedy' (<b>लालची</b>) है।</span>"
+},
+{
+"q": "ABSURD",
+"tag": "UPSC NDA & NA 19/04/2009 (Shift-I)",
+"opts": [
+"Senseless",
+"Clean",
+"Abrupt",
+"Candid"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Absurd' का अर्थ है <b>बेतुका</b>। Synonym 'Senseless' (<b>निरर्थक</b>) है।</span>"
+},
+{
+"q": "ACCESS",
+"tag": "DSSSB- heâeÙej Dee@hejsšj hejer#ee (31-08-2014)",
+"opts": [
+"Angle",
+"Reach",
+"Debate",
+"Break"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Access' का अर्थ है <b>पहुंच</b>। Synonym 'Reach' (<b>पहुंचना</b>) है।</span>"
+},
+{
+"q": "ADEPT",
+"tag": "DSSSB- mšsvees«eeheâj hejer#ee (27-07-2014)",
+"opts": [
+"Expert",
+"Applaud",
+"Approve",
+"Sharp"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Adept' का अर्थ है <b>निपुण</b>। Synonym 'Expert' (<b>विशेषज्ञ</b>) है।</span>"
+},
+{
+"q": "Abortive",
+"tag": "DSSSB- «es[- III hejer#ee (24-09-2017)",
+"opts": [
+"Foolish",
+"Illegal",
+"Futile",
+"Furtive"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abortive' का अर्थ है <b>असफल</b>। Synonym 'Futile' (<b>व्यर्थ</b>) है।</span>"
+},
+{
+"q": "Ameliorate means",
+"tag": "DSSSB- mšsvees«eeheâj «es[-III hejer#ee (11-06-2017)",
+"opts": [
+"to appease",
+"to impress",
+"to deny",
+"to improve"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Ameliorate' का अर्थ है <b>सुधारना</b>। Synonym 'To improve' (<b>सुधारना</b>) है।</span>"
+},
+{
+"q": "Acquitted",
+"tag": "DSSSB - «es[- II (DASS) Tier-II hejer#ee (29-03-2015) Synonyms 8",
+"opts": [
+"Sentenced",
+"Acquired",
+"Summoned",
+"Free"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Acquitted' का अर्थ है <b>बरी होना</b>। Synonym 'Free' (<b>मुक्त</b>) है।</span>"
+},
+{
+"q": "Amicable",
+"tag": "DSSSB - ØeMeemeefvekeâ DeefOekeâejer hejer#ee (31-05-2015)",
+"opts": [
+"Friendly",
+"Happy",
+"Perfect",
+"Joyous"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Amicable' का अर्थ है <b>मैत्रीपूर्ण</b>। Synonym 'Friendly' (<b>मित्रवत</b>) है।</span>"
+},
+{
+"q": "AUDACIOUS",
+"tag": "DSSSB TGT (Computer Science) Exam 21/05/2017 DSSSB TGT-PGT (Computer Science) Exam 21/06/2017",
+"opts": [
+"Cowardly",
+"Excited",
+"Brave",
+"Soldier"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Audacious' का अर्थ है <b>साहसी</b>। Synonym 'Brave' (<b>बहादुर</b>) है।</span>"
+},
+{
+"q": "Choose the word that means the same as the given word. Alien",
+"tag": "DSSSB LDC Exam 17-08-2019 Shift-III",
+"opts": [
+"Foreigner",
+"Known",
+"Native",
+"Companion"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Alien' का अर्थ है <b>विदेशी</b>। Synonym 'Foreigner' (<b>विदेशी</b>) है।</span>"
+},
+{
+"q": "Select the word that is closest in meaning SYNONYM to the word given below. ABATE",
+"tag": "DSSSB LDC Exam. 25-08-2019 Shift-I NDA & NA 17-04-2011 (Shift–I)",
+"opts": [
+"Increase",
+"Flexible",
+"Decrease",
+"Approve"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abate' का अर्थ है <b>कम होना</b>। Synonym 'Decrease' (<b>घटना</b>) है।</span>"
+},
+{
+"q": "Choose the word that means the same as the given word. Abnormal",
+"tag": "DSSSB LDC Exam 18-08-2019 Shift-I 84 YCT",
+"opts": [
+"Typical",
+"Normal",
+"Strange",
+"Conforming"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abnormal' का अर्थ है <b>असामान्य</b>। Synonym 'Strange' (<b>अजीब</b>) है।</span>"
+},
+{
+"q": "Choose the word that means the same as the given word. Appetzing",
+"tag": "DSSSB LDC Exam 18-08-2019 Shift-I",
+"opts": [
+"Pleasing",
+"Tedious",
+"Melting",
+"Repulsive"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Appetizing' का अर्थ है <b>स्वादिष्ट/भूख बढ़ाने वाला</b>। Synonym 'Pleasing' (<b>सुखद</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. APPLAUSE",
+"tag": "SSC CPO-SI (Tier-II) 27/09/2019 (3 pm - 5 pm)",
+"opts": [
+"approval",
+"condemnation",
+"attack",
+"blame"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Applause' का अर्थ है <b>प्रशंसा/तालियाँ</b>। Synonym 'Approval' (<b>अनुमोदन</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word : ABUNDANT",
+"tag": "SSC Stenographer Grade C&D –05/02/2019 (3:5pm)",
+"opts": [
+"plentiful",
+"available",
+"necessary",
+"latest"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Abundant' का अर्थ है <b>प्रचुर</b>। Synonym 'Plentiful' (<b>भरपूर</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AUSPICIOUS",
+"tag": "SSC CPO-SI – 25/11/2020 (Shift-II)",
+"opts": [
+"suspicious",
+"playful",
+"favourable",
+"hapless"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Auspicious' का अर्थ है <b>शुभ</b>। Synonym 'Favourable' (<b>अनुकूल</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ABSURD Synonyms 8",
+"tag": "SSC CPO-SI – 23/11/2020 (Shift-II) UPSC NDA & NA 19/04/2019 (Shift-I)",
+"opts": [
+"meaningful",
+"ridiculous",
+"important",
+"rational"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Absurd' का अर्थ है <b>बेतुका</b>। Synonym 'Ridiculous' (<b>हास्यास्पद</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Accurate",
+"tag": "SSC CPO-SI – 23/11/2020 (Shift-I) SSC CHSL (Tier-I)– 11/07/2019 (Shift-I)",
+"opts": [
+"sincere",
+"complete",
+"correct",
+"appropriate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Accurate' का अर्थ है <b>सटीक</b>। Synonym 'Correct' (<b>सही</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AUSTERE",
+"tag": "SSC CGL (Tier-I) – 19/06/2019 (Shift-III)",
+"opts": [
+"careless",
+"strict",
+"generous",
+"unwilling"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Austere' का अर्थ है <b>कठोर/सादगीपूर्ण</b>। Synonym 'Strict' (<b>सख्त</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ATTRIBUTE",
+"tag": "SSC CGL (Tier-I) – 13/06/2019 (Shift-III)",
+"opts": [
+"respect",
+"speech",
+"praise",
+"quality"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Attribute' का अर्थ है <b>गुण</b>। Synonym 'Quality' (<b>गुण</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ASSIST",
+"tag": "SSC CGL (Tier-I) – 12/06/2019 (Shift-II)",
+"opts": [
+"Help",
+"Mend",
+"Change",
+"Create"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Assist' का अर्थ है <b>सहायता करना</b>। Synonym 'Help' (<b>मदद</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADEPT",
+"tag": "SSC CGL (Tier-I) – 12/06/2019 (Shift-III) DSSSB mšsvees«eeHeâj (27/07/2014) 85 YCT",
+"opts": [
+"alone",
+"skilled",
+"unknown",
+"kind-hearted"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Adept' का अर्थ है <b>निपुण</b>। Synonym 'Skilled' (<b>कुशल</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. APPARENT",
+"tag": "SSC CPO-SI – 09/12/2019 (Shift-II)",
+"opts": [
+"dubious",
+"obvious",
+"obscure",
+"doubtful"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Apparent' का अर्थ है <b>स्पष्ट</b>। Synonym 'Obvious' (<b>स्पष्ट</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADEQUATE",
+"tag": "SSC CPO-SI – 09/12/2019 (Shift-I)",
+"opts": [
+"meagre",
+"sufficient",
+"inept",
+"unfit"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Adequate' का अर्थ है <b>पर्याप्त</b>। Synonym 'Sufficient' (<b>पर्याप्त</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ALOOF",
+"tag": "SSC CPO-SI – 12/12/2019 (Shift-II)",
+"opts": [
+"protected",
+"steady",
+"detached",
+"rocky"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Aloof' का अर्थ है <b>अलग-थलग</b>। Synonym 'Detached' (<b>विरक्त</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ANOMALOUS",
+"tag": "SSC CHSL (Tier-I) –09/07/2019 (Shift-III)",
+"opts": [
+"unhealthy",
+"indirect",
+"peculiar",
+"common"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Anomalous' का अर्थ है <b>असामान्य</b>। Synonym 'Peculiar' (<b>विचित्र</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Avenge",
+"tag": "SSC CHSL (Tier-I) –04/07/2019 (Shift-I)",
+"opts": [
+"Punish",
+"Cheer",
+"Encourage",
+"Comfort"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Avenge' का अर्थ है <b>बदला लेना</b>। Synonym 'Punish' (<b>दंड देना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADHERE",
+"tag": "SSC CHSL (Tier-I) –02/07/2019 (Shift-II)",
+"opts": [
+"comply",
+"ignore",
+"release",
+"detach"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Adhere' का अर्थ है <b>पालन करना</b>। Synonym 'Comply' (<b>अनुपालन करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADVERSARY",
+"tag": "SSC CHSL (Tier-I) –01/07/2019 (Shift-III)",
+"opts": [
+"helper",
+"assistant",
+"rival",
+"supporter"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Adversary' का अर्थ है <b>विरोधी</b>। Synonym 'Rival' (<b>प्रतिद्वंद्वी</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ANODYNE",
+"tag": "SSC CHSL (Tier-I) 18/03/2020 (Shift-II)",
+"opts": [
+"harmful",
+"Benign",
+"Gigantic",
+"Hostile"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Anodyne' का अर्थ है <b>हानिरहित/पीड़ाहर</b>। Synonym 'Benign' (<b>सौम्य</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Assemble",
+"tag": "SSC CHSL (Tier-I) 26/10/2020 (Shift-I)",
+"opts": [
+"Disband",
+"Detach",
+"Address",
+"Amass"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Assemble' का अर्थ है <b>इकट्ठा करना</b>। Synonym 'Amass' (<b>जमा करना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AGILE",
+"tag": "SSC CHSL (Tier-I) 12/10/2020 (Shift-II)",
+"opts": [
+"Nimble",
+"Visible",
+"Docile",
+"Guile"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Agile' का अर्थ है <b>फुर्तीला</b>। Synonym 'Nimble' (<b>फुर्तीला</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word: ALTRUIST",
+"tag": "SSC CHSL (Tier-I) 21/10/2020 (Shift-III)",
+"opts": [
+"Individualist",
+"Philanthropist",
+"Nutritionist",
+"Impressionist"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Altruist' का अर्थ है <b>परोपकारी</b>। Synonym 'Philanthropist' (<b>दानवीर</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AFFLUENT",
+"tag": "SSC CHSL (Tier-I) 19/10/2020 (Shift-II)",
+"opts": [
+"Destitute",
+"Proficient",
+"Wealthy",
+"Impoverished"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Affluent' का अर्थ है <b>समृद्ध</b>। Synonym 'Wealthy' (<b>धनी</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AURA",
+"tag": "SSC CHSL (Tier-I) 14/10/2020 (Shift-I)",
+"opts": [
+"Colour",
+"Shriek",
+"Halo",
+"Noise"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Aura' का अर्थ है <b>आभा</b>। Synonym 'Halo' (<b>प्रभामंडल</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Assertion",
+"tag": "SSC CHSL (Tier-I) 12/10/2020 (Shift-I)",
+"opts": [
+"Continuation",
+"Rejection",
+"Discussion",
+"Declaration"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Assertion' का अर्थ है <b>दावा</b>। Synonym 'Declaration' (<b>घोषणा</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ACCRUE",
+"tag": "SSC CHSL (Tier-I) 20/10/2020 (Shift-II)",
+"opts": [
+"Spread",
+"Variety",
+"Collect",
+"Range"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Accrue' का अर्थ है <b>संचित होना</b>। Synonym 'Collect' (<b>एकत्र होना</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADJUSTMENT",
+"tag": "SSC CHSL (Tier-I) 19/03/2020 (Shift-I) Synonyms 8",
+"opts": [
+"Cooperating",
+"Balancing",
+"Compromising",
+"Coordinating"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Adjustment' का अर्थ है <b>समायोजन</b>। Synonym 'Balancing' (<b>संतुलन</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ALLURING",
+"tag": "SSC CHSL (Tier-I) 17/03/2020 (Shift-I)",
+"opts": [
+"Deceitful",
+"Distracting",
+"Attractive",
+"Cheating"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Alluring' का अर्थ है <b>आकर्षक</b>। Synonym 'Attractive' (<b>आकर्षक</b>) है।</span>"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Abrupt",
+"tag": "SSC MTS 9-10-2017 (Shift-II)",
+"opts": [
+"Deliberate",
+"Gradual",
+"Sudden",
+"Regular"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Abrupt' का अर्थ है <b>अचानक</b>। Synonym 'Sudden' (<b>अचानक</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ANXIOUS",
+"tag": "SSC MTS – 22/08/2019 (Shift-II)",
+"opts": [
+"Elegant",
+"Determined",
+"Nervous",
+"Bored"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Anxious' का अर्थ है <b>चिंतित</b>। Synonym 'Nervous' (<b>घबराया हुआ</b>) है।</span>"
+},
+{
+"q": "Select the synonym of the given word. Aroma",
+"tag": "SSC MTS – 09/08/2019 (Shift-I)",
+"opts": [
+"Sneeze",
+"Stench",
+"Stink",
+"Scent"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Aroma' का अर्थ है <b>सुगंध</b>। Synonym 'Scent' (<b>खुशबू</b>) है।</span>"
+},
+{
+"q": "Select the synonym of the given word. Awkward",
+"tag": "SSC MTS–08/08/2019 (Shift-III)",
+"opts": [
+"Likable",
+"Clumsy",
+"Worthy",
+"Scared"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Awkward' का अर्थ है <b>भद्दा</b>। Synonym 'Clumsy' (<b>अनाड़ी</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Agile",
+"tag": "SSC MTS – 07/08/2019 (Shift-I) SSS GD –14/02/2019 Shift- II",
+"opts": [
+"Dull",
+"Stiff",
+"Quick",
+"Rigid"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Agile' का अर्थ है <b>फुर्तीला</b>। Synonym 'Quick' (<b>तेज़</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Accountable",
+"tag": "SSC MTS – 05/08/2019 (Shift-II)",
+"opts": [
+"Blameless",
+"Slack",
+"Unreliable",
+"Answerable"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Accountable' का अर्थ है <b>जवाबदेह</b>। Synonym 'Answerable' (<b>जवाबदेह</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Artful",
+"tag": "SSC MTS – 20/08/2019 (Shift-III)",
+"opts": [
+"Artistic",
+"Naive",
+"Crafty",
+"Creative"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Artful' का अर्थ है <b>चालाक</b>। Synonym 'Crafty' (<b>धूर्त</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ABSOLVED",
+"tag": "SSC MTS – 19/08/2019 (Shift-II)",
+"opts": [
+"scolded",
+"Pardoned",
+"Punished",
+"Boycotted"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Absolved' का अर्थ है <b>दोषमुक्त</b>। Synonym 'Pardoned' (<b>क्षमा किया गया</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ANTHOLOGY",
+"tag": "SSC MTS – 19/08/2019 (Shift-II)",
+"opts": [
+"Inheritance",
+"Collection",
+"Legacy",
+"Currency"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Anthology' का अर्थ है <b>संकलन</b>। Synonym 'Collection' (<b>संग्रह</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ADVANTAGEOUS",
+"tag": "SSC MTS – 19/08/2019 (Shift-I)",
+"opts": [
+"Unlucky",
+"Adverse",
+"Favorable",
+"Crucial"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Advantageous' का अर्थ है <b>लाभदायक</b>। Synonym 'Favorable' (<b>अनुकूल</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ABANDONED",
+"tag": "SSC MTS – 19/08/2019 (Shift-I)",
+"opts": [
+"Continued",
+"Adopted",
+"Initiated",
+"Deserted"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Abandoned' का अर्थ है <b>त्यागा हुआ</b>। Synonym 'Deserted' (<b>परित्यक्त</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. AFFLUENCE",
+"tag": "SSC MTS – 16/08/2019 (Shift-I)",
+"opts": [
+"Hardship",
+"Poverty",
+"Wealth",
+"Bankruptcy"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Affluence' का अर्थ है <b>समृद्धि</b>। Synonym 'Wealth' (<b>धन-संपत्ति</b>) है।</span>"
+},
+{
+"q": "Select the most appropriate synonym of the given word. ACCLAIM",
+"tag": "SSC MTS – 14/08/2019 (Shift-II)",
+"opts": [
+"Censure",
+"Praise",
+"Blame",
+"Criticism"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Acclaim' का अर्थ है <b>प्रशंसा</b>। Synonym 'Praise' (<b>प्रशंसा</b>) है।</span>"
+},
+{
+"q": "Select the synonym of the given word. APPARENT",
+"tag": "SSC GD – 11/02/2019 (Shift-II) SSC MTS – 09/08/2019 (Shift-II)",
+"opts": [
+"Considerable",
+"Doubtful",
+"Obvious",
+"Questionable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Apparent' का अर्थ है <b>स्पष्ट</b>। Synonym 'Obvious' (<b>स्पष्ट</b>) है।</span>"
+},
+{
+"q": "Select the synonym of the given word. ADORN",
+"tag": "SSC GD – 02/03/2019 (Shift-II)",
+"opts": [
+"create",
+"produce",
+"generate",
+"decorate"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Adorn' का अर्थ है <b>सजाना</b>। Synonym 'Decorate' (<b>सजाना</b>) है।</span>"
+}
+];
+
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

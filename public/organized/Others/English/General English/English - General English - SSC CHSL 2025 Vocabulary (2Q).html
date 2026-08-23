@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YATRI Mock Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf3e7;
+    --paper-card:#fffdf8;
+    --ink:#2c2416;
+    --ink-soft:#6b5d47;
+    --border:#e4d5bd;
+    --accent:#8a5a2b;
+    --accent-dark:#6e4720;
+    --accent-light:#f1e2c8;
+    --green:#2f7a45;
+    --green-bg:#e6f3e8;
+    --red:#b3402f;
+    --red-bg:#fbe9e5;
+    --grey:#9c9182;
+    --grey-bg:#efe9dc;
+    --shadow: 0 4px 14px rgba(80,60,20,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;}
+  .hindi{font-family:'Noto Sans Devanagari','Inter',sans-serif;}
+  button{font-family:inherit;cursor:pointer;}
+
+  /* ---------- HEADER (start screen only) ---------- */
+  #siteHeader{
+    text-align:center;
+    padding:28px 16px 18px;
+  }
+  .eyebrow{
+    font-size:0.78rem;
+    letter-spacing:2px;
+    font-weight:600;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  #siteHeader h1{
+    font-size:2.1rem;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+  .tg-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#229ED9;
+    color:#fff;
+    border:none;
+    padding:10px 22px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:0.92rem;
+    text-decoration:none;
+    box-shadow:0 3px 10px rgba(34,158,217,0.3);
+  }
+  .topic-pill{
+    display:inline-block;
+    margin-top:16px;
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    padding:7px 18px;
+    border-radius:999px;
+    font-size:0.85rem;
+    font-weight:600;
+  }
+
+  /* ---------- START SCREEN ---------- */
+  #startScreen{
+    max-width:480px;
+    margin:10px auto 40px;
+    padding:0 20px;
+    text-align:center;
+  }
+  #startScreen h2{
+    font-size:1.5rem;
+    margin-bottom:22px;
+    color:var(--ink);
+  }
+  .info-boxes{
+    display:flex;
+    gap:14px;
+    margin-bottom:26px;
+  }
+  .info-box{
+    flex:1;
+    background:var(--paper-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px 10px;
+    box-shadow:var(--shadow);
+  }
+  .info-box .num{
+    font-family:'Fraunces',serif;
+    font-size:2rem;
+    font-weight:700;
+    color:var(--accent);
+  }
+  .info-box .lbl{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    margin-top:4px;
+    font-weight:500;
+  }
+  #startBtn{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:14px 0;
+    width:100%;
+    border-radius:12px;
+    font-size:1.05rem;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(138,90,43,0.3);
+  }
+  #startBtn:active{background:var(--accent-dark);}
+
+  /* ---------- TOP BAR (test + review) ---------- */
+  #topBar{
+    display:none;
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:var(--paper-card);
+    border-bottom:1px solid var(--border);
+    padding:10px 16px;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .topbar-left{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:1.15rem;
+    color:var(--accent);
+    white-space:nowrap;
+  }
+  .topbar-status{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .topbar-center{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    font-weight:600;
+    font-size:0.9rem;
+    color:var(--ink);
+    flex-wrap:nowrap;
+  }
+  #timerDisplay{
+    font-variant-numeric:tabular-nums;
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    padding:4px 12px;
+    border-radius:8px;
+    font-weight:700;
+  }
+  #timerDisplay.low-time{
+    background:var(--red-bg);
+    color:var(--red);
+  }
+  .palette-btn{
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:0.85rem;
+    white-space:nowrap;
+    position:relative;
+  }
+
+  /* ---------- PALETTE DROPDOWN ---------- */
+  #paletteDropdown{
+    display:none;
+    position:absolute;
+    top:56px;
+    right:12px;
+    background:var(--paper-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 8px 24px rgba(80,60,20,0.18);
+    padding:16px;
+    width:min(320px, 88vw);
+    z-index:60;
+  }
+  #paletteDropdown.show{display:block;}
+  .palette-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:8px;
+    max-height:260px;
+    overflow-y:auto;
+    margin-bottom:12px;
+  }
+  .palette-num{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    font-size:0.8rem;
+    font-weight:600;
+    border:none;
+    color:#fff;
+  }
+  .palette-num.answered{background:var(--green);}
+  .palette-num.not-answered{background:var(--red);}
+  .palette-num.not-visited{background:var(--grey);}
+  .palette-num.correct{background:var(--green);}
+  .palette-num.wrong{background:var(--red);}
+  .palette-num.unattempted{background:var(--grey);}
+  .palette-legend{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+  }
+  .legend-row{display:flex;align-items:center;gap:8px;}
+  .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+  /* ---------- TEST CONTAINER ---------- */
+  #testScreen, #reviewScreen{
+    display:none;
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 16px 90px;
+  }
+  .q-card{
+    background:var(--paper-card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:var(--shadow);
+  }
+  .q-card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .source-pill{
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    font-size:0.72rem;
+    font-weight:700;
+    padding:4px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .q-of{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .marks-note{
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .marks-note .plus{color:var(--green);font-weight:700;}
+  .marks-note .minus{color:var(--red);font-weight:700;}
+  .q-text{
+    font-size:1.05rem;
+    font-weight:600;
+    line-height:1.55;
+    margin-bottom:18px;
+    color:var(--ink);
+  }
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    background:var(--paper);
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:13px 15px;
+    margin-bottom:10px;
+    font-size:0.96rem;
+    transition:border-color .15s, background .15s;
+  }
+  .option:active{background:var(--accent-light);}
+  .option.selected{
+    border-color:var(--accent);
+    background:var(--accent-light);
+  }
+  .opt-letter{
+    flex-shrink:0;
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.78rem;
+    font-weight:700;
+    color:var(--ink-soft);
+  }
+  .option.selected .opt-letter{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  /* review-only states */
+  .option.correct-answer{
+    border-color:var(--green);
+    background:var(--green-bg);
+  }
+  .option.correct-answer .opt-letter{
+    background:var(--green);border-color:var(--green);color:#fff;
+  }
+  .option.wrong-answer{
+    border-color:var(--red);
+    background:var(--red-bg);
+  }
+  .option.wrong-answer .opt-letter{
+    background:var(--red);border-color:var(--red);color:#fff;
+  }
+  .opt-mark{margin-left:auto;font-weight:700;font-size:1rem;}
+  .opt-mark.tick{color:var(--green);}
+  .opt-mark.cross{color:var(--red);}
+
+  .answer-summary{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--paper);
+    border-radius:10px;
+    font-size:0.85rem;
+    border:1px dashed var(--border);
+  }
+  .answer-summary div{margin-bottom:4px;}
+  .answer-summary b{color:var(--ink);}
+
+  .explanation-box{
+    margin-top:14px;
+    padding:14px 15px;
+    background:#fbf6ea;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:0.9rem;
+    line-height:1.6;
+    color:var(--ink);
+  }
+  .explanation-box .exp-label{
+    font-weight:700;
+    color:var(--accent-dark);
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:6px;
+    display:block;
+  }
+
+  /* ---------- NAV ROWS ---------- */
+  .nav-row{
+    display:flex;
+    gap:8px;
+    margin-top:18px;
+    flex-wrap:nowrap;
+  }
+  .nav-row button{
+    flex:1;
+    min-width:0;
+    padding:11px 6px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    background:var(--paper-card);
+    font-weight:600;
+    font-size:0.82rem;
+    color:var(--ink);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .nav-row button:disabled{opacity:0.4;}
+  .nav-row button.primary{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  .submit-row{margin-top:10px;}
+  .submit-row button{
+    width:100%;
+    padding:13px;
+    border-radius:12px;
+    border:none;
+    background:var(--accent-dark);
+    color:#fff;
+    font-weight:700;
+    font-size:0.95rem;
+  }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(44,36,22,0.45);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:var(--paper-card);
+    border-radius:16px;
+    padding:24px 22px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  }
+  .modal-box h3{
+    font-size:1.15rem;
+    margin:0 0 10px;
+    color:var(--ink);
+  }
+  .modal-box p{
+    font-size:0.9rem;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{
+    flex:1;
+    padding:11px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    font-weight:700;
+    font-size:0.9rem;
+  }
+  .modal-btns .yes-btn{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .modal-btns .cancel-btn{background:var(--paper-card);color:var(--ink);}
+
+  /* ---------- RESULT SCREEN ---------- */
+  #resultScreen{
+    display:none;
+    max-width:480px;
+    margin:40px auto;
+    padding:0 20px;
+    text-align:center;
+  }
+  #resultScreen h2{
+    font-size:1.6rem;
+    margin-bottom:22px;
+  }
+  .result-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .result-box{
+    background:var(--paper-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px 10px;
+    box-shadow:var(--shadow);
+  }
+  .result-box .num{
+    font-family:'Fraunces',serif;
+    font-size:1.6rem;
+    font-weight:700;
+  }
+  .result-box .lbl{
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    margin-top:3px;
+    font-weight:500;
+  }
+  .result-box.correct .num{color:var(--green);}
+  .result-box.wrong .num{color:var(--red);}
+  .score-box{
+    background:var(--accent);
+    color:#fff;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:24px;
+  }
+  .score-box .score-num{
+    font-family:'Fraunces',serif;
+    font-size:2.4rem;
+    font-weight:700;
+  }
+  .score-box .score-lbl{
+    font-size:0.85rem;
+    opacity:0.9;
+    margin-top:2px;
+  }
+  .result-actions{display:flex;flex-direction:column;gap:10px;}
+  .result-actions button{
+    padding:13px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:0.95rem;
+    border:1.5px solid var(--accent);
+  }
+  #reviewBtn{background:var(--accent);color:#fff;}
+  #retakeBtn{background:var(--paper-card);color:var(--accent-dark);}
+
+  @media (max-width:420px){
+    .nav-row button{font-size:0.72rem;padding:10px 4px;}
+    .topbar-center{gap:8px;font-size:0.8rem;}
+    #timerDisplay{padding:3px 9px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="siteHeader">
+  <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+  <h1>YATRI Mock Hub</h1>
+  <a class="tg-btn" href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener">
+    <span>✈️</span> Join Telegram
+  </a>
+  <div><span class="topic-pill" id="topicPill">Topic: —</span></div>
+</div>
+
+<div id="startScreen">
+  <h2 id="quizTitle">Quiz</h2>
+  <div class="info-boxes">
+    <div class="info-box">
+      <div class="num" id="totalQCount">0</div>
+      <div class="lbl">Total Questions</div>
+    </div>
+    <div class="info-box">
+      <div class="num" id="totalTimeDisp">0 Min</div>
+      <div class="lbl">Total Time</div>
+    </div>
+  </div>
+  <button id="startBtn">▶️ Start Test</button>
+</div>
+
+<div id="topBar">
+  <div class="topbar-left" id="topbarLeft">YATRI</div>
+  <div class="topbar-center">
+    <span id="timerDisplay">00:00</span>
+    <span id="progressDisplay">Q 1 / 1</span>
+  </div>
+  <div style="position:relative;">
+    <button class="palette-btn" id="paletteBtn">📋 Palette</button>
+    <div id="paletteDropdown">
+      <div class="palette-grid" id="paletteGrid"></div>
+      <div class="palette-legend" id="paletteLegend"></div>
+    </div>
+  </div>
+</div>
+
+<div id="testScreen">
+  <div class="q-card">
+    <div class="q-card-top">
+      <span class="source-pill" id="sourceTag">SSC</span>
+      <span class="q-of" id="qOfLabel">Question 1 of 1</span>
+    </div>
+    <div class="marks-note"><span class="plus">+1</span> for correct, <span class="minus">−0.25</span> for wrong</div>
+    <div class="q-text" id="qText"></div>
+    <div id="optionsArea"></div>
+  </div>
+  <div class="nav-row">
+    <button id="prevBtn">⬅️ Previous</button>
+    <button id="clearBtn">Clear Response</button>
+    <button id="nextBtn" class="primary">Next ➡️</button>
+  </div>
+  <div class="submit-row">
+    <button id="submitTestBtn">📤 Submit Test</button>
+  </div>
+</div>
+
+<div id="reviewScreen">
+  <div class="q-card">
+    <div class="q-card-top">
+      <span class="source-pill" id="revSourceTag">SSC</span>
+      <span class="q-of" id="revQOfLabel">Question 1 of 1</span>
+    </div>
+    <div class="q-text" id="revQText"></div>
+    <div id="revOptionsArea"></div>
+    <div class="answer-summary" id="revAnswerSummary"></div>
+    <div class="explanation-box">
+      <span class="exp-label">Explanation</span>
+      <span id="revExplanation" class="hindi"></span>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button id="revPrevBtn">⬅️ Previous</button>
+    <button id="revNextBtn" class="primary">Next ➡️</button>
+  </div>
+  <div class="submit-row">
+    <button id="backToResultBtn">📊 Back to Result</button>
+  </div>
+</div>
+
+<div id="resultScreen">
+  <h2>Test Result</h2>
+  <div class="result-grid">
+    <div class="result-box"><div class="num" id="resTotal">0</div><div class="lbl">Total Questions</div></div>
+    <div class="result-box"><div class="num" id="resAttempted">0</div><div class="lbl">Attempted</div></div>
+    <div class="result-box"><div class="num" id="resUnattempted">0</div><div class="lbl">Unattempted</div></div>
+    <div class="result-box correct"><div class="num" id="resCorrect">0</div><div class="lbl">Correct</div></div>
+    <div class="result-box wrong"><div class="num" id="resWrong">0</div><div class="lbl">Wrong</div></div>
+  </div>
+  <div class="score-box">
+    <div class="score-num" id="resScore">0</div>
+    <div class="score-lbl">Final Score</div>
+  </div>
+  <div class="result-actions">
+    <button id="reviewBtn">🔍 Review Solutions</button>
+    <button id="retakeBtn">🔁 Retake Test</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <h3>Submit Test?</h3>
+    <p id="submitModalText">You have some unattempted questions. Are you sure you want to submit?</p>
+    <div class="modal-btns">
+      <button class="cancel-btn" id="modalCancelBtn">Cancel</button>
+      <button class="yes-btn" id="modalYesBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ QUIZ DATA (auto-filled) ============
+const quizData = {
+  "topic": "Vocabulary Asked in SSC CHSL 2025",
+  "totalTimeMin": 14,
+  "marksCorrect": 1,
+  "marksWrong": 0.25,
+  "questions": [
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Transhistorical",
+      "options": [
+        "Timeless",
+        "Ancient",
+        "Recent",
+        "Futuristic"
+      ],
+      "correctIndex": 0,
+      "explanation": "Transhistorical means transcending history; eternal or timeless."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Glib",
+      "options": [
+        "Sincere",
+        "Forthright",
+        "Articulate",
+        "Dispassionate"
+      ],
+      "correctIndex": 2,
+      "explanation": "Glib means fluent and voluble but often insincere and shallow. Articulate is the closest synonym regarding fluency."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Cogent",
+      "options": [
+        "Ineffective",
+        "Unconvincing",
+        "Persuasive",
+        "Weak"
+      ],
+      "correctIndex": 2,
+      "explanation": "Cogent means (of an argument or case) clear, logical, and convincing."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Historiographical",
+      "options": [
+        "Fictional",
+        "Historical writing",
+        "Prophetic",
+        "Verbal"
+      ],
+      "correctIndex": 1,
+      "explanation": "Historiographical relates to the study of the writing of history and historical theories."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Bellicose",
+      "options": [
+        "Peaceful",
+        "Amiable",
+        "Warlike",
+        "Timid"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bellicose means demonstrating aggression and willingness to fight."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Integrity",
+      "options": [
+        "Corruption",
+        "Honesty",
+        "Negligence",
+        "Greed"
+      ],
+      "correctIndex": 1,
+      "explanation": "Integrity is the quality of being honest and having strong moral principles."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Quixotic",
+      "options": [
+        "Practical",
+        "Idealistic",
+        "Realistic",
+        "Sensible"
+      ],
+      "correctIndex": 1,
+      "explanation": "Quixotic means exceedingly idealistic; unrealistic and impractical."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Dread",
+      "options": [
+        "Relief",
+        "Excitement",
+        "Fear",
+        "Triumph"
+      ],
+      "correctIndex": 2,
+      "explanation": "Dread means to anticipate with great apprehension or fear."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Mythopoeic",
+      "options": [
+        "Destructive",
+        "Scientific",
+        "Myth-making",
+        "Realistic"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mythopoeic relates to the making of myths or causing myths to be made."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Pernicious",
+      "options": [
+        "Harmless",
+        "Benevolent",
+        "Malicious",
+        "Helpful"
+      ],
+      "correctIndex": 2,
+      "explanation": "Pernicious means having a harmful effect, especially in a gradual or subtle way. Malicious means intending to do harm."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Existential",
+      "options": [
+        "Decorative",
+        "Psychological",
+        "Cosmic",
+        "Philosophical"
+      ],
+      "correctIndex": 3,
+      "explanation": "Existential relates to existence, often associated with the philosophical theory of existentialism emphasizing individual existence, freedom and choice."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Renounce",
+      "options": [
+        "Adopt",
+        "Accept",
+        "Reject",
+        "Welcome"
+      ],
+      "correctIndex": 2,
+      "explanation": "Renounce means to formally declare one's abandonment of (a claim, right, or possession)."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Wisdom",
+      "options": [
+        "Ignorance",
+        "Cunning",
+        "Knowledge",
+        "Foolishness"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wisdom involves having experience, knowledge, and good judgment."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Choose the correct word from the options given showing a synonym of the word below: Garrulous",
+      "options": [
+        "Loquacious",
+        "Silent",
+        "Defined",
+        "Well – mannered"
+      ],
+      "correctIndex": 0,
+      "explanation": "Garrulous means excessively talkative. Loquacious is a direct synonym."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Choose the option which is similar in meaning to the underlined word: Columbus was convinced that the earth was round.",
+      "options": [
+        "Assured",
+        "Cynical",
+        "Skeptical",
+        "Doubtful"
+      ],
+      "correctIndex": 0,
+      "explanation": "Convinced means completely certain about something. Assured means confident."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Choose the option which is similar in meaning to the underlined word: It’s incredible to see him in such good health after the accident.",
+      "options": [
+        "Unimaginable",
+        "Unremarkable",
+        "Apparent",
+        "Unacceptable"
+      ],
+      "correctIndex": 0,
+      "explanation": "Incredible means impossible to believe. Unimaginable means difficult or impossible to imagine or comprehend."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Sagacious",
+      "options": [
+        "Foolish",
+        "Insightful",
+        "Naïve",
+        "Confused"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sagacious means having or showing keen mental discernment and good judgment."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Clout",
+      "options": [
+        "Weakness",
+        "Power",
+        "Unimportance",
+        "Failure"
+      ],
+      "correctIndex": 1,
+      "explanation": "Clout refers to influence or power, especially in politics or business."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate synonym of the word: Mirage",
+      "options": [
+        "Fantasy",
+        "Reality",
+        "Evidence",
+        "Proof"
+      ],
+      "correctIndex": 0,
+      "explanation": "A Mirage is an optical illusion or something illusory. Fantasy represents something imaginary."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Credulous",
+      "options": [
+        "Trusting",
+        "Skeptical",
+        "Gullible",
+        "Naive"
+      ],
+      "correctIndex": 1,
+      "explanation": "Credulous means showing too great a readiness to believe things. Skeptical means not easily convinced; having doubts."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Ineffable",
+      "options": [
+        "Expressible",
+        "Inarticulate",
+        "Unfathomable",
+        "Indescribable"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ineffable means too great or extreme to be expressed or described in words."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Ignorance",
+      "options": [
+        "Knowledge",
+        "Wisdom",
+        "Awareness",
+        "Understanding"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ignorance is lack of knowledge or information."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Iconoclast",
+      "options": [
+        "Critic",
+        "Rebel",
+        "Conformist",
+        "Dissenter"
+      ],
+      "correctIndex": 2,
+      "explanation": "An Iconoclast attacks cherished beliefs or institutions. A Conformist conforms to accepted behavior or established practices."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Profuse",
+      "options": [
+        "Copious",
+        "Abundant",
+        "Scarce",
+        "Plentiful"
+      ],
+      "correctIndex": 2,
+      "explanation": "Profuse means exuberant; plentiful; abundant. Scarce means insufficient for the demand."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Fastidious",
+      "options": [
+        "Meticulous",
+        "Sloppy",
+        "Fussy",
+        "Perceptive"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fastidious means very attentive to and concerned about accuracy and detail. Sloppy means careless and unsystematic."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Immutable",
+      "options": [
+        "Unchanging",
+        "Fixed",
+        "Alterable",
+        "Permanent"
+      ],
+      "correctIndex": 2,
+      "explanation": "Immutable means unchanging over time or unable to be changed. Alterable means capable of being changed."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Debacle",
+      "options": [
+        "Disaster",
+        "Success",
+        "Failure",
+        "Collapse"
+      ],
+      "correctIndex": 1,
+      "explanation": "A Debacle is a sudden and ignominious failure; a fiasco."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Minute",
+      "options": [
+        "Enormous",
+        "Tiny",
+        "Small",
+        "Insignificant"
+      ],
+      "correctIndex": 0,
+      "explanation": "Minute (pronounced my-noot) means extremely small. Enormous means very large."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Extinguished",
+      "options": [
+        "Ignited",
+        "Stopped",
+        "Quenched",
+        "Burnt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Extinguish means to cause a fire to cease to burn. Ignite means to catch fire or cause to catch fire."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Trivial",
+      "options": [
+        "Insignificant",
+        "Minor",
+        "Important",
+        "Commonplace"
+      ],
+      "correctIndex": 2,
+      "explanation": "Trivial means of little value or importance."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Ebullient",
+      "options": [
+        "Depressed",
+        "Cheerful",
+        "Joyful",
+        "Enthusiastic"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ebullient means cheerful and full of energy. Depressed means in a state of general unhappiness."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Heresy",
+      "options": [
+        "Unorthodoxy",
+        "Dogma",
+        "Orthodoxy",
+        "Dissent"
+      ],
+      "correctIndex": 2,
+      "explanation": "Heresy is belief or opinion contrary to orthodox religious (especially Christian) doctrine. Orthodoxy is authorized or generally accepted theory, doctrine, or practice."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of \"Disparate\"?",
+      "options": [
+        "Distinct",
+        "Separate",
+        "Similar",
+        "Contrasting"
+      ],
+      "correctIndex": 2,
+      "explanation": "Disparate means essentially different in kind; not allowing comparison. Similar means resembling without being identical."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Hegemony",
+      "options": [
+        "Subordination",
+        "Leadership",
+        "Equality",
+        "Authority"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hegemony is leadership or dominance, especially by one country or social group. Subordination is the state of being lower in rank or position."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the antonym of Contumacious”?",
+      "options": [
+        "Rebellious",
+        "Obedient",
+        "Unruly",
+        "Stubborn"
+      ],
+      "correctIndex": 1,
+      "explanation": "Contumacious means stubbornly or willfully disobedient to authority."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Foment",
+      "options": [
+        "Incite",
+        "Stir",
+        "Quash",
+        "Instigate"
+      ],
+      "correctIndex": 2,
+      "explanation": "Foment means to instigate or stir up (an undesirable or violent sentiment or course of action). Quash means to suppress or put an end to."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of \"Evanescent\"?",
+      "options": [
+        "Fleeting",
+        "Transient",
+        "Enduring",
+        "Ephemeral"
+      ],
+      "correctIndex": 2,
+      "explanation": "Evanescent means soon passing out of sight, memory, or existence; quickly fading. Enduring means lasting over a period of time."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of ‘Ephemeral’?",
+      "options": [
+        "Temporary",
+        "Momentary",
+        "Eternal",
+        "Fleeting"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ephemeral means lasting for a very short time. Eternal means lasting or existing forever."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of Tenebrous”?",
+      "options": [
+        "Bright",
+        "Shadowy",
+        "Murky",
+        "Obscure"
+      ],
+      "correctIndex": 0,
+      "explanation": "Tenebrous means dark; shadowy or obscure."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Exacerbate",
+      "options": [
+        "Alleviate",
+        "Intensify",
+        "Improve",
+        "Aggravate"
+      ],
+      "correctIndex": 2,
+      "explanation": "Exacerbate means to make (a problem, bad situation, or negative feeling) worse. Improve means to make or become better."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of misanthropic”?",
+      "options": [
+        "Sociable",
+        "Reclusive",
+        "Cynical",
+        "Pessimistic"
+      ],
+      "correctIndex": 0,
+      "explanation": "Misanthropic means disliking humankind and avoiding human society. Sociable means willing to talk and engage in activities with other people."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of ‘Quaint’?",
+      "options": [
+        "Humble",
+        "Ordinary",
+        "Tolerant",
+        "Gale"
+      ],
+      "correctIndex": 1,
+      "explanation": "Quaint means attractively unusual or old-fashioned. Ordinary means having no special or distinctive features; normal."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of obloquy”?",
+      "options": [
+        "Praise",
+        "Condemnation",
+        "Abuse",
+        "Discredit"
+      ],
+      "correctIndex": 0,
+      "explanation": "Obloquy means strong public criticism or verbal abuse."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Garrulous",
+      "options": [
+        "Quit",
+        "Reserved",
+        "Shy",
+        "Silent"
+      ],
+      "correctIndex": 1,
+      "explanation": "Garrulous means excessively talkative. Reserved implies being slow to reveal emotion or opinions."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of ineluctable”?",
+      "options": [
+        "Unavoidable",
+        "Preventable",
+        "Inevitable",
+        "Inescapable"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ineluctable means unable to be resisted or avoided; inescapable. Preventable means able to be avoided."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of ‘Turbulent’?",
+      "options": [
+        "Deceptive",
+        "Humble",
+        "Calm",
+        "Satisfied"
+      ],
+      "correctIndex": 2,
+      "explanation": "Turbulent means characterized by conflict, disorder, or confusion."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "What is the antonym of Egalitarian”?",
+      "options": [
+        "Fair",
+        "Biased",
+        "Democratic",
+        "Equitable"
+      ],
+      "correctIndex": 1,
+      "explanation": "Egalitarian refers to the principle that all people are equal. Biased implies unfair prejudice for or against someone or something."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Monstrous",
+      "options": [
+        "Beautiful",
+        "Odd",
+        "Abnormal",
+        "Strange"
+      ],
+      "correctIndex": 0,
+      "explanation": "Monstrous can mean ugly or frightening. Beautiful is the opposite in terms of aesthetics."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Elucidate",
+      "options": [
+        "Clarify",
+        "Explain",
+        "Obscure",
+        "Illuminate"
+      ],
+      "correctIndex": 2,
+      "explanation": "Elucidate means to make (something) clear; explain. Obscure means to keep from being seen; conceal."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Euphemism",
+      "options": [
+        "Directness",
+        "Ambiguity",
+        "Politeness",
+        "Formality"
+      ],
+      "correctIndex": 0,
+      "explanation": "A Euphemism is a mild or indirect word or expression substituted for one considered to be too harsh or blunt. Directness is the quality of being plain and straightforward."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Obsolete",
+      "options": [
+        "Outdated",
+        "Ancient",
+        "Current",
+        "Disused"
+      ],
+      "correctIndex": 2,
+      "explanation": "Obsolete means no longer produced or used; out of date. Current means belonging to the present time."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Cajole",
+      "options": [
+        "Entice",
+        "Bully",
+        "Persuade",
+        "Flatter"
+      ],
+      "correctIndex": 1,
+      "explanation": "Cajole means to persuade someone to do something by sustained coaxing or flattery. Bully implies using force or threats."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Select the most appropriate antonym of the word: Sporadic",
+      "options": [
+        "Infrequent",
+        "Occasional",
+        "Frequent",
+        "Intermittent"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sporadic means occurring at irregular intervals or only in a few places. Frequent means occurring or done on many occasions."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Which of the following sentences uses the word \"minute\" with the same meaning as in the following sentence: \"The microscope revealed a minute speck of dust\"",
+      "options": [
+        "The meeting will start in a few minutes.",
+        "I was just a minute away from being late.",
+        "The camera captured every minute detail of the insect's wing.",
+        "The alarm went off in exactly sixty seconds, or one minute."
+      ],
+      "correctIndex": 2,
+      "explanation": "In the question, minute (pronounced my-noot) is an adjective meaning extremely small. Option 3 uses it in the same sense (\"minute detail\")."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Which of the following sentences uses the word \"tire\" with the same meaning as in the following sentence: \"I am starting to tire of this long journey\"",
+      "options": [
+        "My bicycle has a flat tire.",
+        "The mechanic replaced the old tire.",
+        "The baby started to tire of playing with the same toy.",
+        "We needed to put air in the car’s tire."
+      ],
+      "correctIndex": 2,
+      "explanation": "Here, tire is a verb meaning to lose interest or become weary. Option 3 uses it in the same sense."
+    },
+    {
+      "tag": "CHSL 2025",
+      "text": "Which of the following sentences uses the word \"tear\" with the same meaning as in the following sentence: \"A single tear rolled down her cheek\"",
+      "options": [
+        "He carefully tried not to tear the delicate fabric.",
+        "The little girl's tear brought her mother running.",
+        "Be careful not to tear the pages of the old book.",
+        "The sharp edge of the paper can easily tear when handled roughly."
+      ],
+      "correctIndex": 1,
+      "explanation": "Here, tear (rhymes with ear) is a noun meaning a drop of salty liquid from the eye. Option 2 matches this meaning."
+    }
+  ]
+};
+// ==================================================
+
+let state = {
+  current: 0,
+  answers: [],
+  visited: [],
+  timeLeft: 0,
+  timerInterval: null,
+  submitted: false,
+  reviewIndex: 0
+};
+
+const $ = id => document.getElementById(id);
+
+function initQuiz(){
+  const n = quizData.questions.length;
+  state.answers = new Array(n).fill(null);
+  state.visited = new Array(n).fill(false);
+  state.timeLeft = quizData.totalTimeMin * 60;
+
+  $('quizTitle').textContent = quizData.topic;
+  $('topicPill').textContent = 'Topic: ' + quizData.topic;
+  $('totalQCount').textContent = n;
+  $('totalTimeDisp').textContent = quizData.totalTimeMin + ' Min';
+}
+
+$('startBtn').addEventListener('click', () => {
+  $('siteHeader').style.display = 'none';
+  $('startScreen').style.display = 'none';
+  $('topBar').style.display = 'flex';
+  $('testScreen').style.display = 'block';
+  state.visited[0] = true;
+  renderQuestion();
+  startTimer();
+});
+
+function startTimer(){
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    if(state.timeLeft <= 0){
+      state.timeLeft = 0;
+      updateTimerDisplay();
+      clearInterval(state.timerInterval);
+      doSubmit();
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(state.timeLeft / 60);
+  const s = state.timeLeft % 60;
+  const disp = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  $('timerDisplay').textContent = disp;
+  if(state.timeLeft <= 60){
+    $('timerDisplay').classList.add('low-time');
+  }
+}
+
+function renderQuestion(){
+  const q = quizData.questions[state.current];
+  const n = quizData.questions.length;
+  $('sourceTag').textContent = q.tag || 'SSC';
+  $('qOfLabel').textContent = `Question ${state.current+1} of ${n}`;
+  $('progressDisplay').textContent = `Q ${state.current+1} / ${n}`;
+  $('qText').textContent = q.text;
+
+  const area = $('optionsArea');
+  area.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (state.answers[state.current] === idx ? ' selected' : '');
+    div.innerHTML = `<span class="opt-letter">${letters[idx]}</span><span>${opt}</span>`;
+    div.addEventListener('click', () => {
+      state.answers[state.current] = idx;
+      renderQuestion();
+    });
+    area.appendChild(div);
+  });
+
+  $('prevBtn').disabled = state.current === 0;
+  $('nextBtn').textContent = state.current === n-1 ? 'Next ➡️' : 'Next ➡️';
+}
+
+$('prevBtn').addEventListener('click', () => {
+  if(state.current > 0){
+    state.current--;
+    state.visited[state.current] = true;
+    renderQuestion();
+  }
+});
+$('nextBtn').addEventListener('click', () => {
+  if(state.current < quizData.questions.length - 1){
+    state.current++;
+    state.visited[state.current] = true;
+    renderQuestion();
+  }
+});
+$('clearBtn').addEventListener('click', () => {
+  state.answers[state.current] = null;
+  renderQuestion();
+});
+
+// ---------- Palette ----------
+$('paletteBtn').addEventListener('click', () => {
+  renderPalette();
+  $('paletteDropdown').classList.toggle('show');
+});
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('#paletteBtn') && !e.target.closest('#paletteDropdown')){
+    $('paletteDropdown').classList.remove('show');
+  }
+});
+
+function renderPalette(){
+  const grid = $('paletteGrid');
+  grid.innerHTML = '';
+  const legend = $('paletteLegend');
+
+  if(!state.submitted){
+    quizData.questions.forEach((q, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'palette-num ' + (state.answers[idx] !== null ? 'answered' : (state.visited[idx] ? 'not-answered' : 'not-visited'));
+      btn.textContent = idx+1;
+      btn.addEventListener('click', () => {
+        state.current = idx;
+        state.visited[idx] = true;
+        renderQuestion();
+        $('paletteDropdown').classList.remove('show');
+      });
+      grid.appendChild(btn);
+    });
+    legend.innerHTML = `
+      <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span>Answered</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span>Not Answered</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--grey)"></span>Not Visited</div>
+    `;
+  } else {
+    quizData.questions.forEach((q, idx) => {
+      const ans = state.answers[idx];
+      let cls = 'unattempted';
+      if(ans !== null) cls = ans === q.correctIndex ? 'correct' : 'wrong';
+      const btn = document.createElement('button');
+      btn.className = 'palette-num ' + cls;
+      btn.textContent = idx+1;
+      btn.addEventListener('click', () => {
+        state.reviewIndex = idx;
+        renderReview();
+        $('paletteDropdown').classList.remove('show');
+      });
+      grid.appendChild(btn);
+    });
+    legend.innerHTML = `
+      <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span>Correct</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span>Wrong</div>
+      <div class="legend-row"><span class="legend-dot" style="background:var(--grey)"></span>Unattempted</div>
+    `;
+  }
+}
+
+// ---------- Submit ----------
+$('submitTestBtn').addEventListener('click', () => {
+  const unattempted = state.answers.filter(a => a === null).length;
+  $('submitModalText').textContent = unattempted > 0
+    ? `You have ${unattempted} unattempted question(s). Are you sure you want to submit?`
+    : `All questions attempted. Submit the test now?`;
+  $('submitModal').classList.add('show');
+});
+$('modalCancelBtn').addEventListener('click', () => $('submitModal').classList.remove('show'));
+$('modalYesBtn').addEventListener('click', () => {
+  $('submitModal').classList.remove('show');
+  doSubmit();
+});
+
+function doSubmit(){
+  if(state.submitted) return;
+  state.submitted = true;
+  clearInterval(state.timerInterval);
+  $('topBar').style.display = 'none';
+  $('testScreen').style.display = 'none';
+  showResult();
+}
+
+function showResult(){
+  const n = quizData.questions.length;
+  let attempted = 0, correct = 0, wrong = 0;
+  quizData.questions.forEach((q, idx) => {
+    const a = state.answers[idx];
+    if(a !== null){
+      attempted++;
+      if(a === q.correctIndex) correct++; else wrong++;
+    }
+  });
+  const unattempted = n - attempted;
+  const score = (correct * quizData.marksCorrect) - (wrong * quizData.marksWrong);
+
+  $('resTotal').textContent = n;
+  $('resAttempted').textContent = attempted;
+  $('resUnattempted').textContent = unattempted;
+  $('resCorrect').textContent = correct;
+  $('resWrong').textContent = wrong;
+  $('resScore').textContent = score.toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');
+
+  $('resultScreen').style.display = 'block';
+}
+
+$('reviewBtn').addEventListener('click', () => {
+  $('resultScreen').style.display = 'none';
+  $('topBar').style.display = 'flex';
+  $('topbarLeft').textContent = 'Review';
+  $('reviewScreen').style.display = 'block';
+  state.reviewIndex = 0;
+  renderReview();
+});
+
+function renderReview(){
+  const q = quizData.questions[state.reviewIndex];
+  const n = quizData.questions.length;
+  const userAns = state.answers[state.reviewIndex];
+
+  $('revSourceTag').textContent = q.tag || 'SSC';
+  $('revQOfLabel').textContent = `Question ${state.reviewIndex+1} of ${n}`;
+  $('progressDisplay').textContent = `Q ${state.reviewIndex+1} / ${n}`;
+  $('revQText').textContent = q.text;
+
+  const area = $('revOptionsArea');
+  area.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    let cls = 'option';
+    let mark = '';
+    if(idx === q.correctIndex){
+      cls += ' correct-answer';
+      mark = '<span class="opt-mark tick">✓</span>';
+    } else if(idx === userAns){
+      cls += ' wrong-answer';
+      mark = '<span class="opt-mark cross">✗</span>';
+    }
+    div.className = cls;
+    div.innerHTML = `<span class="opt-letter">${letters[idx]}</span><span>${opt}</span>${mark}`;
+    area.appendChild(div);
+  });
+
+  const userAnsText = userAns === null ? 'Not Attempted' : letters[userAns] + '. ' + q.options[userAns];
+  const correctAnsText = letters[q.correctIndex] + '. ' + q.options[q.correctIndex];
+  $('revAnswerSummary').innerHTML = `
+    <div><b>Your Answer:</b> ${userAnsText}</div>
+    <div><b>Correct Answer:</b> ${correctAnsText}</div>
+  `;
+  $('revExplanation').textContent = q.explanation || 'No explanation available.';
+
+  $('revPrevBtn').disabled = state.reviewIndex === 0;
+  $('revNextBtn').disabled = state.reviewIndex === n-1;
+}
+
+$('revPrevBtn').addEventListener('click', () => {
+  if(state.reviewIndex > 0){ state.reviewIndex--; renderReview(); }
+});
+$('revNextBtn').addEventListener('click', () => {
+  if(state.reviewIndex < quizData.questions.length - 1){ state.reviewIndex++; renderReview(); }
+});
+$('backToResultBtn').addEventListener('click', () => {
+  $('topBar').style.display = 'none';
+  $('reviewScreen').style.display = 'none';
+  $('resultScreen').style.display = 'block';
+});
+
+$('retakeBtn').addEventListener('click', () => {
+  state.current = 0;
+  state.answers = new Array(quizData.questions.length).fill(null);
+  state.visited = new Array(quizData.questions.length).fill(false);
+  state.timeLeft = quizData.totalTimeMin * 60;
+  state.submitted = false;
+  $('timerDisplay').classList.remove('low-time');
+  $('resultScreen').style.display = 'none';
+  $('siteHeader').style.display = 'block';
+  $('startScreen').style.display = 'block';
+});
+
+initQuiz();
+</script>
+</body>
+</html>

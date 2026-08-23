@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Synonyms Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Noto+Sans+Devanagari:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f6f1e6;
+    --card:#fffdf8;
+    --rule:#d8cfba;
+    --accent:#8a5a2b;
+    --correct:#2f6b3f;
+    --correct-bg:#e4f2e6;
+    --wrong:#a13d2e;
+    --wrong-bg:#f8e6e2;
+    --muted:#726b5c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{
+    text-align:center;
+    margin-bottom:28px;
+    padding-bottom:20px;
+    border-bottom:3px double var(--rule);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(36px,7vw,56px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{color:var(--muted);font-size:14px;}
+  #tgBtn{
+    display:inline-flex;align-items:center;gap:9px;
+    margin-top:16px;
+    background:#29a9eb;
+    color:#fff;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:30px;
+    box-shadow:0 3px 10px rgba(41,169,235,0.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  #tgBtn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(41,169,235,0.45);}
+  #tgBtn svg{flex-shrink:0;}
+  #topicLine{
+    margin-top:14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--accent);
+    background:var(--card);
+    display:inline-block;
+    padding:6px 18px;
+    border:1px solid var(--rule);
+    border-radius:20px;
+  }
+
+  #scoreBar{
+    position:sticky;top:12px;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 18px;
+    margin-bottom:26px;
+    font-size:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  #scoreBar b{font-family:'Fraunces',serif;font-size:17px;}
+  #resetBtn{
+    background:none;border:1px solid var(--rule);border-radius:6px;
+    padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted);
+    font-family:'Inter',sans-serif;
+  }
+  #resetBtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:22px 22px 18px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .qnum{
+    font-family:'Fraunces',serif;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .qtag{
+    float:right;
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.5;
+    margin:6px 0 14px;
+  }
+  .qtext .word{font-weight:700;color:var(--accent);}
+  .options{display:grid;gap:9px;}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;
+    text-align:left;
+    background:var(--paper);
+    border:1.5px solid var(--rule);
+    border-radius:8px;
+    padding:11px 14px;
+    font-size:15px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt:hover:not(.locked){border-color:var(--accent);background:#fff;}
+  .opt .lab{
+    font-weight:700;
+    color:var(--accent);
+    min-width:18px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .lab{color:var(--correct);}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .lab{color:var(--wrong);}
+  .opt.locked{cursor:default;}
+  .mark{margin-left:auto;font-weight:700;font-size:15px;}
+  .mark.c{color:var(--correct);}
+  .mark.w{color:var(--wrong);}
+
+  .solution{
+    display:none;
+    margin-top:14px;
+    padding:14px 16px;
+    background:#fbf7ee;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    font-size:14.5px;
+    line-height:1.65;
+  }
+  .solution.show{display:block;}
+  .solution .hindi{
+    font-family:'Noto Sans Devanagari','Inter',sans-serif;
+  }
+  .solution b{color:var(--accent);}
+  .solution .lbl{
+    font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:6px;
+  }
+
+  footer{
+    text-align:center;color:var(--muted);font-size:13px;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">SSC · CGL · CHSL · MTS · KVS · CDS</div>
+    <h1>YATRI Mock Hub</h1>
+    <div class="sub">Click any option to check your answer</div>
+    <a href="https://t.me/ssc_cgl_chsl_Mocks_guidance_quiz" target="_blank" rel="noopener" id="tgBtn">
+      <svg viewBox="0 0 240 240" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="120" fill="#29a9eb"/>
+        <path fill="#fff" d="M167.5 72.3 145.3 178c-1.7 7.6-6.2 9.5-12.5 5.9l-34.5-25.5-16.6 16c-1.8 1.8-3.4 3.4-6.9 3.4l2.5-35.2 64-57.9c2.8-2.5-.6-3.9-4.3-1.4l-79.1 49.9-34.1-10.6c-7.4-2.3-7.6-7.4 1.6-11L156 60.1c6.2-2.3 11.6 1.5 11.5 12.2z"/>
+      </svg>
+      <span>Join Telegram</span>
+    </a>
+    <div id="topicLine">Topic: H Words — Previous Years Synonyms</div>
+  </header>
+
+  <div id="scoreBar">
+    <span>Score: <b id="scoreVal">0</b> / <span id="totalVal">32</span></span>
+    <button id="resetBtn" onclick="resetQuiz()">Reset Test</button>
+  </div>
+
+  <div id="quiz"></div>
+
+  <footer>Har jawab click karte hi turant sahi/galat pata chal jayega — saath mein solution bhi.</footer>
+</div>
+
+<script>
+const questions = [
+{
+"q": "Choose the word nearest in meaning to the given word: HOSTILITY",
+"tag": "KVS PRT 28-02-2023 (Shift-I)",
+"opts": [
+"Quarrel",
+"Hospitality",
+"Jealousy",
+"Resentment"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Hostility' का अर्थ है <b>शत्रुता</b>। Synonym 'Resentment' (<b>आक्रोश/नाराज़गी</b>) है।</span><br>Quarrel – झगड़ा, Hospitality – आतिथ्य, Jealousy – ईर्ष्या।"
+},
+{
+"q": "He was appointed as the honorary member of the team.",
+"tag": "UPSC NDA & NA 04/09/2022 (Shift-II)",
+"opts": [
+"Paid",
+"Invited",
+"Accepted",
+"Unpaid"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Honorary' का अर्थ है <b>मानद (बिना वेतन के)</b>। Synonym 'Unpaid' (<b>अवैतनिक</b>) है।</span><br>Paid – वेतनभोगी, Invited – आमंत्रित, Accepted – स्वीकृत।"
+},
+{
+"q": "What is the synonym of the following word? “Harbinger”",
+"tag": "High Court RO 06/01/2022",
+"opts": [
+"Atrocious",
+"Forerunner",
+"Free",
+"Understand"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Harbinger' का अर्थ है <b>अग्रदूत</b>। Synonym 'Forerunner' (<b>अग्रदूत</b>) है।</span><br>Atrocious – क्रूर, Free – मुक्त, Understand – समझना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Humble",
+"tag": "SSC MTS-05/07/2022 Shift-II",
+"opts": [
+"Bold",
+"Assertive",
+"Modest",
+"Inactive"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Humble' का अर्थ है <b>विनम्र</b>। Synonym 'Modest' (<b>विनम्र</b>) है।</span><br>Bold – साहसी, Assertive – दृढ़तापूर्वक कहने वाला, Inactive – निष्क्रिय।"
+},
+{
+"q": "Choose the word that means the same as the given word. Horrified",
+"tag": "DSSSB PRT 23/03/2022 (Shift-II)",
+"opts": [
+"Anxious",
+"Sacred",
+"Terrified",
+"Desperate"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Horrified' का अर्थ है <b>भयभीत</b>। Synonym 'Terrified' (<b>भयभीत</b>) है।</span><br>Anxious – चिंतित, Sacred – पवित्र, Desperate – हताश।"
+},
+{
+"q": "Select the word that is similar in meaning (SYNONYM) to the word given below Horticulture",
+"tag": "DSSSB PRT 26/03/2022 (Shift-III)",
+"opts": [
+"cultivation",
+"litigation",
+"nascent",
+"omniscience"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Horticulture' का अर्थ है <b>बागवानी</b>। Synonym 'Cultivation' (<b>खेती</b>) है।</span><br>Litigation – मुकदमेबाज़ी, Nascent – नवोदित, Omniscience – सर्वज्ञता।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Hasty",
+"tag": "SSC MTS-05/07/2022 Shift-I",
+"opts": [
+"Expeditious",
+"Restricted",
+"Laidback",
+"Locked"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Hasty' का अर्थ है <b>जल्दबाज़ी वाला</b>। Synonym 'Expeditious' (<b>तेज़/त्वरित</b>) है।</span><br>Restricted – प्रतिबंधित, Laidback – निश्चिंत, Locked – बंद।"
+},
+{
+"q": "The effort was to harness the power of nature.",
+"tag": "UPSC NDA & NA 04/09/2022 (Shift-II)",
+"opts": [
+"Abuse",
+"Benefit",
+"Apply",
+"Control"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Harness' का अर्थ है <b>नियंत्रण में लाना/उपयोग करना</b>। Synonym 'Control' (<b>नियंत्रण करना</b>) है।</span><br>Abuse – दुरुपयोग करना, Benefit – लाभ, Apply – लागू करना।"
+},
+{
+"q": "The Holocaust was experienced by millions.",
+"tag": "UPSC NDA & NA 05/09/2021 (Shift-II)",
+"opts": [
+"celebration",
+"destruction",
+"construction",
+"beautiful"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Holocaust' का अर्थ है <b>संहार/विनाश</b>। Synonym 'Destruction' (<b>विनाश</b>) है।</span><br>Celebration – उत्सव, Construction – निर्माण, Beautiful – सुंदर।"
+},
+{
+"q": "Catching snakes can be hazardous for people untrained in the art.",
+"tag": "UPSC NDA & NA 28/09/2014 (Shift-II)",
+"opts": [
+"tricky",
+"harmful",
+"difficult",
+"dangerous"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Hazardous' का अर्थ है <b>खतरनाक</b>। Synonym 'Dangerous' (<b>खतरनाक</b>) है।</span><br>Tricky – चालाकीपूर्ण, Harmful – हानिकारक, Difficult – कठिन।"
+},
+{
+"q": "HIATUS",
+"tag": "UPSC NDA & NA 20/04/2008 (Shift-I)",
+"opts": [
+"Uphill task",
+"Distant place",
+"Fading memory",
+"Gap"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Hiatus' का अर्थ है <b>अंतराल</b>। Synonym 'Gap' (<b>अंतराल</b>) है।</span><br>Uphill task – कठिन कार्य, Distant place – दूरस्थ स्थान, Fading memory – धुंधली स्मृति।"
+},
+{
+"q": "HAMPER",
+"tag": "DSSSB Library Assistant Recruitment Exam (31-08-2014, Shift-I)",
+"opts": [
+"obstruct",
+"enter",
+"hate",
+"humour"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Hamper' का अर्थ है <b>बाधा डालना</b>। Synonym 'Obstruct' (<b>बाधा डालना</b>) है।</span><br>Enter – प्रवेश करना, Hate – नफरत करना, Humour – हास्य।"
+},
+{
+"q": "Hoist",
+"tag": "DSSSB Lower Division Clerk Exam (16-11-2014)",
+"opts": [
+"elevate",
+"lower",
+"host",
+"degrade"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Hoist' का अर्थ है <b>ऊपर उठाना</b>। Synonym 'Elevate' (<b>ऊंचा करना</b>) है।</span><br>Lower – नीचे करना, Host – मेज़बानी करना, Degrade – गिराना।"
+},
+{
+"q": "Hasty",
+"tag": "DSSSB Lab Assistant Exam (26-04-2015)",
+"opts": [
+"slow",
+"matured",
+"speedy",
+"leisurely"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Hasty' का अर्थ है <b>जल्दबाज़ी वाला</b>। Synonym 'Speedy' (<b>तेज़</b>) है।</span><br>Slow – धीमा, Matured – परिपक्व, Leisurely – आराम से।"
+},
+{
+"q": "An officer must know how to handle his men.",
+"tag": "DSSSB - LDC (30-08-2015)",
+"opts": [
+"manipulate",
+"manage",
+"control",
+"discipline"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Handle' का अर्थ है <b>संभालना</b>। Synonym 'Manage' (<b>प्रबंधन करना</b>) है।</span><br>Manipulate – हेरफेर करना, Control – नियंत्रण करना, Discipline – अनुशासित करना।"
+},
+{
+"q": "HOMESICK",
+"tag": "DSSSB Matron & Warder Recruitment Exam (29-06-2014)",
+"opts": [
+"Broomstick",
+"House warming",
+"Longing for home",
+"Comfortable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Homesick' का अर्थ है <b>घर की याद में व्याकुल</b>। Synonym 'Longing for home' (<b>घर के लिए तड़पना</b>) है।</span><br>Broomstick – झाड़ू की छड़ी, House warming – गृह प्रवेश, Comfortable – आरामदायक।"
+},
+{
+"q": "HARMONY",
+"tag": "DSSSB Primary Teacher Exam (29-12-2013)",
+"opts": [
+"Accordance",
+"Incongruity",
+"Discrepancy",
+"Repulsion"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Harmony' का अर्थ है <b>सामंजस्य</b>। Synonym 'Accordance' (<b>सामंजस्य</b>) है।</span><br>Incongruity – असंगति, Discrepancy – विसंगति, Repulsion – विकर्षण।"
+},
+{
+"q": "Select the synonym of the given word. \\'HEARTILY\\'",
+"tag": "DSSSB TGT (Science) Exam 29/09/2018 Shift-I",
+"opts": [
+"harshly",
+"affectionately",
+"callously",
+"earnestly"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Heartily' का अर्थ है <b>हार्दिक रूप से</b>। Synonym 'Earnestly' (<b>निष्ठापूर्वक</b>) है।</span><br>Harshly – कठोरता से, Affectionately – स्नेहपूर्वक, Callously – निर्दयतापूर्वक।"
+},
+{
+"q": "Choose the word that means the same as the given word. - Humble",
+"tag": "DSSSB LDC Exam 18-08-2019 Shift-III",
+"opts": [
+"Proud",
+"Sweet",
+"Bold",
+"Modest"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Humble' का अर्थ है <b>विनम्र</b>। Synonym 'Modest' (<b>विनम्र</b>) है।</span><br>Proud – घमंडी, Sweet – मीठा, Bold – साहसी।"
+},
+{
+"q": "Select the word that is closest in meaning (SYNONYM) to the word given below. Hubris",
+"tag": "DSSSB Junior Assistant 25/8/2021 Shift-II",
+"opts": [
+"Wealthy",
+"Dirt",
+"Humility",
+"Arrogance"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Hubris' का अर्थ है <b>अहंकार</b>। Synonym 'Arrogance' (<b>घमंड</b>) है।</span><br>Wealthy – धनी, Dirt – गंदगी, Humility – विनम्रता।"
+},
+{
+"q": "People thronged to pay homage to the departed leader.",
+"tag": "CDS 2012 (Shift-I)",
+"opts": [
+"humility",
+"tribute",
+"obedience",
+"allegiance"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Homage' का अर्थ है <b>श्रद्धांजलि</b>। Synonym 'Tribute' (<b>श्रद्धांजलि</b>) है।</span><br>Humility – विनम्रता, Obedience – आज्ञाकारिता, Allegiance – निष्ठा।"
+},
+{
+"q": "HOSTILITY",
+"tag": "CDS 2011 (Shift-II) CDS 2014 (Shift II)",
+"opts": [
+"Illness",
+"Enmity",
+"Disturbance",
+"Derogatory"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Hostility' का अर्थ है <b>शत्रुता</b>। Synonym 'Enmity' (<b>शत्रुता</b>) है।</span><br>Illness – बीमारी, Disturbance – गड़बड़ी, Derogatory – अपमानजनक।"
+},
+{
+"q": "Identify the synonym for the word – hamper",
+"tag": "UPSSSC J.E. Exam 19/12/2021",
+"opts": [
+"permit",
+"steal",
+"restrict",
+"comfort"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Hamper' का अर्थ है <b>बाधा डालना</b>। Synonym 'Restrict' (<b>प्रतिबंधित करना</b>) है।</span><br>Permit – अनुमति देना, Steal – चुराना, Comfort – आराम देना।"
+},
+{
+"q": "In the following question, out of the given four alternatives, select the one which best expresses the meaning of the given word. Hound",
+"tag": "SSC CGL (Phase-II) 17/02/2018",
+"opts": [
+"Critic",
+"Migrate",
+"Beagle",
+"Variable"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Hound' का अर्थ है <b>शिकारी कुत्ता/पीछा करना</b>। Synonym 'Beagle' (<b>शिकारी कुत्ते की एक नस्ल</b>) है।</span><br>Critic – आलोचक, Migrate – प्रवास करना, Variable – परिवर्तनशील।"
+},
+{
+"q": "Select the most appropriate synonyms of the given word. HOSTILITY",
+"tag": "SSC CGL (Tier-I) – 13/06/2019 (Shift-II)",
+"opts": [
+"sympathy",
+"friendship",
+"goodwill",
+"enmity"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Hostility' का अर्थ है <b>शत्रुता</b>। Synonym 'Enmity' (<b>शत्रुता</b>) है।</span><br>Sympathy – सहानुभूति, Friendship – मित्रता, Goodwill – सद्भावना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. HANDY",
+"tag": "SSC GD – 18/02/2019 (Shift-III) SSC CHSL (Tier-I) –03/07/2019 (Shift-III) Synonyms 13",
+"opts": [
+"hard",
+"convenient",
+"useless",
+"clumsy"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Handy' का अर्थ है <b>सुविधाजनक</b>। Synonym 'Convenient' (<b>सुविधाजनक</b>) है।</span><br>Hard – कठिन, Useless – बेकार, Clumsy – भद्दा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. HIND",
+"tag": "SSC CHSL (Tier-I) –02/07/2019 (Shift-I)",
+"opts": [
+"near",
+"rear",
+"first",
+"front"
+],
+"ans": 1,
+"sol": "<span class='hindi'>'Hind' का अर्थ है <b>पिछला</b>। Synonym 'Rear' (<b>पिछला</b>) है।</span><br>Near – पास, First – पहला, Front – आगे का।"
+},
+{
+"q": "Select the most appropriate synonym of the given word: HAUGHTY",
+"tag": "SSC CHSL (Tier-I) 21/10/2020 (Shift-III)",
+"opts": [
+"Humble",
+"Talkative",
+"Arrogant",
+"Quiet"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Haughty' का अर्थ है <b>घमंडी</b>। Synonym 'Arrogant' (<b>घमंडी</b>) है।</span><br>Humble – विनम्र, Talkative – बातूनी, Quiet – शांत।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. HOLISTIC",
+"tag": "SSC CHSL (Tier-I) 15/10/2020 (Shift-I)",
+"opts": [
+"dissimilar",
+"superficial",
+"sketchy",
+"comprehensive"
+],
+"ans": 3,
+"sol": "<span class='hindi'>'Holistic' का अर्थ है <b>समग्र</b>। Synonym 'Comprehensive' (<b>व्यापक/समग्र</b>) है।</span><br>Dissimilar – असमान, Superficial – सतही, Sketchy – अधूरा।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. Harass",
+"tag": "SSC MTS – 06/08/2019 (Shift-II)",
+"opts": [
+"Molest",
+"Assist",
+"Comfort",
+"Scare"
+],
+"ans": 0,
+"sol": "<span class='hindi'>'Harass' का अर्थ है <b>परेशान करना</b>। Synonym 'Molest' (<b>तंग करना</b>) है।</span><br>Assist – सहायता करना, Comfort – आराम देना, Scare – डराना।"
+},
+{
+"q": "Select the synonym of the given word. Hate",
+"tag": "SSC MTS – 08/08/2019 (Shift-II)",
+"opts": [
+"Deny",
+"Defer",
+"Detest",
+"Defile"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Hate' का अर्थ है <b>घृणा करना</b>। Synonym 'Detest' (<b>घृणा करना</b>) है।</span><br>Deny – इनकार करना, Defer – स्थगित करना, Defile – अपवित्र करना।"
+},
+{
+"q": "Select the most appropriate synonym of the given word. HUMDRUM",
+"tag": "SSC MTS – 20/08/2019 (Shift-I)",
+"opts": [
+"Synchronic",
+"Musical",
+"Monotonous",
+"Noisy"
+],
+"ans": 2,
+"sol": "<span class='hindi'>'Humdrum' का अर्थ है <b>नीरस/उबाऊ</b>। Synonym 'Monotonous' (<b>नीरस</b>) है।</span><br>Synchronic – समकालिक, Musical – संगीतमय, Noisy – शोरगुल वाला।"
+}
+];
+
+
+const labels=['A','B','C','D'];
+let score=0;
+const answered=new Array(questions.length).fill(false);
+
+function render(){
+  const quiz=document.getElementById('quiz');
+  quiz.innerHTML='';
+  questions.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='qcard';
+    card.innerHTML=`
+      <span class="qtag">${item.tag}</span>
+      <div class="qnum">Question ${qi+1}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="solution" id="sol-${qi}">
+        <div class="lbl">Solution</div>
+        ${item.sol}
+      </div>
+    `;
+    quiz.appendChild(card);
+    const optsDiv=card.querySelector(`#opts-${qi}`);
+    item.opts.forEach((opt,oi)=>{
+      const btn=document.createElement('div');
+      btn.className='opt';
+      btn.innerHTML=`<span class="lab">${labels[oi]}</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOption(qi,oi);
+      optsDiv.appendChild(btn);
+    });
+  });
+  updateScore();
+}
+
+function selectOption(qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const item=questions[qi];
+  const optsDiv=document.getElementById(`opts-${qi}`);
+  const opts=optsDiv.querySelectorAll('.opt');
+  opts.forEach((o,idx)=>{
+    o.classList.add('locked');
+    if(idx===item.ans){
+      o.classList.add('correct');
+      o.insertAdjacentHTML('beforeend','<span class="mark c">✓</span>');
+    } else if(idx===oi){
+      o.classList.add('wrong');
+      o.insertAdjacentHTML('beforeend','<span class="mark w">✗</span>');
+    }
+  });
+  if(oi===item.ans) score++;
+  document.getElementById(`sol-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=score;
+}
+
+function resetQuiz(){
+  score=0;
+  answered.fill(false);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

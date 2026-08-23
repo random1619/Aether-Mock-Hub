@@ -75,7 +75,7 @@ export function NotificationBell() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             className={clsx(
-              'absolute right-0 top-full mt-2 w-72 rounded-xl shadow-xl border overflow-hidden z-50',
+              'absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl shadow-xl border overflow-hidden z-50',
               isNetflix
                 ? 'bg-[#181818] border-[#333]'
                 : 'bg-bg-raised border-[var(--glass-border)]'

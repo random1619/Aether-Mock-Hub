@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { animate, motion, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { projectMomentum, applyRubberband } from '@/lib/motion';
 
 interface RailProps {
   /** Optional heading rendered above the rail (with the arrow controls). */
@@ -86,9 +87,13 @@ export function Rail({ title, hint, icon, children, scrollBy = 340 }: RailProps)
   const onPointerMove = (e: React.PointerEvent) => {
     const el = trackRef.current;
     if (!el || !drag.current.active) return;
-    if (Math.abs(e.clientX - drag.current.startX) > 6) drag.current.moved = true;
-    el.scrollLeft = drag.current.scrollLeft - (e.clientX - drag.current.startX);
-    // Sample velocity (px/ms). Ignore a zero-dt frame to avoid div-by-zero.
+    const rawDelta = e.clientX - drag.current.startX;
+    if (Math.abs(rawDelta) > 6) drag.current.moved = true;
+    // 1:1 tracking with rubber-band resistance past bounds — never hard-stop.
+    const rawTarget = drag.current.scrollLeft - rawDelta;
+    const max = Math.max(0, el.scrollWidth - el.clientWidth);
+    el.scrollLeft = applyRubberband(rawTarget, 0, max, 0.55);
+    // Sample velocity with short history (last few moves matter at release).
     const dt = e.timeStamp - drag.current.lastT;
     if (dt > 0) {
       drag.current.velocity = (e.clientX - drag.current.lastX) / dt;
@@ -101,25 +106,24 @@ export function Rail({ title, hint, icon, children, scrollBy = 340 }: RailProps)
     drag.current.active = false;
     const el = trackRef.current;
     if (!el || reduce) return;
-    // The flick moves the *content* opposite to pointer direction (drag right
-    // → scrollLeft decreases). Negate pointer velocity for scroll velocity.
-    const velocityPxPerMs = -drag.current.velocity;
-    // px/ms → px/s; below threshold (~0.3 px/ms ≈ a firm push) just settle.
-    if (Math.abs(velocityPxPerMs) < 0.3) return;
+    const velocityPxPerMs = -drag.current.velocity; // invert: pointer vs scroll
+    if (Math.abs(velocityPxPerMs) < 0.28) return;
     const max = Math.max(0, el.scrollWidth - el.clientWidth);
     const from = el.scrollLeft;
-    const target = from + velocityPxPerMs * 1000 * 0.6; // project ~0.6s of travel
-    const clamped = Math.max(0, Math.min(max, target));
+    // Apple projection: where is the flick *going*? Not where it was.
+    const projected = from + projectMomentum(velocityPxPerMs * 1000, 0.998);
+    // Snap to nearest card edge for spatial consistency — but carry velocity through.
+    const clamped = Math.max(0, Math.min(max, projected));
     const controls = animate(from, clamped, {
       type: 'inertia',
-      velocity: velocityPxPerMs * 1000, // px/s, framer-motion inertia uses px/s
-      power: 0.6,            // how far the projection reaches
-      timeConstant: 350,     // decay rate (ms)
+      velocity: velocityPxPerMs * 1000,
+      power: 0.7,
+      timeConstant: 380,
       modifyTarget: (v) => Math.max(0, Math.min(max, v)),
-      bounceStiffness: 400,  // gentle settle at the bounds
-      bounceDamping: 26,
+      bounceStiffness: 500,
+      bounceDamping: 28,
       restSpeed: 0.01,
-      onUpdate: (v) => { if (el) el.scrollLeft = v; },
+      onUpdate: (v) => { if (el) el.scrollLeft = applyRubberband(v, 0, max, 0.55); },
     });
     inertiaCtl.current.stop = () => controls.stop();
   };
@@ -162,7 +166,7 @@ export function Rail({ title, hint, icon, children, scrollBy = 340 }: RailProps)
         </motion.button>
       )}
 
-      {/* Track */}
+      {/* Track — mobile: tighter gap, momentum, rubber-band, safe thumb */}
       <div
         ref={trackRef}
         tabIndex={0}
@@ -173,13 +177,21 @@ export function Rail({ title, hint, icon, children, scrollBy = 340 }: RailProps)
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        onTouchStart={(e) => {
+          // Ensure touch doesn't trigger pull-to-refresh on the rail
+          if (e.touches.length === 1) (e.currentTarget as HTMLElement).style.touchAction = 'pan-x';
+        }}
         onClickCapture={swallowDragClick}
         className={clsx(
-          'rail-track flex gap-5 overflow-x-auto snap-x snap-mandatory pb-2',
-          'px-4 sm:px-6 scroll-px-4 sm:scroll-px-6',
+          'rail-track flex gap-3 sm:gap-5 overflow-x-auto snap-x snap-mandatory pb-3 sm:pb-2',
+          'px-3 sm:px-6 scroll-px-3 sm:scroll-px-6',
           '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           'cursor-grab active:cursor-grabbing select-none',
+          '-mx-1 sm:mx-0',
+          'overscroll-x-contain',
         )}
+        style={{ WebkitOverflowScrolling: 'touch' } as any}
       >
         {children}
       </div>

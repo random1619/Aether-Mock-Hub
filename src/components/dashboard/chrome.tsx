@@ -10,9 +10,10 @@ import { examPath } from '@/lib/examLink';
    frosted nav bar, animated theme toggle, search pill, and the iOS-style
    segmented control. Extracted so the two page shells stop drifting. */
 
-/** apple.com-style frosted-glass nav bar classes (identical on both shells). */
+/** Apple translucent material — floating functional layer with blur + saturation.
+    Content scrolls underneath; heavier shadow over busy content handled via unscrolled state. */
 export const FROSTED_NAV =
-  'sticky top-0 z-sticky h-12 bg-[var(--glass)] backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--glass-border)]';
+  'sticky top-0 z-sticky bg-[var(--glass)] backdrop-blur-[20px] backdrop-saturate-[180%] border-b border-[var(--glass-border)] supports-[backdrop-filter:blur(0)]:bg-[var(--glass)]';
 
 /** Animated sun/moon theme toggle with the rotation transition. */
 export function ThemeToggle({
@@ -20,14 +21,13 @@ export function ThemeToggle({
   onToggle,
   className,
 }: {
-  theme: 'dark' | 'light' | 'netflix';
+  theme: 'dark' | 'light' | 'netflix' | 'onepiece';
   onToggle: () => void;
   className?: string;
 }) {
-  /* The toggle flips between the two Apple schemes. When Netflix is active the
-     icon shows Sun (clicking returns to light); Netflix itself is chosen from
-     the Appearance setting, not this quick toggle. */
-  const showSun = theme === 'dark' || theme === 'netflix';
+  /* The toggle flips between the two Apple schemes. When Netflix/OnePiece is active the
+     icon shows Sun (clicking returns to light) */
+  const showSun = theme === 'dark' || theme === 'netflix' || theme === 'onepiece';
   return (
     <button
       onClick={onToggle}
@@ -76,6 +76,9 @@ export function SearchPill({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const openSpotlight = () => {
+    // Prefer a direct custom event (reliable) over synthesizing a KeyboardEvent
+    // which some browsers don't deliver to keydown metaKey handlers.
+    window.dispatchEvent(new CustomEvent('aether:open-palette'));
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
   };
 
@@ -112,38 +115,42 @@ export function SearchPill({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={() => { setFocused(true); openSpotlight(); }}
-        onClick={openSpotlight}
+        onFocus={() => setFocused(true)}
+        onClick={() => { if (!value) openSpotlight(); }}
         placeholder={placeholder}
         aria-label={ariaLabel}
         className={clsx(
-          'w-full bg-surface-2 text-text placeholder:text-muted focus:outline-none focus:shadow-[var(--focus-ring)] transition-all duration-300 cursor-pointer pr-10',
+          'w-full text-text placeholder:text-muted focus:outline-none focus:shadow-[var(--focus-ring)] transition-all duration-300 cursor-pointer pr-10 rounded-full',
           size === 'sm' ? 'h-8 pl-9 text-[13px]' : 'h-10 pl-10 text-sm',
           isNetflix
-            ? 'bg-black/60 border border-white/20 focus:border-white focus:bg-black/90 focus:w-full rounded-[2px] text-white'
-            : 'rounded-full'
+            ? 'bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:border-white/50 focus:bg-white/15 focus:ring-2 focus:ring-[#E50914]/40'
+            : 'bg-surface-2'
         )}
       />
-      {!isNetflix && (
-        <button
-          onClick={openSpotlight}
-          className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-surface-3 text-text font-mono text-[10px] font-bold cursor-pointer hover:bg-primary-soft hover:text-primary transition-colors"
-          title="Open Spotlight Search (⌘K)"
-        >
-          <Command size={10} />K
-        </button>
-      )}
+      <button
+        onClick={openSpotlight}
+        className={clsx(
+          "absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full font-mono text-[10px] font-bold cursor-pointer transition-all active:scale-95",
+          isNetflix
+            ? "bg-white/15 border border-white/20 text-white/90 hover:bg-white/25 hover:text-white"
+            : "bg-surface-3 text-text hover:bg-primary-soft hover:text-primary"
+        )}
+        title="Open Spotlight Search (⌘K)"
+      >
+        <Command size={10} />K
+      </button>
 
       {/* Autocomplete dropdown */}
       <AnimatePresence>
         {showDropdown && (
           <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
             className={clsx(
-              'absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl border overflow-hidden z-50',
-              isNetflix ? 'bg-[#181818] border-[#333]' : 'bg-bg-raised border-[var(--glass-border)]'
+              'absolute top-full left-0 right-0 mt-1.5 rounded-2xl shadow-2xl border overflow-hidden z-50 p-1.5 backdrop-blur-2xl',
+              isNetflix ? 'bg-[#141414]/95 border-white/15' : 'bg-bg-raised border-[var(--glass-border)]'
             )}
           >
             {filteredMocks.map((mock) => (
@@ -152,12 +159,12 @@ export function SearchPill({
                 to={examPath(mock.path)}
                 onClick={() => { setFocused(false); onChange(''); }}
                 className={clsx(
-                  'block px-3 py-2 hover:bg-primary-soft transition-colors',
-                  isNetflix ? 'text-white hover:text-white' : 'text-text'
+                  'block px-3 py-2 rounded-xl transition-all',
+                  isNetflix ? 'text-white hover:bg-white/10' : 'text-text hover:bg-primary-soft'
                 )}
               >
                 <div className="text-sm font-medium truncate">{mock.name}</div>
-                <div className={clsx('text-xs', isNetflix ? 'text-[#808080]' : 'text-muted')}>
+                <div className={clsx('text-xs', isNetflix ? 'text-[#86868b]' : 'text-muted')}>
                   {mock.provider} {mock.subject && `· ${mock.subject}`}
                 </div>
               </Link>

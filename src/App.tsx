@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useProfileStore } from '@/services/profileStore';
 import { LoginGate } from '@/components/profile/LoginGate';
 import { SmoothScrollProvider } from '@/components/layout/SmoothScroll';
+import { CustomCursor } from '@/components/layout/Cursor';
 import { PageTransition } from '@/components/ui';
 import Dashboard from '@/pages/Dashboard';
 import Exam from '@/pages/Exam';
@@ -16,13 +17,15 @@ import TheSolverPage from '@/pages/providers/TheSolverPage';
 import Mocks360Page from '@/pages/providers/Mocks360Page';
 import StaticGkPage from '@/pages/providers/StaticGkPage';
 import CurrentAffairsPdfPage from '@/pages/providers/CurrentAffairsPdfPage';
+import { MobileBottomBar } from '@/components/layout/MobileBottomBar';
 
-// Lazy-load Analytics so recharts (~118KB gzip) is only fetched when the route
-// is visited, keeping it off the Dashboard's critical path.
+// Lazy-load heavy routes so recharts / large pages stay off Dashboard's critical path.
 const Analytics = lazy(() => import('@/pages/Analytics'));
 const SavedQuestions = lazy(() => import('@/pages/SavedQuestions'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Alarms = lazy(() => import('@/pages/Alarms'));
+const Showcase = lazy(() => import('@/pages/Showcase'));
+const Activity = lazy(() => import('@/pages/Activity'));
 
 function RouteLoader() {
   return (
@@ -100,6 +103,22 @@ function AnimatedRoutes() {
             </Suspense>,
           )}
         />
+        <Route
+          path="/showcase"
+          element={withPageTransition(
+            <Suspense fallback={<RouteLoader />}>
+              <Showcase />
+            </Suspense>,
+          )}
+        />
+        <Route
+          path="/activity"
+          element={withPageTransition(
+            <Suspense fallback={<RouteLoader />}>
+              <Activity />
+            </Suspense>,
+          )}
+        />
         <Route path="*" element={withPageTransition(<NotFound />)} />
       </Routes>
     </AnimatePresence>
@@ -125,6 +144,35 @@ function NotFound() {
 }
 
 import { CommandPalette } from '@/components/search/CommandPalette';
+import { initNativeMobile } from '@/services/nativeMobile';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+function NativeMobileBridge() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    initNativeMobile((to) => {
+      if (typeof to === 'number') {
+        navigate(to);
+      } else {
+        navigate(to);
+      }
+    });
+  }, [navigate]);
+  return null;
+}
+
+function getBasename(): string {
+  if (typeof window !== 'undefined') {
+    const proto = window.location.protocol;
+    const isCap = proto === 'capacitor:' || !!(window as any).Capacitor?.isNativePlatform?.();
+    if (isCap) return '/';
+    // Allow overriding via ?base=/ during testing
+    const qs = new URLSearchParams(window.location.search);
+    if (qs.get('base')) return qs.get('base') as string;
+  }
+  return '/v2/';
+}
 
 export default function App() {
   // Profile-keying now lives on the <Routes> inside AnimatedRoutes, so the
@@ -137,11 +185,16 @@ export default function App() {
     // reducedMotion="user" makes every framer-motion animation across the app
     // honor the OS "prefers-reduced-motion" setting (a11y hardening, T6).
     <MotionConfig reducedMotion="user">
-      <BrowserRouter basename="/v2/">
+      <BrowserRouter basename={getBasename()}>
+        <NativeMobileBridge />
+        {/* Desktop custom cursor — self-gates to fine pointers, no-ops on
+            touch / reduced-motion, and never blocks clicks. */}
+        <CustomCursor />
         <LoginGate>
           <SmoothScrollProvider>
             <CommandPalette />
             <AnimatedRoutes />
+            <MobileBottomBar />
           </SmoothScrollProvider>
         </LoginGate>
       </BrowserRouter>

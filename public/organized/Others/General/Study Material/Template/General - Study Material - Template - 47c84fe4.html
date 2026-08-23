@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocks Wallah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --light: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #dfe6e9;
+            --card-bg: #ffffff;
+            --body-bg: #f5f6fa;
+            --header-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --footer-bg: #ffffff;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --box-shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Space for fixed navigation */
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .header-brand i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .control-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .timer-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 18px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .timer-display i {
+            margin-right: 6px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            padding: 16px;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--box-shadow-sm);
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .option-item {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+            .question-text {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+
+    .question-text img,
+    .option-label img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 8px 0;
+        border-radius: 8px;
+    }
+
+    .option-label {
+        overflow: hidden;
+    }
+
+    .question-card {
+        overflow: hidden;
+    }
+        
+        .option-label {
+            display: block;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .option-input:checked + .option-label {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        
+        .option-input:checked + .option-label::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        /* When reviewing answers */
+        .review-mode .option-input:checked + .option-label.correct {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.correct::after {
+            background: var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.incorrect {
+            border-color: var(--danger);
+            background: rgba(214, 48, 49, 0.05);
+            box-shadow: 0 0 0 1px var(--danger);
+        }
+        
+        .MathJax, .mjx-chtml {
+            overflow-x: auto;
+            max-width: 100%;
+            display: inline-block;
+        }
+
+        
+        .review-mode .option-input:checked + .option-label.incorrect::after {
+            background: var(--danger);
+        }
+        
+        .review-mode .option-label.correct-answer {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-label.correct-answer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--success);
+        }
+        
+        .solution-container {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .solution-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        /* Question Navigation */
+        .question-nav {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            bottom: 80px;
+            width: 100%;
+            max-width: 320px;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: var(--transition);
+            z-index: 900;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .question-nav.show {
+            transform: translateX(0);
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .question-stats {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .stat-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .section-selector {
+            width: 100%;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 10px 16px;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            font-size: 0.9rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+        }
+        
+        .q-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .q-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .q-box.attempted {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .q-box.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .q-box.incorrect {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .q-box.current {
+            border: 2px solid var(--accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .q-box.unattempted {
+            background-color: var(--gray);
+            color: white;
+            border-color: var(--gray);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--footer-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 800;
+        }
+        
+        .nav-btn {
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            transition: var(--transition);
+            gap: 8px;
+        }
+        
+        .nav-btn i {
+            font-size: 1rem;
+        }
+        
+        .nav-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .nav-btn-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Overlay when nav is open */
+        .nav-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            background: rgba(0,0,0,0.5);
+            z-index: 800;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .nav-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Results Modal */
+        .results-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 16px;
+        }
+        
+        .results-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .results-modal.show .results-card {
+            transform: translateY(0);
+        }
+        
+        .results-header {
+            background: var(--header-bg);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .results-title {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .results-body {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .results-footer {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 992px) {
+            .question-nav {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 320px;
+            }
+            
+            .nav-overlay {
+                display: none;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+                gap: 6px;
+            }
+            
+            .q-box {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .option-label {
+                padding: 12px 14px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            .header-brand {
+                font-size: 1rem;
+            }
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .timer-display {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            
+            .nav-btn {
+                height: 44px;
+                padding: 0 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="header-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Mocks Wallah</span>
+            </a>
+            
+            <div class="header-controls">
+                <!-- Timer -->
+                <div class="timer-display">
+                    <i class="far fa-clock"></i>
+                    <span id="timer-display">5:00</span>
+                </div>
+                
+                <!-- Language toggle -->
+                <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">
+                    <span id="lang-text">En</span>
+                </button>
+                
+                <!-- Submit button -->
+                <button class="control-btn" id="submit-btn" onclick="confirmSubmit()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                
+                <!-- Questions toggle for mobile -->
+                <button class="control-btn nav-toggle-btn" id="nav-toggle" onclick="toggleNav()">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="main-content" id="main-content">
+        <div class="question-counter" id="question-counter">Question 1 of 15</div>
+        
+        <!-- Questions will be displayed here -->
+        <div id="questions-container"></div>
+    </main>
+    
+    <!-- Overlay for mobile nav -->
+    <div class="nav-overlay" id="nav-overlay" onclick="toggleNav(false)"></div>
+    
+    <!-- Question navigation sidebar -->
+    <aside class="question-nav" id="question-nav">
+        <div class="nav-header">
+            <h3 class="nav-title">Questions</h3>
+            <div class="question-stats">
+                <span class="stat-badge bg-primary" id="attempted-count">0</span>
+                <span class="stat-badge bg-gray" id="total-count">15</span>
+                <button class="control-btn d-lg-none" onclick="toggleNav(false)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Section selector -->
+        <select class="section-selector" id="section-selector" onchange="switchSection(this.value)">
+            <option value="all">All Sections</option>
+        </select>
+        
+        <!-- Question grid -->
+        <div class="question-grid" id="question-boxes"></div>
+    </aside>
+    
+    <!-- Bottom navigation for mobile -->
+    <nav class="bottom-nav d-lg-none">
+        <button class="nav-btn nav-btn-outline" onclick="prevQuestion()">
+            <i class="fas fa-chevron-left"></i>
+            <span>Previous</span>
+        </button>
+        <button class="nav-btn nav-btn-outline" onclick="nextQuestion()">
+            <span>Next</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </nav>
+    
+    <!-- Results modal -->
+    <div class="results-modal" id="results-modal">
+        <div class="results-card">
+            <div class="results-header">
+                <h3 class="results-title">Test Results</h3>
+            </div>
+            <div class="results-body">
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark))">
+                        <div class="stat-value" id="score-value">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--success), #1b9aaa)">
+                        <div class="stat-value" id="correct-value">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--danger), var(--accent))">
+                        <div class="stat-value" id="incorrect-value">0</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--gray), var(--dark))">
+                        <div class="stat-value" id="unattempted-value">0</div>
+                        <div class="stat-label">Unattempted</div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-footer">
+                <button class="nav-btn nav-btn-primary" onclick="reviewTest()">
+                    <i class="fas fa-search me-1"></i>
+                    <span>Review Test</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Questions data
+        const questions = [];
+        const sections = {};
+        let currentLang = "en";
+        let currentQuestion = 0;
+        let answers = {};
+        let submitted = false;
+        let totalTime = 5 * 60;
+        
+        // Initialize the test
+        window.onload = function() {
+            initializeTest();
+            startTimer();
+            
+            // If on desktop, show the question navigation by default
+            if (window.innerWidth >= 992) {
+                document.getElementById('question-nav').classList.add('show');
+                document.getElementById('main-content').classList.add('with-nav');
+            }
+        };
+        
+        // Initialize test data
+        function initializeTest() {
+            // Add sections and questions
+            
+            sections["18"] = {
+                name: "General Awareness",
+                start: 0,
+                end: 13
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="18">General Awareness</option>`;
+            
+            sections["misc"] = {
+                name: "Miscellaneous",
+                start: 14,
+                end: 14
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="misc">Miscellaneous</option>`;
+            
+            
+                questions.push({
+                    id: "1",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">1.</span><span style=\"font-family: Roboto;\">The Commonwealth Games 2018 were held at which of the following places?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin Dark;\">1. राष्ट्रमंडल खेल 2018 निम्नलिखित में से किस स्थान पर आयोजित किए गए थे?</span></p>",
+                    options_en: ["<p>Gold coast</p>", "<p>Edinburgh</p>", 
+                                "<p>Victoria</p>", "<p>Kuala Lumpur</p>"],
+                    options_hi: ["<p>गोल्ड कोस्ट</p>", "<p>एडिनबर्ग</p>",
+                                "<p>विक्टोरिया</p>", "<p>क्वालालंपुर</p>"],
+                    solution_en: "<p>1.(a) <span style=\"font-family: Roboto;\">Commonwealth Games</span><span style=\"font-family: Roboto;\"> <strong>2018</strong> :</span><span style=\"font-family: Roboto;\"> Host (</span><span style=\"font-family: Roboto;\"><strong>Gold Coast</strong>,</span><span style=\"font-family: Roboto;\"> Australia), Top Association (Australia). </span><span style=\"font-family: Roboto;\"><strong>2022:</strong> </span><span style=\"font-family: Roboto;\">Host (Birmingham, England England), Top Association (Australia).</span><span style=\"font-family: Roboto;\"> <strong>2026</strong>: </span><span style=\"font-family: Roboto;\">Host (State of Victoria, Australia). </span></p>",
+                    solution_hi: "<p>1.(a)<span style=\"font-family: Palanquin;\"> कॉमनवेल्थ गेम्स </span><strong><span style=\"font-family: Roboto;\">2018</span></strong><span style=\"font-family: Palanquin;\">: मेज़बान <strong>(</strong></span><strong><span style=\"font-family: Palanquin;\">गोल्ड कोस्ट</span></strong><span style=\"font-family: Palanquin;\">, ऑस्ट्रेलिया), टॉप एसोसिएशन (ऑस्ट्रेलिया)। </span><strong><span style=\"font-family: Roboto;\">2022</span></strong><span style=\"font-family: Palanquin;\">: मेज़बान (बर्मिंघम, इंग्लैंड), टॉप एसोसिएशन (ऑस्ट्रेलिया)। <strong>2026</strong>: मेजबान (विक्टोरिया राज्य, ऑस्ट्रेलिया)।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "2",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">2.</span><span style=\"font-family: Roboto;\">The word Manuscripts derived from which of the following language?</span></p>",
+                    question_hi: "<p>2.<span style=\"font-family: Palanquin Dark;\">पांडुलिपि शब्द निम्नलिखित में से किस भाषा से लिया गया है?</span></p>",
+                    options_en: ["<p>Latin</p>", "<p>Prakrit</p>", 
+                                "<p>Sanskrit</p>", "<p>Greek</p>"],
+                    options_hi: ["<p>लैटिन</p>", "<p>प्राकृत</p>",
+                                "<p>संस्कृत</p>", "<p>ग्रीक</p>"],
+                    solution_en: "<p>2.(a) <span style=\"font-family: Roboto;\">The </span><span style=\"font-family: Roboto;\"><strong>manuscript</strong> </span><span style=\"font-family: Roboto;\">word evolved from the </span><strong><span style=\"font-family: Roboto;\">Latin Manu S</span><span style=\"font-family: Roboto;\">criptus</span></strong><span style=\"font-family: Roboto;\">,</span><span style=\"font-family: Roboto;\"> meaning &ldquo;written by hand.&rdquo; Manu is &ldquo;hand&rdquo; and S</span><span style=\"font-family: Roboto;\">criptus</span><span style=\"font-family: Roboto;\"> is &ldquo;to write.\" These were written on palm leaves and on the bark of birch trees. </span><span style=\"font-family: Roboto;\"><strong>Palaeography</strong> </span><span style=\"font-family: Roboto;\">is the study of pre-modern manuscripts: hand-written books, rolls, scrolls and single-sheet documents.</span></p>",
+                    solution_hi: "<p>2.(a)<span style=\"font-family: Palanquin;\"> पांडुलिपि शब्द लैटिन मनु स्क्रिप्टस (</span><strong><span style=\"font-family: Roboto;\">manuscript</span></strong><span style=\"font-family: Palanquin;\">) से विकसित हुआ है, जिसका अर्थ है \"हाथ से लिखा गया।\" मनु \"हाथ\" है और स्क्रिप्टस \"लिखने के लिए\" है। ये ताड़ के पत्तों और बर्च के पेड़ों की छाल पर लिखे गए थे।<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">पुरालेख</span></strong><span style=\"font-family: Palanquin;\"> पूर्व-आधुनिक पांडुलिपियों का अध्ययन है: हाथ से लिखी गई किताबें, रोल, स्क्रॉल और सिंगल-शीट दस्तावेज़ </span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "3",
+                    section: "18",
+                    question_en: "<p>3. <span style=\"font-family: Roboto;\">For</span><span style=\"font-family: Roboto;\"> how many days is the Hornbill festival held?</span></p>",
+                    question_hi: "<p>3.<span style=\"font-family: Roboto;\"> </span><span style=\"font-family: Palanquin Dark;\">हॉर्नबिल महोत्सव कितने दिनों के लिए आयोजित किया जाता है?</span></p>",
+                    options_en: ["<p>5</p>", "<p>10</p>", 
+                                "<p>15</p>", "<p>20</p>"],
+                    options_hi: ["<p>5</p>", "<p>10</p>",
+                                "<p>15</p>", "<p>20</p>"],
+                    solution_en: "<p>3.(b)<span style=\"font-family: Roboto;\"> The</span><span style=\"font-family: Roboto;\"><strong> Hornbill</strong> Festival</span><span style=\"font-family: Roboto;\"> is an annual festival celebrated by Warrior Tribes of Nagaland from 1 to 10 of December</span><span style=\"font-family: Roboto;\"> (<strong>10 days</strong>)</span><span style=\"font-family: Roboto;\">. Other festivals of<strong> </strong></span><span style=\"font-family: Roboto;\"><strong>Nagaland</strong> </span><span style=\"font-family: Roboto;\">include Sekrenyi (Angami tribe), Tsukheneye (Chakhesang tribe), Aoleang (Konyak tribe), Naknyulem (Chang tribe), Mimkut (Kuki Tribe), Tokhu Emong (Lotha tribe), Tuluni (Sumi Tribe), etc. </span></p>",
+                    solution_hi: "<p>3.(b) <strong>हॉर्नबिल महोत्सव</strong><span style=\"font-family: Palanquin;\"> नागालैंड की योद्धा जनजातियों द्वारा 1 से 10 दिसंबर (</span><strong><span style=\"font-family: Palanquin;\">10 दिन</span></strong><span style=\"font-family: Palanquin;\">) तक मनाया जाने वाला एक वार्षिक उत्सव है। </span><span style=\"font-family: Palanquin;\"><strong>नागालैंड</strong> </span><span style=\"font-family: Palanquin;\">के अन्य त्योहारों में सेक्रेनी (अगामी जनजाति), त्सुखेनेय (चखेसांग जनजाति), आओलंग (कोन्याक जनजाति), </span><span style=\"font-family: Palanquin;\">नाक्युलेम (चांग जनजाति), मिमकुत (कूकी जनजाति), तोखू एमोंग (लोथा जनजाति), तुलुनी (सुमी जनजाति), आदि शामिल हैं।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "4",
+                    section: "18",
+                    question_en: "<p>4. <span style=\"font-family: Roboto;\"> Bimbavati Devi is an exponent of which Indian dance form?</span></p>",
+                    question_hi: "<p>4.<span style=\"font-family: Palanquin Dark;\"> बिम्बावती देवी किस भारतीय नृत्य शैली की प्रतिपादक हैं?</span></p>",
+                    options_en: ["<p>Chhau</p>", "<p>Manipuri</p>", 
+                                "<p>Kathakali</p>", "<p>Odissi</p>"],
+                    options_hi: ["<p>छऊ</p>", "<p>मणिपुरी</p>",
+                                "<p>कथकली</p>", "<p>ओडिसी</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">4.(b)</span><span style=\"font-family: Roboto;\"> Bimbavati Devi is the exponent of </span><strong><span style=\"font-family: Roboto;\">Manipuri</span></strong><span style=\"font-family: Roboto;\"> dance form. Some of other<strong> </strong></span><span style=\"font-family: Roboto;\"><strong>Manipuri</strong> </span><span style=\"font-family: Roboto;\">dancers: Guru Bipin Singh, Rajkumar Singhjit Singh, Charu Sija Mathur.<strong> </strong></span><span style=\"font-family: Roboto;\"><strong>Kathakali</strong> </span><span style=\"font-family: Roboto;\">(Kerala): Kalamandalam Ramankutty Nair, Kalamandalam Gopi, Madavoor Vasudevan Nair, Milena Salvini. </span><strong><span style=\"font-family: Roboto;\">Odissi</span></strong><span style=\"font-family: Roboto;\"> (Odisha): Kelucharan Mohapatra, Sonal Mansingh. </span><strong><span style=\"font-family: Roboto;\">Chhau</span></strong><span style=\"font-family: Roboto;\"> (Odisha, Chhattisgarh, Jharkhand, West-Bengal).</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Roboto;\">4.(b)</span><span style=\"font-family: Palanquin;\"> बिम्बावती देवी<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">मणिपुरी</span></strong><span style=\"font-family: Palanquin;\"> नृत्य शैली की प्रतिपादक हैं। कुछ अन्य मणिपुरी नर्तक: गुरु बिपिन सिंह, राजकुमार सिंहजीत सिंह, चारू सिजा माथुर।</span><span style=\"font-family: Palanquin;\"> <strong>कथकली</strong> </span><span style=\"font-family: Palanquin;\">(केरल): कलामंडलम रमनकुट्टी नायर, कलामंडलम गोपी, मदवूर वासुदेवन नायर, मिलेना साल्विनी। </span><strong><span style=\"font-family: Palanquin;\">ओडिसी</span></strong><span style=\"font-family: Palanquin;\"><strong> </strong>(ओडिशा): केलुचरण महापात्रा, सोनल मानसिंह। </span><strong><span style=\"font-family: Palanquin;\">छऊ</span></strong><span style=\"font-family: Palanquin;\"> (ओडिशा, छत्तीसगढ़, झारखंड, पश्चिम-बंगाल)।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "5",
+                    section: "18",
+                    question_en: "<p>5. The Kuchipudi classical dance is accompanied with which type of music?</p>",
+                    question_hi: "<p>5. <span style=\"font-family: Palanquin Dark;\">कुचिपुड़ी शास्त्रीय नृत्य किस प्रकार के संगीत से संबंधित है?</span></p>",
+                    options_en: ["<p>Kajri</p>", "<p>Chaiti</p>", 
+                                "<p>Carnatic Music</p>", "<p>Hindustani Music</p>"],
+                    options_hi: ["<p>कजरी</p>", "<p>चैती</p>",
+                                "<p>कर्नाटक संगीत</p>", "<p>हिंदुस्तानी संगीत</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">5.(c)<strong> Kuchipudi</strong> </span><span style=\"font-family: Roboto;\">dance is accompanied with Carnatic music, while the recital is in Telugu language. </span><strong><span style=\"font-family: Roboto;\">Bharatnatyam</span><span style=\"font-family: Roboto;\">, </span></strong><span style=\"font-family: Roboto;\"><strong>Kathakali</strong>, </span><span style=\"font-family: Roboto;\">and </span><strong><span style=\"font-family: Roboto;\">Mohiniattam</span></strong><span style=\"font-family: Roboto;\">, are accompanied by the classical southern Indian Carnatic music. </span><span style=\"font-family: Roboto;\"><strong>Manipuri</strong> </span><span style=\"font-family: Roboto;\">: Devotional music,</span><span style=\"font-family: Roboto;\"> <strong>Odisha</strong></span><span style=\"font-family: Roboto;\">: Odissi Music, </span><strong><span style=\"font-family: Roboto;\">Sattriya</span></strong><span style=\"font-family: Roboto;\">: Borgeet music, </span><span style=\"font-family: Roboto;\"><strong>Kathak</strong>:</span><span style=\"font-family: Roboto;\"> Hindustani Music. Kajri and Chaiti Dance (Uttar pradesh).</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Palanquin;\">5.(c) <strong>कुचिपुड़ी नृत्य</strong> </span><span style=\"font-family: Palanquin;\">कर्नाटक संगीत के साथ होता है, जबकि गायन तेलुगु भाषा में होता है।</span><span style=\"font-family: Palanquin;\"> <strong>भरतनाट्यम, कथकली, और मोहिनीअट्टम</strong>,</span><span style=\"font-family: Palanquin;\"> शास्त्रीय दक्षिणी भारतीय कर्नाटक संगीत के साथ हैं। </span><strong><span style=\"font-family: Palanquin;\">मणिपुरी</span></strong><span style=\"font-family: Palanquin;\">: भक्ति संगीत, </span><strong><span style=\"font-family: Palanquin;\">ओडिशा</span></strong><span style=\"font-family: Palanquin;\">: ओडिसी संगीत, <strong>सत्त्रिया</strong>: बोरगीत संगीत, </span><strong><span style=\"font-family: Palanquin;\">कथक</span></strong><span style=\"font-family: Palanquin;\">: हिंदुस्तानी संगीत। कजरी और चैती नृत्य (उत्तर प्रदेश)।</span></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "6",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">6. At present, the Grand Trunk Road extends from_______________ in India.</span></p>",
+                    question_hi: "<p>6<span style=\"font-family: Palanquin Dark;\">. वर्तमान में, ग्रैंड ट्रंक रोड भारत में कहाँ से कहाँ तक जाती है?</span></p>",
+                    options_en: ["<p>Kashmir to Kanyakumari</p>", "<p>Amritsar to Kolkata</p>", 
+                                "<p>Chennai to Kolkata</p>", "<p>Agra to Kolkata</p>"],
+                    options_hi: ["<p>कश्मीर से कन्याकुमारी तक</p>", "<p>अमृतसर से कोलकाता तक</p>",
+                                "<p>चेन्नई से कोलकाता तक</p>", "<p>आगरा से कोलकाता तक</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">6.(b) </span><span style=\"font-family: Roboto;\">The Grand Trunk Road runs from </span><strong><span style=\"font-family: Roboto;\">Amritsar to Kolkata</span></strong><span style=\"font-family: Roboto;\"> in India. This road was built by </span><strong><span style=\"font-family: Roboto;\">Sher Shah Suri</span></strong><span style=\"font-family: Roboto;\"> in the 16th century. National Highway 1 is known as Sher Shah Suri Marg. Sher Shah Suri {(Farid Khan), founder of the Suri Empire in India, capital in Sasaram in modern-day Bihar}. Sher Shah issued a coin of silver which was termed the </span><strong><span style=\"font-family: Roboto;\">Rupiya</span></strong><span style=\"font-family: Roboto;\">.</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Roboto;\">6.(b) </span><span style=\"font-family: Palanquin;\">ग्रांड ट्रंक रोड भारत में </span><span style=\"font-family: Palanquin;\"><strong>अमृतसर से कोलकाता</strong> </span><span style=\"font-family: Palanquin;\">तक चलती है। इस सड़क का निर्माण </span><strong><span style=\"font-family: Palanquin;\">शेरशाह सूरी</span></strong><span style=\"font-family: Palanquin;\"> ने 16वीं शताब्दी में करवाया था। राष्ट्रीय राजमार्ग 1 को शेरशाह सूरी मार्ग के नाम से जाना जाता है। शेर शाह सूरी {(फरीद खान), भारत में सूरी साम्राज्य के संस्थापक, आधुनिक बिहार में सासाराम में राजधानी}। शेरशाह ने </span><span style=\"font-family: Palanquin;\"><strong>चाँदी का सिक्का</strong> </span><span style=\"font-family: Palanquin;\">जारी किया जिसे </span><span style=\"font-family: Palanquin;\"><strong>रुपये</strong> </span><span style=\"font-family: Palanquin;\">कहा गया।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "7",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">7. What is the average circumference of the standard cricket ball in international cricket?</span></p>",
+                    question_hi: "<p>7.<span style=\"font-family: Palanquin Dark;\">अंतरराष्ट्रीय क्रिकेट में मानक क्रिकेट गेंद की औसत परिधि क्या है?</span></p>",
+                    options_en: ["<p>7.89 inches - 8.45 inches</p>", "<p>10.46 inches - 10.90 inches</p>", 
+                                "<p><span style=\"font-family: Roboto;\">9.45</span><span style=\"font-family: Roboto;\"> inches - </span><span style=\"font-family: Roboto;\">10.20</span><span style=\"font-family: Roboto;\"> inches</span></p>", "<p>8.81 inches-9 inches</p>"],
+                    options_hi: ["<p>7.89 इंच - 8.45 इंच</p>", "<p>10.46 इंच - 10.90 इंच</p>",
+                                "<p>9.45 इंच - 10.20 इंच</p>", "<p>8.81 इंच - 9 इंच</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">7.(d) </span><span style=\"font-family: Roboto;\">The standard cricket ball in international cricket has an average circumference of </span><strong><span style=\"font-family: Roboto;\">8.81inches - 9 inches</span></strong><span style=\"font-family: Roboto;\">. Cricket pitch breadth : </span><span style=\"font-family: Roboto;\"><strong>10 feet</strong>. </span><span style=\"font-family: Roboto;\">Important</span><span style=\"font-family: Roboto;\"> <strong>terminologies</strong> </span><span style=\"font-family: Roboto;\">used in Cricket: Striker, Off-side/leg-side, Run, Four, Bowled, Caught, LBW, Stumped, Innings, etc.</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Roboto;\">7.(d)</span><span style=\"font-family: Palanquin;\"> अंतरराष्ट्रीय क्रिकेट में मानक क्रिकेट गेंद की औसत परिधि 8.81 इंच - 9 इंच होती है। क्रिकेट पिच की चौड़ाई:<strong> </strong></span><span style=\"font-family: Palanquin;\"><strong>10 फीट</strong> है </span><span style=\"font-family: Palanquin;\">। क्रिकेट में उपयोग की जाने वाली<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">महत्वपूर्ण शब्दावली</span></strong><span style=\"font-family: Palanquin;\">: स्ट्राइकर, ऑफ-साइड/लेग-साइड, रन, फोर, बोल्ड, कॉट, एलबीडब्ल्यू(LBW), स्टंप्ड, इनिंग्स, आदि।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "8",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">8. Which of the following festivals is known as Vijaya Utsav?</span></p>",
+                    question_hi: "<p>8. <span style=\"font-family: Palanquin Dark;\">निम्नलिखित में से किस त्योहार को विजय उत्सव के नाम से जाना जाता है?</span></p>",
+                    options_en: ["<p>Hampi Festival</p>", "<p>Gangasagar Mela</p>", 
+                                "<p>Pushkar Fair</p>", "<p>Konark Dance Festival</p>"],
+                    options_hi: ["<p>हम्पी महोत्सव</p>", "<p>गंगासागर मेला</p>",
+                                "<p>पुष्कर मेला</p>", "<p>कोणार्क नृत्य महोत्सव</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">8.(a) <strong>Hampi festival</strong></span><span style=\"font-family: Roboto;\"> (Karnataka), also known as Vijay Utsav, is celebrated for 2 or 3 days and reflects the pomp, splendor and glory of the Vijayanagara Empire. </span><span style=\"font-family: Roboto;\"><strong>Other Festivals of Karnataka</strong>: </span><span style=\"font-family: Roboto;\">Kambala, Ugadi, Pattadakal Dance festival, Vairamundi, Karaga, Vara Mahalakshmi pooja, ganesh Chaturthi, Gowri. </span><span style=\"font-family: Roboto;\"><strong>Pushkar Fair</strong>:</span><span style=\"font-family: Roboto;\"> Rajasthan</span><span style=\"font-family: Roboto;\">. <strong>Konark</strong> </span><span style=\"font-family: Roboto;\">Dance festival: Odisha</span><span style=\"font-family: Roboto;\">. <strong>Gangasagar Mela</strong></span><span style=\"font-family: Roboto;\">: West Bengal.</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Roboto;\">8.(a)</span><span style=\"font-family: Roboto;\"> </span><strong><span style=\"font-family: Palanquin;\">हम्पी उत्सव</span></strong><span style=\"font-family: Palanquin;\"> (कर्नाटक), जिसे विजय उत्सव के नाम से भी जाना जाता है, 2 या 3 दिनों के लिए मनाया जाता है और विजयनगर साम्राज्य के धूमधाम, वैभव और गौरव को दर्शाता है।</span><span style=\"font-family: Palanquin;\"> <strong>कर्नाटक के अन्य त्यौहार</strong></span><span style=\"font-family: Palanquin;\">: कंबाला, उगादि, पट्टदकल नृत्य उत्सव, वैरामुंडी, करगा, वर महालक्ष्मी पूजा, गणेश चतुर्थी, गौरी आदि है। </span><strong><span style=\"font-family: Palanquin;\">पुष्कर मेला</span></strong><span style=\"font-family: Palanquin;\">: राजस्थान। </span><strong><span style=\"font-family: Palanquin;\">कोणार्क नृत्य उत्सव</span></strong><span style=\"font-family: Palanquin;\">: ओडिशा।<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">गंगासागर मेला</span></strong><span style=\"font-family: Palanquin;\">: पश्चिम बंगाल।</span></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "9",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">9.</span><span style=\"font-family: Roboto;\"> Which of the following is the most important festival celebrated by the Muslim community in India to mark the beginning of the Islamic New Year?</span></p>",
+                    question_hi: "<p>9. <span style=\"font-family: Palanquin Dark;\">इस्लामिक नव वर्ष की शुरुआत के उपलक्ष्य में भारत में मुस्लिम समुदाय द्वारा मनाया जाने वाला सबसे महत्वपूर्ण त्योहार निम्नलिखित में से कौन-सा है?</span></p>",
+                    options_en: ["<p>Milad-Un-Nabi</p>", "<p>Muharram</p>", 
+                                "<p>Idu\'l Zuha</p>", "<p>Idul Fitr</p>"],
+                    options_hi: ["<p>मिलाद-उन-नबी</p>", "<p>मुहर्रम</p>",
+                                "<p>इदुल जुहा</p>", "<p>ईद-उल-फितर</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">9.(b) <strong>Muharram</strong></span><span style=\"font-family: Roboto;\"> (July). Muharram is the name of the first month of the Hijri calendar. In Islam there are 4 months (Zu al-Qada, Zu al-Hajja, Muharram and Rajab) which are considered the most sacred. </span><strong><span style=\"font-family: Roboto;\">Milad-un-Nabi</span></strong><span style=\"font-family: Roboto;\"> (festival to commemorate the birth anniversary of Prophet Muhammad), </span><strong><span style=\"font-family: Roboto;\">Id ul Z</span><span style=\"font-family: Roboto;\">uha</span></strong><span style=\"font-family: Roboto;\"> (to commemorate the obedience, willingness, and devotion of Prophet Ibrahim towards his God), </span><strong><span style=\"font-family: Roboto;\">Eid al-Fitr</span></strong><span style=\"font-family: Roboto;\"> (end of Ramadan, the Muslim holy month of fasting). </span></p>",
+                    solution_hi: "<p><span style=\"font-family: Palanquin;\">9.(b) <strong>मुहर्रम</strong></span><span style=\"font-family: Palanquin;\"> (जुलाई)।</span><span style=\"font-family: Roboto;\"> </span><span style=\"font-family: Palanquin;\">मुहर्रम हिजरी कैलेंडर के पहले महीने का नाम है। इस्लाम में 4 महीने (ज़ु अल-क़दा, ज़ु अल-हज्जा, मुहर्रम और रजब) हैं जिन्हें सबसे पवित्र माना जाता है।</span><strong><span style=\"font-family: Palanquin;\"> मिलाद-उन-नबी</span></strong><span style=\"font-family: Palanquin;\"> (पैगंबर मुहम्मद की जयंती मनाने का त्योहार), </span><strong><span style=\"font-family: Palanquin;\">ईद उल जुहा</span></strong><span style=\"font-family: Palanquin;\"> (ईश्वर के प्रति पैगंबर इब्राहिम की आज्ञाकारिता, इच्छा और भक्ति का स्मरण करने के लिए), </span><span style=\"font-family: Palanquin;\"><strong>ईद अल-फितर</strong> </span><span style=\"font-family: Palanquin;\">(मुस्लिम पवित्र रमजान का अंत) उपवास का महीना)।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "10",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">10. According to census 2011, the male literacy rate in India is__________</span></p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">10. 2011 की जनगणना के अनुसार, भारत में पुरुष साक्षरता दर __________ </span><span style=\"font-family: Palanquin Dark;\">है।</span></p>",
+                    options_en: ["<p>81.14 percent</p>", "<p>82.14 percent</p>", 
+                                "<p>84.14 percent</p>", "<p>83.14 percent</p>"],
+                    options_hi: ["<p>81.14 प्रतिशत</p>", "<p>82.14 प्रतिशत</p>",
+                                "<p>84.14 प्रतिशत</p>", "<p>83.14 प्रतिशत</p>"],
+                    solution_en: "<p><span style=\"font-family: Roboto;\">10.(b) </span><span style=\"font-family: Roboto;\">According to census 2011, the male literacy rate in India is<strong> </strong></span><strong><span style=\"font-family: Roboto;\">82.14 %</span></strong><span style=\"font-family: Roboto;\">. Female literacy rate: </span><strong><span style=\"font-family: Roboto;\">65.46%</span></strong><span style=\"font-family: Roboto;\"><strong>.</strong> literacy rate of India:<strong> </strong></span><strong><span style=\"font-family: Roboto;\">74.04%</span></strong><span style=\"font-family: Roboto;\">. Highest literacy rate:<strong> </strong></span><strong><span style=\"font-family: Roboto;\">Kerala</span></strong><span style=\"font-family: Roboto;\"><strong> </strong>(94.0%) {male literacy rate is 96.11% and the female literacy rate is 92.07%}. Lowest literacy rate :<strong> </strong></span><strong><span style=\"font-family: Roboto;\">Bihar</span></strong><span style=\"font-family: Roboto;\"><strong> </strong>(61.8%).</span></p>",
+                    solution_hi: "<p><span style=\"font-family: Roboto;\">10.(b)</span><span style=\"font-family: Palanquin;\"> 2011 की जनगणना के अनुसार, भारत में पुरुष साक्षरता दर </span><strong><span style=\"font-family: Roboto;\">82.14%</span></strong><span style=\"font-family: Palanquin;\"> है। महिला साक्षरता दर: </span><span style=\"font-family: Palanquin;\"><strong>65.46%</strong> है</span><span style=\"font-family: Palanquin;\">। भारत की साक्षरता दर: </span><strong><span style=\"font-family: Palanquin;\">74.04% है</span></strong><span style=\"font-family: Palanquin;\">। उच्चतम साक्षरता दर: </span><strong><span style=\"font-family: Palanquin;\">केरल</span></strong><span style=\"font-family: Palanquin;\"><strong> </strong>(94.0%) {पुरुष साक्षरता दर 96.11% है और महिला साक्षरता दर 92.07% है}। सबसे कम साक्षरता दर :</span><span style=\"font-family: Palanquin;\"> <strong>बिहार</strong></span><span style=\"font-family: Palanquin;\"> (61.8%) है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "11",
+                    section: "18",
+                    question_en: "<p>11. Who among the following is known as a pioneering dance educationist and a prominent Mohiniyattam exponent?</p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">11.निम्नलिखित में से कौन एक अग्रणी नृत्य शिक्षाविद् और एक प्रमुख मोहिनीअट्टम प्रतिपादक के रूप में जाने जाते /जानी जाती हैं?</span></p>",
+                    options_en: ["<p>Madhavi Mudgal</p>", "<p>Shagun Butani</p>", 
+                                "<p>Mohanrao Kallianpurkar</p>", "<p>Dr Kanak Rele</p>"],
+                    options_hi: ["<p>माधवी मुद्गल</p>", "<p>शगुन भूटानी</p>",
+                                "<p>मोहनराव कलियांपुरकर</p>", "<p>डॉ कनक रेले</p>"],
+                    solution_en: "<p>11.(d) <strong>Dr. Kanak Rele</strong>. <span style=\"font-family: Roboto;\">She is the founder-director of the Nalanda Dance Research Centre (1967) and the founder-principal of the Nalanda Nritya Kala Mahavidyalaya in Mumbai. </span><span style=\"font-family: Roboto;\"><strong>Awards and Honors</strong>:</span><span style=\"font-family: Roboto;\"> Gaurav Puraskar (Gujarat ; 1989), Padma Shri (1990), Kala Vipanchee (Vipanchee institution ; 2005), Kalidas Samman (Madhya Pradesh, 2006), Sangeet Natak Akademi Award (1994), Padma Bhushan (2013). </span><strong><span style=\"font-family: Roboto;\">Madhavi Mudgal</span></strong><span style=\"font-family: Roboto;\"> (Odissi dancer), </span><strong><span style=\"font-family: Roboto;\">Shagun Bhutan</span></strong><span style=\"font-family: Roboto;\"> (Odissi Dancer), </span><strong><span style=\"font-family: Roboto;\">Mohanrao Kallianpurka</span></strong><span style=\"font-family: Roboto;\"> (Kathak dancer). </span></p>",
+                    solution_hi: "<p>11.(d) <strong>डॉ कनक रेले</strong><span style=\"font-family: Palanquin;\"> । वह मुंबई में ,नालंदा नृत्य अनुसंधान केंद्र (1967) की संस्थापक-निदेशक और नालंदा नृत्य कला महाविद्यालय की संस्थापक-प्राचार्य हैं। </span><span style=\"font-family: Palanquin;\"><strong>पुरस्कार और सम्मान</strong> :</span><span style=\"font-family: Palanquin;\"> गौरव पुरस्कार (गुजरात; 1989), पद्म श्री (1990), कला विपंची (विपंची संस्था; 2005), कालिदास सम्मान (मध्य प्रदेश, 2006), संगीत नाटक अकादमी पुरस्कार (1994), पद्म भूषण (2013) । </span><strong><span style=\"font-family: Palanquin;\">माधवी मुद्गल</span></strong><span style=\"font-family: Palanquin;\"> (ओडिसी नर्तकी),<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">शगुन भूटान</span></strong><span style=\"font-family: Palanquin;\"> (ओडिसी नर्तकी), </span><strong><span style=\"font-family: Palanquin;\">मोहनराव कल्यानपुरका</span></strong><span style=\"font-family: Palanquin;\"> (कथक नर्तक)।</span></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "12",
+                    section: "18",
+                    question_en: "<p>12. Which of the following Indian classical dance forms uses various colours on face to symbolise the characters?</p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">12. निम्नलिखित में से किस भारतीय शास्त्रीय नृत्य रूप में पात्रों को प्रतीक के रूप में प्रस्तुत करने के लिए उनके चेहरों पर विभिन्न रंगों का उपयोग किया जाता है?</span></p>",
+                    options_en: ["<p>Odissi</p>", "<p>Kathakali</p>", 
+                                "<p>Bharatanatyam</p>", "<p>Mohiniattam</p>"],
+                    options_hi: ["<p>ओडिसी</p>", "<p>कथकली</p>",
+                                "<p>भरतनाट्यम</p>", "<p>मोहिनीअट्टम</p>"],
+                    solution_en: "<p>12.(b) <strong>Kathakali</strong> <span style=\"font-family: Roboto;\">is famous for its intricate choreography and elaborate makeup and costumes. The makeup and costumes inform the viewer of the type of character on stage, as there is no dialogue throughout the performance. This dance originates primarily from the Indian state of </span><strong><span style=\"font-family: Roboto;\">Kerala</span></strong><span style=\"font-family: Roboto;\">. The characters in a Kathakali performance are broadly divided into </span><strong><span style=\"font-family: Roboto;\">Satvika, Rajasika and T</span><span style=\"font-family: Roboto;\">amasika</span></strong><span style=\"font-family: Roboto;\">. </span></p>",
+                    solution_hi: "<p>12.(b) <strong>कथकली </strong><span style=\"font-family: Palanquin;\">अपनी जटिल नृत्यकला और विस्तृत श्रृंगार तथा वेशभूषा के लिए प्रसिद्ध है। श्रृंगार और वेशभूषा दर्शकों को मंच पर चरित्र के प्रकार के बारे में सूचित करती है, क्योंकि प्रदर्शन के दौरान कोई संवाद नहीं होता है। यह नृत्य मुख्य रूप से भारतीय राज्य </span><strong><span style=\"font-family: Palanquin;\">केरल </span></strong><span style=\"font-family: Palanquin;\">से उत्पन्न हुआ है। कथकली प्रदर्शन में पात्रों को मोटे तौर पर </span><strong><span style=\"font-family: Palanquin;\">सात्विक</span><span style=\"font-family: Roboto;\">, </span><span style=\"font-family: Palanquin;\">राजसिका </span></strong><span style=\"font-family: Palanquin;\">और </span><span style=\"font-family: Palanquin;\"><strong>तामसिक</strong> </span><span style=\"font-family: Palanquin;\">में विभाजित किया जाता है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "13",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">13. Merchants and migrants first brought the teachings of the holy Quran to India in the_______century.</span></p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">13. कुरान की शिक्षाएं भारत में पहले पहल</span><span style=\"font-family: Palanquin;\"> ----- सदी में व्यापारियों और प्रवासियों के जरिए पहुँचा |</span></p>",
+                    options_en: ["<p>fourth</p>", "<p>seventh</p>", 
+                                "<p>ninth</p>", "<p>sixth</p>"],
+                    options_hi: ["<p>चौथी</p>", "<p>सातवीं</p>",
+                                "<p>नौवीं</p>", "<p>छठी</p>"],
+                    solution_en: "<p>13.(b) <span style=\"font-family: Roboto;\">Merchants and migrants first brought the teachings of the holy Quran to India in the </span><span style=\"font-family: Roboto;\"><strong>seventh</strong> </span><span style=\"font-family: Roboto;\">century. </span><span style=\"font-family: Roboto;\"><strong>Different religions and their holy books</strong>:</span><span style=\"font-family: Roboto;\"> Islam (Quran and Sunnah), Sikhism (Guru Granth Sahib), Jainism (Jain Agamas), Buddhist (Tipitaka), Hinduism (Bhagwat Gita, Ved, Upnishad), Christianity (Bible), Rastafari (Bible, Kebra Nagast, The Promise Key, Holy Piby), Shinto (Kojiki, Nihon Shoki, Fudoki), Zoroastrianism (Zend Avesta), etc. </span></p>",
+                    solution_hi: "<p>13.(b) <span style=\"font-family: Palanquin;\">व्यापारी और प्रवासी पहली बार </span><strong><span style=\"font-family: Palanquin;\">सातवीं शताब्दी</span></strong><span style=\"font-family: Palanquin;\"> में पवित्र कुरान की शिक्षाओं को भारत लाए।<strong> </strong></span><span style=\"font-family: Palanquin;\"><strong>विभिन्न धर्म और उनकी पवित्र पुस्तकें</strong> </span><span style=\"font-family: Palanquin;\">: इस्लाम (कुरान और सुन्नत), सिख धर्म (गुरु ग्रंथ साहिब), जैन धर्म (जैन आगम), बौद्ध (</span><span style=\"font-family: Palanquin Dark;\">त्रिपिटक</span><span style=\"font-family: Palanquin;\">), हिंदू धर्म (भगवत गीता, वेद, उपनिषद), ईसाई धर्म (बाइबिल) , रस्ताफरी (बाइबिल, केबरा नागास्ट, द प्रॉमिस की, होली पिबी), शिंटो (कोजिकी, निहोन शोकी, फुडोकी) ), पारसी धर्म (ज़ेंड अवेस्ता), आदि।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "14",
+                    section: "18",
+                    question_en: "<p><span style=\"font-family: Roboto;\">14.Which of the following is celebrated as the \"Tibetan New Year\"?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">14. निम्नलिखित में से किसे \"तिब्बती नव वर्ष\" के रूप में मनाया जाता है?</span></p>",
+                    options_en: ["<p>Lohang</p>", "<p>Losar</p>", 
+                                "<p>Myoko</p>", "<p>Murung</p>"],
+                    options_hi: ["<p>लोहांग</p>", "<p>लोसर</p>",
+                                "<p>मायोको</p>", "<p>मुरुंग</p>"],
+                    solution_en: "<p>14.(b) <strong>Losar</strong><span style=\"font-family: Roboto;\">, also known as Tibetan New Year, is a festival in Tibetan Buddhism. It is mainly celebrated in Tibet, Bhutan, Nepal (called Lhochhar), and India (Arunachal Pradesh, Sikkim, and Ladakh).</span><span style=\"font-family: Roboto;\"> <strong>Myoko</strong> </span><span style=\"font-family: Roboto;\">festival and </span><span style=\"font-family: Roboto;\"><strong>Murung</strong> </span><span style=\"font-family: Roboto;\">festivals are celebrated by the Apatani Tribe of Ziro valley in Arunachal Pradesh. </span></p>",
+                    solution_hi: "<p>14.(b) <strong>लोसर</strong>, <span style=\"font-family: Palanquin;\">जिसे तिब्बती नव वर्ष के रूप में भी जाना जाता है जो तिब्बती बौद्ध धर्म का त्योहार है। यह मुख्य रूप से तिब्बत, भूटान, नेपाल (लोछर कहा जाता है), और भारत (अरुणाचल प्रदेश, सिक्किम और लद्दाख) में मनाया जाता है।</span><span style=\"font-family: Palanquin;\"><strong> </strong></span><strong><span style=\"font-family: Palanquin;\">मायोको </span></strong><span style=\"font-family: Palanquin;\">त्योहार और </span><strong><span style=\"font-family: Palanquin;\">मुरुंग </span></strong><span style=\"font-family: Palanquin;\">त्योहार अरुणाचल प्रदेश में </span><span style=\"font-family: Palanquin Dark;\">जीरो वैली</span><span style=\"font-family: Palanquin Dark;\"> </span><span style=\"font-family: Palanquin;\">की </span><span style=\"font-family: Palanquin;\"><strong>अपतानी जनजाति</strong> </span><span style=\"font-family: Palanquin;\">द्वारा मनाया जाता है।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "15",
+                    section: "misc",
+                    question_en: "<p><span style=\"font-family: Roboto;\">15.In Table Tennis, how many lets are allowed in a row on a serve?</span></p>",
+                    question_hi: "<p><span style=\"font-family: Palanquin;\">15. टेबल टेनिस में एक सर्व पर लगातार कितने लेट्स (lets) की अनुमति होती है?</span></p>",
+                    options_en: ["<p>Three</p>", "<p>Unlimited</p>", 
+                                "<p>Two</p>", "<p>One</p>"],
+                    options_hi: ["<p>तीन</p>", "<p>असीमित</p>",
+                                "<p>दो</p>", "<p>एक</p>"],
+                    solution_en: "<p>15.(b) <span style=\"font-family: Roboto;\">There\'s</span><span style=\"font-family: Roboto;\"><strong> no limit</strong> </span><span style=\"font-family: Roboto;\">on the number of times one can replay when it has hit the net. </span><strong><span style=\"font-family: Roboto;\">Table tennis</span></strong><span style=\"font-family: Roboto;\"> is played on a 2.74 x 1.53 metre rectangular table made of fiber wood and is split into two halves. The game was invented in </span><span style=\"font-family: Roboto;\"><strong>England</strong> </span><span style=\"font-family: Roboto;\">and was originally called </span><strong><span style=\"font-family: Roboto;\">Ping-Pong</span></strong><span style=\"font-family: Roboto;\">, a trademark name. International Table Tennis Federation (founded in 1926). </span></p>",
+                    solution_hi: "<p>15.(b) <span style=\"font-family: Palanquin;\">जब कोई नेट पर हिट करता है तो कितनी बार रीप्ले कर सकता है इसकी</span><span style=\"font-family: Palanquin;\"> <strong>कोई सीमा नहीं </strong></span><span style=\"font-family: Palanquin;\">है।</span><span style=\"font-family: Palanquin;\"> <strong>टेबल टेनिस</strong>,</span><span style=\"font-family: Palanquin;\"> फाइबर की लकड़ी से बने</span><span style=\"font-family: Palanquin;\"> <strong>2.74 x 1.53 मीटर</strong></span><span style=\"font-family: Palanquin;\"><strong> </strong>आयताकार टेबल पर खेला जाता है और इसे दो हिस्सों में विभाजित किया जाता है। खेल का आविष्कार इंग्लैंड में हुआ था और इसे मूल रूप से<strong> </strong></span><strong><span style=\"font-family: Palanquin;\">पिंग-पोंग</span></strong><span style=\"font-family: Palanquin;\"><strong> </strong>कहा जाता था, जो एक ट्रेडमार्क नाम है । इंटरनेशनल टेबल टेनिस फेडरेशन (1926 में स्थापित)।</span></p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+            
+            // Generate question boxes
+            const boxesContainer = document.getElementById('question-boxes');
+            questions.forEach((q, index) => {
+                const box = document.createElement('div');
+                box.className = 'q-box';
+                box.textContent = index + 1;
+                box.onclick = () => showQuestion(index);
+                box.id = `box-${index}`;
+                boxesContainer.appendChild(box);
+            });
+            
+            // Show first question
+            showQuestion(0);
+            updateProgress();
+        }
+        
+        // Show a specific question
+        
+        function formatContent(text) {
+            if (!text) return '';
+            return text.replace(/<img/g, '<img style="max-width:100%;height:auto;"');
+        }
+        
+        function showQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update question counter
+            document.getElementById('question-counter').textContent = `Question ${index + 1} of ${questions.length}`;
+            
+            // Update question boxes
+            document.querySelectorAll('.q-box').forEach(box => box.classList.remove('current'));
+            document.getElementById(`box-${index}`).classList.add('current');
+            
+            // Generate question HTML
+            let html = `
+                <div class="question-card">
+                    <div class="question-text">
+                        <div class="en">${formatContent(question.question_en)}</div>
+                        <div class="hi" style="display:none">${formatContent(question.question_hi)} </div>
+                    </div>
+                    <div class="options" id="options-container">`;
+            
+            // Add options
+            ['a', 'b', 'c', 'd'].forEach((opt, i) => {
+                let optionClass = '';
+                let isCorrectAnswer = opt === question.correct;
+                let isUserAnswer = answers[question.id] === opt;
+                
+                // When reviewing, add appropriate classes
+                if (submitted) {
+                    if (isCorrectAnswer) {
+                        optionClass += ' correct-answer';
+                    } else if (isUserAnswer && !isCorrectAnswer) {
+                        optionClass += ' incorrect';
+                    }
+                }
+                
+                html += `
+                    <div class="option-item">
+                        <input class="option-input" type="radio" name="q${index}" 
+                            id="opt-${index}-${opt}" value="${opt}" 
+                            ${isUserAnswer ? 'checked' : ''}
+                            onclick="selectAnswer('${question.id}', '${opt}')">
+                       <label class="option-label${optionClass}" for="opt-${index}-${opt}">
+                            <div class="en">${question.options_en[i]}</div>
+                            <div class="hi" style="display:none">${question.options_hi[i]}</div>
+                        </label>
+                    </div>`;
+            });
+            
+            // Add solution if submitted
+            if (submitted) {
+                const isCorrect = answers[question.id] === question.correct;
+                const resultText = answers[question.id] ? (isCorrect ? 'Correct!' : 'Incorrect!') : 'Not attempted';
+                
+                html += `
+                    <div class="solution-container">
+                        <div class="solution-title">${resultText}</div>
+                        <div class="solution-text">
+                            <div class="en">${question.solution_en}</div>
+                            <div class="hi" style="display:none">${question.solution_hi}</div>
+                        </div>
+                    </div>`;
+            }
+            
+            html += `</div></div>`;
+            
+            document.getElementById('questions-container').innerHTML = html;
+            
+            // Apply language settings
+            applyLanguage();
+            
+            // If in mobile view, close the menu
+            if (window.innerWidth < 992) {
+                toggleNav(false);
+            }
+            
+            // Add review mode class if submitted
+            if (submitted) {
+                document.getElementById('options-container').classList.add('review-mode');
+            }
+        }
+        
+        // Apply current language
+        function applyLanguage() {
+            document.querySelectorAll(`.${currentLang}`).forEach(el => el.style.display = 'block');
+            document.querySelectorAll(`.${currentLang === 'en' ? 'hi' : 'en'}`).forEach(el => el.style.display = 'none');
+            
+            // Update language button text
+            document.getElementById('lang-text').textContent = currentLang === 'en' ? 'Hi' : 'En';
+        }
+        
+        // Select an answer
+        function selectAnswer(qId, option) {
+            if (submitted) return;
+            
+            answers[qId] = option;
+            updateProgress();
+            
+            // Mark question as attempted in the navigation
+            const index = questions.findIndex(q => q.id === qId);
+            if (index >= 0) {
+                const box = document.getElementById(`box-${index}`);
+                box.classList.add('attempted');
+                box.classList.remove('unattempted');
+            }
+        }
+        
+        // Navigate to previous/next question
+        function prevQuestion() { 
+            if (currentQuestion > 0) showQuestion(currentQuestion - 1); 
+        }
+        
+        function nextQuestion() { 
+            if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1); 
+        }
+        
+        // Switch section
+        function switchSection(sectionId) {
+            if (sectionId === 'all') {
+                showQuestion(0);
+                return;
+            }
+            
+            const section = sections[sectionId];
+            if (section) showQuestion(section.start);
+        }
+        
+        // Toggle language
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            applyLanguage();
+        }
+        
+        // Toggle navigation sidebar
+        function toggleNav(show) {
+            const nav = document.getElementById('question-nav');
+            const overlay = document.getElementById('nav-overlay');
+            
+            if (show === undefined) {
+                show = !nav.classList.contains('show');
+            }
+            
+            if (show) {
+                nav.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Update progress
+        function updateProgress() {
+            const attempted = Object.keys(answers).length;
+            document.getElementById('attempted-count').textContent = attempted;
+        }
+        
+        // Start timer
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            let timeLeft = totalTime;
+            
+            const timerInterval = setInterval(() => {
+                if (timeLeft <= 0 || submitted) {
+                    clearInterval(timerInterval);
+                    if (!submitted) submitTest();
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+        
+        // Confirm before submitting
+        function confirmSubmit() {
+            if (submitted) return;
+            
+            const attempted = Object.keys(answers).length;
+            const remaining = questions.length - attempted;
+            
+            // Create a more modern confirmation dialog
+            const confirmHtml = `
+                <div style="text-align: center; padding: 20px;">
+                    <h4 style="margin-bottom: 16px; color: var(--dark);">Confirm Submission</h4>
+                    <p style="margin-bottom: 24px; color: var(--gray);">
+                        You have attempted ${attempted} of ${questions.length} questions.<br>
+                        ${remaining} questions are unattempted.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 12px;">
+                        <button onclick="this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; border: 1px solid var(--light-gray); background: white; border-radius: 8px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="submitTest(); this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Submit Test
+                        </button>
+                    </div>
+                </div>`;
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'results-modal show';
+            modal.innerHTML = `
+                <div class="results-card" style="max-width: 400px;">
+                    <button class="cancel-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray);" onclick="this.closest('.results-modal').remove()">
+                        ×
+                    </button>
+                    ${confirmHtml}
+                </div>`;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // Submit test
+        function submitTest() {
+            if (submitted) return;
+            
+            submitted = true;
+            
+            let score = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+            
+            questions.forEach((q, index) => {
+                const userAns = answers[q.id];
+                const box = document.getElementById(`box-${index}`);
+                
+                box.classList.remove('attempted');
+                
+                if (!userAns) {
+                    unattemptedCount++;
+                    box.classList.add('unattempted');
+                } else if (userAns === q.correct) {
+                    correctCount++;
+                    score += q.pos_marks;
+                    box.classList.add('correct');
+                } else {
+                    incorrectCount++;
+                    score -= q.neg_marks;
+                    box.classList.add('incorrect');
+                }
+            });
+            
+            // Update result values
+            document.getElementById('score-value').textContent = score.toFixed(2);
+            document.getElementById('correct-value').textContent = correctCount;
+            document.getElementById('incorrect-value').textContent = incorrectCount;
+            document.getElementById('unattempted-value').textContent = unattemptedCount;
+            
+            // Show the results modal
+            document.getElementById('results-modal').classList.add('show');
+            
+            // Disable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i>';
+            submitBtn.style.backgroundColor = 'var(--success)';
+            
+            // Refresh current question view to show solution
+            showQuestion(currentQuestion);
+        }
+        
+        // Review test
+        function reviewTest() {
+            document.getElementById('results-modal').classList.remove('show');
+            showQuestion(0);
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('results-modal')) {
+                document.getElementById('results-modal').classList.remove('show');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'ArrowRight') nextQuestion();
+        });
+    </script>
+</body>
+</html>

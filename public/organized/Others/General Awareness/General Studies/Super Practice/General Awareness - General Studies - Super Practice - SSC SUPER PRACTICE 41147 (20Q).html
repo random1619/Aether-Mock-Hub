@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>devgagan</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --p:#4F46E5;
+            --s:#10B981;
+            --d:#EF4444;
+            --w:#F59E0B;
+            --y:#FCD34D;
+            --bg:#F8FAFC;
+            --card:#FFF;
+            --txt:#1F2937;
+            --txtL:#6B7280;
+            --brd:#E5E7EB;
+            --shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+            --radius:12px;
+            --transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dark mode variables */
+            --dark-bg:#1a1a2e;
+            --dark-card:#16213e;
+            --dark-txt:#e6e6e6;
+            --dark-txtL:#b8b8b8;
+            --dark-brd:#2a2a3a;
+        }
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+            background:var(--bg);
+            color:var(--txt);
+            line-height:1.5;
+            padding-bottom:80px;
+            transition:var(--transition);
+        }
+        
+        body.dark-mode {
+            background:var(--dark-bg);
+            color:var(--dark-txt);
+        }
+        
+        /* Improved math expression and table styling */
+        .math-exp {
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            margin: 0 2px;
+        }
+        
+        .math-num {
+            text-align: center;
+            display: block;
+            padding: 0;
+        }
+        
+        .welcome-instructions {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .dark-mode .welcome-instructions {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .welcome-instructions h3 {
+            margin-bottom: 12px;
+            color: var(--s);
+        }
+        
+        .welcome-instructions ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .welcome-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-instructions li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .math-line {
+            display: block;
+            border-top: 1px solid;
+            padding: 0;
+            text-align: center;
+        }
+        
+        /* Table overflow container */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 12px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid var(--brd);
+        }
+        
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .dark-mode table, 
+        .dark-mode th, 
+        .dark-mode td {
+            border-color: var(--dark-brd);
+        }
+        
+        /* Image containment styles */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        
+        /* Ensure images don't overflow in any container */
+        .q-txt img, .opt-txt img, .sol img, .comp img {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        /* Specific image containers */
+        .img-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        
+        /* Welcome screen styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--card);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .dark-mode .welcome-screen {
+            background: var(--dark-card);
+        }
+        
+        .welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--p);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--p);
+        }
+        
+        .welcome-details {
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+        }
+        
+        .dark-mode .welcome-details {
+            background: rgba(79, 70, 229, 0.2);
+        }
+        
+        .welcome-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .welcome-detail:last-child {
+            margin-bottom: 0;
+        }
+        
+        .welcome-detail-label {
+            font-weight: 600;
+            color: var(--txtL);
+        }
+        
+        .dark-mode .welcome-detail-label {
+            color: var(--dark-txtL);
+        }
+        
+        .welcome-detail-value {
+            font-weight: 500;
+        }
+        
+        .section-info {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .dark-mode .section-info {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .section-info h3 {
+            margin-bottom: 12px;
+            color: var(--s);
+        }
+        
+        .section-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        
+        .section-list th, .section-list td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--brd);
+        }
+        
+        .dark-mode .section-list th, 
+        .dark-mode .section-list td {
+            border-bottom-color: var(--dark-brd);
+        }
+        
+        .section-list th {
+            font-weight: 600;
+            color: var(--txtL);
+        }
+        
+        .dark-mode .section-list th {
+            color: var(--dark-txtL);
+        }
+        
+        .welcome-button {
+            background: var(--p);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .join-channel {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--p);
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 16px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            background: rgba(79, 70, 229, 0.1);
+            transition: var(--transition);
+        }
+        
+        .dark-mode .join-channel {
+            background: rgba(79, 70, 229, 0.2);
+        }
+        
+        .join-channel:hover {
+            background: rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .dark-mode .join-channel:hover {
+            background: rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Section header styles */
+        .section-header {
+            background: var(--p);
+            color: white;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .section-timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .hdr{
+            background:var(--card);
+            border-bottom:1px solid var(--brd);
+            padding:12px 16px;
+            display:grid;
+            grid-template-columns:1fr auto 1fr;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:100;
+            box-shadow:var(--shadow);
+            transition:var(--transition);
+        }
+        
+        .dark-mode .hdr {
+            background:var(--dark-card);
+            border-bottom-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        
+        .hdr-l{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            justify-self:start
+        }
+        .hdr-c{
+            text-align:center;
+            font-weight:600;
+            font-size:15px
+        }
+        .hdr-r{
+            display:flex;
+            justify-self:end;
+            align-items:center;
+            gap:8px
+        }
+        .q-info{
+            font-size:14px;
+            font-weight:600
+        }
+        .timer{
+            background:#FEF3C7;
+            color:#92400E;
+            padding:6px 12px;
+            border-radius:16px;
+            font-size:13px;
+            font-weight:600
+        }
+        .btn{
+            border:none;
+            border-radius:8px;
+            font-weight:500;
+            cursor:pointer;
+            transition:var(--transition);
+            font-size:13px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+        }
+        .btn-sm{
+            padding:8px 12px
+        }
+        .btn-p{
+            background:var(--p);
+            color:white
+        }
+        .btn-o{
+            background:transparent;
+            border:1px solid var(--brd);
+            color:var(--txt)
+        }
+        .dark-mode .btn-o {
+            border-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .btn-w{
+            background:var(--y);
+            color:#78350F;
+            font-weight:600;
+        }
+        .btn-w.active{
+            background:var(--w);
+            color:white;
+        }
+        .btn:active{
+            transform:scale(.98)
+        }
+        .cont{
+            padding:16px;
+            max-width:100%;
+            overflow-x:hidden;
+        }
+        .dark-mode .cont {
+            background:var(--dark-bg);
+        }
+        .q-card{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:20px;
+            margin-bottom:16px;
+            border:1px solid var(--brd);
+            overflow:hidden;
+            box-shadow:var(--shadow);
+            transition:var(--transition);
+        }
+        .dark-mode .q-card {
+            background:var(--dark-card);
+            border-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .lang{
+            display:flex;
+            background:#F3F4F6;
+            border-radius:8px;
+            padding:2px;
+            margin-bottom:16px
+        }
+        .dark-mode .lang {
+            background:#2a2a3a;
+        }
+        .lang-btn{
+            flex:1;
+            padding:8px;
+            border:none;
+            background:transparent;
+            border-radius:6px;
+            font-size:13px;
+            cursor:pointer;
+            transition:var(--transition)
+        }
+        .lang-btn.active{
+            background:white;
+            color:var(--p);
+            box-shadow:0 1px 3px rgba(0,0,0,.1)
+        }
+        .dark-mode .lang-btn.active {
+            background:var(--dark-card);
+            color:var(--p);
+        }
+        .comp{
+            background:#F0F9FF;
+            border:1px solid #BAE6FD;
+            border-radius:8px;
+            padding:16px;
+            margin-bottom:20px;
+            overflow:hidden
+        }
+        .dark-mode .comp {
+            background:#1e3a8a;
+            border-color:#1e40af;
+        }
+        .comp h4{
+            color:#0369A1;
+            font-size:14px;
+            margin-bottom:8px
+        }
+        .dark-mode .comp h4 {
+            color:#93c5fd;
+        }
+        .q-txt{
+            font-size:16px;
+            line-height:1.6;
+            margin-bottom:20px;
+            color:var(--txt);
+            overflow:hidden;
+            word-wrap:break-word
+        }
+        .dark-mode .q-txt {
+            color:var(--dark-txt);
+        }
+        .opts{
+            display:flex;
+            flex-direction:column;
+            gap:12px
+        }
+        .opt{
+            display:flex;
+            align-items:center;
+            padding:16px;
+            background:var(--card);
+            border:2px solid var(--brd);
+            border-radius:12px;
+            cursor:pointer;
+            transition:var(--transition);
+            gap:12px;
+            overflow:hidden
+        }
+        .dark-mode .opt {
+            background:var(--dark-card);
+            border-color:var(--dark-brd);
+        }
+        .opt:hover:not(.submitted){
+            border-color:var(--p);
+            transform:translateY(-2px);
+            box-shadow:var(--shadow);
+        }
+        .opt.sel{
+            border-color:var(--p);
+            background:#F0F9FF
+        }
+        .dark-mode .opt.sel {
+            background:#1e3a8a;
+        }
+        .opt.correct{
+            border-color:var(--s);
+            background:#F0FDF4 !important
+        }
+        .dark-mode .opt.correct {
+            background:#064e3b !important;
+            border-color:#047857;
+        }
+        .opt.wrong{
+            border-color:var(--d);
+            background:#FEF2F2 !important
+        }
+        .dark-mode .opt.wrong {
+            background:#7f1d1d !important;
+            border-color:#b91c1c;
+        }
+        .opt.submitted{
+            cursor:default
+        }
+        .opt-radio{
+            width:20px;
+            height:20px;
+            border:2px solid var(--brd);
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0
+        }
+        .dark-mode .opt-radio {
+            border-color:var(--dark-brd);
+        }
+        .opt.sel .opt-radio{
+            border-color:var(--p);
+            background:var(--p)
+        }
+        .opt.sel .opt-radio::after{
+            content:'✓';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt.correct .opt-radio{
+            border-color:var(--s) !important;
+            background:var(--s) !important
+        }
+        .opt.correct .opt-radio::after{
+            content:'✓';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt.wrong .opt-radio{
+            border-color:var(--d) !important;
+            background:var(--d) !important
+        }
+        .opt.wrong .opt-radio::after{
+            content:'✗';
+            color:white;
+            font-size:12px;
+            font-weight:bold
+        }
+        .opt-txt{
+            flex:1;
+            font-size:15px;
+            overflow:hidden;
+            word-wrap:break-word
+        }
+        .dark-mode .opt-txt {
+            color:var(--dark-txt);
+        }
+        .sol{
+            background:#F0FDF4;
+            border:1px solid #BBF7D0;
+            border-radius:8px;
+            padding:16px;
+            margin-top:20px;
+            display:none;
+            overflow:hidden
+        }
+        .dark-mode .sol {
+            background:#064e3b;
+            border-color:#047857;
+        }
+        .sol.show{
+            display:block
+        }
+        .sol h4{
+            color:var(--s);
+            font-size:14px;
+            margin-bottom:8px;
+            display:flex;
+            align-items:center;
+            gap:6px
+        }
+        .dark-mode .sol h4 {
+            color:#34d399;
+        }
+        .sol-info{
+            display:flex;
+            gap:12px;
+            margin-bottom:12px;
+            font-size:13px;
+            color:var(--txtL);
+        }
+        .dark-mode .sol-info {
+            color:var(--dark-txtL);
+        }
+        .sol-info span{
+            display:flex;
+            align-items:center;
+            gap:4px;
+        }
+        .nav{
+            position:fixed;
+            bottom:0;
+            left:0;
+            right:0;
+            background:var(--card);
+            border-top:1px solid var(--brd);
+            padding:12px 16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            z-index:100;
+            box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+            transition:var(--transition);
+        }
+        .dark-mode .nav {
+            background:var(--dark-card);
+            border-top-color:var(--dark-brd);
+        }
+        .nav-btn{
+            padding:12px 20px;
+            border-radius:8px;
+            font-weight:600;
+            min-width:80px
+        }
+        .nav-btn:disabled{
+            opacity:.5;
+            cursor:not-allowed
+        }
+        .prog{
+            text-align:center;
+            font-size:13px;
+            color:var(--txtL)
+        }
+        .dark-mode .prog {
+            color:var(--dark-txtL);
+        }
+        .panel{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:var(--card);
+            z-index:200;
+            transform:translateY(100%);
+            transition:transform .3s ease;
+            overflow-y:auto;
+            display:none;
+        }
+        .dark-mode .panel {
+            background:var(--dark-card);
+        }
+        .panel.open{
+            transform:translateY(0);
+            display:block;
+        }
+        .panel-hdr{
+            background:var(--p);
+            color:white;
+            padding:16px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            position:sticky;
+            top:0;
+            z-index:1;
+        }
+        .panel-close{
+            background:none;
+            border:none;
+            color:white;
+            font-size:18px;
+            cursor:pointer
+        }
+        .q-grid{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:12px;
+            padding:20px
+        }
+        .q-num{
+            aspect-ratio:1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#F3F4F6;
+            border-radius:8px;
+            font-weight:600;
+            cursor:pointer;
+            transition:var(--transition);
+            font-size:14px
+        }
+        .dark-mode .q-num {
+            background:#2a2a3a;
+            color:var(--dark-txt);
+        }
+        .q-num.cur{
+            background:var(--p);
+            color:white
+        }
+        .q-num.ans{
+            background:var(--s);
+            color:white
+        }
+        .q-num.wrong{
+            background:var(--d);
+            color:white
+        }
+        .q-num.review{
+            background:var(--y);
+            color:#78350F;
+            font-weight:bold;
+        }
+        .q-num.unattempted {
+            background:#E5E7EB;
+            color:#6B7280;
+        }
+        .dark-mode .q-num.unattempted {
+            background:#4B5563;
+            color:#D1D5DB;
+        }
+        .q-num.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .q-num:hover{
+            transform:scale(1.05)
+        }
+        .modal{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:rgba(0,0,0,.5);
+            z-index:300;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px
+        }
+        .modal.show{
+            display:flex
+        }
+        .result{
+            background:var(--card);
+            border-radius:16px;
+            padding:24px;
+            width:100%;
+            max-width:400px;
+            text-align:center
+        }
+        .dark-mode .result {
+            background:var(--dark-card);
+        }
+        .score{
+            font-size:2rem;
+            font-weight:bold;
+            color:var(--p);
+            margin:16px 0
+        }
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:12px;
+            margin:20px 0
+        }
+        .stat{
+            text-align:center;
+            padding:12px;
+            border-radius:8px;
+            border:1px solid var(--brd)
+        }
+        .dark-mode .stat {
+            border-color:var(--dark-brd);
+        }
+        .stat-val{
+            font-size:1.5rem;
+            font-weight:bold;
+            margin-bottom:4px
+        }
+        .stat-lbl{
+            font-size:12px;
+            color:var(--txtL)
+        }
+        .dark-mode .stat-lbl {
+            color:var(--dark-txtL);
+        }
+        .stat.c{
+            border-color:var(--s);
+            background:#F0FDF4
+        }
+        .dark-mode .stat.c {
+            background:#064e3b;
+            border-color:#047857;
+        }
+        .stat.w{
+            border-color:var(--d);
+            background:#FEF2F2
+        }
+        .dark-mode .stat.w {
+            background:#7f1d1d;
+            border-color:#b91c1c;
+        }
+        .stat.c .stat-val{
+            color:var(--s)
+        }
+        .dark-mode .stat.c .stat-val {
+            color:#34d399;
+        }
+        .stat.w .stat-val{
+            color:var(--d)
+        }
+        .dark-mode .stat.w .stat-val {
+            color:#f87171;
+        }
+        .modal-acts{
+            display:flex;
+            gap:12px;
+            margin-top:20px
+        }
+        .modal-btn{
+            flex:1;
+            padding:12px;
+            border-radius:8px;
+            font-weight:600
+        }
+        .print-btn{
+            position:fixed;
+            bottom:100px;
+            right:20px;
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:var(--p);
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow:0 4px 10px rgba(0,0,0,0.2);
+            z-index:50;
+            cursor:pointer;
+            transition:var(--transition);
+            border:none;
+        }
+        .print-btn:hover{
+            transform:scale(1.1);
+        }
+        .dark-mode .print-btn {
+            background:var(--p);
+        }
+        .desktop-sidebar{
+            display:none;
+            position:fixed;
+            right:0;
+            top:0;
+            bottom:0;
+            width:300px;
+            background:var(--card);
+            border-left:1px solid var(--brd);
+            padding:20px;
+            overflow-y:auto;
+            z-index:90;
+            transition:var(--transition);
+        }
+        .dark-mode .desktop-sidebar {
+            background:var(--dark-card);
+            border-left-color:var(--dark-brd);
+        }
+        .desktop-sidebar h3{
+            margin-bottom:16px;
+            padding-bottom:12px;
+            border-bottom:1px solid var(--brd);
+            color:var(--txt);
+        }
+        .dark-mode .desktop-sidebar h3 {
+            border-bottom-color:var(--dark-brd);
+            color:var(--dark-txt);
+        }
+        .theme-toggle{
+            background:none;
+            border:none;
+            color:var(--txt);
+            font-size:18px;
+            cursor:pointer;
+            margin-left:8px;
+        }
+        .dark-mode .theme-toggle {
+            color:var(--dark-txt);
+        }
+        @media (min-width: 1024px) {
+            .cont{
+                padding-right:320px;
+            }
+            .desktop-sidebar{
+                display:block;
+            }
+            .panel{
+                display:none !important;
+            }
+        }
+        @media (max-width:375px){
+            .hdr{padding:10px 12px}
+            .cont{padding:12px}
+            .q-card{padding:16px}
+            .q-grid{grid-template-columns:repeat(4,1fr)}
+        }
+        
+    </style>
+</head>
+<body>
+
+<!-- Welcome Screen -->
+<div class="welcome-screen" id="welcomeScreen">
+    <h1 class="welcome-title">Exam ID : SUPER_BATCH</h1>
+    
+    <div class="welcome-details">
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Test ID</span>
+            <span class="welcome-detail-value">41147 </span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Total Questions:</span>
+            <span class="welcome-detail-value">20</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Total Marks:</span>
+            <span class="welcome-detail-value">20</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Duration:</span>
+            <span class="welcome-detail-value">20 minutes</span>
+        </div>
+        <div class="welcome-detail">
+            <span class="welcome-detail-label">Marking:</span>
+            <span class="welcome-detail-value">+1 / -0.25</span>
+        </div>
+    </div>
+    
+    <div class="welcome-instructions">
+        <h3>Instructions</h3>
+        <ul>
+            <li>Read each question carefully before answering</li>
+            <li>You can mark questions for review and come back later</li>
+            <li>The timer will automatically submit the test when time is up</li>
+            <li>Negative marking applies for wrong answers</li>
+        </ul>
+    </div>
+    
+    <div class="welcome-buttons">
+        <button class="welcome-button" id="startTestBtn">
+            <i class="fas fa-play"></i> Start Test
+        </button>
+        
+        <a href="https://t.me/mocks_wallah" target="_blank" class="join-channel">
+            <i class="fab fa-telegram"></i> Join Our Channel
+        </a>
+    </div>
+ </div>
+
+    <!-- Main Test Interface (hidden initially) -->
+    <div style="display:none" id="mainTestInterface">
+        <div class="hdr">
+            <div class="hdr-l">
+                <div class="q-info" id="qInfo">Q1/20</div>
+                <div class="timer" id="timer">20:00</div>
+            </div>
+            <div class="hdr-c">Mocks Wallah</div>
+            <div class="hdr-r">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <button class="btn btn-o btn-sm" id="menuBtn"><i class="fas fa-th"></i></button>
+                <button class="btn btn-p btn-sm" id="subBtn">Submit</button>
+            </div>
+        </div>
+
+        <div class="cont">
+            
+            <div class="q-card">
+                <div class="lang">
+                    <button class="lang-btn active" id="engBtn">English</button>
+                    <button class="lang-btn" id="hinBtn">हिंदी</button>
+                </div>
+
+                <div id="compSec" class="comp" style="display:none">
+                    <h4><i class="fas fa-book"></i> Comprehension</h4>
+                    <div id="compCont"></div>
+                </div>
+
+                <div class="q-txt" id="qTxt"></div>
+                <div class="opts" id="opts"></div>
+
+                <div class="sol" id="sol">
+                    <div class="sol-info" id="solInfo"></div>
+                    <h4><i class="fas fa-lightbulb"></i> Solution</h4>
+                    <div id="solCont"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="btn btn-o nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+            <button class="btn btn-w nav-btn" id="reviewBtn"><i class="fas fa-flag"></i> Review</button>
+            <div class="prog">
+                <div id="progTxt">1 of 20</div>
+                <div style="font-size:11px">Answered: <span id="ansCnt">0</span> | <a href="https://t.me/mocks_wallah">Mocks Wallah</a></div>
+            </div>
+            <button class="btn btn-p nav-btn" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div class="desktop-sidebar" id="desktopSidebar">
+            <h3>Questions Navigator</h3>
+            <div class="q-grid" id="desktopQGrid"></div>
+            <div style="margin-top:20px;font-size:12px;color:var(--txtL)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num ans" style="width:24px;height:24px">✓</div><span>Answered</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num review" style="width:24px;height:24px">!</div><span>Marked for Review</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num wrong" style="width:24px;height:24px">✗</div><span>Incorrect</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="q-num unattempted" style="width:24px;height:24px">?</div><span>Unattempted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel">
+            <div class="panel-hdr">
+                <h3>All Questions</h3>
+                <button class="panel-close" id="panelClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="q-grid" id="qGrid"></div>
+            <div style="padding:20px;font-size:12px;color:var(--txtL)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num ans" style="width:24px;height:24px">✓</div><span>Answered</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num review" style="width:24px;height:24px">!</div><span>Marked for Review</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                    <div class="q-num wrong" style="width:24px;height:24px">✗</div><span>Incorrect</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="q-num unattempted" style="width:24px;height:24px">?</div><span>Unattempted</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="print-btn" id="printBtn" style="display:none">
+            <i class="fas fa-print"></i>
+        </button>
+
+        <div class="modal" id="modalOver">
+            <div class="result">
+                <h2>Test Complete!</h2>
+                <div class="score" id="scoreDisp">0/20</div>
+                <div class="stats">
+                    <div class="stat c"><div class="stat-val" id="corrStat">0</div><div class="stat-lbl">Correct</div></div>
+                    <div class="stat w"><div class="stat-val" id="incStat">0</div><div class="stat-lbl">Incorrect</div></div>
+                    <div class="stat"><div class="stat-val" id="unaStat">0</div><div class="stat-lbl">Unattempted</div></div>
+                    <div class="stat"><div class="stat-val" id="timeStat">0</div><div class="stat-lbl">Minutes</div></div>
+                </div>
+                <div class="modal-acts">
+                    <button class="btn btn-o modal-btn" id="closeModal">Close</button>
+                    <button class="btn btn-p modal-btn" id="revBtn">Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TestApp {
+            constructor() {
+            this.qs = [
+  {
+    "question": "<span class=\"eqt\"><p>A sector of a circular sheet of radius 35 cm and an arc length of 132 cm is cut and a cone is formed by joining the edges. What is the volume of the cone formed?</p></span><span class=\"hqt\" style=\"display:none\"><p>35 &#2360;&#2375;&#2350;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2324;&#2352; 132 &#2360;&#2375;&#2350;&#2368; &#2330;&#2366;&#2346; &#2354;&#2306;&#2348;&#2366;&#2312; &#2357;&#2366;&#2354;&#2368; &#2319;&#2325; &#2357;&#2371;&#2340;&#2381;&#2340;&#2366;&#2325;&#2366;&#2352; &#2358;&#2368;&#2335; &#2325;&#2366; &#2319;&#2325; &#2326;&#2306;&#2337; &#2325;&#2366;&#2335;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376; &#2324;&#2352; &#2325;&#2367;&#2344;&#2366;&#2352;&#2379;&#2306; &#2325;&#2379; &#2332;&#2379;&#2337;&#2364;&#2325;&#2352; &#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2348;&#2344;&#2366;&#2351;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2348;&#2344;&#2375; &#2358;&#2306;&#2325;&#2369; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; &#2325;&#2381;&#2351;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">12936 cu.cm</span><span class=\"hqt\" style=\"display:none\">12936 &#2328;&#2344; &#2360;&#2375;.&#2350;&#2368;.</span>",
+      "<span class=\"eqt\">13456 cu.cm</span><span class=\"hqt\" style=\"display:none\">13456 &#2328;&#2344; &#2360;&#2375;.&#2350;&#2368;.</span>",
+      "<span class=\"eqt\">14286 cu.cm</span><span class=\"hqt\" style=\"display:none\">14286 &#2328;&#2344; &#2360;&#2375;.&#2350;&#2368;.</span>",
+      "<span class=\"eqt\">15696 cu.cm</span><span class=\"hqt\" style=\"display:none\">15696 &#2328;&#2344; &#2360;&#2375;.&#2350;&#2368;.</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p><img width=128 height=173 id=\"Picture 3\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p240/image008.jpg\"></p><p>Let h and r be the height and the base radius of the cone formed.</p><p>2&#960;r = length of arc = 132 cm</p><p>r = (132* 7)/44 = 21 cm</p><p>As the slant height of the cone is the radius of the sheet, l = 35 cm</p><p>Height of the cone (h)</p><p>= &radic;((l)<sup>2</sup>- (r)<sup>2</sup>) = &radic;((35)<sup>2</sup> - (21)<sup>2</sup>)</p><p>= &radic;(1225-441) = &radic;784 = 28 cm</p><p>Therefore volume of the cone formed</p><p>= 1/3 * &#960; * (21)<sup>2</sup>* 28 = 12936 cu cm</p>",
+    "question_index": 0
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A cube with side 4 cm contains a conical flask inside it. What can be the largest possible volume of the conical flask?</p></span><span class=\"hqt\" style=\"display:none\"><p>4 &#2360;&#2375;&#2350;&#2368; &#2349;&#2369;&#2332;&#2366; &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2328;&#2344; &#2325;&#2375; &#2309;&#2306;&#2342;&#2352; &#2319;&#2325; &#2358;&#2306;&#2325;&#2381;&#2357;&#2366;&#2325;&#2366;&#2352; &#2347;&#2381;&#2354;&#2366;&#2360;&#2381;&#2325; &#2352;&#2326;&#2366; &#2361;&#2369;&#2310; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2381;&#2357;&#2366;&#2325;&#2366;&#2352; &#2347;&#2381;&#2354;&#2366;&#2360;&#2381;&#2325; &#2325;&#2366; &#2309;&#2343;&#2367;&#2325;&#2340;&#2350; &#2360;&#2306;&#2349;&#2366;&#2357;&#2367;&#2340; &#2310;&#2351;&#2340;&#2344; &#2325;&#2381;&#2351;&#2366; &#2361;&#2379; &#2360;&#2325;&#2340;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">64&#960;/3 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">64&#960;/3 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">32&#960;/3 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">32&#960;/3 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">128&#960;/3 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">128&#960;/3 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">16&#960;/3 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">16&#960;/3 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p><img width=137 height=109 id=\"Picture 1\" src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p1867/image001.png\"></p><p>The radius of the cone will be 4/2 cm</p><p>The height of the cone will be 4 cm</p><p>The volume of the cone= &pi; (4/2)<sup>2</sup> x 4/3 = (&#960;4<sup>3</sup>)/12 = 16&#960;/3</p><p>Correct answer: d)16&#960;/3 cm<sup>3</sup></p>",
+    "question_index": 1
+  },
+  {
+    "question": "<span class=\"eqt\"><p>If the circumference of base of the cylinder is 132 cm and its height is 36 cm then what will be the approximate volume of the cylinder?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; &#2348;&#2375;&#2354;&#2344; &#2325;&#2375; &#2310;&#2343;&#2366;&#2352; &#2325;&#2368; &#2346;&#2352;&#2367;&#2343;&#2367; 132 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376; &#2324;&#2352; &#2311;&#2360;&#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; 36 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376; &#2340;&#2379; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2309;&#2344;&#2369;&#2350;&#2366;&#2344;&#2367;&#2340; &#2310;&#2351;&#2340;&#2344; &#2325;&#2381;&#2351;&#2366; &#2361;&#2379;&#2327;&#2366;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">0.05 m<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">0.05 &#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">0.01 m<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">0.01 &#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">0.07 m<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">0.07 &#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">0.1 m<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">0.1 &#2350;&#2368;<sup>3</sup></span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Let's assume that the base radius of the cylinder = R cm</p><p>According to the question; 2&#960;R = 132</p><p>=&gt; 2  X  22/7  X R=132</p><p>=&gt; R = (132  X  7)/(22  X  2)= 21 cm</p><p>Now volume of the cylinder = &#960; R<sup>2</sup>h = 22/7  X  21  X  21  X  36</p><p>= 49896cm<sup>3</sup> = 0.05 m<sup>3</sup> (Approx)</p><p>(1cm = 0.01 m = 10<sup>-2</sup> m, hence 1 cm<sup>3 </sup>= 10<sup>-6 </sup>m<sup>3</sup>)</p>",
+    "question_index": 2
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The diameters of two solid iron cylinders are 8 cm and 16 cm respectively and height of the cylinders are 9 cm and 12 cm respectively. These two iron cylinders are melted to make a new solid cone whose height is 19 cm. Find diameter of the base of the cone.</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2342;&#2379; &#2336;&#2379;&#2360; &#2354;&#2379;&#2361;&#2375; &#2325;&#2375; &#2348;&#2375;&#2354;&#2344;&#2379;&#2306; &#2325;&#2375; &#2357;&#2381;&#2351;&#2366;&#2360; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 8 &#2360;&#2375;&#2350;&#2368; &#2324;&#2352; 16 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2306; &#2324;&#2352; &#2348;&#2375;&#2354;&#2344;&#2379;&#2306; &#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 9 &#2360;&#2375;&#2350;&#2368; &#2324;&#2352; 12 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2311;&#2344; &#2342;&#2379; &#2354;&#2379;&#2361;&#2375; &#2325;&#2375; &#2348;&#2375;&#2354;&#2344;&#2379;&#2306; &#2325;&#2379; &#2346;&#2367;&#2328;&#2354;&#2366;&#2325;&#2352; &#2319;&#2325; &#2344;&#2351;&#2366; &#2336;&#2379;&#2360; &#2358;&#2306;&#2325;&#2369; &#2348;&#2344;&#2366;&#2351;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376; &#2332;&#2367;&#2360;&#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; 19 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2369; &#2325;&#2375; &#2310;&#2343;&#2366;&#2352; &#2325;&#2366; &#2357;&#2381;&#2351;&#2366;&#2360; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">24 cm</span><span class=\"hqt\" style=\"display:none\">24 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">28 cm</span><span class=\"hqt\" style=\"display:none\">28 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">20 cm</span><span class=\"hqt\" style=\"display:none\">20 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">18 cm</span><span class=\"hqt\" style=\"display:none\">18 &#2360;&#2375;&#2350;&#2368;</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>R<sub>1</sub> = 8/2 = 4 cm, R<sub>2</sub> = 16/2 = 8 cm, H<sub>1</sub> = 9 cm and H<sub>2</sub> = 12 cm</p><p>Height of the cone = 19 cm</p><p>Let r be the radius of the cone.</p><p>According to the question,</p><p>=&gt; &#960;R<sub>1</sub><sup>2</sup>H<sub>1</sub> + &#960;R<sub>2</sub><sup>2</sup>H<sub>2</sub><sup>2</sup> = 1/3 * &#960;r<sup>2</sup>h</p><p>=&gt; (16 * 9 + 64 * 12) * 3 = r<sup>2</sup> * 19</p><p>=&gt; r<sup>2</sup> = 2736/19 = 144</p><p>=&gt; r = 12 cm</p><p>Hence, diameter of the base of the cone = 12 * 2 = 24 cm</p>",
+    "question_index": 3
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A bucket in the shape of frustrum of a cone has the top radius of 20cm and the bottom radius is 14cm. Height of the bucket is 70cm. Calculate the volume of water that can be stored in the bucket:</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2358;&#2306;&#2325;&#2369; &#2325;&#2375; &#2331;&#2367;&#2344;&#2381;&#2344;&#2325; &#2325;&#2375; &#2310;&#2325;&#2366;&#2352; &#2325;&#2368; &#2319;&#2325; &#2348;&#2366;&#2354;&#2381;&#2335;&#2368; &#2325;&#2368; &#2314;&#2346;&#2352;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 20 &#2360;&#2375;&#2350;&#2368; &#2324;&#2352; &#2344;&#2367;&#2330;&#2354;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 14 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2348;&#2366;&#2354;&#2381;&#2335;&#2368; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; 70 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2348;&#2366;&#2354;&#2381;&#2335;&#2368; &#2350;&#2375;&#2306; &#2332;&#2350;&#2366; &#2325;&#2367;&#2319; &#2332;&#2366; &#2360;&#2325;&#2344;&#2375; &#2357;&#2366;&#2354;&#2375; &#2346;&#2366;&#2344;&#2368; &#2325;&#2368; &#2350;&#2366;&#2340;&#2381;&#2352;&#2366; &#2325;&#2368; &#2327;&#2339;&#2344;&#2366; &#2325;&#2352;&#2375;&#2306;:</p></span>",
+    "options": [
+      "<span class=\"eqt\">68.24 litres</span><span class=\"hqt\" style=\"display:none\">68.24 &#2354;&#2368;&#2335;&#2352;</span>",
+      "<span class=\"eqt\">62.24 litres</span><span class=\"hqt\" style=\"display:none\">62.24 &#2354;&#2368;&#2335;&#2352;</span>",
+      "<span class=\"eqt\">64.24 litres</span><span class=\"hqt\" style=\"display:none\">64.24 &#2354;&#2368;&#2335;&#2352;</span>",
+      "<span class=\"eqt\">66.24 litres</span><span class=\"hqt\" style=\"display:none\">66.24 &#2354;&#2368;&#2335;&#2352;</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p><img width=305 height=37 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20728/image011.png\"></p><p><img width=345 height=37 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p20728/image012.png\"></p><p>1 cm<sup>3</sup> = 1 ml</p><p>Therefore, 64240 cm<sup>3</sup> = 64240 ml = 64.24 litres</p>",
+    "question_index": 4
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The radius of the base of a cylinder is 1/3 of the height of a cone and height of the cylinder is twice the radius of the cone. The volume of the cone is 2156 cm<sup>3</sup>. If the radius of the cylinder is 14 cm, then find the volume of the cylinder.</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2348;&#2375;&#2354;&#2344; &#2325;&#2375; &#2310;&#2343;&#2366;&#2352; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2325;&#2368; 1/3 &#2361;&#2376; &#2324;&#2352; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2368; &#2342;&#2379;&#2327;&#2369;&#2344;&#2368; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2369; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; 2156 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2351;&#2342;&#2367; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 14 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;, &#2340;&#2379; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">5868 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">5868 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">8624 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">8624 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">9858 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">9858 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>",
+      "<span class=\"eqt\">10220 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">10220 &#2360;&#2375;&#2350;&#2368;<sup>3</sup></span>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Radius of the cylinder = 14 cm</p><p>Height of cone = 14*3 = 42 cm</p><p>Radius of the cone = r</p><p>Height of cylinder = 2r</p><p>Volume of the cone = 2156 cm<sup>3</sup></p><p>1/3 * &#960; * r<sup>2</sup> * 42 = 2156</p><p>r = 7 cm</p><p>Height of cylinder = 2r = 2*7 = 14 cm</p><p>Volume of the cylinder = &#960; * 14 * 14 * 14 = 8624 cm<sup>3</sup></p>",
+    "question_index": 5
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Height of a cone is 40% more than its radius. If the volume of cone is 1069.2 cm<sup>3</sup>, then find the difference between height and radius of the cone. (Take &#960; = 22/7)</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2311;&#2360;&#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2360;&#2375; 40% &#2309;&#2343;&#2367;&#2325; &#2361;&#2376;&#2404; &#2351;&#2342;&#2367; &#2358;&#2306;&#2325;&#2369; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; 1069.2 &#2360;&#2375;&#2350;&#2368;3 &#2361;&#2376;, &#2340;&#2379; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2324;&#2352; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2375; &#2348;&#2368;&#2330; &#2325;&#2366; &#2309;&#2306;&#2340;&#2352; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404; (&#960; = 22/7 &#2354;&#2368;&#2332;&#2367;&#2319;)</p></span>",
+    "options": [
+      "<span class=\"eqt\">2.8 cm</span><span class=\"hqt\" style=\"display:none\">2.8 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">3.2 cm</span><span class=\"hqt\" style=\"display:none\">3.2 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">2.4 cm</span><span class=\"hqt\" style=\"display:none\">2.4 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">3.6 cm</span><span class=\"hqt\" style=\"display:none\">3.6 &#2360;&#2375;&#2350;&#2368;</span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>Let radius of cone = r cm</p><p>Then, height of cone = (100 + 40)% of r = 1.4r cm</p><p>Volume of cone = 1/3 * &#960; * (radius of cone)<sup>2 </sup>* height of cone</p><p>1069.2 = 1/3 * 22/7 * r<sup>2</sup> * 1.4r</p><p>r<sup>3</sup> = 729</p><p>r = 9</p><p>Therefore, difference between height and radius of the cone = 1.4r  -  r = 0.4r = 0.4 * 9 = <b>3.6 cm</b></p>",
+    "question_index": 6
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A solid cylinder has a total surface area of 6336 cm<sup>2</sup>. If the height of the cylinder is 27 cm, then find the radius of the cylinder. </p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2336;&#2379;&#2360; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2325;&#2369;&#2354; &#2346;&#2371;&#2359;&#2381;&#2336;&#2368;&#2351; &#2325;&#2381;&#2359;&#2375;&#2340;&#2381;&#2352;&#2347;&#2354; 6336 &#2357;&#2352;&#2381;&#2327; &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;&#2404; &#2351;&#2342;&#2367; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; 27 &#2360;&#2375;&#2350;&#2368; &#2361;&#2376;, &#2340;&#2379; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">21 cm</span><span class=\"hqt\" style=\"display:none\">21 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">27 cm</span><span class=\"hqt\" style=\"display:none\">27 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">22 cm</span><span class=\"hqt\" style=\"display:none\">22 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">28 cm</span><span class=\"hqt\" style=\"display:none\">28 &#2360;&#2375;&#2350;&#2368;</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>The total surface area of the cylinder = 2&#960;r (r + 27) </p><p>6336 = 2 * 22/7 * r (r + 27)</p><p>1008 = r * (r + 27)</p><p>r<sup>2</sup> + 27r  -  1008 = 0 </p><p>r<sup>2</sup> + 48r  -  21r  -  1008 = 0 </p><p>r (r + 48)  -  21 (r + 48) = 0</p><p>(r  -  21) (r + 48) = 0 </p><p>r = 21 cm </p><p>Hence, the radius of the cylinder = 21 cm</p>",
+    "question_index": 7
+  },
+  {
+    "question": "<span class=\"eqt\"><p>From a wooden solid cylinder of base radius 7 cm and height 14 cm, a cone is cut. The height and base radius of cone are half of height and half of base radius of cylinder respectively. Find the percentage of wood wasted in the process. (upto two decimal)</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2310;&#2343;&#2366;&#2352; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 7 &#2360;&#2375;&#2350;&#2368; &#2324;&#2352; &#2314;&#2306;&#2330;&#2366;&#2312; 14 &#2360;&#2375;&#2350;&#2368; &#2325;&#2375; &#2354;&#2325;&#2337;&#2364;&#2368; &#2325;&#2375; &#2336;&#2379;&#2360; &#2348;&#2375;&#2354;&#2344; &#2360;&#2375; &#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2325;&#2366;&#2335;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2324;&#2352; &#2310;&#2343;&#2366;&#2352; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2325;&#2368; &#2310;&#2343;&#2368; &#2324;&#2352; &#2310;&#2343;&#2366;&#2352; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2368; &#2310;&#2343;&#2368; &#2361;&#2376;&#2404; &#2311;&#2360; &#2346;&#2381;&#2352;&#2325;&#2381;&#2352;&#2367;&#2351;&#2366; &#2350;&#2375;&#2306; &#2326;&#2352;&#2366;&#2348; &#2361;&#2369;&#2312; &#2354;&#2325;&#2337;&#2364;&#2368; &#2325;&#2366; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404; (&#2342;&#2358;&#2350;&#2354;&#2357; &#2325;&#2375; &#2342;&#2379; &#2360;&#2381;&#2341;&#2366;&#2344; &#2340;&#2325;)</p></span>",
+    "options": [
+      "<span class=\"eqt\">90.24%</span><span class=\"hqt\" style=\"display:none\">90.24%</span>",
+      "<span class=\"eqt\">95.83%</span><span class=\"hqt\" style=\"display:none\">95.83%</span>",
+      "<span class=\"eqt\">88.27%</span><span class=\"hqt\" style=\"display:none\">88.27%</span>",
+      "<span class=\"eqt\">78.16%</span><span class=\"hqt\" style=\"display:none\">78.16%</span>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Volume of cylinder = &#960;r<sup>2</sup>h = &#960;*7*7*14 cubic cm</p><p>Volume of cone = 1/3* &#960;*r<sup>2</sup>*h = 1/3* &#960;* (7/2)* (7/2)* 7 cubic cm</p><p>Amount of wood wasted = Volume of cylinder  -  Volume of cone</p><p>= &#960;*7*7*14 - 1/3* &#960;* (7/2)* (7/2)* 7</p><p>= 49&#960;* (14  -  7/12)</p><p>= 49&#960;* 161/12 cubic cm</p><p>Required Percentage = [(49&#960;* 161/12)/ (&#960;*7*7*14)]* 100</p><p>= 161* 25/42 = 95.83%</p><p>Short method:</p><p>Volume of cylinder = &#960;r<sup>2</sup>h</p><p>Volume of cone = 1/3 * &#960;(r/2)<sup>2</sup>(h/2) = 1/24 * &#960;r<sup>2</sup>h</p><p>Amount of wood wasted = Volume of cylinder  -  Volume of cone = 23/24 * &#960;r<sup>2</sup>h</p><p>Required percentage = (23/24 * &#960;r<sup>2</sup>h)/( &#960;r<sup>2</sup>h) * 100 = 95.83%</p>",
+    "question_index": 8
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Water from 'N' small cylindrical mugs each of radius and height 15 cm and 14 cm respectively is poured into a large cuboidal pool of dimension 2 m * 4.5 m * 2.2 m to completely fill it, find the value of N.</p></span><span class=\"hqt\" style=\"display:none\"><p>'N' &#2331;&#2379;&#2335;&#2375; &#2348;&#2375;&#2354;&#2344;&#2366;&#2325;&#2366;&#2352; &#2350;&#2327;&#2379;&#2306; &#2332;&#2367;&#2344;&#2350;&#2375;&#2306; &#2346;&#2381;&#2352;&#2340;&#2381;&#2351;&#2375;&#2325; &#2350;&#2327; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 15 cm &#2324;&#2352; 14 cm &#2361;&#2376;, &#2332;&#2367;&#2360;&#2360;&#2375; &#2346;&#2366;&#2344;&#2368; &#2354;&#2375;&#2325;&#2352; 2 m * 4.5 m * 2.2 m &#2310;&#2351;&#2366;&#2350; &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2348;&#2337;&#2364;&#2375; &#2328;&#2344;&#2366;&#2325;&#2366;&#2352; &#2346;&#2370;&#2354; &#2325;&#2379; &#2346;&#2370;&#2352;&#2368; &#2340;&#2352;&#2361; &#2360;&#2375; &#2349;&#2352;&#2344;&#2375; &#2325;&#2375; &#2354;&#2367;&#2319; &#2346;&#2370;&#2354; &#2350;&#2375;&#2306; &#2337;&#2366;&#2354;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376;, &#2340;&#2379; N &#2325;&#2366; &#2350;&#2366;&#2344; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">24 * 10<sup>2</sup></span><span class=\"hqt\" style=\"display:none\">24 * 10<sup>2</sup></span>",
+      "<span class=\"eqt\">3 * 10<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">3 * 10<sup>3</sup></span>",
+      "<span class=\"eqt\">2 * 10<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2 * 10<sup>3</sup></span>",
+      "<span class=\"eqt\">1440</span><span class=\"hqt\" style=\"display:none\">1440</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Volume of one small mug = &#960;r<sup>2</sup>h = (22/7) * 15<sup>2</sup> * 14 = 225 * 44 = (900/4) * 44 = 9900 cm<sup>3</sup></p><p>Volume of pool = (2 * 100) * (4.5 * 100) * (2.2 * 100) = 19.8 * 10<sup>6</sup> cm<sup>3</sup></p><p>Volume of N small mugs = Volume of pool</p><p>N * 9900 = 19.8 * 10<sup>6</sup></p><p>N * 9900 = 19800 * 10<sup>3</sup></p><p>N = 2 * 10<sup>3</sup></p>",
+    "question_index": 9
+  },
+  {
+    "question": "<span class=\"eqt\"><p>If the total surface area of the cylinder is 1012 cm<sup>2</sup> and the height of the cylinder is 16 cm, then find the volume of the cylinder. </p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2325;&#2369;&#2354; &#2346;&#2371;&#2359;&#2381;&#2336;&#2368;&#2351; &#2325;&#2381;&#2359;&#2375;&#2340;&#2381;&#2352;&#2347;&#2354; 1012 cm<sup>2</sup> &#2361;&#2376; &#2340;&#2341;&#2366; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; 16 cm &#2361;&#2376;, &#2340;&#2379; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">2486 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2486 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">2530 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2530 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">2596 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2596 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">2464 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2464 cm<sup>3</sup></span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>The total surface area of the cylinder = 2&#960;r (h + r) </p><p>1012 = 2 * 22/7 * r (16 + r) </p><p>161 = 16r + r<sup>2</sup> </p><p>r<sup>2</sup> + 16r  -  161 = 0 </p><p>r<sup>2</sup> + 23r  -  7r  -  161 = 0 </p><p>r (r + 23)  -  7 (r + 23) = 0 </p><p>(r  -  7) (r + 23) = 0 </p><p>r = 7 [Neglect negative value] </p><p>The volume of the cylinder = &#960;r<sup>2</sup>h </p><p>= 22/7 * 7 * 7 * 16 </p><p>= 2464 cm<sup>3</sup></p>",
+    "question_index": 10
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The diameter and the slant height of a conical tent are 16 m and 5.6 m respectively. What length of cloth having a width of 4 m is needed to make the tent?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2358;&#2306;&#2325;&#2381;&#2357;&#2366;&#2325;&#2366;&#2352; &#2340;&#2306;&#2348;&#2370; &#2325;&#2366; &#2357;&#2381;&#2351;&#2366;&#2360; &#2324;&#2352; &#2340;&#2367;&#2352;&#2381;&#2351;&#2325; &#2314;&#2306;&#2330;&#2366;&#2312; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 16 m &#2324;&#2352; 5.6 m &#2361;&#2376;&#2404; &#2340;&#2306;&#2348;&#2370; &#2348;&#2344;&#2366;&#2344;&#2375; &#2325;&#2375; &#2354;&#2367;&#2319; 4 m &#2330;&#2380;&#2337;&#2364;&#2366;&#2312; &#2357;&#2366;&#2354;&#2375; &#2325;&#2367;&#2340;&#2344;&#2375; &#2354;&#2350;&#2381;&#2348;&#2375; &#2325;&#2346;&#2337;&#2364;&#2375; &#2325;&#2368; &#2310;&#2357;&#2358;&#2381;&#2351;&#2325;&#2340;&#2366; &#2361;&#2379;&#2327;&#2368;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">35.2 m</span><span class=\"hqt\" style=\"display:none\">35.2 m</span>",
+      "<span class=\"eqt\">32.5 m</span><span class=\"hqt\" style=\"display:none\">32.5 m</span>",
+      "<span class=\"eqt\">32 m</span><span class=\"hqt\" style=\"display:none\">32 m</span>",
+      "<span class=\"eqt\">35 m</span><span class=\"hqt\" style=\"display:none\">35 m</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Curved surface area of conical tent = area of cloth</p><p>&#960; * radius of tent * slant height of tent = length of cloth * breadth of cloth</p><p>22/7 * (16/2) * 5.6 = length of cloth * 4</p><p>Length of cloth = 35.2 m</p>",
+    "question_index": 11
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A rectangular Aluminum sheet with dimensions 22 m x 10 m is rolled into a cylinder so that the smaller side becomes the height of the cylinder. What is the volume of the cylinder formed?</p></span><span class=\"hqt\" style=\"display:none\"><p>22 m x 10 m &#2357;&#2367;&#2350;&#2366;&#2319;&#2305; &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2310;&#2351;&#2340;&#2366;&#2325;&#2366;&#2352; &#2319;&#2354;&#2381;&#2351;&#2370;&#2350;&#2368;&#2344;&#2367;&#2351;&#2350; &#2358;&#2368;&#2335; &#2325;&#2379; &#2319;&#2325; &#2348;&#2375;&#2354;&#2344; &#2325;&#2375; &#2352;&#2370;&#2346; &#2350;&#2375;&#2306; &#2350;&#2379;&#2396;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376; &#2332;&#2367;&#2360;&#2360;&#2375; &#2325;&#2367; &#2313;&#2360;&#2325;&#2368; &#2331;&#2379;&#2335;&#2368; &#2349;&#2369;&#2332;&#2366; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2348;&#2344; &#2332;&#2366;&#2340;&#2368; &#2361;&#2376;, &#2311;&#2360; &#2346;&#2381;&#2352;&#2325;&#2366;&#2352; &#2344;&#2367;&#2352;&#2381;&#2350;&#2367;&#2340; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; &#2325;&#2367;&#2340;&#2344;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">385 cu m</span><span class=\"hqt\" style=\"display:none\">385 cu m</span>",
+      "<span class=\"eqt\">370 cu m</span><span class=\"hqt\" style=\"display:none\">370 cu m</span>",
+      "<span class=\"eqt\">375 cu m</span><span class=\"hqt\" style=\"display:none\">375 cu m</span>",
+      "<span class=\"eqt\">380 cu m</span><span class=\"hqt\" style=\"display:none\">380 cu m</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Height of cylinder = smaller side of rectangular sheet = 10 m</p><p>Circumference of base of cylinder = larger side of rectangular sheet</p><p>2 * 22/7 * radius of cylinder = 22</p><p>Radius of cylinder = 7/2 m</p><p>Therefore, volume of cylinder = 22/7 * (7/2)<sup>2</sup> * 10</p><p>= 385 cu m</p>",
+    "question_index": 12
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A cylinder of radius 6 cm and height 7.5 cm is melted to form a cone of radius 15 cm. What is the height of cone?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 6 cm &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; 7.5 cm &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2348;&#2375;&#2354;&#2344; &#2325;&#2379; &#2346;&#2367;&#2328;&#2354;&#2366;&#2325;&#2352; 15 cm &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2357;&#2366;&#2354;&#2366; &#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2344;&#2367;&#2352;&#2381;&#2350;&#2367;&#2340; &#2325;&#2368; &#2332;&#2366;&#2340;&#2368; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2369; &#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2325;&#2367;&#2340;&#2344;&#2368; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">2.7 cm</span><span class=\"hqt\" style=\"display:none\">2.7 cm</span>",
+      "<span class=\"eqt\">3.6 cm</span><span class=\"hqt\" style=\"display:none\">3.6 cm</span>",
+      "<span class=\"eqt\">2.4 cm</span><span class=\"hqt\" style=\"display:none\">2.4 cm</span>",
+      "<span class=\"eqt\">3.2 cm</span><span class=\"hqt\" style=\"display:none\">3.2 cm</span>"
+    ],
+    "correct_option_id": 1,
+    "solution": "<p>Volume of cylinder = Volume of cone</p><p>&#960; * (radius of cylinder)<sup>2 </sup>* height of cylinder = 1/3 * &#960; * (radius of cone)<sup>2 </sup>* height of cone</p><p>6 * 6 * 7.5 = 1/3 * 15 * 15 * height of cone</p><p>Height of cone = <b>3.6 cm</b></p>",
+    "question_index": 13
+  },
+  {
+    "question": "<span class=\"eqt\"><p>The ratio of radius of a cone and a cylinder is 3:2 respectively and the ratio of volumes of cone and cylinder is 4:3 respectively, then find the ratio of their heights respectively.</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2324;&#2352; &#2319;&#2325; &#2348;&#2375;&#2354;&#2344; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 3:2 &#2361;&#2376; &#2340;&#2341;&#2366; &#2358;&#2306;&#2325;&#2369; &#2324;&#2352; &#2348;&#2375;&#2354;&#2344; &#2325;&#2375; &#2310;&#2351;&#2340;&#2344; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 4:3 &#2361;&#2376;, &#2340;&#2379; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; &#2313;&#2344;&#2325;&#2368; &#2314;&#2305;&#2330;&#2366;&#2312; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">16:9</span><span class=\"hqt\" style=\"display:none\">16:9</span>",
+      "<span class=\"eqt\">7:9</span><span class=\"hqt\" style=\"display:none\">7:9</span>",
+      "<span class=\"eqt\">3:2</span><span class=\"hqt\" style=\"display:none\">3:2</span>",
+      "<span class=\"eqt\">9:4</span><span class=\"hqt\" style=\"display:none\">9:4</span>"
+    ],
+    "correct_option_id": 0,
+    "solution": "<p>Let radius and height of cone are r and h respectively and radius and height of cylinder are R and H respectively.</p><p>r/R = 3/2</p><p><img width=67 height=57 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p21895/image003.png\"></p><p><img width=51 height=36 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p21895/image004.png\"></p><p><img width=51 height=37 src=\"https://u1.oliveboard.in/exams/solution/oliveimg/p21895/image005.png\"></p>",
+    "question_index": 14
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Find the radius of the base and height of a cylinder if curved surface area and volume of the cylinder are 2112 cm<sup>2</sup> and 25344 cm<sup>3</sup>, respectively. (Take &#960; = 22/7)</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2351;&#2342;&#2367; &#2348;&#2375;&#2354;&#2344; &#2325;&#2366; &#2357;&#2325;&#2381;&#2352; &#2346;&#2371;&#2359;&#2381;&#2336;&#2368;&#2351; &#2325;&#2381;&#2359;&#2375;&#2340;&#2381;&#2352;&#2347;&#2354; &#2324;&#2352; &#2310;&#2351;&#2340;&#2344; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 2112 &#2360;&#2375;&#2350;&#2368;<sup>2</sup> &#2324;&#2352; 25344 &#2360;&#2375;&#2350;&#2368;<sup>3</sup> &#2361;&#2376;, &#2340;&#2379; &#2319;&#2325; &#2348;&#2375;&#2354;&#2344; &#2325;&#2375; &#2310;&#2343;&#2366;&#2352; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404; (&#960; = 22/7)</p></span>",
+    "options": [
+      "<span class=\"eqt\">Radius = 42 cm, and Height = 15 cm</span><span class=\"hqt\" style=\"display:none\">&#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; = 42 &#2360;&#2375;&#2350;&#2368;, &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; = 15 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">Radius = 22 cm, and Height = 10 cm</span><span class=\"hqt\" style=\"display:none\">&#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; = 22 &#2360;&#2375;&#2350;&#2368;, &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; = 10 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">Radius = 28 cm, and Height = 12 cm</span><span class=\"hqt\" style=\"display:none\">&#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; = 28 &#2360;&#2375;&#2350;&#2368;, &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; = 12 &#2360;&#2375;&#2350;&#2368;</span>",
+      "<span class=\"eqt\">Radius = 24 cm, and Height = 14 cm</span><span class=\"hqt\" style=\"display:none\">&#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; = 24 &#2360;&#2375;&#2350;&#2368;, &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; = 14 &#2360;&#2375;&#2350;&#2368;</span>"
+    ],
+    "correct_option_id": 3,
+    "solution": "<p>Given, curved surface area and volume of the cylinder are 2112 cm<sup>2</sup> and 25344 cm<sup>3</sup>, respectively.</p><p>So, 2 * 22/7 * r * h = 2112</p><p>=&gt; rh = 336</p><p>And 22/7 * r<sup>2</sup> * h = 25344</p><p>=&gt; 22/7 * r * 336 = 25344</p><p>=&gt; r = 25344 * 7/22 * 1/336</p><p>=&gt; r = 24 cm</p><p>Hence, h = 336/24</p><p>=&gt; h = 14 cm</p>",
+    "question_index": 15
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A cone whose height is 40% more than its radius. If radius of the base is decreased by 30% and its height is increased by 10%, then percentage change in its volume is:</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2332;&#2367;&#2360;&#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312;, &#2311;&#2360;&#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2360;&#2375; 40% &#2309;&#2343;&#2367;&#2325; &#2361;&#2376;&#2404; &#2351;&#2342;&#2367; &#2310;&#2343;&#2366;&#2352; &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; 30% &#2325;&#2350; &#2361;&#2379; &#2332;&#2366;&#2340;&#2368; &#2361;&#2376; &#2324;&#2352; &#2311;&#2360;&#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; 10% &#2348;&#2338;&#2364; &#2332;&#2366;&#2340;&#2368; &#2361;&#2376;, &#2340;&#2379; &#2311;&#2360;&#2325;&#2375; &#2310;&#2351;&#2340;&#2344; &#2350;&#2375;&#2306; &#2346;&#2381;&#2352;&#2340;&#2367;&#2358;&#2340; &#2346;&#2352;&#2367;&#2357;&#2352;&#2381;&#2340;&#2344; &#2325;&#2367;&#2340;&#2344;&#2366; &#2361;&#2379;&#2327;&#2366;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">19.59%</span><span class=\"hqt\" style=\"display:none\">19.59%</span>",
+      "<span class=\"eqt\">23.40%</span><span class=\"hqt\" style=\"display:none\">23.40%</span>",
+      "<span class=\"eqt\">46.09%</span><span class=\"hqt\" style=\"display:none\">46.09%</span>",
+      "<span class=\"eqt\">55.55%</span><span class=\"hqt\" style=\"display:none\">55.55%</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Let radius and height of the cone are 5x cm and 7x cm, respectively.</p><p>Volume of the cone = 1/3 * 22/7 * (5x)<sup>2</sup> * 7x = 550x<sup>3</sup>/3 cm<sup>3</sup></p><p>New radius = 70/100 * 5x = 3.5x cm</p><p>And new height = 110/100 * 7x = 7.7x cm</p><p>And new volume of the cone = 1/3 * 22/7 * (3.5x)<sup>2</sup> * 7.7x = 98.8167x<sup>3</sup> cm<sup>3</sup></p><p>So, percentage change = ((550x<sup>3</sup>)/3 - 98.8167x<sup>3</sup>)/(550x<sup>3</sup>/3) * 100 = 46.09%</p>",
+    "question_index": 16
+  },
+  {
+    "question": "<span class=\"eqt\"><p>A cone of radius 28 cm and height 45 cm is melted and recast into some cuboids of dimension 40 cm * 21 cm * 11 cm. Find the number of cuboids made from the cone.</p></span><span class=\"hqt\" style=\"display:none\"><p>28 cm &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2324;&#2352; 45 cm &#2314;&#2305;&#2330;&#2366;&#2312; &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2358;&#2306;&#2325;&#2369; &#2325;&#2379; &#2346;&#2367;&#2328;&#2354;&#2366;&#2351;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376; &#2324;&#2352; &#2357;&#2367;&#2350;&#2366;&#2319;&#2305; 40 cm * 21 cm * 11 cm &#2357;&#2366;&#2354;&#2375; &#2325;&#2369;&#2331; &#2328;&#2344;&#2366;&#2349;&#2379;&#2306; &#2350;&#2375;&#2306; &#2338;&#2366;&#2354;&#2366; &#2332;&#2366;&#2340;&#2366; &#2361;&#2376;&#2404; &#2358;&#2306;&#2325;&#2369; &#2360;&#2375; &#2348;&#2344;&#2375; &#2328;&#2344;&#2366;&#2349;&#2379;&#2306; &#2325;&#2368; &#2360;&#2306;&#2326;&#2381;&#2351;&#2366; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">6</span><span class=\"hqt\" style=\"display:none\">6</span>",
+      "<span class=\"eqt\">8</span><span class=\"hqt\" style=\"display:none\">8</span>",
+      "<span class=\"eqt\">4</span><span class=\"hqt\" style=\"display:none\">4</span>",
+      "<span class=\"eqt\">3</span><span class=\"hqt\" style=\"display:none\">3</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Radius of cone = 28 cm</p><p>Height of cone = 45 cm</p><p>Dimension of cuboid = 40 cm * 21 cm * 11 cm</p><p>Let the number of cuboids = 'n'</p><p>1/3 * 22/7 * 28 *28 * 45 = n * 40 * 21 * 11</p><p>n = (22*4*28*15)/(40*21*11)</p><p>n = 4</p>",
+    "question_index": 17
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Find the volume of a right circular cone whose radius and height are 21cm and 1.5cm respectively. </p></span><span class=\"hqt\" style=\"display:none\"><p>&#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 21 cm &#2324;&#2352; 1.5 cm &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2324;&#2352; &#2314;&#2305;&#2330;&#2366;&#2312; &#2357;&#2366;&#2354;&#2375; &#2319;&#2325; &#2354;&#2350;&#2381;&#2348; &#2357;&#2352;&#2381;&#2340;&#2381;&#2340;&#2369;&#2354; &#2358;&#2306;&#2325;&#2369; &#2325;&#2366; &#2310;&#2351;&#2340;&#2344; &#2332;&#2381;&#2334;&#2366;&#2340; &#2325;&#2368;&#2332;&#2367;&#2319;&#2404;</p></span>",
+    "options": [
+      "<span class=\"eqt\">2400 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">2400 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">1540 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">1540 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">693 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">693 cm<sup>3</sup></span>",
+      "<span class=\"eqt\">1773 cm<sup>3</sup></span><span class=\"hqt\" style=\"display:none\">1773 cm<sup>3</sup></span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>r = 21cm and h = 1.5cm</p><p>Volume of right circular cone = &#960;r<sup>2</sup>h/3</p><p>= 22/7 * 21 * 21 * 1.5/3</p><p>= 693 cm<sup>3</sup></p>",
+    "question_index": 18
+  },
+  {
+    "question": "<span class=\"eqt\"><p>Volume of two metallic cylinders C<sub>1</sub> and C<sub>2</sub> are in the ratio 3: 8 respectively. Radius of C<sub>1</sub> is 2/3 times the radius of C<sub>2</sub>. What is the respective ratio of height of C<sub>2</sub> to height of C<sub>1</sub>?</p></span><span class=\"hqt\" style=\"display:none\"><p>&#2342;&#2379; &#2343;&#2366;&#2340;&#2369; &#2325;&#2375; &#2348;&#2375;&#2354;&#2344;&#2379;&#2306; C<sub>1</sub> &#2324;&#2352; C<sub>2</sub> &#2325;&#2375; &#2310;&#2351;&#2340;&#2344; &#2325;&#2366; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2381;&#2352;&#2350;&#2358;&#2307; 3:8 &#2361;&#2376;&#2404; C<sub>1</sub> &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366;, C<sub>2</sub> &#2325;&#2368; &#2340;&#2381;&#2352;&#2367;&#2332;&#2381;&#2351;&#2366; &#2325;&#2366; 2/3 &#2327;&#2369;&#2344;&#2366; &#2361;&#2376;&#2404; &#2340;&#2379;, C<sub>2</sub> &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2340;&#2341;&#2366; C<sub>1</sub> &#2325;&#2368; &#2314;&#2306;&#2330;&#2366;&#2312; &#2325;&#2366; &#2360;&#2306;&#2348;&#2306;&#2343;&#2367;&#2340; &#2309;&#2344;&#2369;&#2346;&#2366;&#2340; &#2325;&#2367;&#2340;&#2344;&#2366; &#2361;&#2376;?</p></span>",
+    "options": [
+      "<span class=\"eqt\">4: 3</span><span class=\"hqt\" style=\"display:none\">4: 3</span>",
+      "<span class=\"eqt\">16: 9</span><span class=\"hqt\" style=\"display:none\">16: 9</span>",
+      "<span class=\"eqt\">32: 27</span><span class=\"hqt\" style=\"display:none\">32: 27</span>",
+      "<span class=\"eqt\">3: 2</span><span class=\"hqt\" style=\"display:none\">3: 2</span>"
+    ],
+    "correct_option_id": 2,
+    "solution": "<p>Volume of cylinder = &#960; * (radius of cylinder)<sup>2</sup> * height of cylinder</p><p>Volume of C<sub>1</sub> = &#960; * (radius of C<sub>1</sub>)<sup>2</sup> * height of C<sub>1</sub></p><p>= &#960; * ((2/3) *radius of C<sub>2</sub>)<sup>2</sup> * height of C<sub>1</sub></p><p>= (4/9) * &#960; * (radius of C<sub>2</sub>)<sup>2</sup> * height of C<sub>1</sub></p><p>Volume of C<sub>2</sub> = &#960; * (radius of C<sub>2</sub>)<sup>2</sup> * height of C<sub>2</sub></p><p>Then, 3: 8 = ((4/9) * &#960; * (radius of C<sub>2</sub>)<sup>2</sup> * height of C<sub>1</sub>): (&#960; * (radius of C<sub>2</sub>)<sup>2</sup> * height of C<sub>2</sub>)</p><p>(Height of C<sub>2</sub>): (Height of C<sub>1</sub>) = <b>32: 27</b></p>",
+    "question_index": 19
+  }
+];
+            this.sections = null;
+            this.curQ = 0;
+            this.ans = new Array(this.qs.length).fill(null);
+            this.reviewed = new Array(this.qs.length).fill(false);
+            this.startT = Date.now();
+            this.timeLeft = 20 * 60;
+            this.timeSpent = new Array(this.qs.length).fill(0);
+            this.lastQTime = this.startT;
+            this.sub = false;
+            this.eng = true;
+            this.darkMode = false;
+            this.timer = null;
+            this.sectionTimer = null;
+            this.currentSection = this.sections ? 0 : null;
+            this.initEls();
+            this.setupWelcomeScreen();
+            this.validateData();
+            this.setupBeforeUnload();
+        }
+            
+            setupWelcomeScreen() {
+                document.getElementById('startTestBtn').addEventListener('click', () => {
+                    // Hide welcome screen
+                    document.getElementById('welcomeScreen').classList.add('hidden');
+                    
+                    // Show main test interface
+                    document.getElementById('mainTestInterface').style.display = '';
+                    
+                    // Initialize the test
+                    setTimeout(() => {
+                        this.init();
+                    }, 300);
+                });
+            }
+            
+            setupBeforeUnload() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (!this.sub) {
+                        e.preventDefault();
+                        e.returnValue = 'Are you sure you want to leave? Your test progress will be lost.';
+                        return e.returnValue;
+                    }
+                });
+            }
+            
+            validateData() {
+                console.log('Validating question data...');
+                this.qs.forEach((q, idx) => {
+                    if (q.correct_option_id !== undefined) {
+                        console.log(`Q${idx + 1}: correct_option_id = ${q.correct_option_id}, options count = ${q.options ? q.options.length : 0}`);
+                        
+                        if (q.options && (q.correct_option_id < 0 || q.correct_option_id >= q.options.length)) {
+                            console.warn(`Q${idx + 1}: Invalid correct_option_id ${q.correct_option_id} for ${q.options.length} options`);
+                        }
+                    }
+                });
+            }
+            
+            initEls() {
+                this.els = {
+                    qInfo: document.getElementById('qInfo'),
+                    progTxt: document.getElementById('progTxt'),
+                    ansCnt: document.getElementById('ansCnt'),
+                    timer: document.getElementById('timer'),
+                    qTxt: document.getElementById('qTxt'),
+                    compSec: document.getElementById('compSec'),
+                    compCont: document.getElementById('compCont'),
+                    opts: document.getElementById('opts'),
+                    sol: document.getElementById('sol'),
+                    solCont: document.getElementById('solCont'),
+                    solInfo: document.getElementById('solInfo'),
+                    qGrid: document.getElementById('qGrid'),
+                    desktopQGrid: document.getElementById('desktopQGrid'),
+                    panel: document.getElementById('panel'),
+                    modalOver: document.getElementById('modalOver'),
+                    scoreDisp: document.getElementById('scoreDisp'),
+                    corrStat: document.getElementById('corrStat'),
+                    incStat: document.getElementById('incStat'),
+                    unaStat: document.getElementById('unaStat'),
+                    timeStat: document.getElementById('timeStat'),
+                    printBtn: document.getElementById('printBtn'),
+                    desktopSidebar: document.getElementById('desktopSidebar'),
+                    reviewBtn: document.getElementById('reviewBtn'),
+                    themeToggle: document.getElementById('themeToggle'),
+                    sectionHeader: this.sections ? document.getElementById('sectionHeader') : null,
+                    sectionTitle: this.sections ? document.getElementById('sectionTitle') : null,
+                    sectionTimer: this.sections ? document.getElementById('sectionTimer') : null
+                };
+            }
+            
+            init() {
+                this.createGrid();
+                this.startTimer();
+                if (this.sections) {
+                    this.startSectionTimer();
+                    this.updateSectionHeader();
+                }
+                this.loadQ(0);
+                this.setupEvents();
+                this.updatePrintButton();
+                this.updateThemeToggleIcon();
+            }
+            
+            setupEvents() {
+                document.getElementById('menuBtn').onclick = () => this.togglePanel();
+                document.getElementById('subBtn').onclick = () => this.confirmSub();
+                document.getElementById('prevBtn').onclick = () => this.nav(-1);
+                document.getElementById('nextBtn').onclick = () => this.nav(1);
+                document.getElementById('reviewBtn').onclick = () => this.toggleReview();
+                document.getElementById('engBtn').onclick = () => this.setLang(true);
+                document.getElementById('hinBtn').onclick = () => this.setLang(false);
+                document.getElementById('panelClose').onclick = () => this.closePanel();
+                document.getElementById('closeModal').onclick = () => this.closeModal();
+                document.getElementById('revBtn').onclick = () => this.review();
+                document.getElementById('printBtn').onclick = () => this.printTest();
+                document.getElementById('themeToggle').onclick = () => this.toggleTheme();
+            }
+            
+            // IMPROVED: Better handling of complex HTML content including math expressions
+            extractTxt(html, isEng) {
+                if (!html) return '';
+                
+                // Create a temporary div to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Process math expressions - convert them to proper HTML structure
+                const mathExps = tempDiv.querySelectorAll('div[style*="inline-block"][style*="vertical-align: middle"]');
+                mathExps.forEach(mathExp => {
+                    // Create a new math expression container
+                    const newMathExp = document.createElement('div');
+                    newMathExp.className = 'math-exp';
+                    
+                    // Get numerator and denominator
+                    const spans = mathExp.querySelectorAll('span');
+                    if (spans.length >= 3) {
+                        const numerator = spans[0].cloneNode(true);
+                        const line = spans[1].cloneNode(true);
+                        const denominator = spans[2].cloneNode(true);
+                        
+                        // Clean up the numerator
+                        const numDiv = document.createElement('div');
+                        numDiv.className = 'math-num';
+                        numDiv.innerHTML = numerator.innerHTML;
+                        
+                        // Create the dividing line
+                        const lineDiv = document.createElement('div');
+                        lineDiv.className = 'math-line';
+                        
+                        // Clean up the denominator
+                        const denDiv = document.createElement('div');
+                        denDiv.className = 'math-num';
+                        denDiv.innerHTML = denominator.innerHTML;
+                        
+                        // Build the new math expression
+                        newMathExp.appendChild(numDiv);
+                        newMathExp.appendChild(lineDiv);
+                        newMathExp.appendChild(denDiv);
+                        
+                        // Replace the original with our new structure
+                        mathExp.parentNode.replaceChild(newMathExp, mathExp);
+                    }
+                });
+                
+                // Handle language selection - show/hide appropriate spans
+                const langSpans = tempDiv.querySelectorAll('span.eqt, span.hqt');
+                langSpans.forEach(span => {
+                    if ((isEng && span.classList.contains('hqt')) || 
+                        (!isEng && span.classList.contains('eqt'))) {
+                        span.style.display = 'none';
+                    } else {
+                        span.style.display = '';
+                        // Remove the class to prevent future hiding
+                        span.classList.remove('eqt', 'hqt');
+                    }
+                });
+                
+                // Clean up any remaining display:none styles
+                const hiddenElements = tempDiv.querySelectorAll('[style*="display:none"]');
+                hiddenElements.forEach(el => {
+                    if (el.style.display === 'none' && 
+                        !el.classList.contains('hqt') && 
+                        !el.classList.contains('eqt')) {
+                        el.style.display = '';
+                    }
+                });
+                
+                // Handle tables - wrap them in a scrollable container
+                const tables = tempDiv.querySelectorAll('table');
+                tables.forEach(table => {
+                    const container = document.createElement('div');
+                    container.className = 'table-container';
+                    table.parentNode.insertBefore(container, table);
+                    container.appendChild(table);
+                });
+                
+                return tempDiv.innerHTML;
+            }
+            
+            createGrid() {
+                this.els.qGrid.innerHTML = '';
+                this.els.desktopQGrid.innerHTML = '';
+                
+                this.qs.forEach((_, i) => {
+                    // Create mobile grid element
+                    const mobileDiv = document.createElement('div');
+                    mobileDiv.className = 'q-num';
+                    mobileDiv.textContent = i + 1;
+                    mobileDiv.onclick = () => this.goToQ(i);
+                    this.els.qGrid.appendChild(mobileDiv);
+                    
+                    // Create desktop grid element
+                    const desktopDiv = document.createElement('div');
+                    desktopDiv.className = 'q-num';
+                    desktopDiv.textContent = i + 1;
+                    desktopDiv.onclick = () => this.goToQ(i);
+                    this.els.desktopQGrid.appendChild(desktopDiv);
+                });
+            }
+            
+            loadQ(idx) {
+                // Update time spent on previous question
+                if (this.curQ !== idx) {
+                    const now = Date.now();
+                    this.timeSpent[this.curQ] += (now - this.lastQTime) / 1000;
+                    this.lastQTime = now;
+                }
+                
+                this.curQ = idx;
+                const q = this.qs[idx];
+                
+                // Check if question is in current section (if sections exist)
+                if (this.sections) {
+                    const inCurrentSection = this.isInCurrentSection(idx);
+                    if (!inCurrentSection) {
+                        // Find the section this question belongs to
+                        const sectionIdx = this.findSectionForQuestion(idx);
+                        if (sectionIdx !== null && !this.sections[sectionIdx].submitted) {
+                            this.currentSection = sectionIdx;
+                            this.startSectionTimer();
+                            this.updateSectionHeader();
+                        }
+                    }
+                }
+                
+                this.els.qInfo.textContent = `Q${idx + 1}/${this.qs.length}`;
+                this.els.progTxt.textContent = `${idx + 1} of ${this.qs.length}`;
+                this.updateAnsCnt();
+                this.updateNav();
+                this.updateGrid();
+                this.updateReviewButton();
+                
+                if (q.comp) {
+                    this.els.compSec.style.display = 'block';
+                    this.els.compCont.innerHTML = this.extractTxt(q.comp, this.eng);
+                } else {
+                    this.els.compSec.style.display = 'none';
+                }
+                
+                this.els.qTxt.innerHTML = this.extractTxt(q.question, this.eng);
+                this.loadOpts(q, idx);
+                
+                if (this.sub && q.solution) {
+                    // Show time spent on question in solution
+                    const timeSpent = Math.round(this.timeSpent[idx]);
+                    const minutes = Math.floor(timeSpent / 60);
+                    const seconds = timeSpent % 60;
+                    const timeStr = minutes > 0 
+                        ? `${minutes}m ${seconds}s` 
+                        : `${seconds}s`;
+                    
+                    this.els.solInfo.innerHTML = `
+                        <span><i class="fas fa-clock"></i> Time spent: ${timeStr}</span>
+                        <span><i class="fas fa-check-circle"></i> Correct answer: ${String.fromCharCode(65 + q.correct_option_id)}</span>
+                    `;
+                    
+                    this.els.solCont.innerHTML = this.extractTxt(q.solution, this.eng);
+                    this.els.sol.classList.add('show');
+                } else {
+                    this.els.sol.classList.remove('show');
+                }
+            }
+            
+            loadOpts(q, qIdx) {
+                this.els.opts.innerHTML = '';
+                const userAnswer = this.ans[qIdx];
+                const correctAnswer = q.correct_option_id;
+                
+                console.log(`Loading Q${qIdx + 1} options:`, {
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer,
+                    submitted: this.sub,
+                    optionsCount: q.options ? q.options.length : 0
+                });
+                
+                if (!q.options || !Array.isArray(q.options)) {
+                    console.error(`Q${qIdx + 1}: No valid options array`);
+                    return;
+                }
+                
+                q.options.forEach((opt, i) => {
+                    const div = document.createElement('div');
+                    let cls = 'opt';
+                    
+                    if (this.sub) {
+                        cls += ' submitted';
+                    }
+                    
+                    if (userAnswer === i) {
+                        cls += ' sel';
+                        console.log(`Q${qIdx + 1}: User selected option ${i}`);
+                    }
+                    
+                    if (this.sub && correctAnswer !== undefined && correctAnswer !== null) {
+                        if (i === correctAnswer) {
+                            cls += ' correct';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as correct (is correct answer)`);
+                        } else if (userAnswer === i && userAnswer !== correctAnswer) {
+                            cls += ' wrong';
+                            console.log(`Q${qIdx + 1}: Option ${i} marked as wrong (user selected but incorrect)`);
+                        }
+                    }
+                    
+                    div.className = cls;
+                    div.innerHTML = `
+                        <div class="opt-radio"></div>
+                        <div class="opt-txt">${this.extractTxt(opt, this.eng)}</div>
+                    `;
+                    
+                    if (!this.sub) {
+                        div.onclick = () => this.selOpt(i, qIdx);
+                    }
+                    
+                    this.els.opts.appendChild(div);
+                });
+            }
+            
+            selOpt(optIdx, qIdx) {
+                if (this.sub) return;
+                this.ans[qIdx] = this.ans[qIdx] === optIdx ? null : optIdx;
+                console.log(`Q${qIdx + 1}: Selected option ${optIdx}, answer array:`, this.ans[qIdx]);
+                this.loadOpts(this.qs[qIdx], qIdx);
+                this.updateAnsCnt();
+                this.updateGrid();
+            }
+            
+            toggleReview() {
+                if (this.sub) return;
+                this.reviewed[this.curQ] = !this.reviewed[this.curQ];
+                this.updateGrid();
+                this.updateReviewButton();
+            }
+            
+            updateReviewButton() {
+                const btn = this.els.reviewBtn;
+                if (this.reviewed[this.curQ]) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="fas fa-flag"></i>';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="fas fa-flag"></i>';
+                }
+            }
+            
+           nav(dir) {
+            const newIdx = this.curQ + dir;
+            
+            // If test is submitted, allow free navigation for review
+            if (this.sub) {
+                if (newIdx >= 0 && newIdx < this.qs.length) {
+                    this.loadQ(newIdx);
+                }
+                return;
+            }
+            
+            // During test, enforce section boundaries
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                if (newIdx < currentSection.start || newIdx > currentSection.end) {
+                    return; // Don't allow navigation outside current section
+                }
+            }
+            
+            if (newIdx >= 0 && newIdx < this.qs.length) {
+                this.loadQ(newIdx);
+            }
+        }
+        
+        goToQ(idx) {
+            // Always allow navigation when reviewing after submission
+            if (this.sub) {
+                this.loadQ(idx);
+                this.closePanel();
+                return;
+            }
+            
+            // During test, only allow navigation within current section
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                if (idx < currentSection.start || idx > currentSection.end) {
+                    return; // Block navigation outside current section
+                }
+            }
+            
+            this.loadQ(idx);
+            this.closePanel();
+        }
+        
+        updateGrid() {
+            const nums = this.els.qGrid.querySelectorAll('.q-num');
+            const desktopNums = this.els.desktopQGrid.querySelectorAll('.q-num');
+            
+            const updateNum = (el, i) => {
+                el.className = 'q-num';
+                
+                // Reset all special classes
+                el.classList.remove('cur', 'ans', 'wrong', 'review', 'unattempted', 'disabled');
+                
+                if (i === this.curQ) {
+                    el.classList.add('cur');
+                } else if (this.sub) {
+                    // After submission - prioritize correct/wrong over review status
+                    if (this.ans[i] !== null && this.qs[i].correct_option_id !== undefined) {
+                        if (this.ans[i] === this.qs[i].correct_option_id) {
+                            el.classList.add('ans');
+                        } else {
+                            el.classList.add('wrong');
+                        }
+                    } else if (this.ans[i] === null) {
+                        el.classList.add('unattempted');
+                    }
+                } else {
+                    // Before submission
+                    if (this.reviewed[i]) {
+                        el.classList.add('review');
+                    } else if (this.ans[i] !== null) {
+                        el.classList.add('ans');
+                    }
+                    
+                    // Disable questions from other sections (only if sections exist)
+                    if (this.sections) {
+                        const currentSection = this.sections[this.currentSection];
+                        if (i < currentSection.start || i > currentSection.end) {
+                            el.classList.add('disabled');
+                        }
+                    }
+                }
+            };
+            
+            nums.forEach(updateNum);
+            desktopNums.forEach(updateNum);
+        }
+        
+        updateNav() {
+            // Basic navigation limits
+            document.getElementById('prevBtn').disabled = this.curQ === 0;
+            document.getElementById('nextBtn').disabled = this.curQ === this.qs.length - 1;
+            document.getElementById('reviewBtn').style.display = this.sub ? 'none' : 'inline-flex';
+            
+            // Additional navigation restrictions for sections during test
+            if (this.sections && !this.sub) {
+                const currentSection = this.sections[this.currentSection];
+                document.getElementById('prevBtn').disabled = document.getElementById('prevBtn').disabled || 
+                    (this.curQ === currentSection.start);
+                document.getElementById('nextBtn').disabled = document.getElementById('nextBtn').disabled || 
+                    (this.curQ === currentSection.end);
+            }
+        }
+            
+            updateAnsCnt() {
+                const cnt = this.ans.filter(a => a !== null).length;
+                this.els.ansCnt.textContent = cnt;
+            }
+            
+            updatePrintButton() {
+                this.els.printBtn.style.display = this.sub ? 'flex' : 'none';
+            }
+            
+            updateThemeToggleIcon() {
+                const icon = this.darkMode ? 'fa-sun' : 'fa-moon';
+                this.els.themeToggle.innerHTML = `<i class="fas ${icon}"></i>`;
+            }
+            
+            updateSectionHeader() {
+                if (!this.sections || !this.els.sectionHeader) return;
+                
+                const section = this.sections[this.currentSection];
+                this.els.sectionTitle.textContent = section.name;
+                this.els.sectionTimer.textContent = this.formatTime(section.time_left);
+                
+                // Show the section header if we have sections
+                this.els.sectionHeader.style.display = 'flex';
+            }
+            
+            setLang(eng) {
+                this.eng = eng;
+                document.getElementById('engBtn').classList.toggle('active', eng);
+                document.getElementById('hinBtn').classList.toggle('active', !eng);
+                this.loadQ(this.curQ);
+            }
+            
+            toggleTheme() {
+                this.darkMode = !this.darkMode;
+                document.body.classList.toggle('dark-mode', this.darkMode);
+                this.updateThemeToggleIcon();
+                this.loadQ(this.curQ); // Refresh to apply dark mode styles
+            }
+            
+            startTimer() {
+                if (this.timer) clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.subTest();
+                        return;
+                    }
+                    const mins = Math.floor(this.timeLeft / 60);
+                    const secs = this.timeLeft % 60;
+                    this.els.timer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            startSectionTimer() {
+                if (!this.sections) return;
+                
+                // Clear any existing section timer
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+                
+                const section = this.sections[this.currentSection];
+                section.time_left = section.timer; // Reset to initial time
+                
+                this.sectionTimer = setInterval(() => {
+                    section.time_left--;
+                    this.els.sectionTimer.textContent = this.formatTime(section.time_left);
+                    
+                    if (section.time_left <= 0) {
+                        clearInterval(this.sectionTimer);
+                        this.submitCurrentSection();
+                    }
+                }, 1000);
+            }
+            
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            stopTimers() {
+                if (this.timer) clearInterval(this.timer);
+                if (this.sectionTimer) clearInterval(this.sectionTimer);
+            }
+            
+            togglePanel() {
+                this.els.panel.classList.toggle('open');
+            }
+            
+            closePanel() {
+                this.els.panel.classList.remove('open');
+            }
+            
+            confirmSub() {
+                if (this.sections) {
+                    const section = this.sections[this.currentSection];
+                    const unanswered = this.ans.slice(section.start, section.end + 1)
+                        .filter(a => a === null).length;
+                    const reviewed = this.reviewed.slice(section.start, section.end + 1)
+                        .filter(r => r).length;
+                    
+                    let msg = '';
+                    
+                    if (unanswered > 0 && reviewed > 0) {
+                        msg = `You have ${unanswered} unanswered questions and ${reviewed} marked for review in this section. Submit anyway?`;
+                    } else if (unanswered > 0) {
+                        msg = `You have ${unanswered} unanswered questions in this section. Submit anyway?`;
+                    } else if (reviewed > 0) {
+                        msg = `You have ${reviewed} questions marked for review in this section. Submit anyway?`;
+                    } else {
+                        msg = 'Submit this section?';
+                    }
+                    
+                    if (confirm(msg)) this.submitCurrentSection();
+                } else {
+                    const unanswered = this.ans.filter(a => a === null).length;
+                    const reviewed = this.reviewed.filter(r => r).length;
+                    let msg = '';
+                    
+                    if (unanswered > 0 && reviewed > 0) {
+                        msg = `You have ${unanswered} unanswered questions and ${reviewed} marked for review. Submit anyway?`;
+                    } else if (unanswered > 0) {
+                        msg = `You have ${unanswered} unanswered questions. Submit anyway?`;
+                    } else if (reviewed > 0) {
+                        msg = `You have ${reviewed} questions marked for review. Submit anyway?`;
+                    } else {
+                        msg = 'Submit test?';
+                    }
+                    
+                    if (confirm(msg)) this.subTest();
+                }
+            }
+            
+            submitCurrentSection() {
+                if (!this.sections) return;
+                
+                const section = this.sections[this.currentSection];
+                section.submitted = true;
+                clearInterval(this.sectionTimer);
+                
+                // Move to the next section if available
+                const nextSectionIdx = this.currentSection + 1;
+                if (nextSectionIdx < this.sections.length) {
+                    this.currentSection = nextSectionIdx;
+                    this.startSectionTimer();
+                    this.updateSectionHeader();
+                    this.loadQ(this.sections[nextSectionIdx].start);
+                } else {
+                    // All sections completed
+                    this.subTest();
+                }
+                
+                this.updateGrid();
+            }
+            
+            subTest() {
+                if (this.sub) return;
+                
+                // Record time spent on current question
+                const now = Date.now();
+                this.timeSpent[this.curQ] += (now - this.lastQTime) / 1000;
+                
+                console.log('Submitting test. Final answers:', this.ans);
+                this.sub = true;
+                this.stopTimers();
+                document.getElementById('subBtn').style.display = 'none';
+                document.getElementById('reviewBtn').style.display = 'none';
+                const results = this.calcResults();
+                this.showResults(results);
+                this.loadQ(this.curQ);
+                this.updateGrid();
+                this.updatePrintButton();
+                
+                // Hide section header if it exists
+                if (this.els.sectionHeader) {
+                    this.els.sectionHeader.style.display = 'none';
+                }
+            }
+            
+            calcResults() {
+                const timeTaken = Math.round((Date.now() - this.startT) / 60000);
+                let correct = 0, incorrect = 0, unattempted = 0, score = 0;
+                
+                console.log('Calculating results...');
+                this.qs.forEach((q, i) => {
+                    const userAns = this.ans[i];
+                    const correctAns = q.correct_option_id;
+                    
+                    console.log(`Q${i + 1}: user=${userAns}, correct=${correctAns}`);
+                    
+                    if (userAns === null || userAns === undefined) {
+                        unattempted++;
+                    } else if (correctAns !== undefined && correctAns !== null && userAns === correctAns) {
+                        correct++;
+                        score += 1;
+                        console.log(`Q${i + 1}: CORRECT (+1 marks)`);
+                    } else {
+                        incorrect++;
+                        score -= 0.25;
+                        console.log(`Q${i + 1}: INCORRECT (-0.25 marks)`);
+                    }
+                });
+                
+                const results = { 
+                    score: Math.max(0, score), 
+                    correct, 
+                    incorrect, 
+                    unattempted, 
+                    timeTaken,
+                    timePerQ: this.timeSpent.map(t => Math.round(t))
+                };
+                console.log('Final results:', results);
+                return results;
+            }
+            
+            showResults(results) {
+                this.els.scoreDisp.textContent = `${results.score}/20`;
+                this.els.corrStat.textContent = results.correct;
+                this.els.incStat.textContent = results.incorrect;
+                this.els.unaStat.textContent = results.unattempted;
+                this.els.timeStat.textContent = results.timeTaken;
+                this.els.modalOver.classList.add('show');
+            }
+            
+            closeModal() {
+                this.els.modalOver.classList.remove('show');
+            }
+            
+            review() {
+                this.closeModal();
+                this.loadQ(0);
+            }
+            
+            isNavigationAllowed(idx) {
+            // Always allow navigation after submission
+            if (this.sub) return true;
+            
+            // During test, only allow within current section
+            if (this.sections) {
+                const currentSection = this.sections[this.currentSection];
+                return idx >= currentSection.start && idx <= currentSection.end;
+            }
+            
+            // If no sections, allow all navigation
+            return true;
+            }
+            
+            printTest() {
+                const printWindow = window.open('', '_blank');
+                const testTitle = document.title;
+                const questionsHtml = this.qs.map((q, i) => {
+                    const userAns = this.ans[i];
+                    const correctAns = q.correct_option_id;
+                    const isCorrect = userAns !== null && correctAns !== undefined && userAns === correctAns;
+                    const timeSpent = Math.round(this.timeSpent[i]);
+                    const wasReviewed = this.reviewed[i];
+                    const sectionName = this.sections ? this.getSectionNameForQuestion(i) : '';
+                    
+                    return `
+                        <div style="page-break-inside:avoid;margin-bottom:30px;border-bottom:1px solid #eee;padding-bottom:20px">
+                            <h3 style="color:#4F46E5">Question ${i + 1} ${wasReviewed ? '<span style="color:#F59E0B">(Marked for Review)</span>' : ''}</h3>
+                            ${sectionName ? `<div style="font-size:14px;color:#6B7280;margin-bottom:8px">Section: ${sectionName}</div>` : ''}
+                            ${q.comp ? `<div>${q.comp}</div>` : ''}
+                            <div>${q.question}</div>
+                            <div style="margin-top:15px">
+                                ${q.options.map((opt, j) => `
+                                    <div style="margin:5px 0;padding:5px;border-left:3px solid ${ 
+                                        j === correctAns ? '#10B981' : 
+                                        j === userAns ? '#EF4444' : '#E5E7EB' 
+                                    }">
+                                        ${opt}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="margin-top:15px;font-size:14px;color:#666">
+                                <strong>Your answer:</strong> ${userAns !== null ? String.fromCharCode(65 + userAns) : 'Not attempted'}
+                                ${userAns !== null && correctAns !== undefined ? 
+                                    `(<span style="color:${isCorrect ? '#10B981' : '#EF4444'}">${isCorrect ? 'Correct' : 'Incorrect'}</span>)` : ''}
+                                <br>
+                                <strong>Time spent:</strong> ${timeSpent} seconds
+                            </div>
+                            ${q.solution ? `
+                                <div style="margin-top:15px;background:#f0fdf4;padding:15px;border-radius:8px">
+                                    <h4 style="color:#10B981;margin-top:0">Solution</h4>
+                                    ${q.solution}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${testTitle} - Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+                            h2 { color: #4F46E5; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; }
+                            .math-exp { display: inline-block; vertical-align: middle; position: relative; margin: 0 2px; }
+                            .math-num { text-align: center; display: block; padding: 0; }
+                            .math-line { display: block; border-top: 1px solid; padding: 0; text-align: center; }
+                            .table-container { width: 100%; overflow-x: auto; margin: 12px 0; }
+                            table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+                            table, th, td { border: 1px solid #E5E7EB; }
+                            th, td { padding: 8px 12px; text-align: left; }
+                            @media print {
+                                body { padding: 0; }
+                                .page-break { page-break-after: always; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Mocks Wallah - Analysis</h2>
+                        <div style="margin-bottom:30px">
+                            <div><strong>Score:</strong> ${this.els.scoreDisp.textContent}</div>
+                            <div><strong>Correct:</strong> ${this.els.corrStat.textContent}</div>
+                            <div><strong>Incorrect:</strong> ${this.els.incStat.textContent}</div>
+                            <div><strong>Unattempted:</strong> ${this.els.unaStat.textContent}</div>
+                            <div><strong>Time taken:</strong> ${this.els.timeStat.textContent} minutes</div>
+                        </div>
+                        ${questionsHtml}
+                        <script>
+                            setTimeout(() => { window.print(); }, 500);
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            }
+            
+            // Section-related helper methods
+            isInCurrentSection(qIdx) {
+                if (!this.sections) return true;
+                const section = this.sections[this.currentSection];
+                return qIdx >= section.start && qIdx <= section.end;
+            }
+            
+            findSectionForQuestion(qIdx) {
+                if (!this.sections) return null;
+                for (let i = 0; i < this.sections.length; i++) {
+                    const section = this.sections[i];
+                    if (qIdx >= section.start && qIdx <= section.end) {
+                        return i;
+                    }
+                }
+                return null;
+            }
+            
+            getSectionNameForQuestion(qIdx) {
+                if (!this.sections) return '';
+                const sectionIdx = this.findSectionForQuestion(qIdx);
+                return sectionIdx !== null ? this.sections[sectionIdx].name : '';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => new TestApp());
+    </script>
+</body>
+</html>

@@ -66,7 +66,7 @@ export function MockGrid({ mocks, shown, scoresMap, filteredCount, visible, erro
       <div 
         className={clsx(
           "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
-          isNetflix ? "gap-2 sm:gap-3" : "gap-4 lg:gap-6"
+          isNetflix ? "gap-2 sm:gap-3" : "gap-3 sm:gap-4 lg:gap-6"
         )} 
         role="status" aria-live="polite" aria-label="Loading mocks"
       >
@@ -108,7 +108,7 @@ export function MockGrid({ mocks, shown, scoresMap, filteredCount, visible, erro
         animate="visible"
         className={clsx(
           "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
-          isNetflix ? "gap-2 sm:gap-4 overflow-visible pb-28 -mb-28" : "gap-4 lg:gap-6"
+          isNetflix ? "gap-2 sm:gap-4 overflow-visible pb-28 -mb-28" : "gap-3 sm:gap-4 lg:gap-6"
         )}
       >
         <AnimatePresence mode="popLayout">
