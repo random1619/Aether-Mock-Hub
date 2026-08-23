@@ -1,8 +1,16 @@
 /**
- * Aether Mocks App - Full Dynamic Backend Server
- * ===============================================
- * Provides real-time REST API endpoints for mock catalog, attempts persistence,
- * bookmarks sync, scheduled alarms, dynamic analytics, and static asset serving.
+ * Aether Mocks App - Full Multi-User Dynamic Backend Server
+ * ==========================================================
+ * Provides complete data isolation per user. Every user has their own unique:
+ * - Mock Test Attempts history & timestamps
+ * - Bookmarked / Saved Questions notebook
+ * - Scheduled Alarms & Revision Timers
+ * - Accuracy Analytics & Subject Mastery
+ * - XP, Aspirant Level & Badges Progression
+ * - User Preferences & Custom Goal Targets
+ *
+ * Data is persisted to JSON disk on Render, supporting offline syncing
+ * and multi-client tenancy.
  */
 import http from 'node:http';
 import fs from 'node:fs';
@@ -33,30 +41,89 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2',
 };
 
-// In-Memory Database with JSON Disk Persistence
+// Multi-User In-Memory Database with JSON Disk Persistence
 let db = {
-  attempts: {},
-  bookmarks: [],
-  alarms: [],
+  version: 2,
+  users: {},
   updatedAt: new Date().toISOString(),
 };
+
+function sanitizeUserId(rawId) {
+  if (!rawId || typeof rawId !== 'string') return 'default_user';
+  const clean = rawId.trim().replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64);
+  return clean || 'default_user';
+}
+
+function getUserRecord(userId) {
+  const uid = sanitizeUserId(userId);
+  if (!db.users[uid]) {
+    db.users[uid] = {
+      id: uid,
+      name: uid === 'default_user' ? 'Aspirant' : uid,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      attempts: {},
+      bookmarks: [],
+      alarms: [],
+      settings: {
+        theme: 'light',
+        dailyGoalQuestions: 50,
+      },
+      gamification: {
+        xp: 0,
+        level: 1,
+        streakFreezes: 1,
+        unlockedBadges: [],
+      },
+    };
+  }
+  return db.users[uid];
+}
 
 function loadDbFromDisk() {
   try {
     if (fs.existsSync(DB_FILE)) {
       const content = fs.readFileSync(DB_FILE, 'utf-8');
-      db = { ...db, ...JSON.parse(content) };
-      console.log(`[DB] Loaded backend database (${Object.keys(db.attempts).length} mock attempt keys, ${db.bookmarks.length} bookmarks)`);
+      const parsed = JSON.parse(content);
+      
+      // Automatic migration from v1 legacy flat schema to v2 multi-user schema
+      if (parsed.attempts && !parsed.users) {
+        db.users = {
+          default_user: {
+            id: 'default_user',
+            name: 'Aspirant',
+            createdAt: parsed.updatedAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            attempts: parsed.attempts || {},
+            bookmarks: parsed.bookmarks || [],
+            alarms: parsed.alarms || [],
+            settings: {},
+            gamification: {},
+          },
+        };
+      } else {
+        db = { ...db, ...parsed, users: parsed.users || {} };
+      }
+
+      const userCount = Object.keys(db.users).length;
+      const totalAttempts = Object.values(db.users).reduce(
+        (sum, u) => sum + Object.values(u.attempts || {}).flat().length,
+        0
+      );
+      console.log(`[DB] Loaded multi-user database: ${userCount} users, ${totalAttempts} total attempts`);
     }
   } catch (err) {
-    console.warn('[DB] Failed to load db file, initializing empty:', err.message);
+    console.warn('[DB] Failed to load db file, initializing fresh:', err.message);
   }
 }
 
 function saveDbToDisk() {
   try {
     db.updatedAt = new Date().toISOString();
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
+    // Atomic write via temp file
+    const tempFile = `${DB_FILE}.tmp`;
+    fs.writeFileSync(tempFile, JSON.stringify(db, null, 2), 'utf-8');
+    fs.renameSync(tempFile, DB_FILE);
   } catch (err) {
     console.warn('[DB] Failed to save db to disk:', err.message);
   }
@@ -119,23 +186,23 @@ function scanCatalog() {
   return cachedCatalog;
 }
 
-// Analytics Aggregator
-function computeAnalytics() {
-  const allAttempts = Object.values(db.attempts).flat();
+// User-Scoped Analytics Aggregator
+function computeUserAnalytics(user) {
+  const allAttempts = Object.values(user.attempts || {}).flat();
   const total = allAttempts.length;
   if (total === 0) {
     return {
+      userId: user.id,
       totalAttempts: 0,
       uniqueMocksAttempted: 0,
       overallAccuracy: 0,
       avgScore: 0,
       bestScore: 0,
-      subjectMastery: {},
       recentScores: [],
     };
   }
 
-  const uniquePaths = new Set(Object.keys(db.attempts).filter((k) => db.attempts[k].length > 0));
+  const uniquePaths = new Set(Object.keys(user.attempts).filter((k) => user.attempts[k].length > 0));
   const avgAcc = Math.round(allAttempts.reduce((acc, a) => acc + (a.accuracy || 0), 0) / total);
   const avgScore = Number((allAttempts.reduce((acc, a) => acc + (a.score || 0), 0) / total).toFixed(1));
   const bestScore = Math.max(...allAttempts.map((a) => a.score || 0));
@@ -153,6 +220,7 @@ function computeAnalytics() {
     }));
 
   return {
+    userId: user.id,
     totalAttempts: total,
     uniqueMocksAttempted: uniquePaths.size,
     overallAccuracy: avgAcc,
@@ -167,7 +235,7 @@ function sendJson(res, statusCode, data) {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-Id',
   });
   res.end(JSON.stringify(data));
 }
@@ -199,7 +267,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-Id',
     });
     res.end();
     return;
@@ -207,6 +275,13 @@ const server = http.createServer(async (req, res) => {
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
+
+  // Extract User ID from header, query param, or fallback
+  const rawUserId =
+    req.headers['x-user-id'] ||
+    parsedUrl.searchParams.get('userId') ||
+    parsedUrl.searchParams.get('user');
+  const userId = sanitizeUserId(rawUserId);
 
   // -------------------------------------------------------------
   // REST API ROUTING
@@ -216,20 +291,34 @@ const server = http.createServer(async (req, res) => {
     try {
       // 1. Health & System
       if (pathname === '/api/health') {
-        return sendJson(res, 200, { status: 'online', time: new Date().toISOString() });
+        return sendJson(res, 200, {
+          status: 'online',
+          time: new Date().toISOString(),
+          version: '2.5.0',
+        });
       }
 
       if (pathname === '/api/system') {
         const catalog = scanCatalog();
+        const user = getUserRecord(userId);
+        const allUsers = Object.values(db.users);
+        const totalAttempts = allUsers.reduce((sum, u) => sum + Object.values(u.attempts || {}).flat().length, 0);
+
         return sendJson(res, 200, {
           status: 'online',
           serverTime: new Date().toISOString(),
           uptimeSeconds: Math.floor(process.uptime()),
           totalMocks: catalog.length,
-          totalAttempts: Object.values(db.attempts).flat().length,
-          totalBookmarks: db.bookmarks.length,
+          totalRegisteredUsers: allUsers.length,
+          totalGlobalAttempts: totalAttempts,
+          currentUser: {
+            id: user.id,
+            name: user.name,
+            totalAttempts: Object.values(user.attempts || {}).flat().length,
+            totalBookmarks: user.bookmarks.length,
+          },
           storageHealthy: true,
-          version: '2.4.0',
+          version: '2.5.0',
         });
       }
 
@@ -252,100 +341,173 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, mocks);
       }
 
-      // 3. Attempts CRUD
+      // 3. User Profile CRUD
+      if (pathname === '/api/user' && req.method === 'GET') {
+        const user = getUserRecord(userId);
+        return sendJson(res, 200, user);
+      }
+
+      if (pathname === '/api/user' && req.method === 'POST') {
+        const payload = await readBody(req);
+        const targetId = sanitizeUserId(payload.userId || userId);
+        const user = getUserRecord(targetId);
+
+        if (payload.name) user.name = payload.name;
+        if (payload.settings) user.settings = { ...user.settings, ...payload.settings };
+        if (payload.gamification) user.gamification = { ...user.gamification, ...payload.gamification };
+        user.updatedAt = new Date().toISOString();
+
+        saveDbToDisk();
+        return sendJson(res, 200, { success: true, user });
+      }
+
+      // 4. Attempts CRUD (User-Scoped)
       if (pathname === '/api/attempts' && req.method === 'GET') {
-        return sendJson(res, 200, db.attempts);
+        const user = getUserRecord(userId);
+        return sendJson(res, 200, user.attempts);
       }
 
       if (pathname === '/api/attempts' && req.method === 'POST') {
         const payload = await readBody(req);
+        const targetId = sanitizeUserId(payload.userId || userId);
+        const user = getUserRecord(targetId);
+
         const { mockPath, attempt } = payload;
         if (!mockPath || !attempt) {
           return sendJson(res, 400, { error: 'mockPath and attempt required' });
         }
-        const list = db.attempts[mockPath] || [];
-        // Prevent exact duplicate saves
+
+        const list = user.attempts[mockPath] || [];
         const exists = list.some((a) => a.submittedAt === attempt.submittedAt);
         if (!exists) {
           list.push(attempt);
-          db.attempts[mockPath] = list.slice(-10); // keep up to 10 historical attempts on server
+          user.attempts[mockPath] = list.slice(-15); // keep up to 15 attempts per mock per user
+          user.updatedAt = new Date().toISOString();
           saveDbToDisk();
         }
-        return sendJson(res, 200, { success: true, count: list.length });
+        return sendJson(res, 200, { success: true, count: list.length, userId: targetId });
       }
 
-      // 4. Analytics Aggregation
+      // 5. Analytics (User-Scoped)
       if (pathname === '/api/analytics' && req.method === 'GET') {
-        return sendJson(res, 200, computeAnalytics());
+        const user = getUserRecord(userId);
+        return sendJson(res, 200, computeUserAnalytics(user));
       }
 
-      // 5. Bookmarks CRUD
+      // 6. Bookmarks CRUD (User-Scoped)
       if (pathname === '/api/bookmarks' && req.method === 'GET') {
-        return sendJson(res, 200, db.bookmarks);
+        const user = getUserRecord(userId);
+        return sendJson(res, 200, user.bookmarks);
       }
 
       if (pathname === '/api/bookmarks' && req.method === 'POST') {
-        const bookmark = await readBody(req);
+        const payload = await readBody(req);
+        const targetId = sanitizeUserId(payload.userId || userId);
+        const user = getUserRecord(targetId);
+        const bookmark = payload.bookmark || payload;
+
         if (!bookmark || !bookmark.id) {
           return sendJson(res, 400, { error: 'bookmark with valid id required' });
         }
-        const idx = db.bookmarks.findIndex((b) => b.id === bookmark.id);
-        if (idx >= 0) db.bookmarks[idx] = bookmark;
-        else db.bookmarks.push(bookmark);
+
+        const idx = user.bookmarks.findIndex((b) => b.id === bookmark.id);
+        if (idx >= 0) user.bookmarks[idx] = bookmark;
+        else user.bookmarks.push(bookmark);
+        user.updatedAt = new Date().toISOString();
+
         saveDbToDisk();
-        return sendJson(res, 200, { success: true, total: db.bookmarks.length });
+        return sendJson(res, 200, { success: true, total: user.bookmarks.length, userId: targetId });
       }
 
       if (pathname.startsWith('/api/bookmarks/') && req.method === 'DELETE') {
+        const user = getUserRecord(userId);
         const id = decodeURIComponent(pathname.replace('/api/bookmarks/', ''));
-        db.bookmarks = db.bookmarks.filter((b) => b.id !== id);
+        user.bookmarks = user.bookmarks.filter((b) => b.id !== id);
+        user.updatedAt = new Date().toISOString();
         saveDbToDisk();
-        return sendJson(res, 200, { success: true, total: db.bookmarks.length });
+        return sendJson(res, 200, { success: true, total: user.bookmarks.length, userId });
       }
 
-      // 6. Alarms CRUD
+      // 7. Alarms CRUD (User-Scoped)
       if (pathname === '/api/alarms' && req.method === 'GET') {
-        return sendJson(res, 200, db.alarms);
+        const user = getUserRecord(userId);
+        return sendJson(res, 200, user.alarms);
       }
 
       if (pathname === '/api/alarms' && req.method === 'POST') {
-        const alarm = await readBody(req);
+        const payload = await readBody(req);
+        const targetId = sanitizeUserId(payload.userId || userId);
+        const user = getUserRecord(targetId);
+        const alarm = payload.alarm || payload;
+
         if (!alarm || !alarm.id) return sendJson(res, 400, { error: 'alarm with id required' });
-        const idx = db.alarms.findIndex((a) => a.id === alarm.id);
-        if (idx >= 0) db.alarms[idx] = alarm;
-        else db.alarms.push(alarm);
+        const idx = user.alarms.findIndex((a) => a.id === alarm.id);
+        if (idx >= 0) user.alarms[idx] = alarm;
+        else user.alarms.push(alarm);
+        user.updatedAt = new Date().toISOString();
+
         saveDbToDisk();
-        return sendJson(res, 200, { success: true, alarms: db.alarms });
+        return sendJson(res, 200, { success: true, alarms: user.alarms, userId: targetId });
       }
 
       if (pathname.startsWith('/api/alarms/') && req.method === 'DELETE') {
+        const user = getUserRecord(userId);
         const id = decodeURIComponent(pathname.replace('/api/alarms/', ''));
-        db.alarms = db.alarms.filter((a) => a.id !== id);
+        user.alarms = user.alarms.filter((a) => a.id !== id);
+        user.updatedAt = new Date().toISOString();
         saveDbToDisk();
-        return sendJson(res, 200, { success: true, alarms: db.alarms });
+        return sendJson(res, 200, { success: true, alarms: user.alarms, userId });
       }
 
-      // 7. Two-Way Sync
+      // 8. Two-Way Sync (User-Scoped)
       if (pathname === '/api/sync' && req.method === 'POST') {
         const payload = await readBody(req);
+        const targetId = sanitizeUserId(payload.userId || userId);
+        const user = getUserRecord(targetId);
         const incomingAttempts = payload.attempts || {};
         let merged = 0;
 
         Object.entries(incomingAttempts).forEach(([p, arr]) => {
           if (Array.isArray(arr)) {
-            const currentList = db.attempts[p] || [];
+            const currentList = user.attempts[p] || [];
             arr.forEach((incomingAtt) => {
               if (!currentList.some((c) => c.submittedAt === incomingAtt.submittedAt)) {
                 currentList.push(incomingAtt);
                 merged++;
               }
             });
-            db.attempts[p] = currentList.slice(-10);
+            user.attempts[p] = currentList.slice(-15);
           }
         });
 
-        if (merged > 0) saveDbToDisk();
-        return sendJson(res, 200, { success: true, merged, attempts: db.attempts });
+        // Sync bookmarks if present
+        if (Array.isArray(payload.bookmarks)) {
+          payload.bookmarks.forEach((bm) => {
+            if (bm && bm.id && !user.bookmarks.some((b) => b.id === bm.id)) {
+              user.bookmarks.push(bm);
+              merged++;
+            }
+          });
+        }
+
+        // Sync gamification state if present
+        if (payload.gamification) {
+          user.gamification = { ...user.gamification, ...payload.gamification };
+        }
+
+        if (merged > 0 || payload.gamification) {
+          user.updatedAt = new Date().toISOString();
+          saveDbToDisk();
+        }
+
+        return sendJson(res, 200, {
+          success: true,
+          merged,
+          userId: targetId,
+          attempts: user.attempts,
+          bookmarks: user.bookmarks,
+          gamification: user.gamification,
+        });
       }
 
       return sendJson(res, 404, { error: `API route ${pathname} not found` });
@@ -399,7 +561,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 server.listen(PORT, HOST, () => {
   console.log(`=======================================================`);
-  console.log(`  🚀 Aether Mocks Backend Server Live on Port ${PORT}`);
+  console.log(`  🚀 Aether Multi-User Backend Server Live on Port ${PORT}`);
   console.log(`  🔗 REST API: http://${HOST}:${PORT}/api/`);
   console.log(`  📦 Static & Mocks: http://${HOST}:${PORT}/`);
   console.log(`=======================================================`);

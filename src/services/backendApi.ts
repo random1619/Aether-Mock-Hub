@@ -2,7 +2,7 @@
  * Aether Backend API Client
  * ========================
  * Provides dynamic, robust communication with the Aether Backend Server & Electron IPC.
- * Supports offline-first fallbacks, automatic background synchronization, and dynamic queries.
+ * Supports complete per-user isolation, offline-first fallbacks, and automatic background synchronization.
  */
 
 import { isNativeMobile } from '@/services/nativeMobile';
@@ -10,6 +10,26 @@ import type { Attempt, MockEntry, SavedQuestionRecord } from '@/types';
 import { getDb, saveAttempt } from '@/services/attemptStore';
 
 const RENDER_BACKEND_URL = 'https://aether-mock-hub.onrender.com';
+
+/** Get the active user's persistent unique identifier */
+export function getCurrentUserId(): string {
+  if (typeof window === 'undefined') return 'default_user';
+  try {
+    const rawProfile = localStorage.getItem('aether-profile');
+    if (rawProfile) {
+      const parsed = JSON.parse(rawProfile);
+      if (parsed?.id) return String(parsed.id);
+    }
+    let clientId = localStorage.getItem('aether-client-uuid');
+    if (!clientId) {
+      clientId = `usr_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+      localStorage.setItem('aether-client-uuid', clientId);
+    }
+    return clientId;
+  } catch {
+    return 'default_user';
+  }
+}
 
 function getApiUrl(endpoint: string): string {
   const envUrl = typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_URL;
@@ -33,31 +53,47 @@ function getApiUrl(endpoint: string): string {
   return `${RENDER_BACKEND_URL}/api${endpoint}`;
 }
 
+function getHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-User-Id': getCurrentUserId(),
+  };
+}
+
 export interface BackendSystemInfo {
   status: 'online' | 'offline';
   serverTime: string;
   uptimeSeconds: number;
   totalMocks: number;
-  totalAttempts: number;
-  totalBookmarks: number;
+  totalRegisteredUsers: number;
+  totalGlobalAttempts: number;
+  currentUser: {
+    id: string;
+    name: string;
+    totalAttempts: number;
+    totalBookmarks: number;
+  };
   storageHealthy: boolean;
   version: string;
 }
 
 export interface BackendAnalyticsSummary {
+  userId: string;
   totalAttempts: number;
   uniqueMocksAttempted: number;
   overallAccuracy: number;
   avgScore: number;
   bestScore: number;
-  subjectMastery: Record<string, { attempted: number; accuracy: number; avgScore: number }>;
-  recentScores: { date: string; score: number; accuracy: number; mockName: string }[];
+  recentScores: { date: string; score: number; maxScore: number; accuracy: number; provider: string }[];
 }
 
 /** Check if the backend API is live */
 export async function checkBackendHealth(): Promise<boolean> {
   try {
-    const res = await fetch(getApiUrl('/health'), { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(getApiUrl('/health'), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(2000),
+    });
     return res.ok;
   } catch {
     return false;
@@ -67,7 +103,10 @@ export async function checkBackendHealth(): Promise<boolean> {
 /** Get system information and stats from backend */
 export async function getSystemInfo(): Promise<BackendSystemInfo | null> {
   try {
-    const res = await fetch(getApiUrl('/system'), { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(getApiUrl('/system'), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(3000),
+    });
     if (res.ok) return await res.json();
   } catch (err) {
     console.debug('[backendApi] getSystemInfo offline or failed:', err);
@@ -89,7 +128,10 @@ export async function fetchDynamicCatalog(params?: {
     if (params?.subject) url.searchParams.set('subject', params.subject);
     if (params?.category) url.searchParams.set('category', params.category);
 
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(4000) });
+    const res = await fetch(url.toString(), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(4000),
+    });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) return data;
@@ -101,10 +143,13 @@ export async function fetchDynamicCatalog(params?: {
   return null;
 }
 
-/** Fetch all stored attempts from the backend server */
+/** Fetch all stored attempts for the active user */
 export async function fetchBackendAttempts(): Promise<Record<string, Attempt[]> | null> {
   try {
-    const res = await fetch(getApiUrl('/attempts'), { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(getApiUrl('/attempts'), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(3000),
+    });
     if (res.ok) return await res.json();
   } catch (err) {
     console.debug('[backendApi] fetchBackendAttempts failed:', err);
@@ -112,33 +157,38 @@ export async function fetchBackendAttempts(): Promise<Record<string, Attempt[]> 
   return null;
 }
 
-/** Save an attempt to backend database */
+/** Save an attempt to backend database for the active user */
 export async function persistAttemptToBackend(mockPath: string, attempt: Attempt): Promise<boolean> {
   try {
+    const userId = getCurrentUserId();
+
     // 1. If Electron IPC available, also persist via desktop API
     const desktopApi = (window as unknown as { electronAPI?: { saveAttempt?: (d: any) => Promise<any> } }).electronAPI;
     if (desktopApi?.saveAttempt) {
-      desktopApi.saveAttempt({ mockPath, attempt }).catch(() => {});
+      desktopApi.saveAttempt({ userId, mockPath, attempt }).catch(() => {});
     }
 
     // 2. Persist to REST API
     const res = await fetch(getApiUrl('/attempts'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mockPath, attempt }),
+      headers: getHeaders(),
+      body: JSON.stringify({ userId, mockPath, attempt }),
       signal: AbortSignal.timeout(3500),
     });
     return res.ok;
-  } catch (err) {
+  } catch {
     console.debug('[backendApi] persistAttemptToBackend offline or failed');
     return false;
   }
 }
 
-/** Fetch dynamic analytics calculated on backend */
+/** Fetch dynamic analytics calculated on backend for the active user */
 export async function fetchBackendAnalytics(): Promise<BackendAnalyticsSummary | null> {
   try {
-    const res = await fetch(getApiUrl('/analytics'), { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(getApiUrl('/analytics'), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(3000),
+    });
     if (res.ok) return await res.json();
   } catch (err) {
     console.debug('[backendApi] fetchBackendAnalytics failed:', err);
@@ -146,10 +196,13 @@ export async function fetchBackendAnalytics(): Promise<BackendAnalyticsSummary |
   return null;
 }
 
-/** Sync bookmarks with backend */
+/** Sync bookmarks with backend for the active user */
 export async function fetchBackendBookmarks(): Promise<SavedQuestionRecord[] | null> {
   try {
-    const res = await fetch(getApiUrl('/bookmarks'), { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(getApiUrl('/bookmarks'), {
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(3000),
+    });
     if (res.ok) return await res.json();
   } catch (err) {
     console.debug('[backendApi] fetchBackendBookmarks failed:', err);
@@ -159,10 +212,11 @@ export async function fetchBackendBookmarks(): Promise<SavedQuestionRecord[] | n
 
 export async function saveBookmarkToBackend(bookmark: SavedQuestionRecord): Promise<boolean> {
   try {
+    const userId = getCurrentUserId();
     const res = await fetch(getApiUrl('/bookmarks'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookmark),
+      headers: getHeaders(),
+      body: JSON.stringify({ userId, bookmark }),
       signal: AbortSignal.timeout(3000),
     });
     return res.ok;
@@ -175,6 +229,7 @@ export async function deleteBookmarkFromBackend(id: string): Promise<boolean> {
   try {
     const res = await fetch(getApiUrl(`/bookmarks/${encodeURIComponent(id)}`), {
       method: 'DELETE',
+      headers: getHeaders(),
       signal: AbortSignal.timeout(3000),
     });
     return res.ok;
@@ -183,14 +238,19 @@ export async function deleteBookmarkFromBackend(id: string): Promise<boolean> {
   }
 }
 
-/** Perform seamless two-way merge synchronization between local DB and backend */
+/** Perform seamless two-way merge synchronization between local DB and backend for the active user */
 export async function syncDatabaseWithBackend(): Promise<{ synced: boolean; totalAttempts: number }> {
   try {
+    const userId = getCurrentUserId();
     const localDb = getDb();
     const res = await fetch(getApiUrl('/sync'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attempts: localDb.attempts }),
+      headers: getHeaders(),
+      body: JSON.stringify({
+        userId,
+        attempts: localDb.attempts,
+        bookmarks: Object.values(localDb.savedQuestions || {}),
+      }),
       signal: AbortSignal.timeout(5000),
     });
 
