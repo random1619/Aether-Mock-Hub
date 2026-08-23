@@ -55,7 +55,7 @@ export function MobileBottomBar() {
           end={to === '/'}
           className={({ isActive }) =>
             clsx(
-              'flex flex-1 flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl text-[10px] font-bold tracking-wide transition-all active:scale-[0.92] min-h-[48px] min-w-0',
+              'flex flex-1 flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl text-[10px] font-bold tracking-wide transition-all active:scale-[0.92] min-h-[48px] min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
               isActive
                 ? isOnePiece
                   ? 'text-[#FFB703] bg-[#FFB703]/15 shadow-sm border border-[#FFB703]/30'

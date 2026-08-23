@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Settings as SettingsIcon, Sun, Moon, Check, KeyRound, 
+import {
+  Settings as SettingsIcon, Sun, Moon, Check, KeyRound,
   LogOut, CalendarCheck, Shield, Database, Users, Sparkles, Timer, Lock,
-  Server, RefreshCw, Radio
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { useProfileStore, changePassword } from '@/services/profileStore';
 import { passwordStrengthError } from '@/services/credentials';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { getSystemInfo, syncDatabaseWithBackend, type BackendSystemInfo } from '@/services/backendApi';
 import {
   getDailyGoal,
   setDailyGoal,
@@ -46,33 +44,9 @@ export default function Settings() {
   const [pwError, setPwError] = useState<string | null>(null);
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwBusy, setPwBusy] = useState(false);
-  const [backendInfo, setBackendInfo] = useState<BackendSystemInfo | null>(null);
-  const [syncing, setSyncing] = useState(false);
-  const [syncToast, setSyncToast] = useState<string | null>(null);
 
   const stats = getStats();
   const savedCount = getAllSavedQuestions().length;
-
-  useEffect(() => {
-    getSystemInfo().then((info) => {
-      if (info) setBackendInfo(info);
-    });
-  }, []);
-
-  const handleSync = async () => {
-    setSyncing(true);
-    try {
-      const res = await syncDatabaseWithBackend();
-      setSyncToast(res.synced ? `Synced successfully (${res.totalAttempts} new attempts merged)` : 'Database up to date');
-      const info = await getSystemInfo();
-      if (info) setBackendInfo(info);
-    } catch {
-      setSyncToast('Sync completed');
-    } finally {
-      setSyncing(false);
-      setTimeout(() => setSyncToast(null), 4000);
-    }
-  };
 
   if (!active) {
     return (
@@ -136,7 +110,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen page-surface pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen page-surface mobile-page-shell md:pb-0">
       <AppChrome
         title="User Settings"
         icon={<SettingsIcon size={16} />}
@@ -405,63 +379,50 @@ export default function Settings() {
           </Reveal>
         )}
 
-        {/* Dynamic Backend & Cloud Sync */}
+        {/* Data & Storage — fully local */}
         <Reveal delay={0.22}>
           <Card>
             <div className="flex items-center justify-between">
-              <CardHeader title="Dynamic Backend &amp; Cloud Sync" icon={<Server size={15} />} />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-answered/15 text-answered border border-answered/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-answered animate-pulse" />
-                {backendInfo?.status === 'online' ? 'REST Backend Online' : 'Standby / Offline Sync'}
+              <CardHeader title="Data &amp; Storage" icon={<Database size={15} />} />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-success-soft text-success-fg border border-success/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                Local Only
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-muted mb-3 sm:mb-4">
-              Real-time database and REST API endpoints for mock attempts, bookmarks, and scheduled practice alarms.
+              Everything is stored securely on this device only — progress, bookmarks, streaks, and settings
+              never leave your phone or computer. No cloud account, no online sync, no data upload.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-4">
               <div className="p-3 rounded-xl bg-surface-2">
-                <div className="text-[11px] text-muted font-medium">Server Status</div>
+                <div className="text-[11px] text-muted font-medium">Storage Mode</div>
                 <div className="text-sm font-bold text-text mt-0.5 flex items-center gap-1.5">
-                  <Radio size={14} className="text-primary" /> {backendInfo?.status === 'online' ? 'Connected (:8080)' : 'Local Gateway (:5173)'}
+                  <Shield size={14} className="text-success" /> On-device only
                 </div>
               </div>
               <div className="p-3 rounded-xl bg-surface-2">
-                <div className="text-[11px] text-muted font-medium">Total Mocks Scanned</div>
+                <div className="text-[11px] text-muted font-medium">Total Mocks</div>
                 <div className="text-sm font-bold text-text mt-0.5 tabular-nums">
-                  {backendInfo?.totalMocks ?? 'Dynamic scan active'}
+                  {stats.totalAttempted} attempted
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-surface-2">
+<div className="p-3 rounded-xl bg-surface-2">
                 <div className="text-[11px] text-muted font-medium">Engine Version</div>
                 <div className="text-sm font-bold text-text mt-0.5">
-                  v{backendInfo?.version ?? '2.4.0'}
+                  v2.4.0-local
                 </div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Button
-                variant="primary"
-                size="sm"
-                leftIcon={<RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />}
-                onClick={handleSync}
-                disabled={syncing}
-                className="text-xs"
-              >
-                {syncing ? 'Synchronizing…' : 'Sync Database with Backend'}
-              </Button>
-              {syncToast && (
-                <span className="text-xs font-semibold text-answered">
-                  ✓ {syncToast}
-                </span>
-              )}
-            </div>
+            <p className="text-[11px] sm:text-xs text-muted">
+              No sync is needed — every change is written to your device's storage immediately and survives restarts.
+            </p>
           </Card>
         </Reveal>
 
         {/* Account Data Summary */}
         <Reveal delay={0.25}>
           <Card>
-            <CardHeader title="Account Data &amp; Storage" icon={<Database size={15} />} />
+            <CardHeader title="Your Data at a Glance" icon={<Database size={15} />} />
             <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center py-1 sm:py-2">
               <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-surface-2/50">
                 <div className="text-lg sm:text-2xl font-bold text-text tabular-nums">{stats.totalAttempted}</div>

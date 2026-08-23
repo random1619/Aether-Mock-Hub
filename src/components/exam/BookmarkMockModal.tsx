@@ -13,6 +13,8 @@ import {
   Flame,
   Gauge,
   Sliders,
+  Folder,
+  AlertTriangle,
 } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { examPath } from '@/lib/examLink';
@@ -22,6 +24,7 @@ import {
   DEFAULT_MINUTES_PER_QUESTION,
   type BookmarkMockConfig,
 } from '@/services/bookmarkMock';
+import type { BookmarkFolder } from '@/types';
 
 export type PacingPreset = 'standard' | 'speed' | 'deep' | 'custom';
 
@@ -35,6 +38,11 @@ export interface BookmarkMockModalProps {
   subjects?: string[];
   activeSubjectFilter?: string;
   activeProviderFilter?: string;
+  folders?: BookmarkFolder[];
+  activeFolderId?: string;
+  initialScope?: 'all' | 'filtered' | 'subject' | 'provider' | 'category' | 'mistakes';
+  folderQuestionsMap?: Record<string, number>;
+  mistakesCount?: number;
 }
 
 export function BookmarkMockModal({
@@ -47,17 +55,25 @@ export function BookmarkMockModal({
   subjects = [],
   activeSubjectFilter = 'all',
   activeProviderFilter = 'all',
+  folders = [],
+  activeFolderId,
+  initialScope,
+  folderQuestionsMap = {},
+  mistakesCount = 0,
 }: BookmarkMockModalProps) {
   const navigate = useNavigate();
 
-  // Scope selection: 'all' | 'filtered' | 'subject' | 'provider'
+  // Scope selection: 'all' | 'filtered' | 'category' | 'mistakes' | 'subject' | 'provider'
   const hasFilter =
     filteredCount !== undefined &&
     filteredCount > 0 &&
     filteredCount !== allSavedCount;
 
-  const [scope, setScope] = useState<'all' | 'filtered' | 'subject' | 'provider'>(
-    hasFilter ? 'filtered' : 'all',
+  const [scope, setScope] = useState<'all' | 'filtered' | 'category' | 'mistakes' | 'subject' | 'provider'>(
+    initialScope || (activeFolderId && activeFolderId !== 'all' ? 'category' : hasFilter ? 'filtered' : 'all'),
+  );
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    activeFolderId && activeFolderId !== 'all' ? activeFolderId : folders[0]?.id || 'default',
   );
   const [selectedSubject, setSelectedSubject] = useState<string>(
     activeSubjectFilter !== 'all' ? activeSubjectFilter : subjects[0] || '',
@@ -66,10 +82,18 @@ export function BookmarkMockModal({
     activeProviderFilter !== 'all' ? activeProviderFilter : providers[0] || '',
   );
 
-  // Sync initial scope if opened while filtered
+  // Sync initial scope if opened while filtered or with initialScope
   useEffect(() => {
     if (open) {
-      if (hasFilter) {
+      if (initialScope) {
+        setScope(initialScope);
+        if (initialScope === 'category' && activeFolderId && activeFolderId !== 'all') {
+          setSelectedFolderId(activeFolderId);
+        }
+      } else if (activeFolderId && activeFolderId !== 'all') {
+        setScope('category');
+        setSelectedFolderId(activeFolderId);
+      } else if (hasFilter) {
         setScope('filtered');
       } else if (activeSubjectFilter !== 'all') {
         setScope('subject');
@@ -81,14 +105,16 @@ export function BookmarkMockModal({
         setScope('all');
       }
     }
-  }, [open, hasFilter, activeSubjectFilter, activeProviderFilter]);
+  }, [open, initialScope, activeFolderId, hasFilter, activeSubjectFilter, activeProviderFilter]);
 
   // Max available questions in current chosen scope
   const availableCount = useMemo(() => {
     if (scope === 'filtered') return filteredCount ?? allSavedCount;
+    if (scope === 'category') return folderQuestionsMap[selectedFolderId] ?? allSavedCount;
+    if (scope === 'mistakes') return mistakesCount;
     if (scope === 'all') return allSavedCount;
     return allSavedCount;
-  }, [scope, filteredCount, allSavedCount]);
+  }, [scope, filteredCount, allSavedCount, folderQuestionsMap, selectedFolderId, mistakesCount]);
 
   // Question count subset
   const [questionCount, setQuestionCount] = useState<number>(availableCount || 10);
@@ -97,7 +123,7 @@ export function BookmarkMockModal({
 
   // Update questionCount when scope changes or available count shifts
   useEffect(() => {
-    setQuestionCount(availableCount);
+    setQuestionCount(availableCount || 1);
   }, [availableCount]);
 
   // Pacing / variable timing selection
@@ -134,7 +160,15 @@ export function BookmarkMockModal({
       customDurationMinutes: pacing === 'custom' ? totalDurationMinutes : undefined,
     };
 
-    if (scope === 'filtered' && filteredIds && filteredIds.length > 0) {
+    if (scope === 'category') {
+      const folder = folders.find((f) => f.id === selectedFolderId);
+      config.folderId = selectedFolderId;
+      config.folderName = folder?.name || 'Category';
+      config.title = `Bookmark Mock — ${folder?.name || 'Category'} (${questionCount} Qs)`;
+    } else if (scope === 'mistakes') {
+      config.onlyIncorrect = true;
+      config.title = `Bookmark Mock — Mistakes Drill (${questionCount} Qs)`;
+    } else if (scope === 'filtered' && filteredIds && filteredIds.length > 0) {
       config.questionIds = filteredIds;
       config.title = `Bookmark Mock — Filtered (${questionCount} Qs)`;
     } else if (scope === 'subject' && selectedSubject) {
@@ -204,6 +238,73 @@ export function BookmarkMockModal({
                 {allSavedCount} Qs
               </span>
             </button>
+
+            {folders.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setScope('category')}
+                className={`flex items-center justify-between p-2 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left transition-all ${
+                  scope === 'category'
+                    ? 'border-primary bg-primary-soft/50 ring-1 ring-primary'
+                    : 'border-border bg-surface-2 hover:bg-surface-3'
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] sm:text-sm font-bold text-text flex items-center gap-1.5">
+                    <Folder size={13} className="text-primary shrink-0" />
+                    <span>Category / Folder</span>
+                  </div>
+                  {scope === 'category' ? (
+                    <select
+                      value={selectedFolderId}
+                      onChange={(e) => setSelectedFolderId(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-1 w-full h-7 sm:h-8 px-2 rounded-lg bg-surface border border-border text-xs text-text focus:outline-none"
+                    >
+                      {folders.map((f) => (
+                        <option key={f.id} value={f.id}>
+                          {f.name} ({folderQuestionsMap[f.id] ?? 0} Qs)
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="text-[10px] sm:text-xs text-muted mt-0.5 truncate hidden sm:block">
+                      Target a specific folder/category
+                    </div>
+                  )}
+                </div>
+                {scope !== 'category' && (
+                  <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-surface text-text tabular-nums shrink-0 ml-2">
+                    {folderQuestionsMap[selectedFolderId] ?? allSavedCount} Qs
+                  </span>
+                )}
+              </button>
+            )}
+
+            {mistakesCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setScope('mistakes')}
+                className={`flex items-center justify-between p-2 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left transition-all ${
+                  scope === 'mistakes'
+                    ? 'border-danger bg-danger-soft/60 ring-1 ring-danger'
+                    : 'border-border bg-surface-2 hover:bg-surface-3'
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="text-[11px] sm:text-sm font-bold text-danger-fg flex items-center gap-1.5">
+                    <AlertTriangle size={13} className="text-danger-fg shrink-0" />
+                    <span>Mistakes Drill</span>
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-muted mt-0.5 truncate hidden sm:block">
+                    Only questions answered incorrectly
+                  </div>
+                </div>
+                <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-danger-soft text-danger-fg tabular-nums shrink-0 ml-2">
+                  {mistakesCount} Qs
+                </span>
+              </button>
+            )}
 
             {hasFilter && (
               <button

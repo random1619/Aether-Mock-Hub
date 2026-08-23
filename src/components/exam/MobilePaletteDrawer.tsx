@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutGrid, Send, X } from 'lucide-react';
 import { useExamStore } from '@/stores/examStore';
@@ -16,13 +16,44 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
   const phase = useExamStore((s) => s.phase);
   const currentIdx = useExamStore((s) => s.currentIdx);
   const total = useExamStore((s) => s.questions.length);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const lastFocused = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    return registerBackHandler(() => {
+    lastFocused.current = document.activeElement as HTMLElement;
+    const focusPanel = () => panelRef.current?.querySelector<HTMLElement>('button, [tabindex]:not([tabindex="-1"])')?.focus();
+    const focusTimer = window.setTimeout(focusPanel, 0);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>('button, [tabindex]:not([tabindex="-1"])');
+      if (!focusables?.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    const unregister = registerBackHandler(() => {
       setOpen(false);
       return true;
     });
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKey, true);
+      unregister();
+      lastFocused.current?.focus?.();
+    };
   }, [open]);
 
   return (
@@ -31,8 +62,8 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
       <button
         onClick={() => setOpen(true)}
         aria-label={`Open question palette, on question ${currentIdx + 1} of ${total}`}
-        className="md:hidden fixed right-3.5 z-overlay inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary text-white font-extrabold text-xs shadow-lg hover:bg-primary-hover active:scale-90 transition-all select-none border border-white/20"
-        style={{ bottom: 'calc(8.25rem + env(safe-area-inset-bottom, 0px))' } as any}
+        className="md:hidden fixed right-3.5 z-overlay inline-flex min-h-11 items-center gap-1.5 px-3.5 py-2 rounded-full bg-primary text-white font-extrabold text-xs shadow-lg hover:bg-primary-hover active:scale-90 transition-all select-none border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+        style={{ bottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))' } as any}
       >
         <LayoutGrid size={15} />
         <span>{currentIdx + 1}/{total}</span>
@@ -56,7 +87,8 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
               role="dialog"
               aria-modal="true"
               aria-label="Question palette"
-              className="absolute bottom-0 left-0 right-0 bg-surface border-t border-border rounded-t-2xl shadow-xl max-h-[75vh] overflow-y-auto will-change-transform"
+              ref={panelRef}
+              className="absolute bottom-0 left-0 right-0 bg-surface border-t border-border rounded-t-[24px] shadow-xl max-h-[min(82dvh,720px)] overflow-y-auto will-change-transform overscroll-contain"
               style={{
                 touchAction: 'pan-y',
                 paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
@@ -79,7 +111,7 @@ export function MobilePaletteDrawer({ onShowSummary }: { onShowSummary?: () => v
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Close palette"
-                  className="w-8 h-8 grid place-items-center rounded-md text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer"
+                  className="w-11 h-11 grid place-items-center rounded-xl text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                 >
                   <X size={18} />
                 </button>

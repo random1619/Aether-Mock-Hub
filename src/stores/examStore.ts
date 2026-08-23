@@ -5,7 +5,6 @@ import { create } from 'zustand';
 import type { ExamMeta, ExamPhase, Question, PerQuestionRecord, LangView, ExamPattern, Attempt } from '@/types';
 import { scoreAttempt, type ScoreResult } from '@/lib/scoring';
 import { saveAttempt, attachAttemptToSaved, recordSubjectAttempt, storageHealthy, getLatestAttempt, getAllAttempts, canonicalizePath } from '@/services/attemptStore';
-import { persistAttemptToBackend } from '@/services/backendApi';
 import {
   saveProgress,
   loadProgress,
@@ -912,9 +911,7 @@ export const useExamStore = create<ExamState>((set, get) => ({
         })));
         const updatedLatest = getLatestAttempt(meta.path);
         const updatedAll = getAllAttempts(meta.path);
-        if (updatedLatest) {
-          persistAttemptToBackend(meta.path, updatedLatest);
-        }
+        // Persistence is fully local (profile-namespaced localStorage journal).
         set({
           latestAttempt: updatedLatest,
           allAttempts: updatedAll,

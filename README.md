@@ -10,10 +10,24 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-A78BFA?style=for-the-badge&logo=github&logoColor=white" />
-  <img src="https://img.shields.io/badge/platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
+  <a href="https://github.com/random1619/Aether-Mock-Hub/releases/latest"><img src="https://img.shields.io/badge/Android%20APK-v1.0.0%20Download-3DDC84?style=for-the-badge&logo=android&logoColor=white" /></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Android%20%7C%20Web-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
   <img src="https://img.shields.io/badge/electron-34.0.0-47848F?style=for-the-badge&logo=electron&logoColor=white" />
   <img src="https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge" />
 </p>
+
+<br/>
+
+---
+
+## 📱 Mobile App (Android APK)
+
+> 🚀 **Direct Download**: Grab the latest Android APK directly from the [GitHub Releases](https://github.com/random1619/Aether-Mock-Hub/releases/latest/download/Aether-Mock-Hub-v1.0.0.apk)!
+>
+> - **Full Mobile Experience**: Responsive drawer, mobile question palette, offline-first exam simulation.
+> - **Cloud & Offline Sync**: Connects to the backend server with seamless local IndexedDB fallback.
+
+<br/>
 
 <br/>
 
@@ -113,11 +127,14 @@ npm run dev
 npm run electron:dev
 ```
 
-### 📦 Build Windows Installer
+### 🤖 Run & Build Android APK
 
 ```bash
-npm run electron:build
-# Output → dist-installer/
+# Sync web build to Android Capacitor project
+npm run android:sync
+
+# Assemble Debug APK (outputs to android/app/build/outputs/apk/debug/)
+npm run android:build
 ```
 
 <br/>
@@ -129,9 +146,11 @@ npm run electron:build
 | Command | Description |
 |:---|:---|
 | `npm run dev` | Start Vite dev server in browser |
-| `npm run build` | Production build |
+| `npm run build` | Production web bundle build |
 | `npm run electron:dev` | Launch as Electron desktop app |
 | `npm run electron:build` | Build NSIS Windows installer |
+| `npm run android:sync` | Build web assets & sync to Capacitor Android project |
+| `npm run android:build` | Build Android Debug APK |
 | `npm run test` | Run all tests with Vitest |
 | `npm run lint` | Lint codebase with oxlint |
 

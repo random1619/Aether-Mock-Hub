@@ -44,7 +44,7 @@ export function AppChrome({ title, icon, actions }: AppChromeProps) {
     >
       <div className="max-w-7xl mx-auto h-14 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <button onClick={() => setDrawerOpen(true)} aria-label="Open menu" className="md:hidden w-9 h-9 grid place-items-center rounded-xl bg-surface-2 active:scale-95 shrink-0">
+          <button onClick={() => setDrawerOpen(true)} aria-label="Open menu" className="md:hidden w-11 h-11 grid place-items-center rounded-2xl bg-surface-2 active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
             <Menu size={16} />
           </button>
           <Link
@@ -53,7 +53,7 @@ export function AppChrome({ title, icon, actions }: AppChromeProps) {
           >
             <ArrowLeft size={14} /> Home
           </Link>
-          <Link to="/" className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-2 text-primary shrink-0" aria-label="Home">
+          <Link to="/" className="sm:hidden inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-surface-2 text-primary shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60" aria-label="Home">
             <ArrowLeft size={16} />
           </Link>
           <span aria-hidden className="hidden sm:inline text-border-strong">/</span>

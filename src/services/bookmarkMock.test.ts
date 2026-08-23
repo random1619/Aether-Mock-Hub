@@ -209,5 +209,40 @@ describe('bookmarkMock', () => {
       expect(parsed.meta.sections.map((s) => s.name)).toContain('English');
       expect(parsed.meta.sections.map((s) => s.name)).toContain('Quantitative Aptitude');
     });
+
+    it('scopes by category / folderId', async () => {
+      const bm = await loadServices({
+        'mock-1': [
+          { ...savedQuestion('mock-1::0', 'mock-1', 0, 'English'), folderId: 'f_quant' },
+          { ...savedQuestion('mock-1::1', 'mock-1', 1, 'Reasoning'), folderId: 'f_reasoning' },
+          { ...savedQuestion('mock-1::2', 'mock-1', 2, 'English'), folderId: 'f_quant' },
+        ],
+      });
+
+      const parsed = await bm.buildBookmarkMockExam({
+        scope: 'category',
+        folderId: 'f_quant',
+      });
+
+      expect(parsed.questions).toHaveLength(2);
+      expect(parsed.questions.every((q) => q.question.includes('Question 0') || q.question.includes('Question 2'))).toBe(true);
+    });
+
+    it('scopes by mistakes drill (only incorrect outcomes)', async () => {
+      const bm = await loadServices({
+        'mock-1': [
+          { ...savedQuestion('mock-1::0', 'mock-1', 0), lastOutcome: 'correct' },
+          { ...savedQuestion('mock-1::1', 'mock-1', 1), lastOutcome: 'incorrect' },
+          { ...savedQuestion('mock-1::2', 'mock-1', 2), lastOutcome: 'skipped' },
+        ],
+      });
+
+      const parsed = await bm.buildBookmarkMockExam({
+        scope: 'mistakes',
+      });
+
+      expect(parsed.questions).toHaveLength(1);
+      expect(parsed.questions[0].question).toContain('Question 1');
+    });
   });
 });

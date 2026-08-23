@@ -110,6 +110,18 @@ export function allProfiles(): Profile[] {
   return listProfiles();
 }
 
+/** Create the local cache namespace for a verified cloud account. Unlike the
+    legacy createProfile path this never stores a password in the browser. */
+export function ensureCloudProfile(id: string, name: string): Profile {
+  const existing = listProfiles();
+  const found = existing.find((profile) => profile.id === id);
+  if (found) return found;
+  const profile: Profile = { id, name: name.trim() || id, createdAt: new Date().toISOString() };
+  if (existing.length === 0) adoptLegacyDataInto(id);
+  writeProfiles([...existing, profile]);
+  return profile;
+}
+
 /** The active profile, or null when LOGGED OUT. The app shows the login
     panel whenever this is null. */
 export function getActiveProfile(): Profile | null {
@@ -323,33 +335,29 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   profiles: allProfiles(),
   addProfile: async (name, password, secqa) => {
     try {
-      const { profile, created } = await createProfile(name, password, secqa);
-      if (!created) {
-        // The id already exists. Do NOT log in — creating-with-an-existing-
-        // name must never become an unauthenticated login into that account.
-        return `The login id "${profile.name}" already exists. Sign in with its password instead.`;
-      }
-      setActiveProfile(profile.id);
-      set({ active: profile, profiles: allProfiles() });
+      // Local-only account creation: credentials + profile namespace live
+      // entirely on this device. No server, so offline = fully functional.
+      const res = await createProfile(name, password, secqa);
+      if (!res.created) return 'That login id already exists — sign in instead.';
+      setActiveProfile(res.profile.id);
+      set({ active: res.profile, profiles: allProfiles() });
       return null;
     } catch (e) {
       return e instanceof Error ? e.message : 'Could not create that login id';
     }
   },
   login: async (id, password) => {
-    const profile = listProfiles().find((p) => p.id === id);
-    if (!profile) return 'Login id not found';
-    let ok: boolean;
     try {
-      ok = await verifyPassword(id, password);
+      // Local-only sign in: verify the PBKDF2 credential for this profile.
+      const ok = await checkPassword(id, password);
+      if (!ok) return 'Incorrect password';
+      const profile = listProfiles().find((p) => p.id === id) || { id, name: id, createdAt: new Date().toISOString() };
+      setActiveProfile(profile.id);
+      set({ active: profile, profiles: allProfiles() });
+      return null;
     } catch (e) {
-      // Throttle (rate-limit) or crypto-availability errors surface as-is.
       return e instanceof Error ? e.message : 'Sign-in failed';
     }
-    if (!ok) return 'Incorrect password';
-    setActiveProfile(id);
-    set({ active: getActiveProfile(), profiles: allProfiles() });
-    return null;
   },
   switchTo: (id) => {
     if (id === get().active?.id) return;

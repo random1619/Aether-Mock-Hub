@@ -122,7 +122,7 @@ export default function Analytics() {
   const axisTick = { fill: 'var(--text-muted)', fontSize: 11 } as const;
 
   return (
-    <div className="min-h-screen page-surface pb-[calc(84px+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen page-surface mobile-page-shell md:pb-0">
       <AppChrome title="Analytics" icon={<ChartPie size={14} />} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">

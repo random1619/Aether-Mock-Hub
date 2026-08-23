@@ -267,6 +267,54 @@ describe('saved questions', () => {
     expect(list).toHaveLength(1);
     expect(list[0].id).toBe('ok');
   });
+
+  it('manages bookmark folders CRUD and question notes/tags/priority', async () => {
+    const s = await load();
+    const folders = s.getBookmarkFolders();
+    expect(folders.length).toBeGreaterThanOrEqual(4);
+    expect(folders.some((f) => f.id === 'default')).toBe(true);
+
+    // Create custom folder
+    const created = s.createBookmarkFolder('Math Shortcuts', 'emerald', 'zap', 'High speed quant formulas');
+    expect(created.name).toBe('Math Shortcuts');
+    expect(created.color).toBe('emerald');
+
+    // Update custom folder
+    s.updateBookmarkFolder(created.id, { name: 'Quant Mastery', color: 'purple' });
+    const updatedFolders = s.getBookmarkFolders();
+    const found = updatedFolders.find((f) => f.id === created.id);
+    expect(found?.name).toBe('Quant Mastery');
+    expect(found?.color).toBe('purple');
+
+    // Save a question and assign to this folder
+    s.toggleSaveQuestion('providers/X/a.html', 'Mock A', 'X', q);
+    const allSaved = s.getAllSavedQuestions();
+    const qRecord = allSaved.find((r) => r.examPath === 'providers/X/a.html');
+    expect(qRecord).toBeDefined();
+
+    // Set folder, notes, priority, tags, star
+    s.setQuestionFolder(qRecord!.id, created.id);
+    s.setQuestionNotes(qRecord!.id, 'Use compound interest shortcut formula');
+    s.setQuestionPriority(qRecord!.id, 'high');
+    s.addQuestionTag(qRecord!.id, 'tricky-quant');
+    s.toggleStarQuestion(qRecord!.id);
+
+    const reloaded = s.getAllSavedQuestions().find((r) => r.id === qRecord!.id);
+    expect(reloaded?.folderId).toBe(created.id);
+    expect(reloaded?.notes).toBe('Use compound interest shortcut formula');
+    expect(reloaded?.priority).toBe('high');
+    expect(reloaded?.tags).toContain('tricky-quant');
+    expect(reloaded?.isStarred).toBe(true);
+
+    // Batch operations
+    s.batchUpdateSavedQuestions([qRecord!.id], { priority: 'low' });
+    expect(s.getAllSavedQuestions().find((r) => r.id === qRecord!.id)?.priority).toBe('low');
+
+    // Delete custom folder (reassigns question to 'default')
+    s.deleteBookmarkFolder(created.id);
+    const afterDelete = s.getAllSavedQuestions().find((r) => r.id === qRecord!.id);
+    expect(afterDelete?.folderId).toBe('default');
+  });
 });
 
 describe('path migration (applyPathMap)', () => {

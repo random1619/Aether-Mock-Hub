@@ -10,7 +10,11 @@ import {
   isSavedQuestion,
   toggleSaveQuestion,
   markSavedQuestionReviewed,
+  getBookmarkFolders,
+  createBookmarkFolder,
 } from '@/services/attemptStore';
+import { BookmarkCategoryPicker } from './BookmarkCategoryPicker';
+import type { BookmarkFolder } from '@/types';
 import { haptic } from '@/services/nativeMobile';
 
 import { buildQuestionHtml, downloadQuestionHtml, questionFilename } from '@/lib/exportQuestion';
@@ -58,6 +62,8 @@ export function QuestionCard() {
 
   const [saved, setSaved] = useState(false);
   const [savedToast, setSavedToast] = useState<string | null>(null);
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [folders, setFolders] = useState<BookmarkFolder[]>([]);
 
   const q = questions[currentIdx];
   const isSubmitted = phase === 'submitted';
@@ -79,7 +85,7 @@ export function QuestionCard() {
   useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
   }, []);
-  const onToggleSave = () => {
+  const persistBookmark = (folderId?: string) => {
     if (!meta || !q) return;
     const nowSaved = toggleSaveQuestion(meta.path, meta.name, meta.provider, {
       questionIdx: currentIdx,
@@ -89,7 +95,7 @@ export function QuestionCard() {
       correct_option_id: q.correct_option_id,
       solution: q.solution,
       marks: q.marks,
-    });
+    }, folderId);
     setSaved(nowSaved);
     haptic.tap();
     setSavedToast(nowSaved ? 'Saved to bookmarks' : 'Removed from bookmarks');
@@ -108,6 +114,27 @@ export function QuestionCard() {
     });
     // Only auto-download when *saving*, not when *unsaving*.
     if (nowSaved) downloadQuestionHtml(filename, html);
+  };
+
+  const onToggleSave = () => {
+    if (!meta || !q) return;
+    if (saved) {
+      persistBookmark();
+      return;
+    }
+    setFolders(getBookmarkFolders());
+    setCategoryPickerOpen(true);
+  };
+
+  const onConfirmCategory = (folderId: string) => {
+    setCategoryPickerOpen(false);
+    persistBookmark(folderId);
+  };
+
+  const onCreateCategory = (name: string): BookmarkFolder | undefined => {
+    const folder = createBookmarkFolder(name);
+    setFolders(getBookmarkFolders());
+    return folder;
   };
 
   const onDownloadHtml = () => {
@@ -197,7 +224,7 @@ export function QuestionCard() {
               aria-pressed={saved}
               title={saved ? 'Saved to bookmarks' : 'Save to bookmarks (also downloads HTML)'}
               className={clsx(
-                'inline-grid place-items-center w-8 h-8 sm:w-6 sm:h-6 rounded-md sm:rounded-sm border transition-colors active:scale-95 cursor-pointer',
+                'inline-grid place-items-center w-11 h-11 sm:w-8 sm:h-8 rounded-xl sm:rounded-lg border transition-colors active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
                 saved
                   ? 'bg-marked/25 border-marked text-marked'
                   : 'border-tcs-border text-tcs-muted hover:text-tcs-text hover:bg-tcs-panel-2',
@@ -400,6 +427,14 @@ export function QuestionCard() {
           )}
         </AnimatePresence>
       </motion.div>
+      <BookmarkCategoryPicker
+        open={categoryPickerOpen}
+        questionNumber={currentIdx + 1}
+        folders={folders}
+        onClose={() => setCategoryPickerOpen(false)}
+        onConfirm={onConfirmCategory}
+        onCreateFolder={onCreateCategory}
+      />
     </AnimatePresence>
   );
 }

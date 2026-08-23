@@ -11,9 +11,15 @@ import { getAllSavedQuestions, BOOKMARK_MOCK_PATH_PREFIX } from '@/services/atte
 export const DEFAULT_MINUTES_PER_QUESTION = 1.2;
 
 export interface BookmarkMockConfig {
-  scope?: 'all' | 'filtered' | 'subject' | 'provider';
+  scope?: 'all' | 'filtered' | 'subject' | 'provider' | 'category' | 'folder' | 'tag' | 'priority' | 'mistakes';
   subject?: string;
   provider?: string;
+  folderId?: string;
+  folderName?: string;
+  tag?: string;
+  priority?: 'high' | 'medium' | 'low';
+  onlyIncorrect?: boolean;
+  onlyStarred?: boolean;
   /** Specific question IDs (from SavedQuestionRecord.id) if launched from a filtered/selected set */
   questionIds?: string[];
   /** Subset count (e.g. pick top N or random N) */
@@ -87,10 +93,22 @@ export async function buildBookmarkMockExam(
   if (config.questionIds && config.questionIds.length > 0) {
     const idSet = new Set(config.questionIds);
     pool = pool.filter((item) => idSet.has(item.id));
+  } else if ((config.scope === 'category' || config.scope === 'folder') && config.folderId) {
+    pool = pool.filter((item) => (item.folderId || 'default') === config.folderId || (Array.isArray(item.folderIds) && item.folderIds.includes(config.folderId!)));
+  } else if (config.scope === 'mistakes' || config.onlyIncorrect) {
+    pool = pool.filter((item) => item.lastOutcome === 'incorrect');
+  } else if (config.scope === 'tag' && config.tag) {
+    pool = pool.filter((item) => Array.isArray(item.tags) && item.tags.includes(config.tag!));
+  } else if (config.scope === 'priority' && config.priority) {
+    pool = pool.filter((item) => item.priority === config.priority);
   } else if (config.scope === 'subject' && config.subject) {
     pool = pool.filter((item) => (item as any).subject === config.subject || item.examName.toLowerCase().includes(config.subject!.toLowerCase()));
   } else if (config.scope === 'provider' && config.provider) {
     pool = pool.filter((item) => item.provider === config.provider);
+  }
+
+  if (config.onlyStarred) {
+    pool = pool.filter((item) => item.isStarred);
   }
 
   if (!pool.length) {

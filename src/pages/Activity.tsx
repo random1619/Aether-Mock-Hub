@@ -55,7 +55,7 @@ export default function Activity() {
   const maxCount = Math.max(1, ...days.map((d) => d.count));
 
   return (
-    <div className="min-h-screen page-surface pb-[calc(84px+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen page-surface mobile-page-shell md:pb-0">
       <AppChrome title="Activity" icon={<CalendarDays size={14} />} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">

@@ -154,7 +154,7 @@ export default function Dashboard() {
   const handleToggle = useCompletionToggle(() => setTick((t) => t + 1));
 
   return (
-    <div className="min-h-screen page-surface pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0" data-scroll-section>
+    <div className="min-h-screen page-surface mobile-page-shell md:pb-0 dashboard-mobile-rhythm" data-scroll-section>
       {/* Hero: full-bleed section with subtle parallax on the inner content */}
       <HeroBand
         search={search}

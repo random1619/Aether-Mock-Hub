@@ -17,6 +17,8 @@ interface AlarmStoreState {
   toggleAlarm: (id: string) => void;
   deleteAlarm: (id: string) => void;
   setFiredAlarm: (alarm: PracticeAlarm | null) => void;
+  /** Cloud bootstrap replacement; transient notification is intentionally kept local. */
+  replaceCloudAlarms: (alarms: PracticeAlarm[]) => void;
 }
 
 export const useAlarmStore = create<AlarmStoreState>()(
@@ -82,6 +84,7 @@ export const useAlarmStore = create<AlarmStoreState>()(
       },
 
       setFiredAlarm: (alarm) => set({ activeFiredAlarm: alarm }),
+      replaceCloudAlarms: (alarms) => set({ alarms: Array.isArray(alarms) ? alarms : [] }),
     }),
     {
       name: 'aether-alarms-storage',

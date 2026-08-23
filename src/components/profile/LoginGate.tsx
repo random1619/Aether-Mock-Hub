@@ -72,7 +72,7 @@ export function LoginGate({ children }: { children: ReactNode }) {
         <div className="px-5 pb-6">
           <AnimatePresence mode="wait" initial={false}>
             {view.kind === 'list' && (
-              <ListView key="list" profiles={profiles} onPick={(id, name) => setView({ kind: 'login', id, name })} onCreate={() => setView({ kind: 'create' })} />
+              <ListView key="list" profiles={profiles} onPick={(id, name) => setView({ kind: 'login', id, name })} onCloudSignIn={() => setView({ kind: 'login', id: '', name: 'Cloud account' })} onCreate={() => setView({ kind: 'create' })} />
             )}
             {view.kind === 'login' && (
               <LoginView
@@ -178,10 +178,12 @@ function ErrorText({ children }: { children: ReactNode }) {
 function ListView({
   profiles,
   onPick,
+  onCloudSignIn,
   onCreate,
 }: {
   profiles: Array<{ id: string; name: string }>;
   onPick: (id: string, name: string) => void;
+  onCloudSignIn: () => void;
   onCreate: () => void;
 }) {
   return (
@@ -210,8 +212,14 @@ function ListView({
         </div>
       )}
       <button
+        onClick={onCloudSignIn}
+        className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-surface-2 text-text text-sm font-semibold hover:bg-surface-3 transition-colors"
+      >
+        <LogIn size={16} /> Sign in with another login id
+      </button>
+      <button
         onClick={onCreate}
-        className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+        className="w-full mt-2 flex items-center justify-center gap-2 h-11 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
       >
         <UserPlus size={16} />
         {profiles.length ? 'Create a new login id' : 'Create your login id'}
@@ -234,17 +242,23 @@ function LoginView({
   onRecover: () => void;
   login: (id: string, password: string) => Promise<string | null>;
 }) {
+  const [loginId, setLoginId] = useState(id);
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const requiresLoginId = !id;
 
   const submit = async () => {
+    if (!loginId.trim()) {
+      setError('Enter your login id');
+      return;
+    }
     if (!password) {
       setError('Enter your password');
       return;
     }
     setBusy(true);
-    const err = await login(id, password);
+    const err = await login(loginId, password);
     setBusy(false);
     if (err) setError(err);
   };
@@ -257,10 +271,20 @@ function LoginView({
           {initials(name)}
         </span>
         <div className="min-w-0">
-          <div className="text-base font-bold text-text truncate">{name}</div>
-          <div className="text-[11px] text-muted">Enter your password to continue</div>
+          <div className="text-base font-bold text-text truncate">{requiresLoginId ? 'Cloud account' : name}</div>
+          <div className="text-[11px] text-muted">Enter your credentials to restore your data</div>
         </div>
       </div>
+      {requiresLoginId && (
+        <input
+          value={loginId}
+          autoFocus
+          onChange={(e) => { setLoginId(e.target.value); setError(null); }}
+          placeholder="Login id"
+          aria-label="Login id"
+          className="w-full h-11 px-4 mb-3 rounded-xl bg-surface-2 text-sm text-text placeholder:text-muted focus:outline-none focus:shadow-[var(--focus-ring)]"
+        />
+      )}
       <PasswordInput
         value={password}
         onChange={(v) => {
@@ -280,9 +304,11 @@ function LoginView({
       >
         {busy ? 'Signing in…' : 'Sign in'}
       </button>
-      <button onClick={onRecover} className="w-full mt-2 h-9 text-xs font-medium text-primary hover:underline transition-colors">
-        Forgot password?
-      </button>
+      {!requiresLoginId && (
+        <button onClick={onRecover} className="w-full mt-2 h-9 text-xs font-medium text-primary hover:underline transition-colors">
+          Forgot password?
+        </button>
+      )}
     </Panel>
   );
 }

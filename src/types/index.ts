@@ -127,6 +127,17 @@ export interface PerQuestionRecord {
   timeSec: number;
 }
 
+export interface BookmarkFolder {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
+  isSystem?: boolean;
+}
+
 export interface SavedQuestionRecord {
   id: string;                // unique stable id
   examPath: string;          // canonical path of the source exam
@@ -147,6 +158,17 @@ export interface SavedQuestionRecord {
   lastFlagged?: boolean;
   /** Number of times this question has been revisited in saved view. */
   timesReviewed?: number;
+  /** Category / Folder association */
+  folderId?: string;
+  folderIds?: string[];
+  /** Custom tag labels (e.g. ['#geometry', '#tricky']) */
+  tags?: string[];
+  /** Personal study notes / tips on this question */
+  notes?: string;
+  /** Priority rating */
+  priority?: 'high' | 'medium' | 'low';
+  /** Fast star bookmark */
+  isStarred?: boolean;
 }
 
 export interface AetherDB {
@@ -163,6 +185,7 @@ export interface AetherDB {
   /** Catalog paths saved to this profile's My List. */
   myList: string[];
   savedQuestions: Record<string, SavedQuestionRecord[]>;
+  bookmarkFolders?: BookmarkFolder[];
   stats: Stats;
 }
 

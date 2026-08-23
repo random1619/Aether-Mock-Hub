@@ -58,7 +58,7 @@ export default function ProviderPage({ provider }: { provider: string }) {
   const handleToggle = useCompletionToggle(() => setTick((t) => t + 1));
 
   return (
-    <div className="min-h-screen page-surface pb-[84px] md:pb-0" style={{ paddingBottom: 'calc(84px + env(safe-area-inset-bottom, 0px))' } as any}>
+    <div className="min-h-screen page-surface mobile-page-shell md:pb-0">
       {/* Frosted nav — shared shell */}
       <AppChrome
         title={brand.title}

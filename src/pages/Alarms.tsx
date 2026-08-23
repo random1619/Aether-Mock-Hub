@@ -71,7 +71,7 @@ export default function Alarms() {
   };
 
   return (
-    <div className="min-h-screen page-surface flex flex-col pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen page-surface flex flex-col mobile-page-shell md:pb-0">
       <AppChrome title="Mock Exam Alarms" icon={<Clock size={16} />} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-8 space-y-6">

@@ -1,15 +1,18 @@
 /**
- * Aether Backend API Client
- * ========================
- * Provides dynamic, robust communication with the Aether Backend Server & Electron IPC.
- * Supports complete per-user isolation, offline-first fallbacks, and automatic background synchronization.
+ * Local-only persistence client
+ * =============================
+ * No cloud. All study data lives in localStorage under the active profile's
+ * namespace via attemptStore. These helpers are intentionally local-first:
+ * they never hit network endpoints (Render or otherwise); production-built
+ * apps simply operate in standalone offline mode.
+ *
+ * A thin Electron IPC bridge is still honored for desktop builds so a local
+ * desktop helper can persist to disk; when unavailable everything falls back
+ * to the durable localStorage journal in attemptStore.
  */
 
-import { isNativeMobile } from '@/services/nativeMobile';
 import type { Attempt, MockEntry, SavedQuestionRecord } from '@/types';
 import { getDb, saveAttempt } from '@/services/attemptStore';
-
-const RENDER_BACKEND_URL = 'https://aether-mock-hub.onrender.com';
 
 /** Get the active user's persistent unique identifier */
 export function getCurrentUserId(): string {
@@ -31,33 +34,11 @@ export function getCurrentUserId(): string {
   }
 }
 
-function getApiUrl(endpoint: string): string {
-  const envUrl = typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_URL;
-  if (envUrl) {
-    return `${envUrl.replace(/\/+$/, '')}/api${endpoint}`;
-  }
-  // Native mobile APK container connects directly to Render
-  if (isNativeMobile()) {
-    return `${RENDER_BACKEND_URL}/api${endpoint}`;
-  }
-  if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null') {
-    if (
-      window.location.origin.includes('onrender.com') ||
-      window.location.origin.includes('localhost:5173') ||
-      window.location.origin.includes('localhost:8080') ||
-      window.location.origin.includes('127.0.0.1')
-    ) {
-      return `${window.location.origin}/api${endpoint}`;
-    }
-  }
-  return `${RENDER_BACKEND_URL}/api${endpoint}`;
-}
-
-function getHeaders(): Record<string, string> {
-  return {
-    'Content-Type': 'application/json',
-    'X-User-Id': getCurrentUserId(),
-  };
+/** Constantly false — this build is fully local and never talks to a remote
+    REST backend. Kept as a function so the Settings UI can render the
+    local-only status truthfully. */
+export function isBackendMode(): boolean {
+  return false;
 }
 
 export interface BackendSystemInfo {
@@ -87,139 +68,102 @@ export interface BackendAnalyticsSummary {
   recentScores: { date: string; score: number; maxScore: number; accuracy: number; provider: string }[];
 }
 
-/** Check if the backend API is live */
-export async function checkBackendHealth(): Promise<boolean> {
-  try {
-    const res = await fetch(getApiUrl('/health'), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(2000),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-/** Get system information and stats from backend */
+/** Local-only: report the offline/standby state derived entirely from local
+    storage health — no network request is ever made. */
 export async function getSystemInfo(): Promise<BackendSystemInfo | null> {
   try {
-    const res = await fetch(getApiUrl('/system'), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.debug('[backendApi] getSystemInfo offline or failed:', err);
+    const db = getDb();
+    const savedCount = Object.values(db.savedQuestions || {}).reduce((n, list) => n + (Array.isArray(list) ? list.length : 0), 0);
+    return {
+      status: 'offline',
+      serverTime: new Date().toISOString(),
+      uptimeSeconds: 0,
+      totalMocks: 0,
+      totalRegisteredUsers: 1,
+      totalGlobalAttempts: db.stats?.totalAttempted || 0,
+      currentUser: {
+        id: getCurrentUserId(),
+        name: 'Local profile',
+        totalAttempts: db.stats?.totalAttempted || 0,
+        totalBookmarks: savedCount,
+      },
+      storageHealthy: true,
+      version: 'local',
+    };
+  } catch {
+    return null;
   }
+}
+
+/** Dynamic catalog is sourced locally in this build. Kept as a no-op guard so
+    any future callers can safely rely on the local mock catalog fallback. */
+export async function fetchDynamicCatalog(): Promise<MockEntry[] | null> {
   return null;
 }
 
-/** Dynamically fetch mock catalog with optional backend search/filtering */
-export async function fetchDynamicCatalog(params?: {
-  q?: string;
-  provider?: string;
-  subject?: string;
-  category?: string;
-}): Promise<MockEntry[] | null> {
-  try {
-    const url = new URL(getApiUrl('/catalog'));
-    if (params?.q) url.searchParams.set('q', params.q);
-    if (params?.provider) url.searchParams.set('provider', params.provider);
-    if (params?.subject) url.searchParams.set('subject', params.subject);
-    if (params?.category) url.searchParams.set('category', params.category);
-
-    const res = await fetch(url.toString(), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(4000),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data.mocks)) return data.mocks;
-    }
-  } catch (err) {
-    console.debug('[backendApi] Dynamic catalog fetch fallback:', err);
-  }
-  return null;
-}
-
-/** Fetch all stored attempts for the active user */
+/** Fetch all stored attempts for the active user (local only). */
 export async function fetchBackendAttempts(): Promise<Record<string, Attempt[]> | null> {
-  try {
-    const res = await fetch(getApiUrl('/attempts'), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.debug('[backendApi] fetchBackendAttempts failed:', err);
-  }
-  return null;
+  return Promise.resolve(getDb().attempts);
 }
 
-/** Save an attempt to backend database for the active user */
+/** Save an attempt locally. Desktop builds may ALSO mirror to disk via the
+    Electron IPC bridge; this never touches a remote server. */
 export async function persistAttemptToBackend(mockPath: string, attempt: Attempt): Promise<boolean> {
   try {
-    const userId = getCurrentUserId();
-
-    // 1. If Electron IPC available, also persist via desktop API
     const desktopApi = (window as unknown as { electronAPI?: { saveAttempt?: (d: any) => Promise<any> } }).electronAPI;
     if (desktopApi?.saveAttempt) {
+      const userId = getCurrentUserId();
       desktopApi.saveAttempt({ userId, mockPath, attempt }).catch(() => {});
     }
-
-    // 2. Persist to REST API
-    const res = await fetch(getApiUrl('/attempts'), {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ userId, mockPath, attempt }),
-      signal: AbortSignal.timeout(3500),
-    });
-    return res.ok;
+    saveAttempt(mockPath, attempt);
+    return true;
   } catch {
-    console.debug('[backendApi] persistAttemptToBackend offline or failed');
     return false;
   }
 }
 
-/** Fetch dynamic analytics calculated on backend for the active user */
+/** Local analytics summary. */
 export async function fetchBackendAnalytics(): Promise<BackendAnalyticsSummary | null> {
   try {
-    const res = await fetch(getApiUrl('/analytics'), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.debug('[backendApi] fetchBackendAnalytics failed:', err);
+    const db = getDb();
+    const attempts = Object.values(db.attempts || {}).flat();
+    return {
+      userId: getCurrentUserId(),
+      totalAttempts: attempts.length,
+      uniqueMocksAttempted: Object.keys(db.attempts || {}).length,
+      overallAccuracy: db.stats?.avgAccuracy || 0,
+      avgScore: attempts.length ? Math.round(attempts.reduce((s, a) => s + (a.score || 0), 0) / attempts.length) : 0,
+      bestScore: db.stats?.bestScore?.score ?? 0,
+      recentScores: attempts.slice(-20).map((a) => ({
+        date: a.submittedAt,
+        score: a.score,
+        maxScore: a.maxScore,
+        accuracy: a.accuracy,
+        provider: (a as unknown as { provider?: string }).provider || 'Unknown',
+      })),
+    };
+  } catch {
+    return null;
   }
-  return null;
 }
 
-/** Sync bookmarks with backend for the active user */
+/** All bookmarks, local only. */
 export async function fetchBackendBookmarks(): Promise<SavedQuestionRecord[] | null> {
   try {
-    const res = await fetch(getApiUrl('/bookmarks'), {
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.debug('[backendApi] fetchBackendBookmarks failed:', err);
+    return Object.values(getDb().savedQuestions || {}).flat();
+  } catch {
+    return null;
   }
-  return null;
 }
 
 export async function saveBookmarkToBackend(bookmark: SavedQuestionRecord): Promise<boolean> {
   try {
-    const userId = getCurrentUserId();
-    const res = await fetch(getApiUrl('/bookmarks'), {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ userId, bookmark }),
-      signal: AbortSignal.timeout(3000),
-    });
-    return res.ok;
+    const list = getDb().savedQuestions[bookmark.examPath] || [];
+    if (!list.some((r) => r.id === bookmark.id)) {
+      list.push(bookmark);
+      getDb().savedQuestions[bookmark.examPath] = list;
+    }
+    return true;
   } catch {
     return false;
   }
@@ -227,55 +171,20 @@ export async function saveBookmarkToBackend(bookmark: SavedQuestionRecord): Prom
 
 export async function deleteBookmarkFromBackend(id: string): Promise<boolean> {
   try {
-    const res = await fetch(getApiUrl(`/bookmarks/${encodeURIComponent(id)}`), {
-      method: 'DELETE',
-      headers: getHeaders(),
-      signal: AbortSignal.timeout(3000),
-    });
-    return res.ok;
+    const db = getDb();
+    for (const path of Object.keys(db.savedQuestions || {})) {
+      const orig = db.savedQuestions[path];
+      const filtered = orig.filter((r) => r.id !== id);
+      if (filtered.length !== orig.length) db.savedQuestions[path] = filtered;
+    }
+    return true;
   } catch {
     return false;
   }
 }
 
-/** Perform seamless two-way merge synchronization between local DB and backend for the active user */
+/** Local sync — a no-op acknowledgment so Settings' sync flow reports "already
+    up to date" without any network. */
 export async function syncDatabaseWithBackend(): Promise<{ synced: boolean; totalAttempts: number }> {
-  try {
-    const userId = getCurrentUserId();
-    const localDb = getDb();
-    const res = await fetch(getApiUrl('/sync'), {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({
-        userId,
-        attempts: localDb.attempts,
-        bookmarks: Object.values(localDb.savedQuestions || {}),
-      }),
-      signal: AbortSignal.timeout(5000),
-    });
-
-    if (res.ok) {
-      const serverData = await res.json();
-      if (serverData && serverData.attempts) {
-        // Merge server attempts into local store
-        let addedCount = 0;
-        Object.entries(serverData.attempts as Record<string, Attempt[]>).forEach(([path, attList]) => {
-          if (Array.isArray(attList)) {
-            const localList = localDb.attempts[path] || [];
-            attList.forEach((serverAtt) => {
-              const alreadyHas = localList.some((l) => l.submittedAt === serverAtt.submittedAt);
-              if (!alreadyHas) {
-                saveAttempt(path, serverAtt);
-                addedCount++;
-              }
-            });
-          }
-        });
-        return { synced: true, totalAttempts: addedCount };
-      }
-    }
-  } catch (err) {
-    console.debug('[backendApi] Sync failed (operating in standalone offline mode):', err);
-  }
-  return { synced: false, totalAttempts: 0 };
+  return Promise.resolve({ synced: true, totalAttempts: 0 });
 }

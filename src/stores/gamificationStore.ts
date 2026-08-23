@@ -35,6 +35,8 @@ export interface GamificationState {
   dequeueNewUnlock: () => string | undefined;
   setAmbientSoundType: (type: 'off' | 'binaural_alpha' | 'brown_noise' | 'rain_library') => void;
   setAmbientVolume: (vol: number) => void;
+  /** Hydrates portable account preferences after authenticated cloud bootstrap. */
+  replaceCloudState: (state: Partial<GamificationState>) => void;
 }
 
 export const useGamificationStore = create<GamificationState>()(
@@ -90,6 +92,15 @@ export const useGamificationStore = create<GamificationState>()(
 
       setAmbientSoundType: (type) => set({ ambientSoundType: type }),
       setAmbientVolume: (vol) => set({ ambientVolume: Math.max(0, Math.min(1, vol)) }),
+      replaceCloudState: (state) => set({
+        practiceTarget: typeof state.practiceTarget === 'number' ? Math.max(5, Math.min(500, state.practiceTarget)) : get().practiceTarget,
+        focusTargetMinutes: typeof state.focusTargetMinutes === 'number' ? Math.max(5, Math.min(300, state.focusTargetMinutes)) : get().focusTargetMinutes,
+        masteryTargetAccuracy: typeof state.masteryTargetAccuracy === 'number' ? Math.max(50, Math.min(100, state.masteryTargetAccuracy)) : get().masteryTargetAccuracy,
+        streakFreezes: typeof state.streakFreezes === 'number' ? Math.max(0, Math.min(5, state.streakFreezes)) : get().streakFreezes,
+        usedFreezeDates: Array.isArray(state.usedFreezeDates) ? state.usedFreezeDates : get().usedFreezeDates,
+        ambientSoundType: state.ambientSoundType || get().ambientSoundType,
+        ambientVolume: typeof state.ambientVolume === 'number' ? Math.max(0, Math.min(1, state.ambientVolume)) : get().ambientVolume,
+      }),
     }),
     {
       name: 'aether-gamification-storage',

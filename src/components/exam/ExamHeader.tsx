@@ -96,8 +96,8 @@ export function ExamHeader({
         </div>
       </div>
 
-      {/* Right block — timer + controls + candidate */}
-      <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border-l border-tcs-border/60 flex-nowrap overflow-x-auto">
+      {/* Right block — timer stays visible; secondary tools remain scrollable */}
+      <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 border-l border-tcs-border/60 flex-nowrap overflow-x-auto max-w-[58vw] sm:max-w-none scrollbar-none">
         {phase === 'active' && !isNetflix && (
           <div className="flex items-center gap-1.5 shrink-0">
             {/* Sectional Timer — premium pill with inner dot */}

@@ -14,7 +14,7 @@ export default function Showcase() {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.96]);
 
   return (
-    <div className="min-h-screen page-surface overflow-clip pb-[calc(84px+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen page-surface overflow-clip mobile-page-shell md:pb-0">
       <AppChrome title="Showcase" icon={<Sparkles size={14} />} />
 
       {/* ── Hero — editorial, asymmetric, materialize ── */}

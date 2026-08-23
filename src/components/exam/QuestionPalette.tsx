@@ -54,7 +54,7 @@ const PaletteButton = memo(function PaletteButton({
       aria-current={active ? 'true' : undefined}
       {...(active ? { [ha]: true } : {})}
       className={clsx(
-        'relative aspect-square w-full grid place-items-center rounded-md text-[11px] font-bold',
+        'relative aspect-square w-full min-h-11 min-w-11 grid place-items-center rounded-xl text-[11px] font-bold',
         'transition-all duration-150 hover:scale-110 hover:shadow-md focus-visible:outline-none',
         'focus-visible:shadow-[0_0_0_2px_white,0_0_0_4px_rgba(51,154,240,0.95)]',
         tileStyles[status],

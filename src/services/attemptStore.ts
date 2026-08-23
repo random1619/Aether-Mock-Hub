@@ -2,7 +2,7 @@
    Mirrors the legacy aether-db (localStorage['aether-db'], schema v2)
    so progress recorded by the React engine is fully compatible with
    — and a superset of — data recorded by the legacy static site. */
-import type { AetherDB, Attempt, Stats, SavedQuestionRecord } from '@/types';
+import type { AetherDB, Attempt, Stats, SavedQuestionRecord, BookmarkFolder } from '@/types';
 import { validateDb } from '@/services/dbValidation';
 import { computeAttemptHash } from '@/lib/integrity';
 import { keySuffix } from '@/services/profileStore';
@@ -32,6 +32,13 @@ export const SMART_REVISION_PATH_PREFIX = 'smart-revision/';
 /** Synthetic exam paths (Bookmark Mocks generated from saved questions). */
 export const BOOKMARK_MOCK_PATH_PREFIX = 'bookmark-mock/';
 
+export const DEFAULT_BOOKMARK_FOLDERS: BookmarkFolder[] = [
+  { id: 'default', name: 'General', color: 'blue', icon: 'bookmark', description: 'Default folder for saved questions', createdAt: '2026-01-01T00:00:00.000Z', isSystem: true },
+  { id: 'mistakes', name: 'Mistakes & Revisit', color: 'rose', icon: 'alert-circle', description: 'Questions answered incorrectly or needing review', createdAt: '2026-01-01T00:00:00.000Z', isSystem: true },
+  { id: 'formulas', name: 'Formulas & Shortcuts', color: 'amber', icon: 'zap', description: 'High-speed tricks, formulas, and mnemonics', createdAt: '2026-01-01T00:00:00.000Z', isSystem: true },
+  { id: 'high-yield', name: 'High Yield', color: 'emerald', icon: 'star', description: 'Most frequent and high-scoring question types', createdAt: '2026-01-01T00:00:00.000Z', isSystem: true },
+];
+
 function defaultDb(): AetherDB {
   return {
     version: SCHEMA_VER,
@@ -40,6 +47,7 @@ function defaultDb(): AetherDB {
     completed: {},
     myList: [],
     savedQuestions: {},
+    bookmarkFolders: [...DEFAULT_BOOKMARK_FOLDERS],
     stats: {
       totalAttempted: 0,
       avgAccuracy: 0,
@@ -305,8 +313,15 @@ let _storageHealthy = true;
 /** UI hook fired the first time a save fails (and on recovery). Injected by
     main.tsx so this service stays UI-free and testable. */
 let _onStorageHealthChange: ((healthy: boolean) => void) | null = null;
+/** Installed by cloudSync after authentication is available. The store remains
+    local-first; this hook queues the durable cloud snapshot after each local
+    mutation without coupling this module to transport/auth concerns. */
+let _cloudSyncTrigger: (() => void) | null = null;
 export function setStorageHealthListener(cb: (healthy: boolean) => void): void {
   _onStorageHealthChange = cb;
+}
+export function setCloudSyncTrigger(cb: (() => void) | null): void {
+  _cloudSyncTrigger = cb;
 }
 
 /** One-time probe: Safari private mode (and some locked-down browsers)
@@ -574,6 +589,14 @@ function save(): void {
   // `storage` event only fires in OTHER tabs, so without this an in-tab
   // submit leaves Dashboard/Analytics showing stale numbers until reload.
   notify();
+  // Queue after local persistence/notification so the immediately interactive
+  // UI never waits for network I/O. cloudSync coalesces these snapshots and
+  // keeps them until Render acknowledges a durable write.
+  try {
+    _cloudSyncTrigger?.();
+  } catch {
+    /* Cloud queue failures must never break local study progress. */
+  }
 }
 
 /** Whether the last persistence attempt succeeded. False ⇒ anything saved
@@ -796,6 +819,35 @@ export function getDb(): AetherDB {
   return _db;
 }
 
+/** Replace the local cache with a validated cloud snapshot. The remote account
+    is authoritative after sign-in/reinstall; all stats are rebuilt locally so
+    dashboard calculations stay compatible with legacy data. */
+export function hydrateCloudState(state: {
+  attempts?: Record<string, Attempt[]>;
+  savedQuestions?: SavedQuestionRecord[];
+  bookmarkFolders?: BookmarkFolder[];
+  completed?: Record<string, boolean>;
+  myList?: string[];
+  settings?: Partial<AetherDB['settings']>;
+}): void {
+  const next = defaultDb();
+  next.attempts = structuredClone(state.attempts || {});
+  next.completed = structuredClone(state.completed || {});
+  next.myList = [...(state.myList || [])];
+  next.settings = { ...next.settings, ...(state.settings || {}) };
+  next.bookmarkFolders = state.bookmarkFolders?.length
+    ? structuredClone(state.bookmarkFolders)
+    : [...DEFAULT_BOOKMARK_FOLDERS];
+  (state.savedQuestions || []).forEach((record) => {
+    if (!record?.id || !record.examPath) return;
+    const path = canonicalizePath(record.examPath);
+    if (!path) return;
+    (next.savedQuestions[path] ||= []).push({ ...record, examPath: path });
+  });
+  _db = migrate(next);
+  save();
+}
+
 /** Persist the theme atomically: mutate + save in one step so the preference
      survives reload and isn't wiped by a cross-tab storage sync. */
 export function setTheme(theme: 'dark' | 'light' | 'netflix' | 'onepiece'): void {
@@ -918,6 +970,7 @@ export function toggleSaveQuestion(
     solution?: string;
     marks?: number;
   },
+  folderId?: string,
 ): boolean {
   const path = canonicalizePath(examPath);
   if (!path) return false;
@@ -943,6 +996,7 @@ export function toggleSaveQuestion(
     correct_option_id: q.correct_option_id,
     solution: q.solution,
     marks: q.marks,
+    folderId: getBookmarkFolders().some((folder) => folder.id === folderId) ? folderId : 'default',
     timesReviewed: 0,
   };
   list.push(rec);
@@ -1037,4 +1091,192 @@ export function attachAttemptToSaved(
     dirty = true;
   });
   if (dirty) save();
+}
+
+/* ── Bookmark Folders / Categories CRUD ───────────────────────── */
+
+export function getBookmarkFolders(): BookmarkFolder[] {
+  if (!_db.bookmarkFolders || !Array.isArray(_db.bookmarkFolders) || _db.bookmarkFolders.length === 0) {
+    _db.bookmarkFolders = [...DEFAULT_BOOKMARK_FOLDERS];
+    save();
+  }
+  return [..._db.bookmarkFolders];
+}
+
+export function createBookmarkFolder(
+  name: string,
+  color = 'blue',
+  icon = 'folder',
+  description = '',
+): BookmarkFolder {
+  const folders = getBookmarkFolders();
+  const id = `f_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const newFolder: BookmarkFolder = {
+    id,
+    name: name.trim() || 'Untitled Category',
+    color,
+    icon,
+    description: description.trim(),
+    createdAt: new Date().toISOString(),
+    isSystem: false,
+  };
+  folders.push(newFolder);
+  _db.bookmarkFolders = folders;
+  save();
+  return newFolder;
+}
+
+export function updateBookmarkFolder(
+  id: string,
+  updates: Partial<Omit<BookmarkFolder, 'id' | 'createdAt'>>,
+): boolean {
+  const folders = getBookmarkFolders();
+  const folder = folders.find((f) => f.id === id);
+  if (!folder) return false;
+  if (updates.name !== undefined) folder.name = updates.name.trim() || folder.name;
+  if (updates.color !== undefined) folder.color = updates.color;
+  if (updates.icon !== undefined) folder.icon = updates.icon;
+  if (updates.description !== undefined) folder.description = updates.description.trim();
+  folder.updatedAt = new Date().toISOString();
+  _db.bookmarkFolders = folders;
+  save();
+  return true;
+}
+
+export function deleteBookmarkFolder(id: string): boolean {
+  if (id === 'default') return false; // Default folder cannot be deleted
+  const folders = getBookmarkFolders();
+  const index = folders.findIndex((f) => f.id === id);
+  if (index === -1) return false;
+
+  folders.splice(index, 1);
+  _db.bookmarkFolders = folders;
+
+  // Re-assign all questions currently in this folder to 'default'
+  Object.values(_db.savedQuestions).forEach((list) => {
+    list.forEach((q) => {
+      if (q.folderId === id) q.folderId = 'default';
+      if (Array.isArray(q.folderIds) && q.folderIds.includes(id)) {
+        q.folderIds = q.folderIds.filter((fId) => fId !== id);
+      }
+    });
+  });
+
+  save();
+  return true;
+}
+
+/* ── Saved Question Enhancements ──────────────────────────────── */
+
+export function updateSavedQuestion(
+  id: string,
+  updates: Partial<SavedQuestionRecord>,
+): boolean {
+  for (const list of Object.values(_db.savedQuestions)) {
+    const rec = list.find((r) => r.id === id);
+    if (rec) {
+      Object.assign(rec, updates);
+      save();
+      return true;
+    }
+  }
+  return false;
+}
+
+export function batchUpdateSavedQuestions(
+  ids: string[],
+  updates: Partial<SavedQuestionRecord>,
+): boolean {
+  const idSet = new Set(ids);
+  let updatedCount = 0;
+  for (const list of Object.values(_db.savedQuestions)) {
+    list.forEach((rec) => {
+      if (idSet.has(rec.id)) {
+        Object.assign(rec, updates);
+        updatedCount++;
+      }
+    });
+  }
+  if (updatedCount > 0) {
+    save();
+    return true;
+  }
+  return false;
+}
+
+export function batchDeleteSavedQuestions(ids: string[]): boolean {
+  const idSet = new Set(ids);
+  let dirty = false;
+  for (const path of Object.keys(_db.savedQuestions)) {
+    const original = _db.savedQuestions[path];
+    if (!original) continue;
+    const filtered = original.filter((r) => !idSet.has(r.id));
+    if (filtered.length !== original.length) {
+      _db.savedQuestions[path] = filtered;
+      dirty = true;
+    }
+  }
+  if (dirty) {
+    save();
+    return true;
+  }
+  return false;
+}
+
+export function toggleStarQuestion(id: string): boolean {
+  for (const list of Object.values(_db.savedQuestions)) {
+    const rec = list.find((r) => r.id === id);
+    if (rec) {
+      rec.isStarred = !rec.isStarred;
+      save();
+      return !!rec.isStarred;
+    }
+  }
+  return false;
+}
+
+export function setQuestionFolder(id: string, folderId: string): boolean {
+  return updateSavedQuestion(id, { folderId });
+}
+
+export function setQuestionNotes(id: string, notes: string): boolean {
+  return updateSavedQuestion(id, { notes });
+}
+
+export function setQuestionPriority(
+  id: string,
+  priority: 'high' | 'medium' | 'low' | undefined,
+): boolean {
+  return updateSavedQuestion(id, { priority });
+}
+
+export function addQuestionTag(id: string, tag: string): boolean {
+  const cleanTag = tag.trim().replace(/^#/, '');
+  if (!cleanTag) return false;
+  for (const list of Object.values(_db.savedQuestions)) {
+    const rec = list.find((r) => r.id === id);
+    if (rec) {
+      const currentTags = rec.tags || [];
+      if (!currentTags.includes(cleanTag)) {
+        rec.tags = [...currentTags, cleanTag];
+        save();
+        return true;
+      }
+      return false;
+    }
+  }
+  return false;
+}
+
+export function removeQuestionTag(id: string, tag: string): boolean {
+  const cleanTag = tag.trim().replace(/^#/, '');
+  for (const list of Object.values(_db.savedQuestions)) {
+    const rec = list.find((r) => r.id === id);
+    if (rec && rec.tags) {
+      rec.tags = rec.tags.filter((t) => t !== cleanTag);
+      save();
+      return true;
+    }
+  }
+  return false;
 }

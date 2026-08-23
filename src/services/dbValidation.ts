@@ -3,7 +3,7 @@
    they drop invalid entries and report what was dropped. Used by
    attemptStore on every load/import/cross-tab sync so a malformed
    blob can never poison stats math or crash a page. */
-import type { AetherDB, Attempt, SavedQuestionRecord, SectionSnapshot } from '@/types';
+import type { AetherDB, Attempt, BookmarkFolder, SavedQuestionRecord, SectionSnapshot } from '@/types';
 import { computeAttemptHash } from '@/lib/integrity';
 
 export interface ValidationReport {
@@ -211,6 +211,21 @@ export function validateDb(db: unknown, defaults: AetherDB): { db: AetherDB; rep
     }
   }
 
+  // Bookmark folders: preserve valid custom/system folder records while falling
+  // back to the defaults when the field is absent or completely malformed.
+  const bookmarkFolders: BookmarkFolder[] = Array.isArray(src.bookmarkFolders)
+    ? (src.bookmarkFolders as unknown[]).filter((folder): folder is BookmarkFolder => {
+        if (!isPlainObject(folder)) return false;
+        return (
+          typeof folder.id === 'string' &&
+          folder.id.trim() !== '' &&
+          typeof folder.name === 'string' &&
+          typeof folder.color === 'string' &&
+          typeof folder.createdAt === 'string'
+        );
+      })
+    : [...(defaults.bookmarkFolders || [])];
+
   // Stats: the store recomputes these on every save, so just guarantee shape.
   let stats = defaults.stats;
   if (isPlainObject(src.stats)) {
@@ -238,7 +253,7 @@ export function validateDb(db: unknown, defaults: AetherDB): { db: AetherDB; rep
   const version = isFiniteNumber(src.version) ? src.version : defaults.version;
 
   return {
-    db: { version, settings, attempts, completed, myList, savedQuestions, stats },
+    db: { version, settings, attempts, completed, myList, savedQuestions, bookmarkFolders, stats },
     report,
   };
 }

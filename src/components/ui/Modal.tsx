@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { SPRING_MODAL } from '@/lib/motion';
 import { registerBackHandler } from '@/services/nativeMobile';
+import { acquireScrollLock } from '@/services/scrollLock';
 
 export interface ModalProps {
   open: boolean;
@@ -50,7 +51,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 'max-w-lg', s
       }
     };
     document.addEventListener('keydown', onKey, true);
-    document.body.style.overflow = 'hidden';
+    const releaseScrollLock = acquireScrollLock();
     const unregBack = registerBackHandler(() => {
       onClose();
       return true;
@@ -59,7 +60,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 'max-w-lg', s
     return () => {
       unregBack();
       document.removeEventListener('keydown', onKey, true);
-      document.body.style.overflow = '';
+      releaseScrollLock();
       lastFocused.current?.focus?.();
     };
   }, [open, onClose]);
@@ -113,7 +114,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 'max-w-lg', s
                   <button
                     onClick={onClose}
                     aria-label="Close dialog"
-                    className="w-9 h-9 grid place-items-center rounded-md text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer"
+                    className="w-11 h-11 grid place-items-center rounded-xl text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                   >
                     <X size={18} />
                   </button>

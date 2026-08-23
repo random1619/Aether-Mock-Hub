@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bookmark, BarChart3, Clock3, Bell, Sparkles, LayoutGrid, Zap } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useSettingsStore } from '@/stores/settingsStore';
 import { ProvidersNavDropdown } from '@/components/dashboard/ProvidersNavDropdown';
 import { SPRING_DRAWER } from '@/lib/motion';
 import { registerBackHandler } from '@/services/nativeMobile';
+import { acquireScrollLock } from '@/services/scrollLock';
 
 /** Slide-over drawer for mobile hamburger — providers + secondary links.
  *  Uses spring drawer physics, backdrop blur, and focus trap via inert.
@@ -14,12 +15,38 @@ import { registerBackHandler } from '@/services/nativeMobile';
 export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { theme } = useSettingsStore();
   const isNetflix = theme === 'netflix';
+  const panelRef = useRef<HTMLDivElement>(null);
+  const lastFocused = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
+    lastFocused.current = document.activeElement as HTMLElement;
+    const focusPanel = () => {
+      const first = panelRef.current?.querySelector<HTMLElement>('button, a, [tabindex]:not([tabindex="-1"])');
+      first?.focus();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>('button, a, [tabindex]:not([tabindex="-1"])');
+      if (!focusables?.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    const focusTimer = window.setTimeout(focusPanel, 0);
+    const releaseScrollLock = acquireScrollLock();
     const unregBack = registerBackHandler(() => {
       onClose();
       return true;
@@ -27,8 +54,10 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
 
     return () => {
       unregBack();
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
+      window.clearTimeout(focusTimer);
+      document.removeEventListener('keydown', onKey, true);
+      releaseScrollLock();
+      lastFocused.current?.focus?.();
     };
   }, [open, onClose]);
 
@@ -46,6 +75,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
             onClick={onClose}
           />
           <motion.div
+            ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
@@ -69,7 +99,7 @@ export function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => 
               <button
                 onClick={onClose}
                 aria-label="Close menu"
-                className="w-10 h-10 grid place-items-center rounded-full bg-surface-2 active:scale-95 transition-transform"
+                className="w-11 h-11 grid place-items-center rounded-2xl bg-surface-2 active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               >
                 <X size={18} />
               </button>
