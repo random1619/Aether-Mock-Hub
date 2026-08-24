@@ -10,6 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-A78BFA?style=for-the-badge&logo=github&logoColor=white" />
+  <a href="https://github.com/random1619/Aether-Mock-Hub/releases/latest"><img src="https://img.shields.io/badge/Windows%20Setup-.exe%20Download-0078D4?style=for-the-badge&logo=windows&logoColor=white" /></a>
   <a href="https://github.com/random1619/Aether-Mock-Hub/releases/latest"><img src="https://img.shields.io/badge/Android%20APK-v1.0.0%20Download-3DDC84?style=for-the-badge&logo=android&logoColor=white" /></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Android%20%7C%20Web-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
   <img src="https://img.shields.io/badge/electron-34.0.0-47848F?style=for-the-badge&logo=electron&logoColor=white" />
@@ -20,14 +21,14 @@
 
 ---
 
-## 📱 Mobile App (Android APK)
+## 📥 Downloads (Desktop & Mobile)
 
-> 🚀 **Direct Download**: Grab the latest Android APK directly from the [GitHub Releases](https://github.com/random1619/Aether-Mock-Hub/releases/latest/download/Aether-Mock-Hub-v1.0.0.apk)!
+> 🚀 **Direct Downloads from [GitHub Releases v1.0.0](https://github.com/random1619/Aether-Mock-Hub/releases/latest)**:
 >
-> - **Full Mobile Experience**: Responsive drawer, mobile question palette, offline-first exam simulation.
-> - **Cloud & Offline Sync**: Connects to the backend server with seamless local IndexedDB fallback.
-
-<br/>
+> | Platform | Download Link | Features |
+> | :--- | :--- | :--- |
+> | 💻 **Windows Desktop** | [**Aether Mocks Dashboard Setup (exe)**](https://github.com/random1619/Aether-Mock-Hub/releases/latest/download/Aether.Mocks.Dashboard.Setup.1.0.0.exe) | Full native desktop experience, fullscreen proctoring mode, offline engine |
+> | 📱 **Android Mobile** | [**Aether Mock Hub (APK)**](https://github.com/random1619/Aether-Mock-Hub/releases/latest/download/Aether-Mock-Hub-v1.0.0.apk) | Responsive mobile drawer, question palette, cloud & offline sync |
 
 <br/>
 
