@@ -13,22 +13,22 @@ const DURATION_RE = /<meta[^>]+name=["']exam-duration["'][^>]+content=["'](\d+)[
 const DURATION_RE_ALT = /<meta[^>]+content=["'](\d+)["'][^>]+name=["']exam-duration["']/i;
 /** Data variable names used across vendor templates: legacy mocks embed
     `const questions`, newer Random-Mocks templates use `QUESTIONS` or
-    `QUIZ_DATA`. */
-const VAR_RE = /(?:const|let|var)\s+(questions|QUESTIONS|QUIZ_DATA)\s*=\s*\[/;
+    `QUIZ_DATA`, and other templates use `quizData`, `testData`, etc. */
+const VAR_RE = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA|quizData|testData|qs)\s*=\s*\[/;
 const VAR_RE_QS = /this\.qs\s*=\s*\[/;
 const VAR_RE_QUESTIONS_THIS = /this\.questions\s*=\s*\[/;
 /** Primary: greedy — captures up to the LAST `]` before `</script>`. Correct
      for every generator template (the questions array is the final statement
      before the closing tag) and immune to `]</script>` appearing inside a
      question's HTML string content, which truncated the old non-greedy regex. */
-const QUESTIONS_RE_GREEDY = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA)\s*=\s*(\[[\s\S]*\])\s*;?\s*<\/script>/m;
+const QUESTIONS_RE_GREEDY = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA|quizData|testData|qs)\s*=\s*(\[[\s\S]*\])\s*;?\s*<\/script>/m;
 const QS_RE_GREEDY = /this\.qs\s*=\s*(\[[\s\S]*\])\s*;?\s*(?:<\/script>|this\.sections)/m;
 /** Fallback for hand-authored mocks where the array isn't the last statement. */
-const QUESTIONS_RE = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA)\s*=\s*(\[[\s\S]*?\])\s*;?\s*(?:<\/script>|$)/m;
+const QUESTIONS_RE = /(?:const|let|var)\s+(?:questions|QUESTIONS|QUIZ_DATA|quizData|testData|qs)\s*=\s*(\[[\s\S]*?\])\s*;?\s*(?:<\/script>|$)/m;
 
 /** Bracket-matching extraction for mocks where the data array is followed by
     more JS in the same <script> (both regexes above require the array to sit
-    right before `</script>`/EOF). Finds `const questions|QUESTIONS|QUIZ_DATA = [`
+    right before `</script>`/EOF). Finds `const questions|QUESTIONS|QUIZ_DATA|quizData|testData|qs = [`
     then walks brackets, skipping over string contents so `]`/`[` inside
     question HTML can't unbalance the count. */
 function extractByBracketMatch(html: string): string | null {
@@ -131,6 +131,31 @@ function extractDomQCards(html: string): string | null {
   return null;
 }
 
+function extractObjectWithQuestions(html: string): string | null {
+  const objRe = /(?:const|let|var)\s+(?:quizData|testData|examData|QUIZ_DATA)\s*=\s*\{/g;
+  let m: RegExpExecArray | null;
+  while ((m = objRe.exec(html)) !== null) {
+    const start = m.index + m[0].length - 1;
+    let depth = 0, inStr: string | null = null, escaped = false;
+    for (let i = start; i < html.length; i++) {
+      const ch = html[i];
+      if (inStr) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === inStr) inStr = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === '`') inStr = ch;
+      else if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) return html.slice(start, i + 1);
+      }
+    }
+  }
+  return null;
+}
+
 function extractQuestionsJson(html: string): string | null {
   // Order matters: greedy first (canonical templates), then bracket-match
   // (array followed by more JS in the same script), non-greedy last — with
@@ -143,12 +168,15 @@ function extractQuestionsJson(html: string): string | null {
   if (bracketed) return bracketed;
   const fallback = html.match(QUESTIONS_RE);
   if (fallback) return fallback[1];
+  // Fallback: object wrapping questions (e.g. const quizData = { ... questions: [...] })
+  const objWrap = extractObjectWithQuestions(html);
+  if (objWrap) return objWrap;
   // Fallback: DOM q-cards (Mocks Wallah Direction etc.)
   const dom = extractDomQCards(html);
-  if(dom) return dom;
+  if (dom) return dom;
   // Fallback: lang-en question format (Computer Awareness)
   const langEn = extractLangEnQuestions(html);
-  if(langEn) return langEn;
+  if (langEn) return langEn;
   return null;
 }
 /** Give up on a hung connection instead of spinning forever. */
@@ -179,23 +207,39 @@ export function sanitizeHtml(html: string): string {
 }
 
 function stripOuterJson(raw: string): unknown[] {
-  // The embedded array is already valid JSON (double-quoted keys/strings).
-  // Parse directly; fall back to a tolerant cleanup for stray trailing commas.
+  // 1. Try standard JSON.parse directly
   try {
-    return JSON.parse(raw);
-  } catch (firstErr) {
-    try {
-      const cleaned = raw.replace(/,\s*([}\]])/g, '$1');
-      return JSON.parse(cleaned);
-    } catch {
-      // Surface a useful error — a raw SyntaxError ("Unexpected token } in
-      // JSON at position 18342") gives no hint that the mock file is broken.
-      throw new Error(
-        `Could not parse questions JSON (even after trailing-comma cleanup): ${firstErr instanceof Error ? firstErr.message : String(firstErr)
-        }`,
-      );
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && typeof parsed === 'object' && Array.isArray((parsed as any).questions)) {
+      return (parsed as any).questions;
     }
+  } catch {}
+
+  // 2. Try trailing-comma cleanup
+  try {
+    const cleaned = raw.replace(/,\s*([}\]])/g, '$1');
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && typeof parsed === 'object' && Array.isArray((parsed as any).questions)) {
+      return (parsed as any).questions;
+    }
+  } catch {}
+
+  // 3. Tolerant JavaScript object/array literal evaluator (handles unquoted keys, single quotes, \', trailing commas)
+  try {
+    const evaled = Function('"use strict"; return (' + raw + ')')();
+    if (Array.isArray(evaled)) return evaled;
+    if (evaled && typeof evaled === 'object' && Array.isArray((evaled as any).questions)) {
+      return (evaled as any).questions;
+    }
+  } catch (evalErr) {
+    throw new Error(
+      `Could not parse questions JSON (even after trailing-comma cleanup): ${evalErr instanceof Error ? evalErr.message : String(evalErr)}`
+    );
   }
+
+  throw new Error('Questions payload is not an array.');
 }
 
 /** Slugify a legacy html path the same way scripts/extract-mocks.mjs does:
@@ -323,7 +367,13 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
   const hasEnSol = typeof enSol === 'string' && enSol.trim().length > 0;
 
   const rawOpts = (hasEnOpts ? enOpts : undefined) ?? raw.options ?? raw.opts;
-  let options: unknown[] = Array.isArray(rawOpts) ? rawOpts : [];
+  let options: unknown[] = [];
+  if (Array.isArray(rawOpts)) {
+    options = rawOpts;
+  } else if (typeof rawOpts === 'object' && rawOpts !== null) {
+    options = Object.values(rawOpts);
+  }
+
   const optsAreObjects = options.some(
     (o) => typeof o === 'object' && o !== null && !Array.isArray(o),
   );
@@ -331,7 +381,7 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
     options = options.map((o) => {
       if (typeof o === 'object' && o !== null) {
         const rec = o as Record<string, unknown>;
-        return String(rec.en ?? rec.hi ?? '');
+        return String(rec.en ?? rec.hi ?? rec.text ?? rec.value ?? rec.option ?? '');
       }
       return String(o ?? '');
     });
@@ -345,13 +395,15 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
     return s;
   });
 
-  // Answer key variants: correct_option_id (0-based), correct (letter a–d or
-  // 0-based int), ans (0-based int; 1-based only in the {en,hi}-opts schema).
-  let correct: unknown = raw.correct_option_id;
+  // Answer key variants: correct_option_id (0-based), correctIndex (0-based),
+  // correct (letter a–f or 0-based int), answer, correct_option, ans (0-based int; 1-based only in the {en,hi}-opts schema).
+  let correct: unknown = raw.correct_option_id ?? raw.correctIndex;
   if (correct === undefined || correct === null) {
-    const c = raw.correct;
-    if (typeof c === 'string' && /^[a-dA-D]$/.test(c.trim())) {
+    const c = raw.correct ?? raw.answer ?? raw.correct_option;
+    if (typeof c === 'string' && /^[a-fA-F]$/.test(c.trim())) {
       correct = c.trim().toLowerCase().charCodeAt(0) - 97;
+    } else if (typeof c === 'string' && /^\d+$/.test(c.trim())) {
+      correct = parseInt(c.trim(), 10);
     } else if (c !== undefined && c !== null) {
       correct = c; // numeric / numeric-string — handled by standard validation
     }
@@ -360,6 +412,8 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
     const a = raw.ans;
     if (typeof a === 'number' && Number.isFinite(a)) {
       correct = optsAreObjects ? a - 1 : a;
+    } else if (typeof a === 'string' && /^[a-fA-F]$/.test(a.trim())) {
+      correct = a.trim().toLowerCase().charCodeAt(0) - 97;
     } else if (a !== undefined && a !== null) {
       correct = a;
     }
@@ -371,22 +425,27 @@ function canonicalizeRaw(raw: Record<string, unknown>): Record<string, unknown> 
     else if(typeof ca === 'string' && /^\d+$/.test((ca as string).trim())) correct = parseInt((ca as string).trim(),10)-1;
   }
 
-  // Vocab-quiz schema: instruction line + sentence stem.
+  // Vocab-quiz schema: instruction line + sentence stem or word-only stem.
   const stem =
     (hasEnQ ? enQ : undefined) ?? raw.question ?? raw.text ?? raw.q ?? raw.question_text ??
+    (raw.word !== undefined && raw.q === undefined ? `Select the synonym/meaning of: <b>${raw.word}</b>` : undefined) ??
     (raw.sentence !== undefined
       ? [raw.instr, raw.sentence].filter(Boolean).join('<br>')
       : undefined);
 
+  const passage =
+    raw.comp ?? raw.passage ?? raw.paragraph ?? raw.reading_comprehension ??
+    raw.rc_passage ?? raw.direction ?? raw.directions ?? raw.context ?? raw.passage_text;
+
   return {
     question: stem,
-    comp: raw.comp,
+    comp: passage,
     options,
     correct_option_id: correct,
-    solution: (hasEnSol ? enSol : undefined) ?? raw.solution ?? raw.explanation ?? raw.sol ?? raw.exp ?? raw.expl ?? raw.solHi,
+    solution: (hasEnSol ? enSol : undefined) ?? raw.solution ?? raw.explanation ?? raw.sol ?? raw.exp ?? raw.expl ?? raw.solHi ?? raw.detailed_solution,
     marks: (raw.marks as any)?.positive ?? raw.marks ?? raw.pos ?? raw.marks_per_question,
     section: raw.section,
-    series_name: raw.series_name ?? raw.tag ?? raw.src,
+    series_name: raw.series_name ?? raw.tag ?? raw.topic ?? raw.src,
   };
 }
 

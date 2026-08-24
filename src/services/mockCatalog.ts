@@ -20,6 +20,8 @@ function isRenderableMock(m: MockEntry): boolean {
   if (p.startsWith('pdf-reader.html') || p.includes('pdf-reader.html?')) return false;
   if (p.includes('?') || p.includes('#')) return false; // query/fragment → not a static mock
   if (p.endsWith('.pdf')) return false;
+  if (p.includes('template - ') || p.includes('/template/')) return false;
+  if (p.includes('.html/')) return false;
   return p.endsWith('.html');
 }
 

@@ -179,6 +179,8 @@ function evalMockData(scriptBodies) {
     localStorage: { getItem() { return null; }, setItem() {} },
     navigator: {},
     location: {},
+    setTimeout() {},
+    setInterval() {},
   };
   sandbox.globalThis = sandbox;
   sandbox.window.globalThis = sandbox;
@@ -188,11 +190,14 @@ function evalMockData(scriptBodies) {
       const out = {};
       try { if (typeof questions !== 'undefined') out.questions = questions; } catch (e) {}
       try { if (typeof window.questions !== 'undefined') out.questions = out.questions || window.questions; } catch (e) {}
-      try { if (typeof testData !== 'undefined' && testData.questions) out.questions = testData.questions; } catch (e) {}
-      try { if (typeof window.testData !== 'undefined' && window.testData.questions) out.questions = out.questions || window.testData.questions; } catch (e) {}
+      try { if (typeof QUESTIONS !== 'undefined') out.questions = out.questions || QUESTIONS; } catch (e) {}
+      try { if (typeof QUIZ_DATA !== 'undefined') out.questions = out.questions || (Array.isArray(QUIZ_DATA) ? QUIZ_DATA : QUIZ_DATA.questions); } catch (e) {}
+      try { if (typeof quizData !== 'undefined') out.questions = out.questions || (Array.isArray(quizData) ? quizData : quizData.questions); } catch (e) {}
+      try { if (typeof testData !== 'undefined') out.questions = out.questions || (Array.isArray(testData) ? testData : testData.questions); } catch (e) {}
+      try { if (typeof examData !== 'undefined') out.questions = out.questions || (Array.isArray(examData) ? examData : examData.questions); } catch (e) {}
+      try { if (typeof this !== 'undefined' && this.qs) out.questions = out.questions || this.qs; } catch (e) {}
       try { if (typeof sectionsData !== 'undefined') out.sectionsData = sectionsData; } catch (e) {}
       try { if (typeof window.sectionsData !== 'undefined') out.sectionsData = out.sectionsData || window.sectionsData; } catch (e) {}
-      try { if (typeof examData !== 'undefined') out.examData = examData; } catch (e) {}
       return JSON.stringify(out);
     })()`;
   try {
@@ -419,14 +424,22 @@ function cleanQuestion(q) {
     return s || opt;
   });
   // Handle correct_answer 1-based -> 0-based
-  let correct = q.correct_option_id ?? q.correct ?? q.answer ?? q.correct_answer ?? null;
-  if (q.correct_answer !== undefined && q.correct_option_id === undefined) {
+  let correct = q.correct_option_id ?? q.correctIndex ?? q.correct ?? q.answer ?? q.correct_option ?? q.correct_answer ?? null;
+  if (typeof correct === 'string' && /^[a-dA-D]$/.test(correct.trim())) {
+    correct = correct.trim().toLowerCase().charCodeAt(0) - 97;
+  } else if (q.correct_answer !== undefined && q.correct_option_id === undefined && q.correctIndex === undefined) {
     // testData uses 1-based correct_answer
-    correct = parseInt(q.correct_answer, 10) - 1;
+    const ca = parseInt(String(q.correct_answer), 10);
+    if (!Number.isNaN(ca)) correct = ca - 1;
   }
-  // Handle question_text
-  const question = q.question ?? q.text ?? q.question_text ?? '';
-  const solution = q.solution ?? q.explanation ?? q.correct_option ?? '';
+  // Handle question_text and word
+  let question = q.question ?? q.text ?? q.question_text ?? '';
+  if (!question && q.word) {
+    question = `Select the synonym/meaning of: <b>${q.word}</b>`;
+  } else if (!question && q.sentence) {
+    question = [q.instr, q.sentence].filter(Boolean).join('<br>');
+  }
+  const solution = q.solution ?? q.explanation ?? q.sol ?? q.exp ?? q.correct_option ?? '';
   // Handle marks object {positive:2, negative:0.5} or number
   let marks = 2.0;
   if (q.marks !== undefined) {
@@ -439,7 +452,7 @@ function cleanQuestion(q) {
   return {
     question,
     options,
-    correct_option_id: correct,
+    correct_option_id: typeof correct === 'number' ? correct : (parseInt(String(correct), 10) || 0),
     solution,
     marks,
     section: q.section ?? q.subject ?? null,
@@ -447,7 +460,7 @@ function cleanQuestion(q) {
 }
 
 /* ── Filesystem walk ── */
-const IGNORED_DIRS = ['v2', 'mocks', 'dist', 'dist-electron', 'dist-installer', 'node_modules', '.git', '.firebase', '.claude', '.mimocode', '.superpowers', 'backup', 'styles', 'scss', 'css', 'organized', 'organized-mocks'];
+const IGNORED_DIRS = ['v2', 'mocks', 'dist', 'dist-electron', 'dist-installer', 'node_modules', '.git', '.firebase', '.claude', '.mimocode', '.superpowers', 'backup', 'styles', 'scss', 'css'];
 
 function walk(dir, acc = []) {
   if (!fs.existsSync(dir)) return acc;
@@ -477,13 +490,21 @@ function slugify(rel) {
 export function extractAllMocks() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.mkdirSync(OUT_DIR_PUBLIC, { recursive: true });
-  const files = walk(PUBLIC);
+  const appPublicDir = path.resolve(__dirname, '..', 'public');
+  const rootFiles = walk(PUBLIC).map(f => ({ full: f, rel: path.relative(PUBLIC, f).replace(/\\/g, '/') }));
+  const appFiles = walk(appPublicDir).map(f => ({ full: f, rel: path.relative(appPublicDir, f).replace(/\\/g, '/') }));
+  
+  // Combine unique by relative path
+  const fileMap = new Map();
+  for (const item of [...rootFiles, ...appFiles]) {
+    if (!fileMap.has(item.rel)) fileMap.set(item.rel, item.full);
+  }
+
   const manifest = [];
   const skipped = [];
   let ok = 0;
 
-  for (const file of files) {
-    const rel = path.relative(PUBLIC, file).replace(/\\/g, '/');
+  for (const [rel, file] of fileMap.entries()) {
     const html = fs.readFileSync(file, 'utf8');
     const bodies = extractInlineDataScripts(html);
     let data = bodies.length ? evalMockData(bodies) : { __error: 'no-inline-script' };
@@ -537,12 +558,25 @@ export function extractAllMocks() {
     fs.writeFileSync(path.join(OUT_DIR, slug + '.json'), jsonContent);
     fs.writeFileSync(path.join(OUT_DIR_PUBLIC, slug + '.json'), jsonContent);
 
+    function getSubject(cat, nam) {
+      const catLower = (cat || '').toLowerCase();
+      const nameLower = (nam || '').toLowerCase();
+      if (['quant', 'math', 'calc', 'mixt', 'allig', 'ratio', 'percent', 'prop', 'geometry', 'algebra', 'trig', 'arithmetic', 'number system'].some(k => catLower.includes(k) || nameLower.includes(k))) return 'Quant';
+      if (['reasoning', 'analog', 'odd one', 'syllogism', 'coding', 'blood relation', 'puzzle', 'direction'].some(k => catLower.includes(k) || nameLower.includes(k))) return 'Reasoning';
+      if (['english', 'vocab', 'grammar', 'comprehension', 'synonym', 'antonym', 'idiom', 'error', 'cloze'].some(k => catLower.includes(k) || nameLower.includes(k))) return 'English';
+      if (['gs', 'gk', 'history', 'geography', 'polity', 'science', 'current', 'affairs', 'banking', 'computer', 'static'].some(k => catLower.includes(k) || nameLower.includes(k))) return 'General Studies';
+      if (['full mock', 'pre mock', 'tier 1', 'tier 2', 'live mock', 'cgl', 'chsl', 'mts'].some(k => catLower.includes(k) || nameLower.includes(k))) return 'Full Mock';
+      return 'General';
+    }
+
     manifest.push({
       slug,
       path: rel,
       title,
+      name: title,
       provider,
       category,
+      subject: getSubject(category, title),
       durationMinutes: record.durationMinutes,
       totalQuestions: record.totalQuestions,
       sectionsLocked: locked,
@@ -556,8 +590,22 @@ export function extractAllMocks() {
   fs.writeFileSync(MANIFEST, manifestContent);
   fs.writeFileSync(MANIFEST_PUBLIC, manifestContent);
 
+  const mockDataEntries = manifest.map(m => ({
+    path: m.path,
+    name: m.name || m.title,
+    provider: m.provider,
+    category: m.category,
+    subject: m.subject,
+    totalQuestions: m.totalQuestions,
+    durationMinutes: m.durationMinutes
+  }));
+  const mockDataJs = `// Generated Mock Data\nconst MOCK_DATA = ${JSON.stringify(mockDataEntries, null, 2)};\n`;
+  fs.writeFileSync(path.resolve(__dirname, '..', 'public', 'mocks-data.js'), mockDataJs);
+  fs.writeFileSync(path.resolve(PUBLIC, 'mocks-data.js'), mockDataJs);
+
   console.log(`\nExtraction complete: ${ok} mocks extracted -> ${path.relative(REPO_ROOT, OUT_DIR)}`);
   console.log(`Manifest: ${manifest.length} entries -> ${path.relative(REPO_ROOT, MANIFEST)}`);
+  console.log(`MOCK_DATA: ${mockDataEntries.length} verified mocks emitted to mocks-data.js`);
   if (skipped.length) {
     console.log(`Skipped ${skipped.length} empty/shell HTML files (no inline question data).`);
     console.log('Skipped sample:', skipped.slice(0,15).map(s=> s.path + ' ('+s.reason+')').join('\n'));

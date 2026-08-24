@@ -11,5 +11,16 @@ export function examPath(mockPath: string, opts?: { mode?: 'review'; attempt?: n
 /** Decode the :encoded route param back to a canonical mock path. */
 export function decodeExamParam(encoded: string): string {
   const b64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-  return decodeURIComponent(atob(b64));
+  const padded = b64.padEnd(b64.length + ((4 - (b64.length % 4)) % 4), '=');
+  const decoded = atob(padded);
+  try {
+    return decodeURIComponent(decoded);
+  } catch {
+    try {
+      const bytes = Uint8Array.from(decoded, (c) => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    } catch {
+      return decoded;
+    }
+  }
 }

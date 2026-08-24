@@ -56,6 +56,7 @@ export default function Exam() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [sectionConfirmOpen, setSectionConfirmOpen] = useState(false);
   const [exitConfirmOpen, setExitConfirmOpen] = useState(false);
@@ -132,7 +133,7 @@ export default function Exam() {
       cancelled = true;
       reset();
     };
-  }, [path, loadExam, reset]);
+  }, [path, reloadKey, loadExam, reset]);
 
   const attemptQuery = searchParams.get('attempt');
 
@@ -320,13 +321,18 @@ export default function Exam() {
   if (error) {
     return (
       <div className="min-h-screen grid place-items-center bg-tcs-ink px-4" data-exam-skin="tcs">
-        <div className="max-w-md w-full bg-tcs-panel border border-tcs-border p-8 text-center">
+        <div className="max-w-md w-full bg-tcs-panel border border-tcs-border p-8 text-center rounded-xl">
           <AlertTriangle className="text-warning mx-auto mb-4" size={32} />
           <h1 className="text-xl font-bold text-tcs-text mb-2">Couldn't load this mock</h1>
-          <p className="text-sm text-tcs-muted mb-6">{error}</p>
-          <Button variant="secondary" onClick={() => navigate('/')}>
-            Back to Dashboard
-          </Button>
+          <p className="text-sm text-tcs-muted mb-6 leading-relaxed">{error}</p>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="primary" onClick={() => setReloadKey((k) => k + 1)}>
+              Retry
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/')}>
+              Back to Dashboard
+            </Button>
+          </div>
         </div>
       </div>
     );

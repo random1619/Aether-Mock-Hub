@@ -173,7 +173,14 @@ function applyLang(html: string, lang: LangView): string {
 export function SafeHtml({ html, lang = 'both', className }: SafeHtmlProps) {
   // Derive the language-specific markup from the source on every render. The
   // source `html` prop is stable, so toggling lang re-derives cleanly.
-  const rendered = useMemo(() => sanitizeHtml(applyLang(html, lang)), [html, lang]);
+  const rendered = useMemo(() => {
+    const filtered = applyLang(html, lang);
+    // If language filter completely emptied content (e.g. English requested on Hindi-only item),
+    // fallback to original html so content is never blank
+    const textOnly = filtered.replace(/<[^>]*>/g, '').trim();
+    const effective = (textOnly.length === 0 && !/<(img|svg|math|canvas|video|audio)/i.test(filtered)) ? html : filtered;
+    return sanitizeHtml(effective);
+  }, [html, lang]);
 
   return (
     <div
